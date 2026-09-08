@@ -132,13 +132,15 @@ const T = {
     justify-content: flex-end;
     min-height: 100svh;
     padding-top: 8rem;
+    /* La lámina siguiente sube el equivalente al radio: se compensa aquí para
+       que no se coma el filo de avales del pie de la portada. */
+    padding-bottom: var(--r-lamina);
     background: var(--color-brand-950);
     color: #fff;
     overflow: hidden;
-    /* La portada se recorta por abajo: el papel de la sección siguiente
-       sube por delante, como una lámina impresa sobre otra. */
-    border-bottom-left-radius: var(--r-lamina);
-    border-bottom-right-radius: var(--r-lamina);
+    /* Sin redondeo propio abajo. La lámina siguiente es la que sube por
+       delante con sus esquinas curvas; si además se redondeara la portada,
+       las dos curvas dejarían un hueco de papel entre ellas. */
   }
 
   .hero__fondo { position: absolute; inset: 0; }

@@ -9,6 +9,7 @@ Tabler Icons — MIT © Paweł Kuna — https://tabler.io/icons
 
 Uso:  npm i -D @tabler/icons && python scripts/copiar_iconos.py
 """
+import io
 import os
 import re
 import shutil
@@ -43,6 +44,8 @@ MAPA = {
 
     # ── Institucional ─────────────────────────────────────────────────────
     'certificado': 'certificate',
+    'escudo': 'shield-check',
+    'hoja': 'leaf',
     'almacen': 'building-warehouse',
     'entrega': 'truck-delivery',
     'equipo': 'users',
@@ -76,6 +79,24 @@ MAPA = {
 }
 
 
+ATRIBUCION = '''Tabler Icons
+============
+
+Los iconos del sitio provienen de Tabler Icons, con licencia MIT.
+
+  MIT License — Copyright (c) 2020-2026 Pawel Kuna
+  https://tabler.io/icons
+
+El paquete @tabler/icons es una dependencia de desarrollo: los SVG que el
+sitio usa se copian a src/icons/ con nombre semantico mediante
+
+    python scripts/copiar_iconos.py
+
+y se incrustan en la compilacion. El sitio publicado no descarga nada de
+terceros por este concepto.
+'''
+
+
 def limpiar(svg: str) -> str:
     """Devuelve solo las formas, sin el <svg> exterior ni la guarda."""
     dentro = re.search(r'<svg[^>]*>(.*)</svg>', svg, re.S)
@@ -102,6 +123,11 @@ def main():
         cuerpo = limpiar(open(origen, encoding='utf-8').read())
         with open(os.path.join(OUT, nombre + '.svg'), 'w', encoding='utf-8') as fh:
             fh.write(cuerpo)
+
+    # La carpeta se recrea en cada pasada, asi que la atribucion se vuelve a
+    # escribir aqui: si viviera solo en el disco, un `rmtree` la borraria.
+    with io.open(os.path.join(OUT, 'LEEME.txt'), 'w', encoding='utf-8') as fh:
+        fh.write(ATRIBUCION)
 
     print('%d iconos copiados a src/icons/' % (len(MAPA) - len(faltan)))
     for f in faltan:

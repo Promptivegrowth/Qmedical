@@ -68,22 +68,6 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
             <span class="hidden sm:inline">{site.whatsapp.numero}</span>
             <span class="sm:hidden">WhatsApp</span>
           </a>
-
-          <span class="h-3 w-px bg-current opacity-20" aria-hidden="true"></span>
-
-          <!-- Conmutador de idioma: dos rótulos, no un desplegable. Se ve de
-               un vistazo en qué idioma se está, y el enlace lleva a esta misma
-               página en el otro, no a la portada. -->
-          <p class="idioma">
-            <span class="idioma__actual" aria-current="true">{lang === 'es' ? 'ES' : 'EN'}</span>
-            <a
-              href={destinoIdioma}
-              class="idioma__otro"
-              hreflang={otro}
-              lang={otro}
-              title={textos(otro).verEn(NOMBRE_IDIOMA[otro])}
-            >{otro === 'es' ? 'ES' : 'EN'}</a>
-          </p>
         </div>
       </div>
     </div>
@@ -129,6 +113,22 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
         </nav>
 
         <div class="flex shrink-0 items-center gap-2">
+          <!-- Conmutador de idioma. Vive en la barra y no en el cintillo,
+               porque el cintillo se recoge al hacer scroll y el cambio de
+               idioma tiene que seguir disponible en toda la página. Dos
+               rótulos, no un desplegable: se ve de un vistazo en qué idioma
+               se está, y el enlace lleva a esta misma página en el otro. -->
+          <p class="idioma" aria-label={t.cambiarIdioma}>
+            <span class="idioma__actual" aria-current="true">{lang === 'es' ? 'ES' : 'EN'}</span>
+            <a
+              href={destinoIdioma}
+              class="idioma__otro"
+              hreflang={otro}
+              lang={otro}
+              title={textos(otro).verEn(NOMBRE_IDIOMA[otro])}
+            >{otro === 'es' ? 'ES' : 'EN'}</a>
+          </p>
+
           <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta cta-barra">
             <span class="hidden md:inline">{t.cotizar}</span>
             <span class="md:hidden">{t.cotizarCorto}</span>
@@ -270,36 +270,43 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
   .cabecera { position: sticky; top: 0; z-index: 60; }
 
   /* Conmutador de idioma.
-     Se le da cuerpo —recuadro propio, mas tamano y mas espacio— porque en el
-     cintillo, entre telefonos y WhatsApp, dos siglas sueltas se perdian. El
-     idioma activo va en solido; el otro, en hueco, y se rellena al apuntarlo.
-     Los dos rotulos miden igual, asi que la barra no se mueve al cambiar. */
+     Comparte el lenguaje del botón de cotización que tiene al lado —mismo
+     alto, mismo radio, mismo peso de tipografía— para que se lean como dos
+     piezas de la misma barra y no como un añadido. El idioma activo va en
+     sólido; el otro, en hueco, y se rellena al apuntarlo. Los dos rótulos
+     miden igual, así que la barra no se mueve al cambiar de idioma. */
   .idioma {
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.15rem;
-    border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+    gap: 0.15rem;
+    height: 2.7rem;
+    padding: 0.25rem;
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
     border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: height 0.4s var(--ease-editorial), border-color 0.4s var(--ease-editorial);
   }
+  :global(.cabecera.compacta) .idioma { height: 2.4rem; }
+
   .idioma__actual,
   .idioma__otro {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.15rem;
-    padding: 0.28rem 0.5rem;
+    min-width: 2.3rem;
+    height: 100%;
+    padding-inline: 0.45rem;
     border-radius: 999px;
     line-height: 1;
     transition: background-color 0.3s var(--ease-editorial),
       color 0.3s var(--ease-editorial), opacity 0.3s var(--ease-editorial);
   }
-  /* El rotulo activo va en solido. Su color se declara para los dos estados
-     de la cabecera —papel y transparente sobre el hero— en vez de deducirlo
-     de currentColor, que dejaria blanco sobre blanco. */
+
+  /* El color del rótulo activo se declara para los dos estados de la
+     cabecera —papel y transparente sobre la portada— en vez de deducirlo de
+     currentColor, que dejaría blanco sobre blanco. */
   .idioma__actual {
     background: var(--color-tinta);
     color: var(--color-papel);
@@ -309,11 +316,12 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
     background: #fff;
     color: var(--color-brand-950);
   }
+
   .idioma__otro { opacity: 0.6; }
   .idioma__otro:hover,
   .idioma__otro:focus-visible {
     opacity: 1;
-    background: color-mix(in srgb, currentColor 14%, transparent);
+    background: color-mix(in srgb, currentColor 12%, transparent);
   }
 
   /* Una sola superficie continua: cintillo, barra y lámina del menú.

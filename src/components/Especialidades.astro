@@ -148,10 +148,17 @@ const fichas = especialidades.map((base, i) => {
 <style>
   .esp {
     position: relative;
+    z-index: 1;
     overflow: hidden;
     padding-block: 5rem;
     background: var(--color-brand-700);
     color: #fff;
+    /* Sube por delante de la portada, como una lámina impresa sobre otra.
+       El redondeo vive aquí, no en la portada: así la curva se recorta contra
+       el fondo oscuro que tiene detrás y no contra el papel de la página. */
+    margin-top: calc(-1 * var(--r-lamina));
+    border-top-left-radius: var(--r-lamina);
+    border-top-right-radius: var(--r-lamina);
   }
   @media (min-width: 1024px) { .esp { padding-block: 8rem; } }
 

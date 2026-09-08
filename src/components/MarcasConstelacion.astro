@@ -153,7 +153,7 @@ const orbes = marcas.map((m, i) => {
     --k: 1; /* factor de escala de los discos */
 
     position: relative;
-    background: #000; /* negro corporativo del manual */
+    background: var(--color-brand-950); /* azul profundo del manual */
     color: #fff;
   }
 
@@ -196,7 +196,7 @@ const orbes = marcas.map((m, i) => {
     height: 100%;
     border-radius: 50%;
     /* Del negro del fondo al blanco pleno, según se acerca */
-    background: color-mix(in srgb, #ffffff calc(var(--prof) * 100%), #101319);
+    background: color-mix(in srgb, #ffffff calc(var(--prof) * 100%), #111a3c);
   }
 
   .orbe__logo {

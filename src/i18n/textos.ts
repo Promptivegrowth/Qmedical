@@ -92,7 +92,8 @@ const es = {
     fichas: 'Fichas técnicas',
     reclamos: 'Libro de reclamaciones',
     horario: 'Horario de atención',
-    derechos: (a: number, n: string) => `© ${a} ${n}. Todos los derechos reservados.`,
+    // El nombre ya trae su punto final: «Q-MEDICAL S.A.C.».
+    derechos: (a: number, n: string) => `© ${a} ${n} Todos los derechos reservados.`,
     ruc: 'RUC',
   },
 
@@ -212,7 +213,7 @@ const en: typeof es = {
     fichas: 'Datasheets',
     reclamos: 'Complaints Book',
     horario: 'Opening hours',
-    derechos: (a: number, n: string) => `© ${a} ${n}. All rights reserved.`,
+    derechos: (a: number, n: string) => `© ${a} ${n} All rights reserved.`,
     ruc: 'Tax ID (RUC)',
   },
 

@@ -91,6 +91,17 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   están puestos a ojo. Se midió la relación de contraste del texto blanco contra el
   fondo real —con el texto oculto, en varios momentos del video y de 320 a 1920 px—
   y los valores se ajustaron hasta superar el mínimo AA en todos los casos.
+- **Respaldo**: las tres acreditaciones son placas con superficie propia y son
+  enlaces de verdad —se pulsan, se tabulan y responden al foco—, con el sello
+  dibujándose trazo a trazo al entrar en pantalla. El brillo que sigue al puntero
+  es el único añadido con JavaScript de la sección: solo en equipos con ratón, solo
+  mientras el puntero está encima, y escribiendo dos variables CSS dentro de un
+  `requestAnimationFrame`. El mismo componente sirve a la portada y a `/nosotros`,
+  así que las dos no pueden divergir.
+- **Movimiento**: las fotografías del compromiso y el fondo de la banda de cierre
+  llevan un acercamiento lento y continuo. Cada transformación vive en su propia
+  capa —recorte, parallax y zoom— porque las tres comparten la propiedad
+  `transform` y en un mismo elemento se anularían entre sí.
 - **Preloader**: el logotipo corporativo sobre un trazo electrocardiográfico. Aparece
   una sola vez por sesión (`sessionStorage`), se cierra al terminar la carga con un
   tope de seguridad de 4 s y no se muestra con `prefers-reduced-motion` ni sin

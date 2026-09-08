@@ -5,12 +5,13 @@ import Hero from '../components/Hero.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import Especialidades from '../components/Especialidades.astro';
-import { site, certificaciones } from '../data/site';
+import Respaldo from '../components/Respaldo.astro';
+import { site } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos, productosDeCategoria, productosDestacados } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, certificacionesEn, empresaEn } from '../i18n/contenido';
+import { categoriaEn, empresaEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -83,11 +84,6 @@ const T = {
     catalogoAnte: 'Catálogo',
     catalogoTitulo: 'Piezas que definen la línea',
     losProductos: (n: number) => `Los ${n} productos`,
-    respaldo: 'Respaldo',
-    respaldoTitulo: 'Estándares que se auditan, no que se declaran',
-    respaldoNota:
-      'Atendemos instituciones médicas de todas las regiones del país, ' +
-      'incluyendo procesos de licitación pública y compras corporativas.',
     fotos: [
       'Pasillo principal del almacén central de Q-MEDICAL',
       'Operario de Q-MEDICAL verificando existencias',
@@ -124,11 +120,6 @@ const T = {
     catalogoAnte: 'Catalogue',
     catalogoTitulo: 'The pieces that define the line',
     losProductos: (n: number) => `All ${n} products`,
-    respaldo: 'Credentials',
-    respaldoTitulo: 'Standards that are audited, not merely declared',
-    respaldoNota:
-      'We serve medical institutions in every region of the country, including ' +
-      'public tenders and corporate purchasing.',
     fotos: [
       'Main aisle of the Q-MEDICAL central warehouse',
       'A Q-MEDICAL operator checking stock',
@@ -158,9 +149,6 @@ const matriz = categorias.map((c, i) => ({
   sintesis: SINTESIS[lang][c.slug] ?? categoriaEn(c, lang).corto,
 }));
 
-const avales = certificaciones.map((c, i) =>
-  lang === 'en' ? { ...c, ...(certificacionesEn[i] ?? {}) } : c
-);
 ---
 
 <Base
@@ -243,6 +231,7 @@ const avales = certificaciones.map((c, i) =>
         {galeria.map((f, i) => (
           <figure class="foto" data-anim="cortina">
             <span class="foto__lente">
+              <span class="foto__plano parallax" data-parallax={0.03 + i * 0.008}>
               <img
                 src={`/img/fotos/${f.src}-1000.webp`}
                 srcset={`/img/fotos/${f.src}-640.webp 640w, /img/fotos/${f.src}-1000.webp 1000w`}
@@ -252,9 +241,9 @@ const avales = certificaciones.map((c, i) =>
                 loading="lazy"
                 decoding="async"
                 alt={f.alt}
-                class="parallax"
-                data-parallax={0.03 + i * 0.008}
+                style={`--cine-retraso: ${i * -6}s`}
               />
+              </span>
             </span>
             {i === 0 && (
               <figcaption class="foto__sello">
@@ -317,30 +306,8 @@ const avales = certificaciones.map((c, i) =>
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 04 · Certificaciones -->
-  <section class="certif">
-    <div class="caja">
-      <div class="cabecera-seccion" data-anim-grupo="80">
-        <div>
-          <p class="ante ante-claro" data-anim="sube">{T.respaldo}</p>
-          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.respaldoTitulo}</h2>
-        </div>
-        <p class="certif__nota" data-anim="sube">{T.respaldoNota}</p>
-      </div>
-
-      <ol class="certif__lista" data-anim-grupo="100">
-        {avales.map((c, i) => (
-          <li class="certif__item" data-anim="sube">
-            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
-            <p class="certif__sigla">{c.sigla}</p>
-            <p class="certif__nombre">{c.nombre}</p>
-            <p class="certif__detalle">{c.detalle}</p>
-            <p class="certif__emisor">{c.emisor}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
+  <!-- ══════════════════════════════ 04 · Respaldo -->
+  <Respaldo lang={lang} />
 
   <!-- ══════════════════════════════ 05 · Marcas (anillo, intacto) -->
   <MarcasConstelacion lang={lang} />
@@ -483,31 +450,44 @@ const avales = certificaciones.map((c, i) =>
     border-radius: var(--r-md);
     background: var(--color-linea);
   }
-  /* La lente sostiene el acercamiento de entrada; la imagen, el parallax.
-     Van en elementos distintos para que las dos transformaciones no se
-     pisen. */
+  /* Tres capas, una transformación cada una, y en este orden por un motivo:
+     la lente es la que recibe el recorte de la cortina, así que tiene que
+     quedarse quieta —si se moviera, su caja de recorte se movería con ella y
+     descubriría el fondo por abajo—; el plano lleva el parallax, y la imagen,
+     el acercamiento lento. */
   .foto__lente {
     position: relative;
     display: block;
     width: 100%;
     height: 100%;
-    transform: scale(1.07);
-    /* Las dos van juntas: si solo se declarara transform, esta regla —más
-       específica— anularía la transición del recorte de la cortina. */
-    transition: transform 1.6s var(--ease-salida) var(--retraso, 0ms),
-      clip-path 1.2s var(--ease-salida) var(--retraso, 0ms);
   }
-  .foto.visible .foto__lente { transform: none; }
-  .foto img {
+  .foto__plano {
     position: absolute;
     inset: -10% 0 auto 0;
     display: block;
     width: 100%;
-    /* Un 10 % de holgura arriba y abajo: mas de lo que puede desplazar el
-       parallax con los factores de esta seccion, asi que el marco nunca
+    /* Un 10 % de holgura arriba y abajo: más de lo que puede desplazar el
+       parallax con los factores de esta sección, así que la lente nunca
        descubre el fondo. */
     height: 120%;
+  }
+  .foto img {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    /* Acercamiento lento y continuo, de ida y vuelta. Cada fotografía entra
+       en un punto distinto del ciclo —de ahí el retraso negativo— para que
+       las cuatro no respiren a la vez. Solo corre cuando la fotografía ya se
+       ha descubierto: hasta entonces no gasta nada. */
+    animation: cine 34s ease-in-out infinite alternate var(--cine-retraso, 0s);
+    animation-play-state: paused;
+  }
+  .foto.visible img { animation-play-state: running; }
+
+  @keyframes cine {
+    from { transform: scale(1); }
+    to { transform: scale(1.12); }
   }
   /* La figura humana se encuadra más arriba: el recorte le comía la cabeza. */
   .foto:nth-child(2) img { object-position: 50% 30%; }
@@ -556,15 +536,16 @@ const avales = certificaciones.map((c, i) =>
     gap: 1.5rem;
   }
   .compromiso__dato {
-    margin-top: 0.4rem;
+    margin-top: 0.6rem;
     font-family: var(--font-display);
-    font-size: clamp(1.9rem, 3vw, 2.6rem);
-    line-height: 1;
+    font-size: clamp(2.6rem, 5.2vw, 4.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
     color: var(--color-brand-700);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .foto__lente { transform: none; transition: none; }
+    .foto img { animation: none; }
   }
 
   /* ── Cabeceras y rejilla ──────────────────────────────────────────── */
@@ -583,37 +564,4 @@ const avales = certificaciones.map((c, i) =>
   @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-  /* ── Certificaciones ──────────────────────────────────────────────── */
-  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
-  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
-  .certif__nota {
-    max-width: 22rem;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: rgba(255, 255, 255, 0.6);
-  }
-  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
-  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
-  @media (min-width: 900px) {
-    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
-    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
-  }
-  .certif__folio { color: rgba(255, 255, 255, 0.4); }
-  .certif__sigla {
-    margin-top: 1.25rem;
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 3.4vw, 2.75rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
-  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
-  .certif__emisor {
-    margin-top: 1.5rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35);
-  }
 </style>

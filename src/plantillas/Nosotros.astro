@@ -3,11 +3,12 @@ import Base from '../layouts/Base.astro';
 import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
 import CtaContacto from '../components/CtaContacto.astro';
-import { site, valores, certificaciones } from '../data/site';
+import Respaldo from '../components/Respaldo.astro';
+import { site, valores } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
-import { certificacionesEn, valoresEn } from '../i18n/contenido';
+import { valoresEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -146,9 +147,6 @@ const principios = valores.map((v, i) =>
   lang === 'en' ? (valoresEn[i] ?? v) : v
 );
 
-const avales = certificaciones.map((c, i) =>
-  lang === 'en' ? { ...c, ...(certificacionesEn[i] ?? {}) } : c
-);
 ---
 
 <Base
@@ -248,32 +246,14 @@ const avales = certificaciones.map((c, i) =>
   </section>
 
   <!-- ── Certificaciones ─────────────────────────────────────────────── -->
-  <section id="certificaciones" class="certif scroll-mt-20">
-    <div class="caja">
-      <div class="flex flex-wrap items-end justify-between gap-8" data-anim-grupo="80">
-        <div>
-          <p class="ante ante-claro" data-anim="sube">{T.certifAnte}</p>
-          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.certifTitulo}</h2>
-        </div>
-      </div>
-
-      <ol class="certif__lista" data-anim-grupo="100">
-        {avales.map((c, i) => (
-          <li class="certif__item" data-anim="sube">
-            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
-            <p class="certif__sigla">{c.sigla}</p>
-            <p class="certif__nombre">{c.nombre}</p>
-            <p class="certif__detalle">{c.detalle}</p>
-            <p class="certif__emisor">{c.emisor}</p>
-          </li>
-        ))}
-      </ol>
-
-      <a href={via(lang, 'fichas')} class="pill pill-papel mt-12" data-anim="sube">
-        <Icon name="documento" size={16} />{T.verDocs}
-      </a>
-    </div>
-  </section>
+  <Respaldo
+    lang={lang}
+    id="certificaciones"
+    ante={T.certifAnte}
+    titulo={T.certifTitulo}
+    a={via(lang, 'fichas')}
+    aTexto={T.verDocs}
+  />
 
   <CtaContacto lang={lang} />
 </Base>
@@ -354,32 +334,4 @@ const avales = certificaciones.map((c, i) =>
   .galeria__pieza::after { display: none; }
   .galeria__pieza--ancha { grid-column: span 2; aspect-ratio: 16 / 9; }
 
-  /* ── Certificaciones ──────────────────────────────────────────────── */
-  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
-  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
-  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
-  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
-  @media (min-width: 900px) {
-    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
-    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
-  }
-  .certif__folio { color: rgba(255, 255, 255, 0.4); }
-  .certif__sigla {
-    margin-top: 1.25rem;
-    font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(2rem, 3.4vw, 2.75rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
-  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
-  .certif__emisor {
-    margin-top: 1.5rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35);
-  }
 </style>

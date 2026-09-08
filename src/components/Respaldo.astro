@@ -1,0 +1,410 @@
+---
+import Icon from './Icon.astro';
+import { certificaciones } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { certificacionesEn } from '../i18n/contenido';
+
+/**
+ * Respaldo documental: las acreditaciones de la empresa.
+ *
+ * Antes eran tres columnas separadas por filetes finos: información correcta,
+ * pero sin peso. Un comité de compras que llega aquí está comprobando si el
+ * proveedor es homologable, así que la sección tiene que sostener eso.
+ *
+ * Ahora cada acreditación es una placa con superficie propia —fondo, borde y
+ * un filo superior de luz— y es un enlace de verdad a la página de la
+ * empresa: se puede pulsar, se puede tabular y responde al foco, no solo al
+ * ratón. El sello se dibuja trazo a trazo al entrar en pantalla y la sigla
+ * queda además de fondo, en marca de agua, como en un diploma.
+ *
+ * El brillo que sigue al puntero es el único añadido con JavaScript. Solo se
+ * activa en equipos con ratón, solo mientras el puntero está encima de una
+ * placa, y escribe dos variables CSS dentro de un requestAnimationFrame: no
+ * toca el layout ni corre cuando nadie lo mira.
+ */
+interface Props {
+  lang?: Idioma;
+  /** Sobre papel en vez de sobre el azul corporativo. */
+  claro?: boolean;
+  /** Ancla de la sección. En /nosotros es a donde apunta el mega-menú. */
+  id?: string;
+  ante?: string;
+  titulo?: string;
+  /** A dónde llevan las placas y el enlace del encabezado. */
+  a?: string;
+  aTexto?: string;
+}
+const { lang = 'es', claro = false, id = 'respaldo', ante, titulo, a, aTexto } = Astro.props;
+
+const T = {
+  es: {
+    ante: 'Respaldo',
+    titulo: 'Estándares que se auditan, no que se declaran',
+    nota:
+      'Atendemos instituciones médicas de todas las regiones del país, ' +
+      'incluyendo procesos de licitación pública y compras corporativas.',
+    emitidaPor: 'Emitida por',
+    ver: 'Ver el respaldo documental',
+    verFicha: 'Ver detalle',
+  },
+  en: {
+    ante: 'Credentials',
+    titulo: 'Standards that are audited, not merely declared',
+    nota:
+      'We serve medical institutions in every region of the country, ' +
+      'including public tenders and corporate purchasing.',
+    emitidaPor: 'Issued by',
+    ver: 'See the supporting documentation',
+    verFicha: 'View details',
+  },
+}[lang];
+
+const avales = certificaciones.map((c, i) => ({
+  ...c,
+  ...(lang === 'en' ? (certificacionesEn[i] ?? {}) : {}),
+  n: String(i + 1).padStart(2, '0'),
+}));
+
+const destino = a ?? via(lang, 'nosotros', undefined, 'certificaciones');
+const rotuloAnte = ante ?? T.ante;
+const rotuloTitulo = titulo ?? T.titulo;
+const rotuloEnlace = aTexto ?? T.ver;
+---
+
+<section id={id} class:list={['respaldo', claro && 'es-clara']}>
+  <div class="respaldo__trama trama" aria-hidden="true"></div>
+
+  <div class="caja relative">
+    <div class="respaldo__alto" data-anim-grupo="90">
+      <div>
+        <p class:list={['ante', claro ? 'ante-brand' : 'ante-claro']} data-anim="sube">{rotuloAnte}</p>
+        <h2 class="display-lg mt-5 max-w-[17ch]" data-anim="sube">{rotuloTitulo}</h2>
+      </div>
+      <div class="respaldo__nota" data-anim="sube">
+        <p>{T.nota}</p>
+        <a href={destino} class="respaldo__ir">
+          {rotuloEnlace}<Icon name="flecha" size={15} />
+        </a>
+      </div>
+    </div>
+
+    <ol class="respaldo__placas" data-anim-grupo="130">
+      {avales.map((c) => (
+        <li data-anim="sube">
+          <a href={destino} class="placa" data-placa>
+            <span class="placa__brillo" aria-hidden="true"></span>
+            <span class="placa__marca" aria-hidden="true">{c.sigla}</span>
+
+            <span class="placa__alto">
+              <span class="folio placa__folio">{c.n}</span>
+              <span class="placa__sello">
+                <Icon name={c.icono} size={26} stroke={1.2} anim />
+              </span>
+            </span>
+
+            <span class="placa__cuerpo">
+              <span class="placa__sigla">{c.sigla}</span>
+              <span class="placa__nombre">{c.nombre}</span>
+              <span class="placa__detalle">{c.detalle}</span>
+            </span>
+
+            <span class="placa__pie">
+              <span class="placa__emisor">
+                <span class="placa__rotulo">{T.emitidaPor}</span>
+                {c.emisor}
+              </span>
+              <span class="placa__flecha"><Icon name="flecha" size={16} /></span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* ── La banda ─────────────────────────────────────────────────────── */
+  .respaldo {
+    position: relative;
+    overflow: hidden;
+    padding-block: 5rem;
+    background: var(--color-brand-700);
+    color: #fff;
+  }
+  @media (min-width: 1024px) { .respaldo { padding-block: 8rem; } }
+
+  .respaldo.es-clara {
+    background: var(--color-papel);
+    color: var(--color-tinta);
+  }
+  .respaldo__trama { position: absolute; inset: 0; opacity: 0.4; }
+  .respaldo.es-clara .respaldo__trama { display: none; }
+
+  /* ── Encabezado, sobre la retícula de doce columnas ───────────────── */
+  .respaldo__alto { display: grid; gap: 2rem; }
+  @media (min-width: 900px) {
+    .respaldo__alto {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 2rem var(--medianil);
+      align-items: end;
+    }
+    .respaldo__alto > div:first-child { grid-column: 1 / span 7; }
+    .respaldo__nota { grid-column: 9 / span 4; }
+  }
+
+  .respaldo__nota {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .respaldo.es-clara .respaldo__nota { color: var(--color-tinta-70); }
+
+  .respaldo__ir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid currentColor;
+    font-size: 0.87rem;
+    color: #fff;
+    transition: gap 0.35s var(--ease-salida), opacity 0.3s;
+  }
+  .respaldo.es-clara .respaldo__ir { color: var(--color-brand-700); }
+  .respaldo__ir:hover { gap: 0.85rem; opacity: 0.8; }
+
+  /* ── Las placas ───────────────────────────────────────────────────── */
+  .respaldo__placas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--medianil);
+    margin-top: 3.5rem;
+  }
+  @media (min-width: 700px) {
+    .respaldo__placas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) { .respaldo__placas { margin-top: 5rem; } }
+  .respaldo__placas > li { display: flex; }
+
+  .placa {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    width: 100%;
+    padding: 1.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--r-lg);
+    background: rgba(255, 255, 255, 0.05);
+    /* Filo de luz en el borde superior: el detalle que da cuerpo de placa. */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    transition: background-color 0.45s var(--ease-editorial),
+      border-color 0.45s var(--ease-editorial),
+      transform 0.5s var(--ease-salida);
+  }
+  @media (min-width: 1024px) { .placa { padding: 2.25rem; } }
+
+  .respaldo.es-clara .placa {
+    border-color: var(--color-linea);
+    background: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .placa:hover,
+  .placa:focus-visible {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-4px);
+  }
+  .respaldo.es-clara .placa:hover,
+  .respaldo.es-clara .placa:focus-visible {
+    background: #fff;
+    border-color: var(--color-brand-300);
+  }
+
+  /* Brillo que sigue al puntero. Sin puntero encima queda en cero. */
+  .placa__brillo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: radial-gradient(
+      18rem circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.16),
+      transparent 70%
+    );
+    transition: opacity 0.5s var(--ease-editorial);
+  }
+  .placa:hover .placa__brillo { opacity: 1; }
+  .respaldo.es-clara .placa__brillo {
+    background: radial-gradient(
+      18rem circle at var(--mx, 50%) var(--my, 50%),
+      var(--color-brand-50),
+      transparent 70%
+    );
+  }
+
+  /* La sigla, de nuevo y en grande, como la marca de agua de un diploma. */
+  .placa__marca {
+    position: absolute;
+    right: -0.35em;
+    bottom: -0.34em;
+    z-index: -1;
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 9vw, 7.5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+  }
+  .respaldo.es-clara .placa__marca { color: var(--color-brand-50); }
+
+  .placa__alto { display: flex; align-items: flex-start; justify-content: space-between; }
+  .placa__folio { color: rgba(255, 255, 255, 0.45); }
+  .respaldo.es-clara .placa__folio { color: var(--color-tinta-45); }
+
+  /* Sello: el icono dentro de su anillo, como el troquel de un certificado. */
+  .placa__sello {
+    display: grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    flex: none;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    color: #fff;
+    transition: border-color 0.45s var(--ease-editorial),
+      background-color 0.45s var(--ease-editorial);
+  }
+  .respaldo.es-clara .placa__sello {
+    border-color: var(--color-linea-2);
+    color: var(--color-brand-700);
+  }
+  .placa:hover .placa__sello {
+    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .respaldo.es-clara .placa:hover .placa__sello {
+    border-color: var(--color-brand-300);
+    background: var(--color-brand-50);
+  }
+
+  .placa__cuerpo { display: grid; gap: 0.7rem; }
+  .placa__sigla {
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 3vw, 2.4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .placa__nombre {
+    font-size: 0.97rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .respaldo.es-clara .placa__nombre { color: var(--color-tinta); }
+  .placa__detalle {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.58);
+  }
+  .respaldo.es-clara .placa__detalle { color: var(--color-tinta-70); }
+
+  .placa__pie {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .respaldo.es-clara .placa__pie { border-top-color: var(--color-linea); }
+
+  .placa__emisor {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .respaldo.es-clara .placa__emisor { color: var(--color-tinta-70); }
+  .placa__rotulo {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.38);
+  }
+  .respaldo.es-clara .placa__rotulo { color: var(--color-tinta-45); }
+
+  .placa__flecha {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: background-color 0.4s var(--ease-editorial),
+      color 0.4s var(--ease-editorial), transform 0.5s var(--ease-salida);
+  }
+  .respaldo.es-clara .placa__flecha {
+    background: var(--color-papel-2);
+    color: var(--color-tinta);
+  }
+  .placa:hover .placa__flecha {
+    background: #fff;
+    color: var(--color-brand-700);
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .placa,
+    .placa__flecha { transition: none; }
+    .placa:hover { transform: none; }
+  }
+</style>
+
+<script>
+  /* Brillo que sigue al puntero.
+     Solo en equipos con ratón —en táctil no hay puntero que seguir y sería
+     trabajo perdido—, solo mientras el puntero está sobre una placa, y con la
+     escritura agrupada en un requestAnimationFrame. Se escriben dos variables
+     CSS que alimentan un degradado: no se toca el layout. */
+  const finoYConHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (finoYConHover.matches && !quieto.matches) {
+    const placas = document.querySelectorAll<HTMLElement>('[data-placa]');
+
+    placas.forEach((placa) => {
+      let pendiente = false;
+      let x = 0;
+      let y = 0;
+
+      const pintar = () => {
+        placa.style.setProperty('--mx', `${x}px`);
+        placa.style.setProperty('--my', `${y}px`);
+        pendiente = false;
+      };
+
+      placa.addEventListener(
+        'pointermove',
+        (e) => {
+          const r = placa.getBoundingClientRect();
+          x = e.clientX - r.left;
+          y = e.clientY - r.top;
+          if (pendiente) return;
+          pendiente = true;
+          requestAnimationFrame(pintar);
+        },
+        { passive: true }
+      );
+    });
+  }
+</script>

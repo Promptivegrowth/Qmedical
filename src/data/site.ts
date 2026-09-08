@@ -116,6 +116,7 @@ export const navegacion = [
 export const certificaciones = [
   {
     sigla: 'BPA',
+    icono: 'certificado',
     nombre: 'Buenas Prácticas de Almacenamiento',
     emisor: 'DIGEMID — Ministerio de Salud del Perú',
     detalle:
@@ -125,6 +126,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 37001',
+    icono: 'escudo',
     nombre: 'Sistema de gestión antisoborno',
     emisor: 'Norma internacional ISO',
     detalle:
@@ -133,6 +135,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 14001',
+    icono: 'hoja',
     nombre: 'Sistema de gestión ambiental',
     emisor: 'Norma internacional ISO',
     detalle:
