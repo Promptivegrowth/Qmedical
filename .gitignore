@@ -1,0 +1,23 @@
+# dependencias
+node_modules/
+.pnpm-store/
+
+# resultado de la compilacion
+dist/
+.astro/
+.vercel/
+.output/
+
+# entorno
+.env
+.env.local
+.env.*.local
+
+# sistema
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# temporales de los scripts
+scripts/_favicon_preview.png

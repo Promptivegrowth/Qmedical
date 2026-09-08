@@ -1,0 +1,181 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Preloader from '../components/Preloader.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  /** El preloader completo solo se muestra en la portada. */
+  preloader?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  image = '/img/fotos/almacen-p1360310-1600.webp',
+  preloader = false,
+  schema,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href.replace(
+  /(.)\/$/,
+  '$1'
+);
+const socialImage = new URL(image, Astro.site ?? site.url).href;
+const titleFull = title.includes(site.nombreCorto) ? title : `${title} | ${site.nombre}`;
+
+const organizacion = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalBusiness',
+  '@id': site.url + '/#organizacion',
+  name: site.nombre,
+  alternateName: 'Q-MEDICAL',
+  url: site.url,
+  logo: site.url + '/img/logo/qmedical-azul.png',
+  description: site.descripcion,
+  foundingDate: String(site.fundacion),
+  telephone: site.telefonos.map((t) => t.etiqueta),
+  email: site.correoPrincipal,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.direccion.calle,
+    addressLocality: site.direccion.distrito,
+    addressRegion: site.direccion.ciudad,
+    addressCountry: 'PE',
+  },
+  areaServed: { '@type': 'Country', name: 'Perú' },
+  sameAs: [
+    'https://www.instagram.com/qmedicalperu/',
+    'https://www.facebook.com/Drogueria.QMedicalsac',
+    'https://www.linkedin.com/company/q-medical-s-a-c/',
+    'https://www.youtube.com/channel/UCFh2U0cEywVbI2dtXEfIbtw',
+  ],
+};
+const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [schema]) : [])];
+---
+
+<!doctype html>
+<html lang="es-PE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titleFull}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#152e7f" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content={site.nombre} />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.nombre} />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:title" content={titleFull} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titleFull} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap"
+    />
+
+    <script is:inline define:vars={{ preloader }}>
+      // Marca el documento antes del primer pintado para evitar destellos.
+      (function () {
+        var h = document.documentElement;
+        h.classList.add('js');
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var visto = false;
+        try { visto = sessionStorage.getItem('qm-visto') === '1'; } catch (e) {}
+        if (preloader && !reduce && !visto) h.classList.add('is-loading');
+      })();
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(schemas)} />
+  </head>
+
+  <body>
+    {preloader && <Preloader />}
+
+    <a href="#contenido" class="skip-link">Ir al contenido</a>
+
+    <Header />
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      // El preloader se cierra al terminar de cargar, con un tope de seguridad.
+      const html = document.documentElement;
+      if (html.classList.contains('is-loading')) {
+        const cerrar = () => {
+          if (!html.classList.contains('is-loading')) return;
+          html.classList.remove('is-loading');
+          html.classList.add('is-loaded');
+          try { sessionStorage.setItem('qm-visto', '1'); } catch (e) {}
+        };
+        const minimo = new Promise((r) => setTimeout(r, 900));
+        const carga = new Promise((r) =>
+          document.readyState === 'complete'
+            ? r(undefined)
+            : window.addEventListener('load', () => r(undefined), { once: true })
+        );
+        Promise.all([minimo, carga]).then(cerrar);
+        setTimeout(cerrar, 4000); // nunca deja la página bloqueada
+      }
+
+      // Aparición progresiva de secciones al entrar en pantalla.
+      const objetivos = document.querySelectorAll<HTMLElement>('.reveal');
+      if (objetivos.length) {
+        const io = new IntersectionObserver(
+          (entradas) => {
+            for (const e of entradas) {
+              if (!e.isIntersecting) continue;
+              const el = e.target as HTMLElement;
+              const retraso = Number(el.dataset.delay ?? 0);
+              setTimeout(() => el.classList.add('is-visible'), retraso);
+              io.unobserve(el);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+        );
+        objetivos.forEach((el) => io.observe(el));
+      }
+    </script>
+
+    <style is:global>
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 300;
+        padding: 0.75rem 1.25rem;
+        background: var(--color-brand-700);
+        color: #fff;
+        font-size: 0.85rem;
+        border-radius: 0 0 0.5rem 0;
+      }
+      .skip-link:focus { left: 0; }
+    </style>
+  </body>
+</html>

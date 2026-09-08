@@ -1,0 +1,364 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import MarcasCarrusel from '../components/MarcasCarrusel.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import { site, cifras, certificaciones } from '../data/site';
+import { marcas } from '../data/marcas';
+import { categorias, productos, productosDestacados } from '../data/catalogo';
+
+const destacados = productosDestacados().slice(0, 8);
+const pilares = categorias.filter((c) =>
+  ['laparoscopia', 'bioseguridad', 'antisepsia', 'nutricion-enteral'].includes(c.slug)
+);
+---
+
+<Base
+  title="Q-MEDICAL S.A.C. — Dispositivos médicos y bioseguridad en el Perú"
+  description={site.descripcion}
+  preloader
+>
+  <!-- ══════════════════════════════════════════════ Portada -->
+  <section class="relative overflow-hidden bg-brand-950 text-white">
+    <img
+      src="/img/fotos/almacen-p1360310-1600.webp"
+      srcset="
+        /img/fotos/almacen-p1360310-640.webp   640w,
+        /img/fotos/almacen-p1360310-1000.webp 1000w,
+        /img/fotos/almacen-p1360310-1600.webp 1600w"
+      sizes="100vw"
+      width="1600"
+      height="1200"
+      alt="Almacén central de Q-MEDICAL S.A.C. certificado en Buenas Prácticas de Almacenamiento"
+      class="absolute inset-0 h-full w-full object-cover"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-brand-950/96 via-brand-900/88 to-brand-800/60"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="grid-bg absolute inset-0 opacity-25" aria-hidden="true"></div>
+
+    <div class="container-q relative">
+      <div class="grid items-center gap-12 py-20 lg:min-h-[38rem] lg:grid-cols-12 lg:py-28">
+        <div class="lg:col-span-7">
+          <p class="eyebrow eyebrow--light">Droguería peruana · desde {site.fundacion}</p>
+
+          <h1 class="title-xl mt-6">
+            Dispositivos médicos<br class="hidden sm:block" /> y bioseguridad
+            <span class="text-white/55">para la salud del país</span>
+          </h1>
+
+          <p class="prose-q mt-7 max-w-xl !text-[1.08rem] !text-white/75">
+            Abastecemos a instituciones de salud estatales y privadas con productos
+            de alta calidad, respaldo técnico y entregas confiables. Trabajamos con
+            fabricantes de todo el mundo bajo certificación BPA de DIGEMID.
+          </p>
+
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="/catalogo" class="btn btn-light">
+              Ver catálogo
+              <Icon name="arrow" size={16} />
+            </a>
+            <a href="/contacto#cotizar" class="btn btn-ghost-light">Solicitar cotización</a>
+          </div>
+
+          <ul class="mt-11 flex flex-wrap gap-x-8 gap-y-3 text-[0.82rem] text-white/55">
+            <li class="flex items-center gap-2">
+              <Icon name="check" size={15} class="text-white/40" /> BPA — DIGEMID
+            </li>
+            <li class="flex items-center gap-2">
+              <Icon name="check" size={15} class="text-white/40" /> ISO 37001 · ISO 14001
+            </li>
+            <li class="flex items-center gap-2">
+              <Icon name="check" size={15} class="text-white/40" /> Cobertura nacional
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tarjeta de cifras -->
+        <div class="lg:col-span-5 lg:justify-self-end">
+          <div
+            class="w-full max-w-md rounded-2xl border border-white/12 bg-white/[0.06] p-7 backdrop-blur-md sm:p-8"
+          >
+            <p class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/45">
+              Q-MEDICAL en cifras
+            </p>
+            <dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-7">
+              {
+                cifras.map((c) => (
+                  <div>
+                    <dd class="font-display text-3xl font-semibold leading-none sm:text-[2.1rem]">
+                      {c.valor}
+                    </dd>
+                    <dt class="mt-2 text-[0.82rem] font-medium text-white/80">{c.etiqueta}</dt>
+                    <p class="mt-1 text-[0.72rem] leading-snug text-white/40">{c.nota}</p>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Marcas asociadas -->
+  <section class="border-b border-line bg-white py-9">
+    <div class="container-q">
+      <p class="text-center text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-muted/70">
+        Representamos y distribuimos {marcas.length} marcas de fabricantes de todo el mundo
+      </p>
+    </div>
+    <div class="mt-7">
+      <MarcasCarrusel titulo="Marcas asociadas a Q-MEDICAL" />
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Pilares -->
+  <section class="bg-white py-20 lg:py-28">
+    <div class="container-q">
+      <div class="max-w-2xl reveal">
+        <p class="eyebrow">Especialidades</p>
+        <h2 class="title-lg mt-4">Cuatro frentes donde el insumo correcto cambia el resultado</h2>
+        <p class="prose-q mt-5">
+          Nuestro catálogo está organizado por la realidad del servicio: lo que
+          necesita sala de operaciones no es lo que necesita el punto de acopio de
+          residuos ni la unidad de nutrición.
+        </p>
+      </div>
+
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          pilares.map((c, i) => (
+            <a
+              href={`/catalogo/${c.slug}`}
+              class="card group flex flex-col p-7 reveal"
+              data-delay={i * 90}
+            >
+              <span class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
+                <Icon name={c.icono} size={23} />
+              </span>
+              <h3 class="title-md mt-6">{c.corto}</h3>
+              <p class="mt-3 flex-1 text-[0.88rem] leading-relaxed text-muted">{c.descripcion}</p>
+              <span class="mt-6 inline-flex items-center gap-2 text-[0.8rem] font-semibold text-brand-700">
+                Ver línea
+                <Icon
+                  name="arrow"
+                  size={15}
+                  class="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="/catalogo" class="btn btn-outline">
+          Ver las {categorias.length} líneas de producto
+          <Icon name="arrow" size={15} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Compromiso -->
+  <section class="bg-surface py-20 lg:py-28">
+    <div class="container-q">
+      <div class="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+        <div class="reveal">
+          <div class="relative overflow-hidden rounded-2xl">
+            <img
+              src="/img/fotos/equipo-almacen-1000.webp"
+              srcset="
+                /img/fotos/equipo-almacen-640.webp   640w,
+                /img/fotos/equipo-almacen-1000.webp 1000w,
+                /img/fotos/equipo-almacen-1600.webp 1600w"
+              sizes="(min-width: 1024px) 46vw, 92vw"
+              width="1000"
+              height="563"
+              alt="Personal de Q-MEDICAL S.A.C. verificando existencias en el almacén central"
+              loading="lazy"
+              decoding="async"
+              class="w-full object-cover"
+            />
+          </div>
+          <div class="mt-5 grid grid-cols-2 gap-5">
+            <img
+              src="/img/fotos/almacen-p1360322-640.webp"
+              width="640"
+              height="480"
+              alt="Pasillo de racks del almacén central"
+              loading="lazy"
+              decoding="async"
+              class="w-full rounded-xl object-cover"
+            />
+            <img
+              src="/img/fotos/almacen-p1360266-640.webp"
+              width="640"
+              height="480"
+              alt="Estanterías con productos médicos correctamente rotulados"
+              loading="lazy"
+              decoding="async"
+              class="w-full rounded-xl object-cover"
+            />
+          </div>
+        </div>
+
+        <div class="reveal" data-delay="120">
+          <p class="eyebrow">El compromiso es de nosotros</p>
+          <h2 class="title-lg mt-4">
+            Cada entrega sostiene el trabajo de un equipo de salud
+          </h2>
+          <div class="prose-q mt-6">
+            <p>
+              Somos una empresa peruana comprometida con la salud del país. Trabajamos
+              incansablemente para que las instituciones de salud estatales y privadas
+              dispongan de productos médicos, de bioseguridad y de protección personal
+              de alta calidad, en beneficio del equipo asistencial y de los pacientes.
+            </p>
+            <p>
+              Todos los trabajadores de Q-MEDICAL formamos un equipo comprometido con
+              satisfacer las necesidades y expectativas de nuestros clientes mediante
+              la entrega oportuna de productos de calidad y una atención posventa que
+              acompaña todo el ciclo del pedido.
+            </p>
+          </div>
+
+          <dl class="mt-9 grid gap-6 sm:grid-cols-2">
+            <div class="flex gap-4">
+              <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-brand-700 shadow-sm">
+                <Icon name="truck" size={20} />
+              </span>
+              <div>
+                <dt class="text-[0.92rem] font-semibold">Entregas confiables</dt>
+                <dd class="mt-1 text-[0.84rem] leading-relaxed text-muted">
+                  Programación de despachos a instituciones de todas las regiones del país.
+                </dd>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-brand-700 shadow-sm">
+                <Icon name="building" size={20} />
+              </span>
+              <div>
+                <dt class="text-[0.92rem] font-semibold">Almacén certificado</dt>
+                <dd class="mt-1 text-[0.84rem] leading-relaxed text-muted">
+                  Condiciones de conservación y trazabilidad verificadas bajo BPA.
+                </dd>
+              </div>
+            </div>
+          </dl>
+
+          <a href="/nosotros" class="btn btn-outline mt-9">
+            Conocer la empresa
+            <Icon name="arrow" size={15} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Productos destacados -->
+  <section class="bg-white py-20 lg:py-28">
+    <div class="container-q">
+      <div class="flex flex-wrap items-end justify-between gap-6 reveal">
+        <div class="max-w-2xl">
+          <p class="eyebrow">Catálogo</p>
+          <h2 class="title-lg mt-4">Productos destacados</h2>
+          <p class="prose-q mt-5">
+            Una selección de nuestras líneas más solicitadas. Cada producto incluye
+            sus características técnicas, presentaciones y la ficha técnica oficial
+            en PDF lista para descargar.
+          </p>
+        </div>
+        <a href="/catalogo" class="btn btn-outline">
+          Todo el catálogo
+          <Icon name="arrow" size={15} />
+        </a>
+      </div>
+
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          destacados.map((p, i) => (
+            <div class="reveal" data-delay={(i % 4) * 80}>
+              <ProductoCard producto={p} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Certificaciones -->
+  <section class="relative overflow-hidden bg-brand-950 py-20 text-white lg:py-28">
+    <div class="grid-bg absolute inset-0 opacity-30" aria-hidden="true"></div>
+    <div class="container-q relative">
+      <div class="grid gap-14 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-4 reveal">
+          <p class="eyebrow eyebrow--light">Respaldo</p>
+          <h2 class="title-lg mt-4">Certificaciones y acreditaciones</h2>
+          <p class="prose-q mt-5 !text-white/70">
+            Operamos bajo estándares auditables que sostienen la calidad del producto,
+            la transparencia comercial y el cuidado del entorno.
+          </p>
+          <p class="mt-8 text-[0.84rem] text-white/45">
+            Atendemos instituciones médicas de todas las regiones del Perú, incluyendo
+            procesos de licitación pública y compras corporativas.
+          </p>
+        </div>
+
+        <ul class="lg:col-span-8 grid gap-4 sm:grid-cols-3">
+          {
+            certificaciones.map((c, i) => (
+              <li
+                class="flex flex-col rounded-2xl border border-white/12 bg-white/[0.04] p-7 reveal"
+                data-delay={i * 100}
+              >
+                <Icon name="award" size={26} class="text-white/35" />
+                <p class="mt-6 font-display text-2xl font-semibold">{c.sigla}</p>
+                <p class="mt-1.5 text-[0.9rem] font-medium text-white/85">{c.nombre}</p>
+                <p class="mt-4 flex-1 text-[0.82rem] leading-relaxed text-white/50">{c.detalle}</p>
+                <p class="mt-5 border-t border-white/10 pt-4 text-[0.72rem] uppercase tracking-wider text-white/35">
+                  {c.emisor}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ Fichas técnicas -->
+  <section class="bg-surface py-20 lg:py-24">
+    <div class="container-q">
+      <div
+        class="flex flex-col items-start justify-between gap-8 rounded-2xl border border-line bg-white p-8 sm:p-11 lg:flex-row lg:items-center reveal"
+      >
+        <div class="max-w-2xl">
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-700">
+            <Icon name="pdf" size={22} />
+          </span>
+          <h2 class="title-md mt-6">Fichas técnicas descargables</h2>
+          <p class="prose-q mt-3">
+            Ponemos a disposición del área usuaria, del comité de compras y del
+            especialista las {productos.length} líneas de nuestro catálogo con su
+            documentación técnica oficial en PDF, lista para adjuntar a un
+            requerimiento o a un expediente de licitación.
+          </p>
+        </div>
+        <a href="/fichas-tecnicas" class="btn btn-primary shrink-0">
+          <Icon name="download" size={16} />
+          Ver todas las fichas
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <CtaContacto />
+</Base>

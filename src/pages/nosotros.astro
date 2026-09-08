@@ -1,0 +1,218 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import MarcasCarrusel from '../components/MarcasCarrusel.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import { site, valores, certificaciones, cifras } from '../data/site';
+import { marcas } from '../data/marcas';
+import { categorias, productos } from '../data/catalogo';
+
+const galeria = [
+  { src: 'almacen-p1360322', alt: 'Pasillo principal de racks del almacén central de Q-MEDICAL' },
+  { src: 'almacen-p1360352', alt: 'Racks selectivos con productos identificados y rotulados' },
+  { src: 'almacen-p1360349', alt: 'Zona de acopio con productos paletizados y señalización de piso' },
+  { src: 'almacen-p1360288', alt: 'Estanterías con cajas de producto terminado ordenadas por lote' },
+  { src: 'almacen-p1360328', alt: 'Vista del almacén hacia la zona de despacho' },
+  { src: 'almacen-p1360232', alt: 'Área de preparación de pedidos con transpaleta' },
+];
+---
+
+<Base
+  title="Nosotros — 23 años abasteciendo al sector salud del Perú"
+  description="Q-MEDICAL S.A.C. es una droguería peruana fundada en 2003, certificada en Buenas Prácticas de Almacenamiento por DIGEMID, ISO 37001 e ISO 14001. Conozca nuestra misión, infraestructura y certificaciones."
+  image="/img/fotos/equipo-almacen-1600.webp"
+>
+  <PageHeader
+    eyebrow={`Desde ${site.fundacion} · ${site.anios} años`}
+    titulo="Una empresa peruana comprometida con la salud del país"
+    texto="Trabajamos para que las instituciones de salud estatales y privadas dispongan de productos médicos, de bioseguridad y de protección personal de alta calidad, junto a nuestros proveedores alrededor del mundo."
+    migas={[{ nombre: 'Nosotros' }]}
+    foto="/img/fotos/almacen-p1360352-1600.webp"
+  />
+
+  <!-- Cifras -->
+  <section class="border-b border-line bg-white">
+    <div class="container-q">
+      <dl class="grid gap-px divide-line sm:grid-cols-2 lg:grid-cols-4">
+        {
+          cifras.map((c) => (
+            <div class="py-9 lg:py-11">
+              <dd class="font-display text-4xl font-semibold text-brand-700">{c.valor}</dd>
+              <dt class="mt-2 text-[0.9rem] font-semibold">{c.etiqueta}</dt>
+              <p class="mt-1 text-[0.8rem] leading-snug text-muted">{c.nota}</p>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Quiénes somos -->
+  <section class="bg-white py-20 lg:py-28">
+    <div class="container-q grid gap-14 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5 reveal">
+        <p class="eyebrow">Quiénes somos</p>
+        <h2 class="title-lg mt-4">Una droguería, no un intermediario</h2>
+      </div>
+      <div class="prose-q lg:col-span-7 reveal" data-delay="100">
+        <p>
+          Q-MEDICAL S.A.C. inició actividades en enero de {site.fundacion} y hoy es
+          una droguería especializada en la comercialización de dispositivos médicos
+          de alta calidad. Contamos con la certificación de Buenas Prácticas de
+          Almacenamiento otorgada por DIGEMID y representamos y distribuimos productos
+          de compañías reconocidas a nivel mundial.
+        </p>
+        <p>
+          Esa condición cambia lo que podemos ofrecer: no solo colocamos un producto,
+          respondemos por su conservación, su trazabilidad documental y su ficha
+          técnica frente al área usuaria, al comité de compras y a la autoridad
+          sanitaria. Nuestro catálogo reúne hoy {productos.length} líneas de producto
+          de {marcas.length} marcas, organizadas en {categorias.length} especialidades.
+        </p>
+        <p>
+          Atendemos a instituciones médicas de todas las regiones del país —hospitales,
+          clínicas, laboratorios y centros geriátricos— tanto en compra directa como en
+          procesos de licitación pública.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Misión, visión, filosofía -->
+  <section class="bg-surface py-20 lg:py-24">
+    <div class="container-q">
+      <div class="grid gap-5 md:grid-cols-3">
+        {
+          valores.map((v, i) => (
+            <div class="card flex flex-col p-8 reveal" data-delay={i * 100}>
+              <span class="font-display text-[0.8rem] font-semibold uppercase tracking-[0.2em] text-brand-700">
+                {v.titulo}
+              </span>
+              <p class="mt-5 text-[1.02rem] leading-relaxed text-ink/85">{v.texto}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Infraestructura -->
+  <section class="bg-white py-20 lg:py-28">
+    <div class="container-q">
+      <div class="grid items-end gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-7 reveal">
+          <p class="eyebrow">Infraestructura</p>
+          <h2 class="title-lg mt-4">Un almacén que responde por el producto</h2>
+          <p class="prose-q mt-5">
+            La certificación BPA no es un sello en la pared: es un régimen de control
+            sobre la recepción, el almacenamiento, la conservación y el despacho de
+            cada lote. Racks selectivos identificados, control de condiciones
+            ambientales, segregación de productos y registros que permiten rastrear
+            cualquier unidad hasta su origen.
+          </p>
+        </div>
+        <div class="lg:col-span-5 reveal" data-delay="120">
+          <ul class="space-y-3.5 text-[0.9rem]">
+            <li class="flex gap-3">
+              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+              Recepción con verificación documental y de integridad de empaque
+            </li>
+            <li class="flex gap-3">
+              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+              Almacenamiento segregado y rotulado por lote y fecha de vencimiento
+            </li>
+            <li class="flex gap-3">
+              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+              Rotación controlada bajo criterio de primero en vencer, primero en salir
+            </li>
+            <li class="flex gap-3">
+              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+              Trazabilidad completa desde la recepción hasta el despacho
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          galeria.map((g, i) => (
+            <figure
+              class:list={[
+                'overflow-hidden rounded-xl bg-surface reveal',
+                i === 0 && 'sm:col-span-2 sm:row-span-2',
+              ]}
+              data-delay={(i % 3) * 80}
+            >
+              <img
+                src={`/img/fotos/${g.src}-1000.webp`}
+                srcset={`/img/fotos/${g.src}-640.webp 640w, /img/fotos/${g.src}-1000.webp 1000w, /img/fotos/${g.src}-1600.webp 1600w`}
+                sizes={i === 0 ? '(min-width: 640px) 62vw, 92vw' : '(min-width: 1024px) 31vw, 46vw'}
+                width="1000"
+                height="750"
+                alt={g.alt}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificaciones -->
+  <section class="relative overflow-hidden bg-brand-950 py-20 text-white lg:py-28">
+    <div class="grid-bg absolute inset-0 opacity-30" aria-hidden="true"></div>
+    <div class="container-q relative">
+      <div class="max-w-2xl reveal">
+        <p class="eyebrow eyebrow--light">Certificaciones y acreditaciones</p>
+        <h2 class="title-lg mt-4">Estándares que se auditan, no que se declaran</h2>
+      </div>
+
+      <ul class="mt-14 grid gap-5 md:grid-cols-3">
+        {
+          certificaciones.map((c, i) => (
+            <li
+              class="flex flex-col rounded-2xl border border-white/12 bg-white/[0.04] p-8 reveal"
+              data-delay={i * 100}
+            >
+              <Icon name="award" size={28} class="text-white/35" />
+              <p class="mt-7 font-display text-[1.7rem] font-semibold leading-none">{c.sigla}</p>
+              <p class="mt-2 text-[0.95rem] font-medium text-white/85">{c.nombre}</p>
+              <p class="mt-5 flex-1 text-[0.86rem] leading-relaxed text-white/50">{c.detalle}</p>
+              <p class="mt-6 border-t border-white/10 pt-5 text-[0.72rem] uppercase tracking-wider text-white/35">
+                {c.emisor}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Marcas -->
+  <section class="bg-white py-20 lg:py-24">
+    <div class="container-q text-center reveal">
+      <p class="eyebrow justify-center">Alianzas</p>
+      <h2 class="title-lg mt-4">Representamos a {marcas.length} fabricantes</h2>
+      <p class="prose-q mx-auto mt-5 max-w-2xl">
+        Seleccionamos a nuestros proveedores por la consistencia de su documentación
+        técnica y la estabilidad de su suministro, dos condiciones sin las cuales una
+        institución de salud no puede planificar.
+      </p>
+    </div>
+    <div class="mt-12">
+      <MarcasCarrusel titulo="Marcas asociadas" />
+    </div>
+    <div class="container-q mt-10 text-center">
+      <a href="/marcas" class="btn btn-outline">
+        Conocer cada marca
+        <Icon name="arrow" size={15} />
+      </a>
+    </div>
+  </section>
+
+  <CtaContacto />
+</Base>

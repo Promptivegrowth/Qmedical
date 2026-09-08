@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qmedicalsac.com/sitemap-index.xml

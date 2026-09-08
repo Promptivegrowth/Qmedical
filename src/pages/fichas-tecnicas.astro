@@ -1,0 +1,199 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import {
+  categorias,
+  productos,
+  fichasIndex,
+  productosDeCategoria,
+} from '../data/catalogo';
+import { marcaPorSlug } from '../data/marcas';
+
+// Agrupa las fichas por línea de producto y evita repetir un mismo PDF.
+const grupos = categorias
+  .map((c) => {
+    const items = productosDeCategoria(c.slug).flatMap((p) =>
+      p.fichas
+        .map((f) => fichasIndex[f])
+        .filter(Boolean)
+        .map((f) => ({
+          ...f,
+          producto: p.nombre,
+          slug: p.slug,
+          marca: marcaPorSlug.get(p.marca)?.nombre ?? '',
+        }))
+    );
+    // Un mismo PDF puede estar referenciado por dos productos (p. ej. accesorios).
+    const vistos = new Set<string>();
+    const unicos = items.filter((f) => !vistos.has(f.archivo) && vistos.add(f.archivo));
+    return { categoria: c, fichas: unicos };
+  })
+  .filter((g) => g.fichas.length > 0);
+
+const total = new Set(Object.values(fichasIndex).map((f) => f.archivo)).size;
+---
+
+<Base
+  title="Fichas técnicas descargables"
+  description={`Biblioteca de ${total} fichas técnicas oficiales en PDF de los productos Q-MEDICAL S.A.C., organizadas por línea, listas para adjuntar a un requerimiento o expediente de licitación.`}
+>
+  <PageHeader
+    eyebrow="Documentación"
+    titulo="Biblioteca de fichas técnicas"
+    texto={`${total} fichas técnicas oficiales en PDF, organizadas por línea de producto. Descárguelas para su expediente de licitación, su requerimiento interno o la evaluación del área usuaria.`}
+    migas={[{ nombre: 'Fichas técnicas' }]}
+  />
+
+  <section class="bg-white py-14 lg:py-16">
+    <div class="container-q">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <label class="relative w-full sm:max-w-sm">
+          <span class="sr-only">Buscar ficha técnica</span>
+          <Icon
+            name="search"
+            size={17}
+            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+          />
+          <input
+            id="buscador-fichas"
+            type="search"
+            class="field !pl-11"
+            placeholder="Buscar por producto, marca o código…"
+            autocomplete="off"
+          />
+        </label>
+        <p id="conteo-fichas" class="text-[0.85rem] text-muted" aria-live="polite">
+          {total} fichas técnicas
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-surface pb-20 pt-2 lg:pb-24">
+    <div class="container-q space-y-12">
+      {
+        grupos.map((g) => (
+          <div class="grupo-fichas" data-grupo={g.categoria.slug}>
+            <div class="flex items-center gap-3">
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-700">
+                <Icon name={g.categoria.icono} size={17} />
+              </span>
+              <h2 class="text-[1.05rem] font-semibold">{g.categoria.nombre}</h2>
+              <a
+                href={`/catalogo/${g.categoria.slug}`}
+                class="ml-auto hidden shrink-0 items-center gap-1.5 text-[0.8rem] font-semibold text-brand-700 sm:inline-flex"
+              >
+                Ver la línea
+                <Icon name="arrow" size={14} />
+              </a>
+            </div>
+
+            <ul class="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {g.fichas.map((f) => (
+                <li
+                  class="item-ficha"
+                  data-buscar={`${f.titulo} ${f.producto} ${f.marca}`.toLowerCase()}
+                >
+                  <a href={f.archivo} download class="card group flex h-full items-start gap-4 p-5">
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
+                      <Icon name="pdf" size={20} />
+                    </span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-[0.9rem] font-medium leading-snug text-ink">
+                        {f.titulo}
+                      </span>
+                      <span class="mt-1 block text-[0.76rem] text-muted">
+                        PDF · {f.peso} KB · {f.marca}
+                      </span>
+                      <span class="mt-2 inline-flex items-center gap-1.5 text-[0.76rem] text-brand-700">
+                        <Icon name="download" size={13} />
+                        Descargar
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      <p id="vacio-fichas" class="hidden py-12 text-center text-muted">
+        No encontramos fichas con ese término.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-white py-16 lg:py-20">
+    <div class="container-q">
+      <div class="rounded-2xl border border-line bg-surface p-8 sm:p-11">
+        <h2 class="title-md">¿Necesita documentación adicional?</h2>
+        <p class="prose-q mt-3 max-w-3xl">
+          Para procesos de licitación y homologación podemos entregar registro
+          sanitario, certificado de análisis del lote, certificados de calidad del
+          fabricante y la documentación de nuestra certificación BPA. Solicítelos a
+          nuestra dirección técnica.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="mailto:direccion_tecnica@qmedicalsac.com" class="btn btn-primary">
+            <Icon name="mail" size={16} />
+            Escribir a dirección técnica
+          </a>
+          <a href="/catalogo" class="btn btn-outline">
+            Ver catálogo ({productos.length} productos)
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaContacto />
+</Base>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('buscador-fichas') as HTMLInputElement | null;
+  const conteo = document.getElementById('conteo-fichas');
+  const vacio = document.getElementById('vacio-fichas');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.item-ficha'));
+  const grupos = Array.from(document.querySelectorAll<HTMLElement>('.grupo-fichas'));
+
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+
+  const filtrar = () => {
+    if (!input || !conteo || !vacio) return;
+    const terminos = normalizar(input.value).split(/\s+/).filter(Boolean);
+    let visibles = 0;
+
+    for (const el of items) {
+      const texto = normalizar(el.dataset.buscar ?? '');
+      const ok = terminos.every((t) => texto.includes(t));
+      el.hidden = !ok;
+      if (ok) visibles++;
+    }
+    for (const g of grupos) {
+      g.hidden = !g.querySelector<HTMLElement>('.item-ficha:not([hidden])');
+    }
+
+    conteo.textContent = `${visibles} ficha${visibles === 1 ? '' : 's'} técnica${visibles === 1 ? '' : 's'}`;
+    vacio.classList.toggle('hidden', visibles > 0);
+  };
+
+  let t: number;
+  input?.addEventListener('input', () => {
+    clearTimeout(t);
+    t = window.setTimeout(filtrar, 120);
+  });
+</script>

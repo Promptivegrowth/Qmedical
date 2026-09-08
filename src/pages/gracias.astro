@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Mensaje recibido"
+  description="Hemos recibido su mensaje. El equipo de Q-MEDICAL S.A.C. le responderá a la brevedad."
+>
+  <section class="relative overflow-hidden bg-white">
+    <div class="container-q grid min-h-[62vh] place-items-center py-20 text-center">
+      <div class="max-w-lg">
+        <span
+          class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-50 text-brand-700"
+        >
+          <Icon name="check" size={30} />
+        </span>
+
+        <h1 class="title-lg mt-8">Recibimos su mensaje</h1>
+        <p class="prose-q mt-5">
+          Gracias por escribirnos. Nuestro equipo revisará su solicitud y le responderá
+          dentro del siguiente día hábil al correo que registró.
+        </p>
+
+        <p class="mt-6 text-[0.88rem] text-muted">
+          Si su requerimiento es urgente, escríbanos por WhatsApp al
+          <a
+            href={site.whatsapp.href}
+            target="_blank"
+            rel="noopener"
+            class="font-medium text-brand-700 underline underline-offset-4"
+          >
+            {site.whatsapp.numero}
+          </a>
+          o llámenos al {site.telefonos[0].etiqueta}.
+        </p>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <a href="/catalogo" class="btn btn-primary">
+            Ver catálogo
+            <Icon name="arrow" size={16} />
+          </a>
+          <a href="/" class="btn btn-outline">Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

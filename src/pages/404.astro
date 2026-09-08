@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { categorias } from '../data/catalogo';
+---
+
+<Base
+  title="Página no encontrada"
+  description="La página que busca no existe o cambió de dirección. Vuelva al inicio o explore el catálogo de Q-MEDICAL S.A.C."
+>
+  <section class="bg-white">
+    <div class="container-q grid min-h-[62vh] place-items-center py-20 text-center">
+      <div class="max-w-xl">
+        <p class="font-display text-6xl font-semibold text-brand-100">404</p>
+        <h1 class="title-lg mt-4">No encontramos esta página</h1>
+        <p class="prose-q mt-5">
+          Puede que la dirección haya cambiado con el rediseño del sitio. Le dejamos
+          los accesos directos a las secciones más consultadas.
+        </p>
+
+        <div class="mt-9 flex flex-wrap justify-center gap-3">
+          <a href="/catalogo" class="btn btn-primary">
+            Ir al catálogo
+            <Icon name="arrow" size={16} />
+          </a>
+          <a href="/contacto" class="btn btn-outline">Contactar</a>
+        </div>
+
+        <ul class="mt-11 flex flex-wrap justify-center gap-2.5">
+          {
+            categorias.map((c) => (
+              <li>
+                <a
+                  href={`/catalogo/${c.slug}`}
+                  class="inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-[0.8rem] text-muted transition hover:border-brand-300 hover:text-brand-700"
+                >
+                  <Icon name={c.icono} size={14} />
+                  {c.corto}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

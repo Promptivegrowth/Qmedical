@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  eyebrow?: string;
+  titulo: string;
+  texto?: string;
+  migas?: { nombre: string; href?: string }[];
+  /** Ruta a una foto de fondo; si se omite, se usa el fondo azul con trama. */
+  foto?: string;
+}
+const { eyebrow, titulo, texto, migas = [], foto } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-brand-900 text-white">
+  {
+    foto ? (
+      <>
+        <img
+          src={foto}
+          alt=""
+          aria-hidden="true"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-brand-950/95 via-brand-900/85 to-brand-800/70"
+          aria-hidden="true"
+        />
+      </>
+    ) : (
+      <div class="grid-bg absolute inset-0 opacity-40" aria-hidden="true" />
+    )
+  }
+
+  <div class="container-q relative pb-14 pt-12 lg:pb-20 lg:pt-16">
+    {
+      migas.length > 0 && (
+        <nav aria-label="Ruta de navegación" class="mb-7">
+          <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.76rem] text-white/50">
+            <li>
+              <a href="/" class="transition hover:text-white/85">
+                Inicio
+              </a>
+            </li>
+            {migas.map((m) => (
+              <>
+                <li aria-hidden="true">
+                  <Icon name="chevron" size={11} class="opacity-50" />
+                </li>
+                <li>
+                  {m.href ? (
+                    <a href={m.href} class="transition hover:text-white/85">
+                      {m.nombre}
+                    </a>
+                  ) : (
+                    <span class="text-white/85">{m.nombre}</span>
+                  )}
+                </li>
+              </>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    {eyebrow && <p class="eyebrow eyebrow--light">{eyebrow}</p>}
+    <h1 class="title-xl mt-4 max-w-4xl">{titulo}</h1>
+    {texto && <p class="prose-q mt-6 max-w-2xl !text-white/72 !text-[1.06rem]">{texto}</p>}
+  </div>
+</section>

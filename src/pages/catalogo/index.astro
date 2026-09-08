@@ -1,0 +1,212 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Icon from '../../components/Icon.astro';
+import ProductoCard from '../../components/ProductoCard.astro';
+import CtaContacto from '../../components/CtaContacto.astro';
+import { categorias, productos, productosDeCategoria } from '../../data/catalogo';
+import { marcaPorSlug } from '../../data/marcas';
+
+// Índice de búsqueda embebido: el filtrado ocurre en el navegador, sin peticiones.
+const indice = productos.map((p) => ({
+  slug: p.slug,
+  buscar: [
+    p.nombre,
+    p.resumen,
+    marcaPorSlug.get(p.marca)?.nombre ?? '',
+    ...(p.variantes?.map((v) => `${v.codigo} ${v.detalle}`) ?? []),
+    ...p.caracteristicas,
+  ]
+    .join(' ')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, ''),
+}));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Catálogo de productos Q-MEDICAL S.A.C.',
+  numberOfItems: productos.length,
+};
+---
+
+<Base
+  title="Catálogo de dispositivos médicos y bioseguridad"
+  description={`Catálogo completo de Q-MEDICAL S.A.C.: ${productos.length} líneas de producto en ${categorias.length} especialidades, con características técnicas, presentaciones y ficha técnica descargable en PDF.`}
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Catálogo"
+    titulo="Todo nuestro catálogo, con ficha técnica"
+    texto={`${productos.length} líneas de producto organizadas en ${categorias.length} especialidades. Seleccione una línea o busque por nombre, marca o código de referencia; cada producto incluye su documentación técnica oficial en PDF.`}
+    migas={[{ nombre: 'Catálogo' }]}
+  />
+
+  <!-- Índice de categorías -->
+  <section class="border-b border-line bg-white py-14 lg:py-16">
+    <div class="container-q">
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {
+          categorias.map((c, i) => (
+            <li class="reveal" data-delay={(i % 5) * 60}>
+              <a
+                href={`/catalogo/${c.slug}`}
+                class="card group flex h-full items-start gap-3.5 p-5"
+              >
+                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
+                  <Icon name={c.icono} size={19} />
+                </span>
+                <span>
+                  <span class="block text-[0.92rem] font-semibold leading-snug">{c.corto}</span>
+                  <span class="mt-1 block text-[0.76rem] text-muted">
+                    {productosDeCategoria(c.slug).length} producto
+                    {productosDeCategoria(c.slug).length === 1 ? '' : 's'}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Buscador + rejilla -->
+  <section class="bg-surface py-14 lg:py-20">
+    <div class="container-q">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <label class="relative w-full sm:max-w-sm">
+          <span class="sr-only">Buscar en el catálogo</span>
+          <Icon
+            name="search"
+            size={17}
+            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+          />
+          <input
+            id="buscador"
+            type="search"
+            class="field !pl-11"
+            placeholder="Buscar producto, marca o código…"
+            autocomplete="off"
+          />
+        </label>
+        <p id="conteo" class="text-[0.85rem] text-muted" aria-live="polite">
+          {productos.length} productos
+        </p>
+      </div>
+
+      <div id="rejilla" class="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {
+          productos.map((p, i) => (
+            <div data-slug={p.slug}>
+              <ProductoCard producto={p} eager={i < 4} />
+            </div>
+          ))
+        }
+      </div>
+
+      <p id="vacio" class="hidden py-16 text-center text-muted">
+        No encontramos productos con ese término.<br />
+        <a href="/contacto#cotizar" class="text-brand-700 underline underline-offset-4">
+          Escríbanos y le confirmamos disponibilidad.
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Líneas sin ficha publicada -->
+  <section class="bg-white py-16 lg:py-20">
+    <div class="container-q">
+      <div class="rounded-2xl border border-line bg-surface p-8 sm:p-11 reveal">
+        <h2 class="title-md">Otras líneas disponibles bajo consulta</h2>
+        <p class="prose-q mt-3 max-w-3xl">
+          Además del catálogo publicado, atendemos requerimientos de equipamiento y
+          material quirúrgico que gestionamos directamente con el fabricante. Consúltenos
+          por disponibilidad, precios y documentación técnica.
+        </p>
+        <ul class="mt-7 flex flex-wrap gap-2.5">
+          {
+            [
+              'Bomba de infusión',
+              'Iluminador de venas',
+              'Anillo retractor de heridas',
+              'Contador de agujas doble imán',
+              'Pieza manual para cirugía laparoscópica',
+              'Organizador de cepillos de limpieza',
+            ].map((n) => (
+              <li class="rounded-full border border-line bg-white px-4 py-2 text-[0.82rem] text-ink/80">
+                {n}
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/contacto#cotizar" class="btn btn-primary mt-8">
+          Consultar disponibilidad
+          <Icon name="arrow" size={15} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <CtaContacto />
+</Base>
+
+<script is:inline define:vars={{ indice }}>
+  (function () {
+    var input = document.getElementById('buscador');
+    var rejilla = document.getElementById('rejilla');
+    var conteo = document.getElementById('conteo');
+    var vacio = document.getElementById('vacio');
+    if (!input || !rejilla || !conteo || !vacio) return;
+
+    var mapa = {};
+    for (var i = 0; i < indice.length; i++) mapa[indice[i].slug] = indice[i].buscar;
+    var tarjetas = Array.prototype.slice.call(rejilla.children);
+
+    var normalizar = function (s) {
+      return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    };
+
+    var filtrar = function () {
+      var q = normalizar(input.value);
+      var terminos = q ? q.split(/\s+/) : [];
+      var visibles = 0;
+
+      tarjetas.forEach(function (el) {
+        var texto = mapa[el.dataset.slug] || '';
+        var ok = terminos.every(function (t) {
+          return texto.indexOf(t) !== -1;
+        });
+        el.hidden = !ok;
+        if (ok) visibles++;
+      });
+
+      conteo.textContent = visibles + (visibles === 1 ? ' producto' : ' productos');
+      vacio.classList.toggle('hidden', visibles > 0);
+    };
+
+    var t;
+    input.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(filtrar, 120);
+    });
+
+    // Permite enlazar directamente a una búsqueda: /catalogo?q=clorhexidina
+    var q = new URLSearchParams(location.search).get('q');
+    if (q) {
+      input.value = q;
+      filtrar();
+    }
+  })();
+</script>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+</style>

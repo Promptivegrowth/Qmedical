@@ -1,0 +1,341 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import FormularioBase from '../components/FormularioBase.astro';
+import { site, contactos, redes } from '../data/site';
+import { categorias, productos } from '../data/catalogo';
+
+const mapa =
+  'https://www.google.com/maps?q=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA&output=embed';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contacto — Q-MEDICAL S.A.C.',
+  url: `${site.url}/contacto`,
+};
+---
+
+<Base
+  title="Contacto y cotizaciones"
+  description="Solicite una cotización de dispositivos médicos y bioseguridad. Oficinas en Av. Arica 1442, Breña, Lima. Teléfonos (01) 424-7290 / (01) 433-4197 y WhatsApp +51 977 814 006."
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Contacto"
+    titulo="Cuéntenos qué necesita su institución"
+    texto="Atendemos requerimientos de hospitales, clínicas, laboratorios y centros geriátricos en todo el país, tanto en compra directa como en procesos de licitación pública."
+    migas={[{ nombre: 'Contacto' }]}
+  />
+
+  <!-- Vías de contacto -->
+  <section class="border-b border-line bg-white py-12 lg:py-14">
+    <div class="container-q">
+      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <li class="card flex flex-col p-6">
+          <Icon name="phone" size={21} class="text-brand-700" />
+          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
+            Teléfonos
+          </p>
+          <div class="mt-2 space-y-0.5 text-[0.95rem] font-medium">
+            {
+              site.telefonos.map((t) => (
+                <a href={t.href} class="block transition hover:text-brand-700">
+                  {t.etiqueta}
+                </a>
+              ))
+            }
+          </div>
+        </li>
+
+        <li class="card flex flex-col p-6">
+          <Icon name="whatsapp" size={21} class="text-brand-700" />
+          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
+            WhatsApp
+          </p>
+          <a
+            href={site.whatsapp.href}
+            target="_blank"
+            rel="noopener"
+            class="mt-2 text-[0.95rem] font-medium transition hover:text-brand-700"
+          >
+            {site.whatsapp.numero}
+          </a>
+        </li>
+
+        <li class="card flex flex-col p-6">
+          <Icon name="mail" size={21} class="text-brand-700" />
+          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
+            Cotizaciones
+          </p>
+          <a
+            href={`mailto:${site.correoPrincipal}`}
+            class="mt-2 break-all text-[0.88rem] font-medium transition hover:text-brand-700"
+          >
+            {site.correoPrincipal}
+          </a>
+        </li>
+
+        <li class="card flex flex-col p-6">
+          <Icon name="clock" size={21} class="text-brand-700" />
+          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
+            Horario
+          </p>
+          <p class="mt-2 text-[0.9rem] font-medium">{site.horario}</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Formulario + oficinas -->
+  <section id="cotizar" class="scroll-mt-24 bg-surface py-16 lg:py-24">
+    <div class="container-q grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <!-- Formulario -->
+      <div class="lg:col-span-7">
+        <p class="eyebrow">Solicitud de cotización</p>
+        <h2 class="title-lg mt-4">Envíenos su requerimiento</h2>
+        <p class="prose-q mt-4">
+          Complete el formulario y nuestro equipo comercial le responderá con precios,
+          disponibilidad, tiempo de entrega y la documentación técnica que necesite.
+        </p>
+
+        <FormularioBase
+          id="form-cotizacion"
+          asunto="Solicitud de cotización desde la web"
+          class="mt-9 rounded-2xl border border-line bg-white p-6 sm:p-8"
+        >
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label>
+              <span class="label">Nombre y apellidos <span class="text-brand-700">*</span></span>
+              <input
+                id="c-nombre"
+                type="text"
+                name="Nombre"
+                class="field"
+                required
+                autocomplete="name"
+                placeholder="Nombre completo"
+              />
+            </label>
+
+            <label>
+              <span class="label">Institución o empresa</span>
+              <input
+                id="c-institucion"
+                type="text"
+                name="Institución"
+                class="field"
+                autocomplete="organization"
+                placeholder="Hospital, clínica, laboratorio…"
+              />
+            </label>
+
+            <label>
+              <span class="label">Correo electrónico <span class="text-brand-700">*</span></span>
+              <input
+                id="c-correo"
+                type="email"
+                name="Correo"
+                class="field"
+                required
+                autocomplete="email"
+                placeholder="nombre@institucion.pe"
+              />
+            </label>
+
+            <label>
+              <span class="label">Teléfono <span class="text-brand-700">*</span></span>
+              <input
+                id="c-telefono"
+                type="tel"
+                name="Teléfono"
+                class="field"
+                required
+                autocomplete="tel"
+                placeholder="+51 9XX XXX XXX"
+              />
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="label">Línea de producto de interés</span>
+              <select id="c-linea" name="Línea de interés" class="field">
+                <option value="">Seleccione una línea (opcional)</option>
+                {categorias.map((c) => <option value={c.nombre}>{c.nombre}</option>)}
+                <option value="Otra / varias líneas">Otra o varias líneas</option>
+              </select>
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="label">Detalle de su requerimiento <span class="text-brand-700">*</span></span>
+              <textarea
+                id="c-mensaje"
+                name="Mensaje"
+                rows="6"
+                class="field resize-y"
+                required
+                placeholder="Indique productos, códigos, cantidades y fecha requerida de entrega."></textarea>
+            </label>
+
+            <label class="sm:col-span-2 flex items-start gap-3">
+              <input
+                type="checkbox"
+                name="Autoriza el tratamiento de datos"
+                value="Sí"
+                required
+                class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]"
+              />
+              <span class="text-[0.82rem] leading-relaxed text-muted">
+                Autorizo a {site.nombre} a utilizar mis datos para atender esta
+                solicitud, conforme a la Ley N.° 29733 de Protección de Datos
+                Personales. <span class="text-brand-700">*</span>
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-7 w-full sm:w-auto">
+            Enviar solicitud
+            <Icon name="arrow" size={16} />
+          </button>
+
+          <p class="mt-4 text-[0.78rem] text-muted">
+            Los campos marcados con <span class="text-brand-700">*</span> son obligatorios.
+            Le responderemos dentro del siguiente día hábil.
+          </p>
+        </FormularioBase>
+      </div>
+
+      <!-- Oficinas y correos -->
+      <div class="lg:col-span-5">
+        <div class="rounded-2xl border border-line bg-white p-6 sm:p-8">
+          <h2 class="title-md">Nuestras oficinas</h2>
+          <p class="mt-4 flex gap-3 text-[0.92rem] leading-relaxed">
+            <Icon name="pin" size={18} class="mt-0.5 shrink-0 text-brand-700" />
+            <span>
+              {site.direccion.calle}<br />
+              {site.direccion.distrito} — {site.direccion.ciudad}, {site.direccion.pais}
+            </span>
+          </p>
+
+          <!--
+            El mapa se carga solo cuando el visitante lo pide: evita la petición a
+            Google en cada visita y que quede un recuadro en blanco si el navegador
+            bloquea el embebido.
+          -->
+          <div
+            id="mapa"
+            class="relative mt-6 grid h-[260px] place-items-center overflow-hidden rounded-xl border border-line bg-brand-950"
+            data-mapa={mapa}
+          >
+            <div class="grid-bg absolute inset-0 opacity-40" aria-hidden="true"></div>
+            <div class="relative text-center">
+              <Icon name="pin" size={26} class="mx-auto text-white/50" />
+              <p class="mt-3 text-[0.86rem] font-medium text-white/90">Breña, Lima — Perú</p>
+              <button type="button" id="cargar-mapa" class="btn btn-light mt-4 !px-5 !py-2.5 !text-[0.8rem]">
+                Ver mapa interactivo
+              </button>
+              <p class="mt-3 text-[0.7rem] text-white/40">Se cargará contenido de Google Maps</p>
+            </div>
+          </div>
+
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-outline mt-5 w-full"
+          >
+            <Icon name="pin" size={15} />
+            Abrir en Google Maps
+          </a>
+        </div>
+
+        <div class="mt-5 rounded-2xl border border-line bg-white p-6 sm:p-8">
+          <h2 class="title-md">Correos por área</h2>
+          <ul class="mt-5 space-y-3.5">
+            {
+              contactos.map((c) => (
+                <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3.5 last:border-0 last:pb-0">
+                  <span class="text-[0.82rem] text-muted">{c.area}</span>
+                  <a
+                    href={`mailto:${c.correo}`}
+                    class="break-all text-[0.84rem] font-medium text-brand-700 hover:underline"
+                  >
+                    {c.correo}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="mt-5 rounded-2xl border border-line bg-white p-6 sm:p-8">
+          <h2 class="title-md">Síganos</h2>
+          <ul class="mt-5 flex flex-wrap gap-2.5">
+            {
+              redes.map((r) => (
+                <li>
+                  <a
+                    href={r.href}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[0.84rem] transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                  >
+                    <Icon name={r.icono} size={16} />
+                    {r.nombre}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="mt-7 border-t border-line pt-6">
+            <p class="text-[0.85rem] leading-relaxed text-muted">
+              ¿Tiene un reclamo o una queja sobre nuestros productos o servicios?
+            </p>
+            <a
+              href="/libro-de-reclamaciones"
+              class="mt-3 inline-flex items-center gap-2 text-[0.86rem] font-semibold text-brand-700 hover:underline"
+            >
+              <Icon name="book" size={16} />
+              Libro de Reclamaciones
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ productos: productos.map((p) => ({ slug: p.slug, nombre: p.nombre })) }}>
+  // Precarga el producto cuando se llega desde una ficha: /contacto?producto=slug
+  (function () {
+    var slug = new URLSearchParams(location.search).get('producto');
+    if (!slug) return;
+    var prod = productos.find(function (p) {
+      return p.slug === slug;
+    });
+    if (!prod) return;
+    var ta = document.getElementById('c-mensaje');
+    if (ta && !ta.value) {
+      ta.value = 'Solicito cotización del producto: ' + prod.nombre + '\n\nCantidad requerida: \nFecha requerida: ';
+    }
+  })();
+</script>
+
+<script>
+  // Carga del mapa a petición del visitante.
+  const contenedor = document.getElementById('mapa');
+  document.getElementById('cargar-mapa')?.addEventListener('click', () => {
+    if (!contenedor) return;
+    const marco = document.createElement('iframe');
+    marco.src = contenedor.dataset.mapa ?? '';
+    marco.title = 'Ubicación de Q-MEDICAL S.A.C. en Av. Arica 1442, Breña, Lima';
+    marco.width = '100%';
+    marco.height = '260';
+    marco.style.border = '0';
+    marco.loading = 'lazy';
+    marco.referrerPolicy = 'no-referrer-when-downgrade';
+    contenedor.replaceChildren(marco);
+    contenedor.classList.remove('grid', 'place-items-center', 'bg-brand-950');
+  });
+</script>

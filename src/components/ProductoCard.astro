@@ -1,0 +1,76 @@
+---
+import Icon from './Icon.astro';
+import { imagenPrincipal, categoriaPorSlug, type Producto } from '../data/catalogo';
+import { marcaPorSlug } from '../data/marcas';
+
+interface Props {
+  producto: Producto;
+  eager?: boolean;
+  mostrarCategoria?: boolean;
+}
+const { producto: p, eager = false, mostrarCategoria = true } = Astro.props;
+
+const img = imagenPrincipal(p.slug, 900);
+const imgSm = imagenPrincipal(p.slug, 480);
+const marca = marcaPorSlug.get(p.marca);
+const cat = categoriaPorSlug.get(p.categoria);
+const nFichas = p.fichas.length;
+---
+
+<article class="card group flex h-full flex-col overflow-hidden">
+  <a href={`/productos/${p.slug}`} class="block" tabindex="-1" aria-hidden="true">
+    <div class="relative aspect-square overflow-hidden bg-white p-6">
+      {
+        img && (
+          <img
+            src={imgSm}
+            srcset={`${imgSm} 480w, ${img} 900w`}
+            sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 80vw"
+            width="480"
+            height="480"
+            alt={p.nombre}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.06]"
+          />
+        )
+      }
+      {
+        nFichas > 0 && (
+          <span class="absolute left-3.5 top-3.5 inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-brand-700">
+            <Icon name="pdf" size={11} />
+            Ficha técnica
+          </span>
+        )
+      }
+    </div>
+  </a>
+
+  <div class="flex flex-1 flex-col border-t border-line p-5">
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em]">
+      {marca && <span class="text-brand-700">{marca.nombre}</span>}
+      {mostrarCategoria && cat && <span class="text-muted/70">· {cat.corto}</span>}
+    </div>
+
+    <h3 class="mt-2 text-[1.02rem] font-semibold leading-snug text-ink">
+      <a href={`/productos/${p.slug}`} class="after:absolute after:inset-0 focus:outline-none">
+        {p.nombre}
+      </a>
+    </h3>
+
+    <p class="mt-2 line-clamp-3 text-[0.86rem] leading-relaxed text-muted">{p.resumen}</p>
+
+    <div class="mt-auto flex items-center gap-2 pt-4 text-[0.8rem] font-semibold text-brand-700">
+      Ver producto
+      <Icon
+        name="arrow"
+        size={15}
+        class="transition-transform duration-300 group-hover:translate-x-1"
+      />
+    </div>
+  </div>
+</article>
+
+<style>
+  article { position: relative; }
+</style>

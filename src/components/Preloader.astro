@@ -1,0 +1,163 @@
+---
+/**
+ * Preloader temático del sector: el logotipo corporativo sobre un trazo
+ * electrocardiográfico que se dibuja mientras carga la página.
+ *
+ * El logotipo se muestra íntegro y sin alteraciones, conforme al punto 08
+ * del Manual de Identidad ("el logo NO puede disgregarse").
+ *
+ * Solo aparece si hay JavaScript (la clase `.is-loading` la coloca el script
+ * en línea del layout). Sin JS, o con `prefers-reduced-motion`, la página se
+ * ve de inmediato.
+ */
+---
+
+<div id="preloader" class="preloader" role="status" aria-live="polite">
+  <span class="sr-only">Cargando Q-MEDICAL S.A.C.</span>
+
+  <div class="preloader__inner">
+    <img
+      src="/img/logo/qmedical-azul.webp"
+      width="260"
+      height="148"
+      alt="Q-MEDICAL S.A.C."
+      class="preloader__logo"
+      fetchpriority="high"
+    />
+
+    <svg class="preloader__ecg" viewBox="0 0 600 80" aria-hidden="true">
+      <path
+        class="ecg-base"
+        d="M0,40 L90,40 L102,28 L114,40 L150,40 L162,40 L172,6 L184,74 L196,40 L230,40 L246,32 L258,44 L268,40 L600,40"
+      ></path>
+      <path
+        class="ecg-trace"
+        pathLength="1"
+        d="M0,40 L90,40 L102,28 L114,40 L150,40 L162,40 L172,6 L184,74 L196,40 L230,40 L246,32 L258,44 L268,40 L600,40"
+      ></path>
+    </svg>
+
+    <p class="preloader__label">Dispositivos médicos y bioseguridad</p>
+    <div class="preloader__bar"><span></span></div>
+  </div>
+</div>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    background-image:
+      radial-gradient(120% 90% at 50% 0%, #f2f5fc 0%, #fff 62%);
+  }
+  /* Debe seguir presente durante `is-loaded` para que el desvanecido se vea:
+     una animación no se ejecuta sobre un elemento con `display: none`. */
+  :global(html.is-loading) .preloader,
+  :global(html.is-loaded) .preloader {
+    display: flex;
+  }
+  :global(html.is-loaded) .preloader {
+    pointer-events: none;
+    animation: preloader-out 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes preloader-out {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .preloader__inner {
+    width: min(420px, 78vw);
+    text-align: center;
+  }
+
+  .preloader__logo {
+    width: min(230px, 56vw);
+    height: auto;
+    margin-inline: auto;
+    animation: logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes logo-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .preloader__ecg {
+    display: block;
+    width: 100%;
+    height: 62px;
+    margin-top: 0.35rem;
+    overflow: visible;
+  }
+  .ecg-base,
+  .ecg-trace {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .ecg-base { stroke: #dbe1f4; }
+  .ecg-trace {
+    stroke: #152e7f;
+    stroke-dasharray: 0.22 1;
+    animation: ecg 1.55s linear infinite;
+    filter: drop-shadow(0 0 5px rgba(21, 46, 127, 0.35));
+  }
+  @keyframes ecg {
+    from { stroke-dashoffset: 0.22; }
+    to { stroke-dashoffset: -1; }
+  }
+
+  .preloader__label {
+    margin-top: 0.1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8e9fd8;
+  }
+
+  .preloader__bar {
+    position: relative;
+    width: 118px;
+    height: 2px;
+    margin: 1.2rem auto 0;
+    overflow: hidden;
+    background: #e3e7ee;
+    border-radius: 999px;
+  }
+  .preloader__bar span {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background: #152e7f;
+    transform: translateX(-100%);
+    animation: bar 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes bar {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Quien pide menos movimiento no ve el preloader en absoluto. */
+  @media (prefers-reduced-motion: reduce) {
+    .preloader { display: none !important; }
+  }
+</style>

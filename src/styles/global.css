@@ -1,0 +1,259 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Sistema de diseño Q-MEDICAL S.A.C.
+   Colores corporativos según el Manual de Identidad (pág. 05):
+     Pantone Blue  R21  G46  B127  -> #152E7F
+     Pantone White R255 G255 B255  -> #FFFFFF
+     Pantone Black R0   G0   B0    -> #000000
+   La escala azul se deriva del azul corporativo; no se introducen colores
+   ajenos a la marca salvo los grises neutros de soporte.
+   ========================================================================== */
+
+@theme {
+  --color-brand-50: #eef1fa;
+  --color-brand-100: #dbe1f4;
+  --color-brand-200: #b8c3e8;
+  --color-brand-300: #8e9fd8;
+  --color-brand-400: #5f76c2;
+  --color-brand-500: #3a52a5;
+  --color-brand-600: #24398c;
+  --color-brand-700: #152e7f; /* azul corporativo */
+  --color-brand-800: #112565;
+  --color-brand-900: #0c1a48;
+  --color-brand-950: #070f2b;
+
+  --color-ink: #0b0d12;
+  --color-muted: #5b6472;
+  --color-line: #e3e7ee;
+  --color-surface: #f6f8fc;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Source Serif 4', 'Athelas', 'Adobe Caslon Pro', Georgia,
+    'Times New Roman', serif;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-wrap: break-word;
+  }
+
+  ::selection { background: var(--color-brand-700); color: #fff; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-700);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+}
+
+@layer components {
+  .container-q {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 1024px) {
+    .container-q { padding-inline: 2.5rem; }
+  }
+
+  /* Titular de sección con el aire del manual de marca */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-brand-700);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+  .eyebrow--light { color: rgba(255, 255, 255, 0.72); }
+
+  .title-xl {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+    font-size: clamp(2.1rem, 5.2vw, 3.9rem);
+  }
+  .title-lg {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.14;
+    font-size: clamp(1.75rem, 3.4vw, 2.7rem);
+  }
+  .title-md {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    transition: all 0.25s var(--ease-out-quint);
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn svg { flex: none; }
+
+  .btn-primary { background: var(--color-brand-700); color: #fff; }
+  .btn-primary:hover {
+    background: var(--color-brand-800);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -12px rgba(21, 46, 127, 0.65);
+  }
+
+  .btn-light { background: #fff; color: var(--color-brand-700); }
+  .btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-outline {
+    border-color: var(--color-line);
+    color: var(--color-ink);
+    background: #fff;
+  }
+  .btn-outline:hover {
+    border-color: var(--color-brand-700);
+    color: var(--color-brand-700);
+  }
+
+  .btn-ghost-light {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+  }
+  .btn-ghost-light:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.75);
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+  .card:hover {
+    border-color: var(--color-brand-200);
+    box-shadow: 0 22px 44px -30px rgba(12, 26, 72, 0.45);
+    transform: translateY(-3px);
+  }
+
+  .field {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: 0.7rem;
+    padding: 0.8rem 0.95rem;
+    font-size: 0.925rem;
+    color: var(--color-ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field::placeholder { color: #9aa3b2; }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-brand-700);
+    box-shadow: 0 0 0 3px rgba(21, 46, 127, 0.12);
+  }
+  .label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .prose-q { font-size: 1rem; line-height: 1.75; color: #3c4453; }
+  .prose-q p + p { margin-top: 1rem; }
+
+  /* Trama sutil de fondo, evocando la retícula de un envase estéril */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(21, 46, 127, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(21, 46, 127, 0.055) 1px, transparent 1px);
+    background-size: 46px 46px;
+  }
+}
+
+@layer utilities {
+  /* Aparición al hacer scroll (progressive enhancement: sin JS todo es visible) */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s var(--ease-out-quint),
+      transform 0.7s var(--ease-out-quint);
+  }
+  .js .reveal.is-visible { opacity: 1; transform: none; }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 46s linear infinite;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track { animation-play-state: paused; }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}

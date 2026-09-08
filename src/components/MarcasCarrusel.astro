@@ -1,0 +1,90 @@
+---
+import { marcas } from '../data/marcas';
+
+interface Props {
+  /** `oscuro` invierte los logotipos para lucir sobre el azul corporativo. */
+  variante?: 'claro' | 'oscuro';
+  titulo?: string;
+}
+const { variante = 'claro', titulo } = Astro.props;
+
+// Se duplica la lista para que el desplazamiento sea continuo y sin saltos.
+const pista = [...marcas, ...marcas];
+---
+
+<div class="marquee mask-fade-x overflow-hidden" data-variante={variante}>
+  {titulo && <p class="sr-only">{titulo}</p>}
+  <ul class="marquee-track items-center" aria-hidden="false">
+    {
+      pista.map((m, i) => (
+        <li class="shrink-0 px-6 sm:px-9" aria-hidden={i >= marcas.length ? 'true' : undefined}>
+          <a
+            href={`/marcas#${m.slug}`}
+            class="logo-link block"
+            tabindex={i >= marcas.length ? -1 : 0}
+            title={m.nombre}
+          >
+            <img
+              src={`/img/marcas/${m.slug}.webp`}
+              srcset={`/img/marcas/${m.slug}-1x.webp 1x, /img/marcas/${m.slug}.webp 2x`}
+              height="60"
+              alt={i >= marcas.length ? '' : m.nombre}
+              loading="lazy"
+              decoding="async"
+              class="logo-img"
+            />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .logo-img {
+    height: 3.1rem;
+    width: auto;
+    max-width: 11rem;
+    object-fit: contain;
+    transition: filter 0.35s var(--ease-out-quint), opacity 0.35s, transform 0.35s;
+  }
+  @media (min-width: 768px) {
+    .logo-img { height: 3.6rem; max-width: 13rem; }
+  }
+
+  /* Sobre fondo claro los logotipos se muestran en escala de grises y
+     recuperan su color al pasar el cursor, para no competir con la marca. */
+  [data-variante='claro'] .logo-img {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+  [data-variante='claro'] .logo-link:hover .logo-img,
+  [data-variante='claro'] .logo-link:focus-visible .logo-img {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  /* Sobre el azul corporativo se blanquean para mantener legibilidad. */
+  [data-variante='oscuro'] .logo-img {
+    filter: brightness(0) invert(1);
+    opacity: 0.62;
+  }
+  [data-variante='oscuro'] .logo-link:hover .logo-img,
+  [data-variante='oscuro'] .logo-link:focus-visible .logo-img {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { overflow-x: auto; }
+  }
+</style>

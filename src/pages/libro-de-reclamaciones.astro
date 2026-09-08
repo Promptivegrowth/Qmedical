@@ -1,0 +1,310 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import FormularioBase from '../components/FormularioBase.astro';
+import { site } from '../data/site';
+
+// Hoja de reclamación conforme al Código de Protección y Defensa del Consumidor
+// (Ley N.° 29571) y su reglamento del Libro de Reclamaciones (D.S. 011-2011-PCM,
+// modificado por el D.S. 006-2014-PCM).
+const anio = new Date().getFullYear();
+---
+
+<Base
+  title="Libro de Reclamaciones"
+  description="Libro de Reclamaciones virtual de Q-MEDICAL S.A.C. conforme a la Ley N.° 29571, Código de Protección y Defensa del Consumidor. Registre aquí su reclamo o queja."
+>
+  <PageHeader
+    eyebrow="Atención al consumidor"
+    titulo="Libro de Reclamaciones"
+    texto="Conforme a lo establecido en el Código de Protección y Defensa del Consumidor, Q-MEDICAL S.A.C. pone a su disposición este Libro de Reclamaciones virtual."
+    migas={[{ nombre: 'Libro de Reclamaciones' }]}
+  />
+
+  <section class="bg-white py-14 lg:py-20">
+    <div class="container-q max-w-4xl">
+      <!-- Identificación del proveedor -->
+      <div class="rounded-2xl border-2 border-brand-700 bg-white p-6 sm:p-8">
+        <div class="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <p class="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
+              Hoja de reclamación
+            </p>
+            <h2 class="title-md mt-2">Identificación del proveedor</h2>
+          </div>
+          <img
+            src="/img/logo/qmedical-azul.webp"
+            width="120"
+            height="68"
+            alt="Q-MEDICAL S.A.C."
+            class="h-9 w-auto"
+            loading="lazy"
+          />
+        </div>
+
+        <dl class="mt-6 grid gap-x-8 gap-y-4 text-[0.88rem] sm:grid-cols-2">
+          <div>
+            <dt class="text-[0.72rem] uppercase tracking-wider text-muted">Razón social</dt>
+            <dd class="mt-0.5 font-medium">{site.razonSocial}</dd>
+          </div>
+          <div>
+            <dt class="text-[0.72rem] uppercase tracking-wider text-muted">RUC</dt>
+            <dd class="mt-0.5 font-medium">{site.ruc}</dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt class="text-[0.72rem] uppercase tracking-wider text-muted">Domicilio</dt>
+            <dd class="mt-0.5 font-medium">{site.direccion.completa}</dd>
+          </div>
+          <div>
+            <dt class="text-[0.72rem] uppercase tracking-wider text-muted">Teléfonos</dt>
+            <dd class="mt-0.5 font-medium">
+              {site.telefonos.map((t) => t.etiqueta).join(' / ')}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-[0.72rem] uppercase tracking-wider text-muted">Fecha</dt>
+            <dd class="mt-0.5 font-medium">
+              <span id="fecha-hoy">—</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Definiciones -->
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-line bg-surface p-5">
+          <p class="text-[0.78rem] font-semibold uppercase tracking-wider text-brand-700">Reclamo</p>
+          <p class="mt-2 text-[0.85rem] leading-relaxed text-muted">
+            Disconformidad relacionada con los productos o servicios que le hemos
+            brindado.
+          </p>
+        </div>
+        <div class="rounded-xl border border-line bg-surface p-5">
+          <p class="text-[0.78rem] font-semibold uppercase tracking-wider text-brand-700">Queja</p>
+          <p class="mt-2 text-[0.85rem] leading-relaxed text-muted">
+            Malestar o descontento respecto a la atención al público, no relacionado
+            con los productos o servicios.
+          </p>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <FormularioBase
+        id="form-reclamo"
+        asunto="Libro de Reclamaciones — nueva hoja de reclamación"
+        destino="direccion_tecnica@qmedicalsac.com"
+        class="mt-6 rounded-2xl border border-line bg-white p-6 sm:p-8"
+      >
+        <input type="hidden" name="Tipo de registro" value="Libro de Reclamaciones" />
+
+        <!-- 1. Consumidor -->
+        <fieldset>
+          <legend class="title-md">1. Identificación del consumidor reclamante</legend>
+
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+            <label class="sm:col-span-2">
+              <span class="label">Nombres y apellidos <span class="text-brand-700">*</span></span>
+              <input type="text" name="Nombres y apellidos" class="field" required autocomplete="name" />
+            </label>
+
+            <label>
+              <span class="label">Tipo de documento <span class="text-brand-700">*</span></span>
+              <select name="Tipo de documento" class="field" required>
+                <option value="DNI">DNI</option>
+                <option value="Carné de extranjería">Carné de extranjería</option>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="RUC">RUC</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label">Número de documento <span class="text-brand-700">*</span></span>
+              <input type="text" name="Número de documento" class="field" required inputmode="numeric" />
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="label">Domicilio <span class="text-brand-700">*</span></span>
+              <input type="text" name="Domicilio" class="field" required autocomplete="street-address" />
+            </label>
+
+            <label>
+              <span class="label">Correo electrónico <span class="text-brand-700">*</span></span>
+              <input type="email" name="Correo electrónico" class="field" required autocomplete="email" />
+            </label>
+
+            <label>
+              <span class="label">Teléfono <span class="text-brand-700">*</span></span>
+              <input type="tel" name="Teléfono" class="field" required autocomplete="tel" />
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="label">
+                Si es menor de edad, nombre del padre, madre o apoderado
+              </span>
+              <input type="text" name="Padre, madre o apoderado" class="field" />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 2. Bien contratado -->
+        <fieldset class="mt-10 border-t border-line pt-9">
+          <legend class="title-md">2. Identificación del bien contratado</legend>
+
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+            <label>
+              <span class="label">Tipo <span class="text-brand-700">*</span></span>
+              <select name="Tipo de bien" class="field" required>
+                <option value="Producto">Producto</option>
+                <option value="Servicio">Servicio</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label">Monto reclamado (S/)</span>
+              <input type="text" name="Monto reclamado" class="field" inputmode="decimal" placeholder="Opcional" />
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="label">Descripción del producto o servicio <span class="text-brand-700">*</span></span>
+              <textarea
+                name="Descripción del bien"
+                rows="3"
+                class="field resize-y"
+                required
+                placeholder="Indique el producto, código, número de guía o factura, y la fecha de la operación."></textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 3. Detalle -->
+        <fieldset class="mt-10 border-t border-line pt-9">
+          <legend class="title-md">3. Detalle de la reclamación y pedido</legend>
+
+          <div class="mt-6 space-y-5">
+            <div>
+              <span class="label">Tipo de registro <span class="text-brand-700">*</span></span>
+              <div class="mt-2 flex flex-wrap gap-3">
+                <label class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-line px-4 py-3 text-[0.9rem] transition has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50">
+                  <input
+                    type="radio"
+                    name="Tipo de reclamación"
+                    value="Reclamo"
+                    required
+                    class="h-4 w-4 accent-[#152e7f]"
+                  />
+                  Reclamo
+                </label>
+                <label class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-line px-4 py-3 text-[0.9rem] transition has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50">
+                  <input
+                    type="radio"
+                    name="Tipo de reclamación"
+                    value="Queja"
+                    class="h-4 w-4 accent-[#152e7f]"
+                  />
+                  Queja
+                </label>
+              </div>
+            </div>
+
+            <label class="block">
+              <span class="label">Detalle <span class="text-brand-700">*</span></span>
+              <textarea
+                name="Detalle de la reclamación"
+                rows="6"
+                class="field resize-y"
+                required
+                placeholder="Describa los hechos con el mayor detalle posible."></textarea>
+            </label>
+
+            <label class="block">
+              <span class="label">Pedido del consumidor <span class="text-brand-700">*</span></span>
+              <textarea
+                name="Pedido del consumidor"
+                rows="4"
+                class="field resize-y"
+                required
+                placeholder="Indique qué solución solicita."></textarea>
+            </label>
+
+            <label class="flex items-start gap-3">
+              <input
+                type="checkbox"
+                name="Declaración de veracidad"
+                value="Sí, declaro que la información es veraz"
+                required
+                class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]"
+              />
+              <span class="text-[0.82rem] leading-relaxed text-muted">
+                Declaro que la información consignada es veraz y autorizo a
+                {site.razonSocial} a tratar mis datos personales con la finalidad de
+                atender esta reclamación, conforme a la Ley N.° 29733.
+                <span class="text-brand-700">*</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary mt-9 w-full sm:w-auto">
+          <Icon name="book" size={16} />
+          Registrar reclamación
+        </button>
+      </FormularioBase>
+
+      <!-- Avisos legales -->
+      <div class="mt-8 space-y-4 rounded-2xl border border-line bg-surface p-6 text-[0.85rem] leading-relaxed text-muted sm:p-8">
+        <p class="flex gap-3">
+          <Icon name="clock" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+          <span>
+            El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a
+            <strong class="text-ink">quince (15) días hábiles</strong>, prorrogable por
+            un plazo igual previa comunicación al consumidor.
+          </span>
+        </p>
+        <p class="flex gap-3">
+          <Icon name="award" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+          <span>
+            La formulación del reclamo no impide acudir a otras vías de solución de
+            controversias ni es requisito previo para interponer una denuncia ante el
+            <strong class="text-ink">INDECOPI</strong>.
+          </span>
+        </p>
+        <p class="flex gap-3">
+          <Icon name="book" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+          <span>
+            Conforme al Código de Protección y Defensa del Consumidor, Ley N.° 29571, y
+            al Reglamento del Libro de Reclamaciones aprobado por D.S. N.° 011-2011-PCM
+            y su modificatoria D.S. N.° 006-2014-PCM.
+          </span>
+        </p>
+        <p class="flex gap-3">
+          <Icon name="mail" size={17} class="mt-0.5 shrink-0 text-brand-700" />
+          <span>
+            Conservaremos una copia de su reclamación por dos (2) años. Recibirá el
+            cargo de recepción en el correo electrónico que registre. Ante cualquier
+            duda escríbanos a
+            <a
+              href="mailto:direccion_tecnica@qmedicalsac.com"
+              class="text-brand-700 underline underline-offset-4">direccion_tecnica@qmedicalsac.com</a
+            >.
+          </span>
+        </p>
+      </div>
+
+      <p class="mt-6 text-center text-[0.78rem] text-muted">
+        © {anio} {site.razonSocial} — RUC {site.ruc}
+      </p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Fecha de la hoja de reclamación en horario de Perú.
+  const el = document.getElementById('fecha-hoy');
+  if (el) {
+    el.textContent = new Intl.DateTimeFormat('es-PE', {
+      dateStyle: 'long',
+      timeZone: 'America/Lima',
+    }).format(new Date());
+  }
+</script>

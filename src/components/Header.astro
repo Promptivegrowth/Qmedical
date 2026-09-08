@@ -1,0 +1,274 @@
+---
+import Icon from './Icon.astro';
+import { navegacion, site } from '../data/site';
+import { categorias } from '../data/catalogo';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const activo = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+
+<header id="site-header" class="site-header">
+  <!-- Barra superior con los datos de contacto directo -->
+  <div class="topbar">
+    <div class="container-q flex items-center justify-between gap-4 py-2 text-[0.78rem]">
+      <p class="hidden sm:flex items-center gap-2 text-white/70">
+        <Icon name="award" size={15} />
+        <span>Droguería certificada en Buenas Prácticas de Almacenamiento — DIGEMID</span>
+      </p>
+      <p class="sm:hidden text-white/70">Certificación BPA — DIGEMID</p>
+      <div class="flex items-center gap-4 text-white/80">
+        <a href={site.telefonos[0].href} class="hidden md:flex items-center gap-1.5 hover:text-white transition">
+          <Icon name="phone" size={14} />{site.telefonos[0].etiqueta}
+        </a>
+        <a
+          href={site.whatsapp.href}
+          target="_blank"
+          rel="noopener"
+          class="flex items-center gap-1.5 hover:text-white transition"
+        >
+          <Icon name="whatsapp" size={14} /><span class="hidden xs:inline">{site.whatsapp.numero}</span>
+          <span class="xs:hidden">WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegación principal -->
+  <div class="navbar">
+    <div class="container-q flex items-center justify-between gap-6 py-3.5">
+      <a href="/" class="shrink-0" aria-label="Q-MEDICAL S.A.C. — Inicio">
+        <img
+          src="/img/logo/qmedical-azul.webp"
+          srcset="/img/logo/qmedical-azul-1x.webp 1x, /img/logo/qmedical-azul.webp 2x"
+          width="130"
+          height="74"
+          alt="Q-MEDICAL S.A.C."
+          class="h-9 w-auto md:h-10"
+          fetchpriority="high"
+        />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-1" aria-label="Navegación principal">
+        {
+          navegacion.map((item) =>
+            item.href === '/catalogo' ? (
+              <div class="nav-drop relative">
+                <a href={item.href} class:list={['nav-link', activo(item.href) && 'is-active']}>
+                  {item.nombre}
+                  <Icon name="chevron" size={13} class="rotate-90 opacity-50" />
+                </a>
+                <div class="nav-panel">
+                  <p class="px-4 pt-3 pb-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted">
+                    Líneas de producto
+                  </p>
+                  <ul class="grid grid-cols-2 gap-0.5 p-2 pt-0">
+                    {categorias.map((c) => (
+                      <li>
+                        <a href={`/catalogo/${c.slug}`} class="nav-panel__item">
+                          <Icon name={c.icono} size={17} class="text-brand-700 shrink-0" />
+                          <span>{c.corto}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <a href={item.href} class:list={['nav-link', activo(item.href) && 'is-active']}>
+                {item.nombre}
+              </a>
+            )
+          )
+        }
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/contacto#cotizar" class="btn btn-primary hidden sm:inline-flex !px-5 !py-2.5 !text-[0.82rem]">
+          Solicitar cotización
+        </a>
+        <button
+          id="menu-toggle"
+          type="button"
+          class="lg:hidden grid h-10 w-10 place-items-center rounded-lg border border-line text-ink"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          aria-controls="menu-movil"
+        >
+          <Icon name="menu" size={20} class="icon-open" />
+          <Icon name="close" size={20} class="icon-close hidden" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="menu-movil" class="menu-movil lg:hidden" hidden>
+    <nav class="container-q py-4" aria-label="Navegación móvil">
+      <ul class="space-y-0.5">
+        {
+          navegacion.map((item) => (
+            <li>
+              <a href={item.href} class:list={['menu-movil__link', activo(item.href) && 'is-active']}>
+                {item.nombre}
+                <Icon name="arrow" size={16} class="opacity-40" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-5 mb-2 px-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted">
+        Líneas de producto
+      </p>
+      <ul class="grid grid-cols-2 gap-1">
+        {
+          categorias.map((c) => (
+            <li>
+              <a href={`/catalogo/${c.slug}`} class="menu-movil__cat">
+                <Icon name={c.icono} size={16} class="text-brand-700" />
+                {c.corto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/contacto#cotizar" class="btn btn-primary mt-5 w-full">Solicitar cotización</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+  }
+  .topbar {
+    background: var(--color-brand-900);
+    color: #fff;
+    transition: margin-top 0.35s var(--ease-out-quint);
+  }
+  /* Al bajar, la barra superior se repliega y solo queda la navegación */
+  :global(html.scrolled) .topbar {
+    margin-top: -2.35rem;
+  }
+  .navbar {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--color-line);
+    transition: box-shadow 0.3s;
+  }
+  :global(html.scrolled) .navbar {
+    box-shadow: 0 10px 30px -22px rgba(12, 26, 72, 0.5);
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 0.55rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #3c4453;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-link:hover { color: var(--color-brand-700); background: var(--color-brand-50); }
+  .nav-link.is-active { color: var(--color-brand-700); font-weight: 600; }
+
+  .nav-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 30rem;
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: 0.9rem;
+    box-shadow: 0 26px 50px -26px rgba(12, 26, 72, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.22s, transform 0.22s, visibility 0.22s;
+  }
+  .nav-drop:hover .nav-panel,
+  .nav-drop:focus-within .nav-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .nav-panel__item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 0.55rem;
+    font-size: 0.85rem;
+    color: #3c4453;
+    transition: background 0.18s, color 0.18s;
+  }
+  .nav-panel__item:hover { background: var(--color-brand-50); color: var(--color-brand-700); }
+
+  .menu-movil {
+    background: #fff;
+    border-bottom: 1px solid var(--color-line);
+    box-shadow: 0 22px 40px -28px rgba(12, 26, 72, 0.5);
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+  }
+  .menu-movil__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0.6rem;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .menu-movil__link.is-active { color: var(--color-brand-700); background: var(--color-brand-50); }
+  .menu-movil__cat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.6rem;
+    font-size: 0.8rem;
+    color: #3c4453;
+  }
+
+  @media (min-width: 400px) {
+    .xs\:inline { display: inline; }
+    .xs\:hidden { display: none; }
+  }
+  @media (max-width: 399px) {
+    .xs\:inline { display: none; }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('menu-movil');
+
+  toggle?.addEventListener('click', () => {
+    const abierto = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!abierto));
+    toggle.setAttribute('aria-label', abierto ? 'Abrir menú' : 'Cerrar menú');
+    if (menu) menu.hidden = abierto;
+    toggle.querySelector('.icon-open')?.classList.toggle('hidden', !abierto);
+    toggle.querySelector('.icon-close')?.classList.toggle('hidden', abierto);
+  });
+
+  // Sombra y repliegue de la barra superior al desplazarse
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      document.documentElement.classList.toggle('scrolled', window.scrollY > 40);
+      ticking = false;
+    });
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

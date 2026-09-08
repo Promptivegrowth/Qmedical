@@ -1,0 +1,87 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Icon from '../../components/Icon.astro';
+import ProductoCard from '../../components/ProductoCard.astro';
+import CtaContacto from '../../components/CtaContacto.astro';
+import { categorias, productosDeCategoria, type Categoria } from '../../data/catalogo';
+
+export function getStaticPaths() {
+  return categorias.map((c) => ({
+    params: { categoria: c.slug },
+    props: { categoria: c },
+  }));
+}
+
+interface Props {
+  categoria: Categoria;
+}
+const { categoria } = Astro.props;
+const items = productosDeCategoria(categoria.slug);
+const otras = categorias.filter((c) => c.slug !== categoria.slug);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://qmedicalsac.com' },
+    { '@type': 'ListItem', position: 2, name: 'Catálogo', item: 'https://qmedicalsac.com/catalogo' },
+    { '@type': 'ListItem', position: 3, name: categoria.nombre },
+  ],
+};
+---
+
+<Base
+  title={categoria.nombre}
+  description={categoria.descripcion}
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Línea de producto"
+    titulo={categoria.nombre}
+    texto={categoria.descripcion}
+    migas={[{ nombre: 'Catálogo', href: '/catalogo' }, { nombre: categoria.corto }]}
+  />
+
+  <section class="bg-surface py-14 lg:py-20">
+    <div class="container-q">
+      <p class="text-[0.85rem] text-muted">
+        {items.length} producto{items.length === 1 ? '' : 's'} en esta línea
+      </p>
+
+      <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {
+          items.map((p, i) => (
+            <div class="reveal" data-delay={(i % 4) * 70}>
+              <ProductoCard producto={p} eager={i < 4} mostrarCategoria={false} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Otras líneas -->
+  <section class="bg-white py-16 lg:py-20">
+    <div class="container-q">
+      <h2 class="title-md">Otras líneas de nuestro catálogo</h2>
+      <ul class="mt-7 flex flex-wrap gap-2.5">
+        {
+          otras.map((c) => (
+            <li>
+              <a
+                href={`/catalogo/${c.slug}`}
+                class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[0.84rem] text-ink/80 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+              >
+                <Icon name={c.icono} size={15} />
+                {c.corto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaContacto />
+</Base>

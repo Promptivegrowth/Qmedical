@@ -1,0 +1,20 @@
+{
+  "name": "qmedical-web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio web corporativo de Q-MEDICAL S.A.C.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.0",
+    "tailwindcss": "^4.1.18"
+  }
+}

@@ -1,0 +1,108 @@
+# ============================================================================
+#  Q-MEDICAL S.A.C. — configuración de Apache para hosting cPanel (Namecheap)
+#  Este archivo se copia tal cual dentro de dist/ y debe subirse a public_html.
+#  En Vercel se ignora: allí manda vercel.json.
+# ============================================================================
+
+# ---------------------------------------------------------------- Compresión
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript
+  AddOutputFilterByType BROTLI_COMPRESS application/json image/svg+xml
+</IfModule>
+
+# ------------------------------------------------------------------ Tipos MIME
+<IfModule mod_mime.c>
+  AddType image/webp                   .webp
+  AddType image/avif                   .avif
+  AddType application/manifest+json    .webmanifest
+  AddType font/woff2                   .woff2
+</IfModule>
+
+# ------------------------------------------------------------------- Caché
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                          "access plus 1 month"
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType application/json          "access plus 0 seconds"
+  ExpiresByType text/xml                  "access plus 1 hour"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/png                 "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+  ExpiresByType application/pdf           "access plus 1 month"
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+</IfModule>
+
+# Los recursos con huella digital en el nombre (/_astro/…) son inmutables.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Cabeceras de seguridad
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header unset X-Powered-By
+</IfModule>
+
+# ------------------------------------------------------------------ Reescrituras
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Forzar HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # Forzar el dominio sin www (ajustar si se prefiere con www)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # URL limpias: /catalogo -> /catalogo/index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+  RewriteRule ^(.*?)/?$ /$1/index.html [L]
+
+  # ---- Redirecciones desde las URL de la web anterior (WordPress) ----
+  RedirectMatch 301 ^/catalago/?$                                   /catalogo
+  RedirectMatch 301 ^/video-laringoscopio/?$                        /productos/videolaringoscopio
+  RedirectMatch 301 ^/bomba-de-nutricion-enteral/?$                 /productos/bomba-nutricion-enteral
+  RedirectMatch 301 ^/trocar-retractil-de-un-solo-uso/?$            /productos/trocares-desechables
+  RedirectMatch 301 ^/contenedores-de-seguridad/?$                  /catalogo/bioseguridad
+  RedirectMatch 301 ^/bolsa-de-aspiracion/?$                        /productos/bolsas-aspiracion
+  RedirectMatch 301 ^/aplicador-esteril-desechable/?$               /productos/aplicador-clorhexidina-2
+  RedirectMatch 301 ^/bolsa-de-nutricion/?$                         /productos/bolsa-nutricion-enteral
+  RedirectMatch 301 ^/pano-clinico-y-toalla-de-un-solo-uso/?$       /productos/pano-clinico-qmedical
+  RedirectMatch 301 ^/lapiz-marcador-de-piel-y-limpiador-de-punta/?$ /productos/marcador-piel-esteril
+  RedirectMatch 301 ^/guantes-de-nitrilo/?$                         /productos/guantes-nitrilo
+  RedirectMatch 301 ^/tubuladora-de-silicona-de-un-solo-uso/?$      /productos/tubuladura-silicona
+  RedirectMatch 301 ^/cepillo-para-limpieza-de-instrumental-medico/?$ /productos/cepillos-limpieza-instrumental
+  RedirectMatch 301 ^/anillo-retractor-de-heridas-de-un-solo-uso.*$ /catalogo
+  RedirectMatch 301 ^/iluminador-de-venas/?$                        /catalogo
+  RedirectMatch 301 ^/bomba-de-infusion/?$                          /catalogo
+</IfModule>
+
+# ------------------------------------------------------------------ Errores
+ErrorDocument 404 /404.html
+
+# ------------------------------------------------------------------ Seguridad
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+Options -Indexes
