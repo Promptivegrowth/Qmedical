@@ -17,10 +17,10 @@ const activo = (href: string) =>
 const destCatalogo = productoPorSlug.get('videolaringoscopio')!;
 
 const empresa = [
-  { nombre: 'Nosotros', href: '/nosotros', nota: 'Historia, misión y equipo', icono: 'equipo' },
+  { nombre: 'Marcas asociadas', href: '/marcas', nota: `${marcas.length} fabricantes representados`, icono: 'reticula' },
   { nombre: 'Infraestructura', href: '/nosotros#infraestructura', nota: 'Almacén certificado BPA', icono: 'almacen' },
   { nombre: 'Certificaciones', href: '/nosotros#certificaciones', nota: 'BPA · ISO 37001 · ISO 14001', icono: 'certificado' },
-  { nombre: 'Marcas asociadas', href: '/marcas', nota: `${marcas.length} fabricantes`, icono: 'reticula' },
+  { nombre: 'Entregas', href: '/nosotros#infraestructura', nota: 'Cobertura en todas las regiones', icono: 'entrega' },
 ];
 ---
 
@@ -75,13 +75,13 @@ const empresa = [
               Catálogo<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
+          <a href="/nosotros" class:list={['nav__enlace', activo('/nosotros') && 'es-activo']}>Nosotros</a>
           <div class="nav__item" data-menu="empresa">
-            <button type="button" class:list={['nav__enlace', (activo('/nosotros') || activo('/marcas')) && 'es-activo']}
+            <button type="button" class:list={['nav__enlace', activo('/marcas') && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-empresa">
               Empresa<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
-          <a href="/fichas-tecnicas" class:list={['nav__enlace', activo('/fichas-tecnicas') && 'es-activo']}>Fichas técnicas</a>
           <a href="/contacto" class:list={['nav__enlace', activo('/contacto') && 'es-activo']}>Contacto</a>
         </nav>
 
@@ -131,7 +131,7 @@ const empresa = [
           </ul>
           <div class="lamina-menu__pie">
             <a href="/catalogo" class="enlace">Todo el catálogo · {productos.length} productos<Icon name="flecha" size={15} /></a>
-            <a href="/fichas-tecnicas" class="enlace">49 fichas técnicas en PDF<Icon name="descarga" size={15} /></a>
+            <a href="/contacto#cotizar" class="enlace">Solicitar una cotización<Icon name="flecha" size={15} /></a>
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@ const empresa = [
           <span class="lamina__pie">
             <span>
               <span class="ante ante-claro">Desde {site.fundacion}</span>
-              <span class="mt-1 block display-sm text-white">Quiénes somos</span>
+              <span class="mt-1 block display-sm text-white">Nuestro almacén</span>
             </span>
             <span class="disco-flecha"><Icon name="flecha" size={17} /></span>
           </span>
@@ -194,7 +194,6 @@ const empresa = [
           { n: 'Catálogo', h: '/catalogo' },
           { n: 'Nosotros', h: '/nosotros' },
           { n: 'Marcas asociadas', h: '/marcas' },
-          { n: 'Fichas técnicas', h: '/fichas-tecnicas' },
           { n: 'Contacto', h: '/contacto' },
         ].map((i) => (
           <li>
@@ -231,8 +230,8 @@ const empresa = [
     background: var(--color-papel);
     color: var(--color-tinta);
     transition: background-color 0.45s var(--ease-editorial),
-      color 0.45s var(--ease-editorial), border-radius 0.5s var(--ease-salida),
-      box-shadow 0.45s var(--ease-editorial);
+      color 0.45s var(--ease-editorial), border-radius 0.7s var(--ease-salida),
+      box-shadow 0.6s var(--ease-editorial);
   }
   :global(.cabecera.abierta) .cabecera__lamina {
     border-bottom-left-radius: var(--r-lamina);
@@ -340,10 +339,40 @@ const empresa = [
   :global(.cabecera.movil-abierto) .ic-cerrar { display: block; }
 
   /* ── Lámina del mega-menú ─────────────────────────────────────────── */
-  .lamina-menu { overflow: hidden; animation: baja-lamina 0.5s var(--ease-salida); }
-  @keyframes baja-lamina {
-    from { opacity: 0; transform: translateY(-14px); }
+  /* La lámina abre despacio: primero cede la altura y luego asoma el
+     contenido, escalonado. Nada de saltos. */
+  .lamina-menu { overflow: hidden; animation: abre-lamina 0.72s var(--ease-salida); }
+  @keyframes abre-lamina {
+    from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: none; }
+  }
+  .lamina-menu .destacado,
+  .lamina-menu .lamina-menu__lista > *,
+  .lamina-menu .rejilla-lineas > li {
+    animation: asoma-menu 0.6s var(--ease-salida) both;
+  }
+  .lamina-menu .destacado { animation-delay: 0.08s; }
+  .lamina-menu .lamina-menu__lista > :nth-child(1) { animation-delay: 0.1s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(1) { animation-delay: 0.14s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(2) { animation-delay: 0.17s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(3) { animation-delay: 0.2s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(4) { animation-delay: 0.23s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(5) { animation-delay: 0.26s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(6) { animation-delay: 0.29s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(7) { animation-delay: 0.32s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(8) { animation-delay: 0.35s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(9) { animation-delay: 0.38s; }
+  .lamina-menu .rejilla-lineas > li:nth-child(10) { animation-delay: 0.41s; }
+  .lamina-menu .lamina-menu__pie { animation-delay: 0.44s; }
+  @keyframes asoma-menu {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lamina-menu,
+    .lamina-menu .destacado,
+    .lamina-menu .lamina-menu__lista > *,
+    .lamina-menu .rejilla-lineas > li { animation: none; }
   }
   .lamina-menu__cuerpo {
     display: grid;
@@ -427,7 +456,7 @@ const empresa = [
     backdrop-filter: blur(2px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s var(--ease-editorial), visibility 0.4s;
+    transition: opacity 0.6s var(--ease-editorial), visibility 0.6s;
   }
   :global(.cabecera.abierta) .velo { opacity: 1; visibility: visible; }
 
@@ -524,7 +553,7 @@ const empresa = [
     // Se cierra al salir de la cabecera, con una pausa para poder bajar el ratón.
     cabecera.addEventListener('pointerleave', () => {
       clearTimeout(cierre);
-      cierre = window.setTimeout(cerrarLamina, 220);
+      cierre = window.setTimeout(cerrarLamina, 320);
     });
     cabecera.addEventListener('pointerenter', () => clearTimeout(cierre));
     velo?.addEventListener('click', cerrarLamina);

@@ -5,40 +5,33 @@ import Hero from '../components/Hero.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import { site, certificaciones } from '../data/site';
-import { marcas, marcaPorSlug } from '../data/marcas';
-import {
-  categorias,
-  productos,
-  productosDestacados,
-  productosDeCategoria,
-  imagenPrincipal,
-  conteoProductos,
-} from '../data/catalogo';
+import { marcas } from '../data/marcas';
+import { categorias, productos, productosDestacados, conteoProductos } from '../data/catalogo';
 
 const destacados = productosDestacados().slice(0, 5);
 
-// Sumario de especialidades: cada línea con su producto insignia
-const insignia: Record<string, string> = {
-  bioseguridad: 'contenedores-punzocortantes',
-  antisepsia: 'aplicador-clorhexidina-2',
-  laparoscopia: 'trocares-desechables',
-  aspiracion: 'bolsas-aspiracion',
-  'nutricion-enteral': 'bomba-nutricion-enteral',
-  'via-aerea': 'videolaringoscopio',
-  'higiene-paciente': 'pano-bano-facil',
-  absorbentes: 'manta-absorbente-xodus',
-  instrumental: 'marcador-piel-esteril',
-  'proteccion-personal': 'guantes-nitrilo',
+/**
+ * Matriz de especialidades. La síntesis describe la función clínica de la
+ * línea, no sus productos: la matriz es el índice general del catálogo, y el
+ * detalle vive en cada línea.
+ */
+const sintesis: Record<string, string> = {
+  bioseguridad: 'Contención y descarte seguro de residuos',
+  antisepsia: 'Preparación de piel y lavado quirúrgico',
+  laparoscopia: 'Acceso mínimamente invasivo a la cavidad',
+  aspiracion: 'Manejo cerrado de secreciones y fluidos',
+  'nutricion-enteral': 'Soporte nutricional del paciente',
+  'via-aerea': 'Intubación y control de la vía aérea',
+  'higiene-paciente': 'Higiene y confort del paciente encamado',
+  absorbentes: 'Superficies limpias, secas y sin resbalones',
+  instrumental: 'Insumos de sala y central de esterilización',
+  'proteccion-personal': 'Barrera para el equipo asistencial',
 };
 
-const sumario = categorias.map((c, i) => ({
+const matriz = categorias.map((c, i) => ({
   ...c,
   n: String(i + 1).padStart(2, '0'),
-  foto: imagenPrincipal(insignia[c.slug] ?? productosDeCategoria(c.slug)[0]?.slug ?? '', 480),
-  firmas: [...new Set(productosDeCategoria(c.slug).map((p) => marcaPorSlug.get(p.marca)?.nombre))]
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(' · '),
+  sintesis: sintesis[c.slug] ?? c.corto,
 }));
 ---
 
@@ -50,17 +43,17 @@ const sumario = categorias.map((c, i) => ({
 >
   <Hero />
 
-  <!-- ══════════════════════════════ 01 · Sumario de especialidades -->
+  <!-- ══════════════════════════════ 01 · Matriz de especialidades -->
   <section id="lineas" class="aire bg-[var(--color-papel)]">
     <div class="caja">
-      <div class="sumario__intro" data-anim-grupo="80">
+      <div class="matriz__intro" data-anim-grupo="80">
         <div>
           <p class="ante ante-brand" data-anim="sube">Especialidades</p>
           <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">
             Diez líneas, ordenadas por la realidad del servicio
           </h2>
         </div>
-        <div class="sumario__intro-texto" data-anim="sube">
+        <div class="matriz__intro-texto" data-anim="sube">
           <p class="cuerpo-lg">
             Lo que necesita sala de operaciones no es lo que necesita el punto de
             acopio de residuos ni la unidad de nutrición. Por eso el catálogo no
@@ -72,27 +65,27 @@ const sumario = categorias.map((c, i) => ({
         </div>
       </div>
 
-      <ol class="sumario" data-anim-grupo="55">
-        {sumario.map((c) => (
-          <li data-anim="lineas">
-            <a href={`/catalogo/${c.slug}`} class="renglon">
-              <span class="folio renglon__folio">{c.n}</span>
-
-              <span class="renglon__miniatura">
-                <img src={c.foto} width="480" height="480" alt="" loading="lazy" decoding="async" />
+      <!-- Matriz: retícula de filetes finos, sin fotografía de producto.
+           Cada celda dibuja su icono al entrar en pantalla. -->
+      <ol class="matriz" data-anim-grupo="70">
+        {matriz.map((c) => (
+          <li data-anim="escala">
+            <a href={`/catalogo/${c.slug}`} class="celda">
+              <span class="celda__alto">
+                <span class="folio celda__folio">{c.n}</span>
+                <span class="celda__cuenta">{conteoProductos(c.slug)}</span>
               </span>
 
-              <span class="renglon__medio">
-                <span class="renglon__titulo">{c.corto}</span>
-                <span class="renglon__nota">{c.descripcion}</span>
+              <span class="celda__ic">
+                <Icon name={c.icono} size={52} stroke={0.9} anim />
               </span>
 
-              <span class="renglon__meta">
-                <span class="renglon__firmas">{c.firmas}</span>
-                <span class="renglon__cuenta">{conteoProductos(c.slug)}</span>
+              <span class="celda__pie">
+                <span class="celda__nombre">{c.corto}</span>
+                <span class="celda__sintesis">{c.sintesis}</span>
               </span>
 
-              <span class="renglon__flecha"><Icon name="flecha" size={17} /></span>
+              <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
             </a>
           </li>
         ))}
@@ -104,23 +97,53 @@ const sumario = categorias.map((c, i) => ({
   <section class="aire bg-[var(--color-papel-2)]">
     <div class="caja">
       <div class="compromiso">
-        <div class="compromiso__figura">
-          <figure class="lamina compromiso__grande" data-anim="cortina">
+        <!-- Collage: cuatro fotografías montadas con reborde de papel, a
+             distinta profundidad de parallax, como recortes sobre una mesa. -->
+        <div class="collage" data-anim="sube">
+          <figure class="recorte recorte--a">
+            <img
+              src="/img/fotos/almacen-p1360310-1000.webp"
+              srcset="/img/fotos/almacen-p1360310-640.webp 640w, /img/fotos/almacen-p1360310-1000.webp 1000w"
+              sizes="(min-width: 1024px) 30vw, 55vw" width="1000" height="750"
+              loading="lazy" decoding="async"
+              alt="Pasillo principal del almacén central de Q-MEDICAL"
+              class="parallax" data-parallax="0.06"
+            />
+          </figure>
+
+          <figure class="recorte recorte--b">
             <img
               src="/img/fotos/equipo-almacen-1000.webp"
-              srcset="/img/fotos/equipo-almacen-640.webp 640w, /img/fotos/equipo-almacen-1000.webp 1000w, /img/fotos/equipo-almacen-1600.webp 1600w"
-              sizes="(min-width: 1024px) 46vw, 92vw"
-              width="1000" height="563" loading="lazy" decoding="async"
-              alt="Personal de Q-MEDICAL verificando existencias en el almacén central"
+              srcset="/img/fotos/equipo-almacen-640.webp 640w, /img/fotos/equipo-almacen-1000.webp 1000w"
+              sizes="(min-width: 1024px) 26vw, 48vw" width="1000" height="563"
+              loading="lazy" decoding="async"
+              alt="Operario de Q-MEDICAL verificando existencias"
+              class="parallax" data-parallax="0.15"
+            />
+          </figure>
+
+          <figure class="recorte recorte--c">
+            <img
+              src="/img/fotos/almacen-p1360266-640.webp" width="640" height="480"
+              loading="lazy" decoding="async"
+              alt="Estanterías con producto rotulado por lote"
+              class="parallax" data-parallax="0.22"
+            />
+          </figure>
+
+          <figure class="recorte recorte--d">
+            <img
+              src="/img/fotos/almacen-p1360352-640.webp" width="640" height="480"
+              loading="lazy" decoding="async"
+              alt="Racks selectivos del almacén"
               class="parallax" data-parallax="0.1"
             />
           </figure>
-          <figure class="lamina compromiso__chica" data-anim="escala">
-            <img
-              src="/img/fotos/almacen-p1360322-640.webp" width="640" height="480"
-              loading="lazy" decoding="async" alt="Pasillo de racks del almacén central"
-            />
-          </figure>
+
+          <span class="collage__sello">
+            <Icon name="certificado" size={16} />
+            <span>Almacén certificado BPA</span>
+          </span>
         </div>
 
         <div class="compromiso__texto" data-anim-grupo="80">
@@ -145,16 +168,16 @@ const sumario = categorias.map((c, i) => ({
 
           <dl class="compromiso__datos" data-anim="sube">
             <div>
-              <dt class="ante">Fundación</dt>
-              <dd class="compromiso__dato">{site.fundacion}</dd>
+              <dt class="ante">Años operando</dt>
+              <dd class="compromiso__dato cuenta" data-conteo={site.anios} data-duracion="1400">0</dd>
             </div>
             <div>
               <dt class="ante">Marcas</dt>
-              <dd class="compromiso__dato">{marcas.length}</dd>
+              <dd class="compromiso__dato cuenta" data-conteo={marcas.length} data-duracion="1500">0</dd>
             </div>
             <div>
               <dt class="ante">Productos</dt>
-              <dd class="compromiso__dato">{productos.length}</dd>
+              <dd class="compromiso__dato cuenta" data-conteo={productos.length} data-duracion="1700">0</dd>
             </div>
           </dl>
 
@@ -166,29 +189,7 @@ const sumario = categorias.map((c, i) => ({
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 03 · La cifra -->
-  <section class="cifra-band">
-    <div class="caja text-center" data-anim-grupo="110">
-      <p class="ante ante-brand" data-anim="sube">Respaldo documental</p>
-      <p class="cifra mt-8 text-[var(--color-brand-700)]" data-anim="escala">49</p>
-      <h2 class="display-md mx-auto mt-6 max-w-[22ch]" data-anim="sube">
-        fichas técnicas oficiales, en PDF y listas para su expediente de licitación
-      </h2>
-      <p class="cuerpo mx-auto mt-6 max-w-xl" data-anim="sube">
-        Cada producto del catálogo publica la documentación del fabricante. El área
-        usuaria evalúa, el comité de compras adjunta y la dirección técnica verifica,
-        sin tener que pedir nada por correo.
-      </p>
-      <div class="mt-10 flex flex-wrap justify-center gap-3" data-anim="sube">
-        <a href="/fichas-tecnicas" class="pill pill-tinta">
-          <Icon name="descarga" size={16} />Ver la biblioteca
-        </a>
-        <a href="/catalogo" class="pill pill-linea">Explorar el catálogo</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════ 04 · Catálogo destacado -->
+  <!-- ══════════════════════════════ 03 · Catálogo destacado -->
   <section class="aire bg-[var(--color-papel)]">
     <div class="caja">
       <div class="cabecera-seccion" data-anim-grupo="80">
@@ -215,7 +216,7 @@ const sumario = categorias.map((c, i) => ({
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 05 · Certificaciones -->
+  <!-- ══════════════════════════════ 04 · Certificaciones -->
   <section class="certif">
     <div class="caja">
       <div class="cabecera-seccion" data-anim-grupo="80">
@@ -245,130 +246,148 @@ const sumario = categorias.map((c, i) => ({
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 06 · Marcas (anillo, intacto) -->
+  <!-- ══════════════════════════════ 05 · Marcas (anillo, intacto) -->
   <MarcasConstelacion />
 </Base>
 
 <style>
-  /* ── Sumario de especialidades ────────────────────────────────────── */
-  .sumario__intro { display: grid; gap: 2.5rem; }
+  /* ── Matriz de especialidades ─────────────────────────────────────── */
+  .matriz__intro { display: grid; gap: 2.5rem; }
   @media (min-width: 1024px) {
-    .sumario__intro { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+    .matriz__intro { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
   }
-  .sumario__intro-texto { max-width: 34rem; }
+  .matriz__intro-texto { max-width: 34rem; }
 
-  .sumario { margin-top: 4rem; border-top: 1px solid var(--color-linea); }
-  .sumario > li { border-bottom: 1px solid var(--color-linea); }
-
-  .renglon {
+  /* La retícula se dibuja con el propio hueco: el fondo del contenedor
+     asoma entre celdas y forma los filetes, sin bordes dobles. */
+  .matriz {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1rem 1.25rem;
-    padding: 1.35rem 0;
-    transition: padding-inline 0.5s var(--ease-salida), background-color 0.4s var(--ease-editorial);
-  }
-  @media (min-width: 900px) {
-    .renglon {
-      grid-template-columns: 3rem 5.5rem minmax(0, 1fr) 13rem 2.75rem;
-      gap: 2rem;
-      padding-block: 1.5rem;
-    }
-    .renglon:hover { padding-inline: 1.25rem; }
-  }
-  .renglon:hover { background: rgba(20, 22, 28, 0.025); }
-
-  .renglon__folio { display: none; }
-  @media (min-width: 900px) { .renglon__folio { display: block; } }
-
-  .renglon__miniatura {
-    display: grid;
-    place-items: center;
-    width: 3.75rem;
-    height: 3.75rem;
-    flex: none;
-    border-radius: var(--r-sm);
-    background: #fff;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 4rem;
+    background: var(--color-linea);
     border: 1px solid var(--color-linea);
-    overflow: hidden;
   }
-  @media (min-width: 900px) { .renglon__miniatura { width: 5.5rem; height: 5.5rem; } }
-  .renglon__miniatura img {
-    width: 100%;
+  @media (min-width: 768px) { .matriz { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+  .celda {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    object-fit: contain;
-    padding: 14%;
-    transition: transform 0.6s var(--ease-salida);
-  }
-  .renglon:hover .renglon__miniatura img { transform: scale(1.08); }
-
-  .renglon__medio { min-width: 0; }
-  .renglon__titulo {
-    display: block;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(1.15rem, 2vw, 1.65rem);
-    line-height: 1.15;
-    letter-spacing: -0.012em;
-  }
-  .renglon__nota {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    min-height: 15rem;
+    padding: 1.35rem;
+    background: var(--color-papel);
+    color: var(--color-tinta);
     overflow: hidden;
-    margin-top: 0.4rem;
-    font-size: 0.865rem;
-    line-height: 1.5;
-    color: var(--color-tinta-70);
+    transition: background-color 0.5s var(--ease-editorial),
+      color 0.5s var(--ease-editorial);
   }
+  @media (min-width: 768px) { .celda { min-height: 16.5rem; padding: 1.6rem; } }
+  .celda:hover { background: var(--color-brand-700); color: #fff; }
 
-  .renglon__meta { display: none; text-align: right; }
-  @media (min-width: 900px) { .renglon__meta { display: block; } }
-  .renglon__firmas {
-    display: block;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+  .celda__alto { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+  .celda__folio { transition: color 0.5s var(--ease-editorial); }
+  .celda:hover .celda__folio { color: rgba(255, 255, 255, 0.5); }
+  .celda__cuenta {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-tinta-45);
+    transition: color 0.5s var(--ease-editorial);
   }
-  .renglon__cuenta { display: block; margin-top: 0.4rem; font-size: 0.82rem; color: var(--color-tinta-70); }
+  .celda:hover .celda__cuenta { color: rgba(255, 255, 255, 0.6); }
 
-  .renglon__flecha {
-    display: grid;
-    place-items: center;
-    width: 2.4rem;
-    height: 2.4rem;
-    flex: none;
-    border: 1px solid var(--color-linea);
-    border-radius: 999px;
-    color: var(--color-tinta);
-    transition: background-color 0.35s, color 0.35s, border-color 0.35s, transform 0.45s var(--ease-salida);
+  .celda__ic {
+    display: flex;
+    align-items: center;
+    height: 3.75rem;
+    margin-top: 1.9rem;
+    color: var(--color-brand-700);
+    transition: color 0.5s var(--ease-editorial), transform 0.6s var(--ease-salida);
   }
-  .renglon:hover .renglon__flecha {
-    background: var(--color-brand-700);
-    border-color: var(--color-brand-700);
-    color: #fff;
-    transform: translateX(3px);
-  }
+  .celda:hover .celda__ic { color: #fff; transform: translateY(-3px); }
 
-  /* ── Compromiso ───────────────────────────────────────────────────── */
+  .celda__pie { margin-top: 1.9rem; }
+  .celda__nombre {
+    display: block;
+    font-family: var(--font-display-texto);
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+  .celda__sintesis {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--color-tinta-70);
+    transition: color 0.5s var(--ease-editorial);
+  }
+  .celda:hover .celda__sintesis { color: rgba(255, 255, 255, 0.72); }
+
+  .celda__flecha {
+    position: absolute;
+    right: 1.35rem;
+    bottom: 1.35rem;
+    display: inline-flex;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.45s var(--ease-editorial), transform 0.45s var(--ease-salida);
+  }
+  .celda:hover .celda__flecha { opacity: 1; transform: none; }
+  @media (min-width: 768px) { .celda__flecha { right: 1.6rem; bottom: 1.6rem; } }
+
+  /* ── Compromiso y collage ─────────────────────────────────────────── */
   .compromiso { display: grid; gap: 3.5rem; }
   @media (min-width: 1024px) {
     .compromiso { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: center; }
   }
-  .compromiso__figura { position: relative; }
-  .compromiso__grande { aspect-ratio: 4 / 3; }
-  .compromiso__grande::after { display: none; }
-  .compromiso__grande img { height: 118%; }
-  .compromiso__chica {
-    width: 46%;
-    aspect-ratio: 4 / 3;
-    margin: -18% -1rem 0 auto;
-    border: 6px solid var(--color-papel-2);
-    border-radius: calc(var(--r-lg) + 6px);
+
+  .collage {
+    position: relative;
+    aspect-ratio: 1;
+    isolation: isolate;
   }
-  .compromiso__chica::after { display: none; }
-  @media (min-width: 1024px) { .compromiso__chica { margin-right: -3rem; } }
+  @media (min-width: 1024px) { .collage { aspect-ratio: 5 / 6; } }
+
+  .recorte {
+    position: absolute;
+    overflow: hidden;
+    /* Reborde de papel: el recorte se lee como una copia sobre la mesa */
+    border: 7px solid var(--color-papel);
+    border-radius: 3px;
+    box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.3);
+  }
+  .recorte img { display: block; width: 100%; height: 110%; object-fit: cover; }
+  /* La figura humana se encuadra algo más arriba: el parallax le comía la
+     cabeza en la parte alta del recorrido. */
+  .recorte--b img { object-position: 50% 32%; }
+
+  .recorte--a { left: 0; top: 6%; width: 62%; aspect-ratio: 4 / 5; z-index: 2; transform: rotate(-1.6deg); }
+  .recorte--b { right: 0; top: 0; width: 46%; aspect-ratio: 4 / 3; z-index: 3; transform: rotate(2.2deg); }
+  .recorte--c { right: 4%; bottom: 4%; width: 52%; aspect-ratio: 4 / 3; z-index: 4; transform: rotate(-1.1deg); }
+  .recorte--d { left: 8%; bottom: 0; width: 34%; aspect-ratio: 3 / 4; z-index: 1; transform: rotate(3deg); }
+
+  .collage__sello {
+    position: absolute;
+    left: 0;
+    bottom: 16%;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-brand-700);
+    color: #fff;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) {
+    .collage__sello { font-size: 0.62rem; padding: 0.45rem 0.7rem; gap: 0.35rem; }
+  }
 
   .compromiso__datos {
     display: grid;
@@ -381,22 +400,12 @@ const sumario = categorias.map((c, i) => ({
   .compromiso__dato {
     margin-top: 0.4rem;
     font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
     line-height: 1;
     color: var(--color-brand-700);
-    font-variant-numeric: lining-nums tabular-nums;
   }
 
-  /* ── Cifra ────────────────────────────────────────────────────────── */
-  .cifra-band {
-    padding-block: 6rem;
-    background: var(--color-papel);
-    border-block: 1px solid var(--color-linea);
-  }
-  @media (min-width: 1024px) { .cifra-band { padding-block: 9rem; } }
-
-  /* ── Cabeceras de sección y rejilla ───────────────────────────────── */
+  /* ── Cabeceras y rejilla ──────────────────────────────────────────── */
   .cabecera-seccion {
     display: flex;
     flex-wrap: wrap;
@@ -413,11 +422,7 @@ const sumario = categorias.map((c, i) => ({
   @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   /* ── Certificaciones ──────────────────────────────────────────────── */
-  .certif {
-    padding-block: 5rem;
-    background: var(--color-brand-700);
-    color: #fff;
-  }
+  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
   @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
   .certif__nota {
     max-width: 22rem;
@@ -425,11 +430,7 @@ const sumario = categorias.map((c, i) => ({
     line-height: 1.65;
     color: rgba(255, 255, 255, 0.6);
   }
-  .certif__lista {
-    display: grid;
-    margin-top: 4rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-  }
+  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
   @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
   @media (min-width: 900px) {
@@ -440,18 +441,12 @@ const sumario = categorias.map((c, i) => ({
   .certif__sigla {
     margin-top: 1.25rem;
     font-family: var(--font-display);
-    font-weight: 300;
     font-size: clamp(2rem, 3.4vw, 2.75rem);
     line-height: 1;
     letter-spacing: -0.02em;
   }
   .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
-  .certif__detalle {
-    margin-top: 1rem;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.55);
-  }
+  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
   .certif__emisor {
     margin-top: 1.5rem;
     font-size: 0.7rem;

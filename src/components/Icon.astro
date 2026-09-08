@@ -11,8 +11,10 @@ interface Props {
   size?: number;
   /** Grosor del trazo; los iconos grandes piden uno algo menor. */
   stroke?: number;
+  /** Dibuja el icono trazo a trazo al entrar en pantalla. */
+  anim?: boolean;
 }
-const { name, class: klass = '', size = 24, stroke = 1.25 } = Astro.props;
+const { name, class: klass = '', size = 24, stroke = 1.25, anim = false } = Astro.props;
 
 const paths: Record<string, string> = {
   /* ── Líneas de producto ─────────────────────────────────────────────── */
@@ -89,11 +91,17 @@ const paths: Record<string, string> = {
     '<path d="M21.4 7.2a2.5 2.5 0 0 0-1.7-1.8C18.2 5 12 5 12 5s-6.2 0-7.7.4A2.5 2.5 0 0 0 2.6 7.2 26 26 0 0 0 2.2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.7 1.8C5.8 19 12 19 12 19s6.2 0 7.7-.4a2.5 2.5 0 0 0 1.7-1.8 26 26 0 0 0 .4-4.8 26 26 0 0 0-.4-4.8Z"/><path d="M10.1 14.9 15.3 12l-5.2-2.9Z" fill="currentColor" stroke="none"/>',
 };
 
-const d = paths[name] ?? '';
+let d = paths[name] ?? '';
+
+// Para el trazado animado, cada forma se normaliza a longitud 1: así todas
+// se dibujan en el mismo tiempo, sin importar su longitud real.
+if (anim) {
+  d = d.replace(/<(path|circle|rect|line|polyline|polygon)/g, '<$1 pathLength="1"');
+}
 ---
 
 <svg
-  class={klass}
+  class:list={[klass, anim && "ico-trazo"]}
   width={size}
   height={size}
   viewBox="0 0 24 24"

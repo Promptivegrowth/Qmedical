@@ -93,7 +93,7 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Libre+Caslon+Display&family=Libre+Caslon+Text:wght@400;700&display=swap"
     />
 
     <script is:inline define:vars={{ preloader }}>
@@ -162,6 +162,43 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
 
       const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      /* ── Trazado de iconos ──────────────────────────────────────────
+         Cada forma se prepara con su propia longitud, medida en el
+         navegador, y se dibuja cuando su sección entra en pantalla. Al
+         terminar se retira el guionado: el icono queda sólido y limpio.  */
+      type Trazo = SVGGeometryElement & { style: CSSStyleDeclaration };
+      const formas = 'path, circle, rect, line, polyline, polygon';
+
+      const prepararIcono = (svg: Element) => {
+        svg.querySelectorAll<Trazo>(formas).forEach((el) => {
+          if (typeof el.getTotalLength !== 'function') return;
+          let largo = 0;
+          try { largo = el.getTotalLength(); } catch { return; }
+          if (!largo) return;
+          el.dataset.largo = String(largo);
+          el.style.strokeDasharray = `${largo}`;
+          el.style.strokeDashoffset = `${largo}`;
+        });
+      };
+
+      const dibujarIcono = (svg: Element) => {
+        svg.querySelectorAll<Trazo>(formas).forEach((el, i) => {
+          const largo = Number(el.dataset.largo ?? 0);
+          if (!largo) return;
+          el.style.transition = `stroke-dashoffset 0.85s var(--ease-editorial) ${i * 90}ms`;
+          el.style.strokeDashoffset = '0';
+          // Al acabar se quita el guionado, para que no queden puntos.
+          window.setTimeout(() => {
+            el.style.transition = '';
+            el.style.strokeDasharray = '';
+            el.style.strokeDashoffset = '';
+          }, 900 + i * 90);
+        });
+      };
+
+      const iconos = Array.from(document.querySelectorAll('.ico-trazo'));
+      if (iconos.length && !quieto) iconos.forEach(prepararIcono);
+
       /* ── Entradas al entrar en pantalla ──────────────────────────────
          Un elemento con `data-anim-grupo` escalona a sus hijos con
          `data-anim`, así no hay que numerar retrasos a mano.            */
@@ -184,12 +221,63 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
             for (const e of entradas) {
               if (!e.isIntersecting) continue;
               e.target.classList.add('visible');
+              e.target.querySelectorAll('.ico-trazo').forEach(dibujarIcono);
+              if (e.target.classList.contains('ico-trazo')) dibujarIcono(e.target);
               io.unobserve(e.target);
             }
           },
           { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
         );
         objetivos.forEach((el) => io.observe(el));
+      }
+
+      /* ── Conteo de cifras ────────────────────────────────────────────
+         Un elemento con `data-conteo="2003"` cuenta hasta ese valor al
+         entrar en pantalla. Respeta el formato original (separadores,
+         sufijos) y se salta si se ha pedido menos movimiento.            */
+      const cifras = document.querySelectorAll<HTMLElement>('[data-conteo]');
+
+      if (cifras.length) {
+        const pintarCifra = (el: HTMLElement, valor: number) => {
+          const dec = Number(el.dataset.decimales ?? 0);
+          el.textContent =
+            (el.dataset.prefijo ?? '') +
+            valor.toLocaleString('es-PE', {
+              minimumFractionDigits: dec,
+              maximumFractionDigits: dec,
+              useGrouping: el.dataset.agrupar !== 'no',
+            }) +
+            (el.dataset.sufijo ?? '');
+        };
+
+        if (quieto) {
+          cifras.forEach((el) => pintarCifra(el, Number(el.dataset.conteo)));
+        } else {
+          cifras.forEach((el) => pintarCifra(el, 0));
+          const ioC = new IntersectionObserver(
+            (entradas) => {
+              for (const e of entradas) {
+                if (!e.isIntersecting) continue;
+                const el = e.target as HTMLElement;
+                ioC.unobserve(el);
+                const meta = Number(el.dataset.conteo);
+                const dur = Number(el.dataset.duracion ?? 1600);
+                const t0 = performance.now();
+                const paso = (ahora: number) => {
+                  const p = Math.min(1, (ahora - t0) / dur);
+                  // Desaceleración: la cifra frena al acercarse al valor
+                  const e2 = 1 - Math.pow(1 - p, 3);
+                  pintarCifra(el, meta * e2);
+                  if (p < 1) requestAnimationFrame(paso);
+                  else pintarCifra(el, meta);
+                };
+                requestAnimationFrame(paso);
+              }
+            },
+            { threshold: 0.4 }
+          );
+          cifras.forEach((el) => ioC.observe(el));
+        }
       }
 
       /* ── Parallax ────────────────────────────────────────────────────

@@ -7,10 +7,14 @@
      Pantone Blue  R21  G46  B127  -> #152E7F
      Pantone White #FFFFFF · Pantone Black #000000
 
-   Sobre esa base se añade un papel neutro cálido y una escala de tintas. El
-   papel no es un color de marca: es el soporte, igual que el blanco de una
-   revista impresa. Papel cálido y azul profundo es el registro de las
-   publicaciones médicas serias, y deja al azul corporativo todo el peso.
+   El soporte usa unicamente blanco, negro y grises neutros, que es lo que
+   autoriza la pagina 06 del manual ("fondos blancos, negro y grises hasta un
+   valor de 40 % de negro"). Sin tintes calidos ni frios: el unico color del
+   sitio es el azul corporativo.
+
+   Tipografia: el manual pide Athelas Bold y Adobe Caslon Pro Bold, ambas
+   comerciales. Para web se usa Libre Caslon, una revival directa de Caslon,
+   de modo que el texto emparenta con la palabra MEDICAL del logotipo.
    ========================================================================== */
 
 @theme {
@@ -27,20 +31,23 @@
   --color-brand-900: #0c1a46;
   --color-brand-950: #070f2b;
 
-  /* Soporte editorial */
-  --color-papel: #f3f1ed; /* soporte principal, papel cálido */
-  --color-papel-2: #eae6df; /* segundo tono, para escalonar bloques */
-  --color-tinta: #14161c; /* texto principal */
-  --color-tinta-70: #4a4d55; /* texto secundario */
-  --color-tinta-45: #7d818a; /* apoyo, metadatos */
-  --color-linea: #ded9d0; /* filetes sobre papel */
-  --color-linea-2: #cfc8bd; /* filetes marcados */
+  /* Soporte: blanco, negro y grises neutros (manual, pág. 06) */
+  --color-papel: #ffffff;
+  --color-papel-2: #f4f4f4; /* ~4 % de negro */
+  --color-tinta: #0a0a0a; /* negro corporativo */
+  --color-tinta-70: #444444;
+  --color-tinta-45: #767676; /* contraste AA sobre blanco */
+  --color-linea: #e3e3e3;
+  --color-linea-2: #cdcdcd;
 
   /* Tipografía */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Source Serif 4', 'Athelas', 'Adobe Caslon Pro', Georgia,
-    'Times New Roman', serif;
+  /* Caslon para los titulares: es la familia de la que nace el logotipo */
+  --font-display: 'Libre Caslon Display', 'Adobe Caslon Pro', 'Athelas',
+    Georgia, 'Times New Roman', serif;
+  --font-display-texto: 'Libre Caslon Text', 'Adobe Caslon Pro', 'Athelas',
+    Georgia, 'Times New Roman', serif;
 
   /* Movimiento — la misma curva y tiempos de la referencia */
   --ease-editorial: cubic-bezier(0.4, 0, 0.2, 1);
@@ -133,27 +140,27 @@
      referencia, un display ligero. El 300 satisface ambas.                */
   .display-xl {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(2.75rem, 6.6vw, 6.5rem);
     line-height: 0.98;
     letter-spacing: -0.024em;
   }
   .display-lg {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(2.15rem, 4.6vw, 4.25rem);
     line-height: 1.04;
     letter-spacing: -0.02em;
   }
   .display-md {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(1.6rem, 2.6vw, 2.4rem);
     line-height: 1.12;
     letter-spacing: -0.014em;
   }
   .display-sm {
-    font-family: var(--font-display);
+    font-family: var(--font-display-texto);
     font-weight: 400;
     font-size: clamp(1.2rem, 1.6vw, 1.5rem);
     line-height: 1.2;
@@ -162,7 +169,7 @@
   /* Cifra suelta, del tamaño de un titular */
   .cifra {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(3.5rem, 9vw, 9rem);
     line-height: 0.86;
     letter-spacing: -0.035em;
@@ -183,8 +190,8 @@
 
   /* Numeración de sumario */
   .folio {
-    font-family: var(--font-display);
-    font-weight: 300;
+    font-family: var(--font-display-texto);
+    font-weight: 400;
     font-size: 0.95rem;
     letter-spacing: 0.04em;
     color: var(--color-tinta-45);
@@ -406,6 +413,14 @@
 
   /* Parallax: lo alimenta el layout con --py */
   .parallax { will-change: transform; transform: translate3d(0, var(--py, 0px), 0); }
+
+  /* Los iconos con `anim` se dibujan solos al entrar en pantalla. La
+     longitud de cada trazo la mide el layout con getTotalLength(): así todas
+     las formas tardan lo mismo, y al terminar se retira el guionado para que
+     el icono quede sólido. */
+
+  /* Evita el salto de ancho mientras una cifra cuenta */
+  .cuenta { font-variant-numeric: lining-nums tabular-nums; }
 
   .no-barra::-webkit-scrollbar { display: none; }
   .no-barra { scrollbar-width: none; }
