@@ -1,34 +1,22 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
+import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
 import CtaContacto from '../components/CtaContacto.astro';
-import {
-  categorias,
-  productos,
-  fichasIndex,
-  productosDeCategoria,
-} from '../data/catalogo';
+import { categorias, fichasIndex, productosDeCategoria } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
 
-// Agrupa las fichas por línea de producto y evita repetir un mismo PDF.
+// Agrupa las fichas por línea y evita repetir un mismo PDF.
 const grupos = categorias
   .map((c) => {
     const items = productosDeCategoria(c.slug).flatMap((p) =>
       p.fichas
         .map((f) => fichasIndex[f])
         .filter(Boolean)
-        .map((f) => ({
-          ...f,
-          producto: p.nombre,
-          slug: p.slug,
-          marca: marcaPorSlug.get(p.marca)?.nombre ?? '',
-        }))
+        .map((f) => ({ ...f, producto: p.nombre, marca: marcaPorSlug.get(p.marca)?.nombre ?? '' }))
     );
-    // Un mismo PDF puede estar referenciado por dos productos (p. ej. accesorios).
     const vistos = new Set<string>();
-    const unicos = items.filter((f) => !vistos.has(f.archivo) && vistos.add(f.archivo));
-    return { categoria: c, fichas: unicos };
+    return { categoria: c, fichas: items.filter((f) => !vistos.has(f.archivo) && vistos.add(f.archivo)) };
   })
   .filter((g) => g.fichas.length > 0);
 
@@ -39,111 +27,85 @@ const total = new Set(Object.values(fichasIndex).map((f) => f.archivo)).size;
   title="Fichas técnicas descargables"
   description={`Biblioteca de ${total} fichas técnicas oficiales en PDF de los productos Q-MEDICAL S.A.C., organizadas por línea, listas para adjuntar a un requerimiento o expediente de licitación.`}
 >
-  <PageHeader
-    eyebrow="Documentación"
+  <Portada
+    ante="Documentación"
     titulo="Biblioteca de fichas técnicas"
-    texto={`${total} fichas técnicas oficiales en PDF, organizadas por línea de producto. Descárguelas para su expediente de licitación, su requerimiento interno o la evaluación del área usuaria.`}
+    texto="Documentación oficial del fabricante, en PDF y organizada por línea de producto. Descárguela para su expediente de licitación, su requerimiento interno o la evaluación del área usuaria."
     migas={[{ nombre: 'Fichas técnicas' }]}
+    dato={{ valor: String(total), etiqueta: 'documentos en PDF' }}
   />
 
-  <section class="bg-white py-14 lg:py-16">
-    <div class="container-q">
-      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <label class="relative w-full sm:max-w-sm">
-          <span class="sr-only">Buscar ficha técnica</span>
-          <Icon
-            name="search"
-            size={17}
-            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
-          />
-          <input
-            id="buscador-fichas"
-            type="search"
-            class="field !pl-11"
-            placeholder="Buscar por producto, marca o código…"
-            autocomplete="off"
-          />
-        </label>
-        <p id="conteo-fichas" class="text-[0.85rem] text-muted" aria-live="polite">
-          {total} fichas técnicas
-        </p>
-      </div>
+  <!-- Buscador -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)] py-8">
+    <div class="caja barra-busqueda">
+      <label class="relative block w-full sm:max-w-md">
+        <span class="solo-lector">Buscar ficha técnica</span>
+        <span class="lupa"><Icon name="buscar" size={17} /></span>
+        <input id="buscador-fichas" type="search" class="campo !pl-11" autocomplete="off"
+          placeholder="Buscar por producto, marca o código…" />
+      </label>
+      <p id="conteo-fichas" class="text-[0.85rem] text-[var(--color-tinta-45)]" aria-live="polite">
+        {total} fichas técnicas
+      </p>
     </div>
   </section>
 
-  <section class="bg-surface pb-20 pt-2 lg:pb-24">
-    <div class="container-q space-y-12">
-      {
-        grupos.map((g) => (
-          <div class="grupo-fichas" data-grupo={g.categoria.slug}>
-            <div class="flex items-center gap-3">
-              <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-700">
-                <Icon name={g.categoria.icono} size={17} />
-              </span>
-              <h2 class="text-[1.05rem] font-semibold">{g.categoria.nombre}</h2>
-              <a
-                href={`/catalogo/${g.categoria.slug}`}
-                class="ml-auto hidden shrink-0 items-center gap-1.5 text-[0.8rem] font-semibold text-brand-700 sm:inline-flex"
-              >
-                Ver la línea
-                <Icon name="arrow" size={14} />
-              </a>
-            </div>
-
-            <ul class="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {g.fichas.map((f) => (
-                <li
-                  class="item-ficha"
-                  data-buscar={`${f.titulo} ${f.producto} ${f.marca}`.toLowerCase()}
-                >
-                  <a href={f.archivo} download class="card group flex h-full items-start gap-4 p-5">
-                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
-                      <Icon name="pdf" size={20} />
-                    </span>
-                    <span class="min-w-0 flex-1">
-                      <span class="block text-[0.9rem] font-medium leading-snug text-ink">
-                        {f.titulo}
-                      </span>
-                      <span class="mt-1 block text-[0.76rem] text-muted">
-                        PDF · {f.peso} KB · {f.marca}
-                      </span>
-                      <span class="mt-2 inline-flex items-center gap-1.5 text-[0.76rem] text-brand-700">
-                        <Icon name="download" size={13} />
-                        Descargar
-                      </span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja space-y-14">
+      {grupos.map((g, gi) => (
+        <div class="grupo-fichas" data-grupo={g.categoria.slug}>
+          <div class="grupo__alto">
+            <span class="folio">{String(gi + 1).padStart(2, '0')}</span>
+            <Icon name={g.categoria.icono} size={20} class="text-[var(--color-brand-700)]" />
+            <h2 class="grupo__titulo">{g.categoria.nombre}</h2>
+            <a href={`/catalogo/${g.categoria.slug}`} class="enlace ml-auto hidden sm:inline-flex">
+              Ver la línea<Icon name="flecha" size={14} />
+            </a>
           </div>
-        ))
-      }
 
-      <p id="vacio-fichas" class="hidden py-12 text-center text-muted">
+          <ul class="rejilla-fichas" data-anim-grupo="40">
+            {g.fichas.map((f) => (
+              <li class="item-ficha" data-buscar={`${f.titulo} ${f.producto} ${f.marca}`.toLowerCase()} data-anim="sube">
+                <a href={f.archivo} download class="ficha-item">
+                  <span class="ficha-item__ic"><Icon name="documento" size={19} /></span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-[0.92rem] leading-snug">{f.titulo}</span>
+                    <span class="mt-1 block text-[0.75rem] text-[var(--color-tinta-45)]">
+                      PDF · {f.peso} KB{f.marca && ` · ${f.marca}`}
+                    </span>
+                  </span>
+                  <Icon name="descarga" size={17} class="shrink-0 opacity-40" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <p id="vacio-fichas" class="hidden py-16 text-center text-[var(--color-tinta-45)]">
         No encontramos fichas con ese término.
       </p>
     </div>
   </section>
 
-  <section class="bg-white py-16 lg:py-20">
-    <div class="container-q">
-      <div class="rounded-2xl border border-line bg-surface p-8 sm:p-11">
-        <h2 class="title-md">¿Necesita documentación adicional?</h2>
-        <p class="prose-q mt-3 max-w-3xl">
-          Para procesos de licitación y homologación podemos entregar registro
-          sanitario, certificado de análisis del lote, certificados de calidad del
-          fabricante y la documentación de nuestra certificación BPA. Solicítelos a
-          nuestra dirección técnica.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3">
-          <a href="mailto:direccion_tecnica@qmedicalsac.com" class="btn btn-primary">
-            <Icon name="mail" size={16} />
-            Escribir a dirección técnica
+  <!-- Documentación adicional -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="adicional" data-anim="sube">
+        <div>
+          <p class="ante ante-brand">Para licitaciones</p>
+          <h2 class="display-md mt-4 max-w-[20ch]">¿Necesita documentación adicional?</h2>
+          <p class="cuerpo mt-5 max-w-2xl">
+            Para procesos de licitación y homologación entregamos registro sanitario,
+            certificado de análisis del lote, certificados de calidad del fabricante y
+            la documentación de nuestra certificación BPA.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="mailto:direccion_tecnica@qmedicalsac.com" class="pill pill-tinta">
+            <Icon name="correo" size={16} />Escribir a dirección técnica
           </a>
-          <a href="/catalogo" class="btn btn-outline">
-            Ver catálogo ({productos.length} productos)
-          </a>
+          <a href="/catalogo" class="pill pill-linea">Ver catálogo</a>
         </div>
       </div>
     </div>
@@ -153,12 +115,76 @@ const total = new Set(Object.values(fichasIndex).map((f) => f.archivo)).size;
 </Base>
 
 <style>
-  .sr-only {
+  .barra-busqueda { display: flex; flex-direction: column; gap: 1rem; }
+  @media (min-width: 640px) {
+    .barra-busqueda { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  .lupa {
+    display: inline-flex;
     position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-tinta-45);
+    pointer-events: none;
+  }
+
+  .grupo__alto {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--color-linea-2);
+  }
+  .grupo__titulo {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    letter-spacing: -0.01em;
+  }
+
+  .rejilla-fichas { display: grid; gap: 0.7rem; margin-top: 1.5rem; }
+  @media (min-width: 768px) { .rejilla-fichas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .rejilla-fichas { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .ficha-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.1rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    transition: border-color 0.3s, transform 0.4s var(--ease-salida);
+  }
+  .ficha-item:hover { border-color: var(--color-brand-300); transform: translateY(-2px); }
+  .ficha-item__ic {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    border-radius: 999px;
+    border: 1px solid var(--color-linea);
+    color: var(--color-brand-700);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .ficha-item:hover .ficha-item__ic {
+    background: var(--color-brand-700);
+    border-color: var(--color-brand-700);
+    color: #fff;
+  }
+
+  .adicional {
+    display: grid;
+    gap: 2rem;
+    padding: 2.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 1024px) {
+    .adicional { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3.5rem; padding: 3.5rem; }
   }
 </style>
 

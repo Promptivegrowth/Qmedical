@@ -11,6 +11,8 @@ interface Props {
   image?: string;
   /** El preloader completo solo se muestra en la portada. */
   preloader?: boolean;
+  /** Cabecera sobre fondo oscuro: el logotipo y la navegación se invierten. */
+  cabeceraClara?: boolean;
   schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -19,13 +21,11 @@ const {
   description,
   image = '/img/fotos/almacen-p1360310-1600.webp',
   preloader = false,
+  cabeceraClara = false,
   schema,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href.replace(
-  /(.)\/$/,
-  '$1'
-);
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href.replace(/(.)\/$/, '$1');
 const socialImage = new URL(image, Astro.site ?? site.url).href;
 const titleFull = title.includes(site.nombreCorto) ? title : `${title} | ${site.nombre}`;
 
@@ -93,11 +93,11 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap"
     />
 
     <script is:inline define:vars={{ preloader }}>
-      // Marca el documento antes del primer pintado para evitar destellos.
+      // Marca el documento antes del primer pintado, para evitar destellos.
       (function () {
         var h = document.documentElement;
         h.classList.add('js');
@@ -111,12 +111,12 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
     <script type="application/ld+json" set:html={JSON.stringify(schemas)} />
   </head>
 
-  <body>
+  <body class:list={[cabeceraClara && 'cabecera-superpuesta']}>
     {preloader && <Preloader />}
 
-    <a href="#contenido" class="skip-link">Ir al contenido</a>
+    <a href="#contenido" class="salto">Ir al contenido</a>
 
-    <Header />
+    <Header claro={cabeceraClara} />
 
     <main id="contenido">
       <slot />
@@ -125,13 +125,29 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
     <Footer />
 
     <script>
-      // El preloader se cierra al terminar de cargar, con un tope de seguridad.
-      const html = document.documentElement;
-      if (html.classList.contains('is-loading')) {
+      const raiz = document.documentElement;
+
+      /* ── Cabecera superpuesta ────────────────────────────────────────
+         Se mide con la cabecera desplegada, antes de que se compacte, y
+         el valor no se vuelve a tocar: así el hero no da un salto.      */
+      if (document.body.classList.contains('cabecera-superpuesta')) {
+        const cab = document.getElementById('cabecera');
+        if (cab) {
+          const medir = () =>
+            document.body.style.setProperty('--alto-cabecera', `${cab.offsetHeight}px`);
+          if (window.scrollY < 4) medir();
+          window.addEventListener('resize', () => {
+            if (window.scrollY < 4) medir();
+          }, { passive: true });
+        }
+      }
+
+      /* ── Preloader ───────────────────────────────────────────────────── */
+      if (raiz.classList.contains('is-loading')) {
         const cerrar = () => {
-          if (!html.classList.contains('is-loading')) return;
-          html.classList.remove('is-loading');
-          html.classList.add('is-loaded');
+          if (!raiz.classList.contains('is-loading')) return;
+          raiz.classList.remove('is-loading');
+          raiz.classList.add('is-loaded');
           try { sessionStorage.setItem('qm-visto', '1'); } catch (e) {}
         };
         const minimo = new Promise((r) => setTimeout(r, 900));
@@ -144,38 +160,97 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
         setTimeout(cerrar, 4000); // nunca deja la página bloqueada
       }
 
-      // Aparición progresiva de secciones al entrar en pantalla.
-      const objetivos = document.querySelectorAll<HTMLElement>('.reveal');
-      if (objetivos.length) {
+      const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── Entradas al entrar en pantalla ──────────────────────────────
+         Un elemento con `data-anim-grupo` escalona a sus hijos con
+         `data-anim`, así no hay que numerar retrasos a mano.            */
+      const objetivos = document.querySelectorAll<HTMLElement>('[data-anim]');
+
+      if (quieto) {
+        objetivos.forEach((el) => el.classList.add('visible'));
+      } else if (objetivos.length) {
+        document.querySelectorAll<HTMLElement>('[data-anim-grupo]').forEach((grupo) => {
+          const paso = Number(grupo.dataset.animGrupo) || 90;
+          grupo.querySelectorAll<HTMLElement>('[data-anim]').forEach((hijo, i) => {
+            if (!hijo.style.getPropertyValue('--retraso')) {
+              hijo.style.setProperty('--retraso', `${i * paso}ms`);
+            }
+          });
+        });
+
         const io = new IntersectionObserver(
           (entradas) => {
             for (const e of entradas) {
               if (!e.isIntersecting) continue;
-              const el = e.target as HTMLElement;
-              const retraso = Number(el.dataset.delay ?? 0);
-              setTimeout(() => el.classList.add('is-visible'), retraso);
-              io.unobserve(el);
+              e.target.classList.add('visible');
+              io.unobserve(e.target);
             }
           },
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
         );
         objetivos.forEach((el) => io.observe(el));
+      }
+
+      /* ── Parallax ────────────────────────────────────────────────────
+         `data-parallax="0.18"` desplaza el elemento esa fracción de su
+         recorrido por la pantalla. Todo va en `--py`, que solo alimenta
+         un `translate3d`: nunca toca el layout.                          */
+      const capas = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+
+      if (capas.length && !quieto) {
+        let visibles: HTMLElement[] = [];
+        const ioP = new IntersectionObserver(
+          (entradas) => {
+            for (const e of entradas) {
+              const el = e.target as HTMLElement;
+              if (e.isIntersecting) {
+                if (!visibles.includes(el)) visibles.push(el);
+              } else {
+                visibles = visibles.filter((x) => x !== el);
+              }
+            }
+          },
+          { rootMargin: '20% 0px' }
+        );
+        capas.forEach((el) => ioP.observe(el));
+
+        let pendiente = false;
+        const pintar = () => {
+          const alto = window.innerHeight;
+          for (const el of visibles) {
+            const r = el.getBoundingClientRect();
+            const factor = Number(el.dataset.parallax) || 0.15;
+            // -1 arriba del todo, +1 abajo del todo
+            const centro = (r.top + r.height / 2 - alto / 2) / (alto / 2 + r.height / 2);
+            el.style.setProperty('--py', `${(centro * factor * alto) / 2}px`);
+          }
+          pendiente = false;
+        };
+        const alScroll = () => {
+          if (pendiente) return;
+          pendiente = true;
+          requestAnimationFrame(pintar);
+        };
+        window.addEventListener('scroll', alScroll, { passive: true });
+        window.addEventListener('resize', alScroll, { passive: true });
+        pintar();
       }
     </script>
 
     <style is:global>
-      .skip-link {
+      .salto {
         position: absolute;
         left: -9999px;
         top: 0;
         z-index: 300;
-        padding: 0.75rem 1.25rem;
+        padding: 0.85rem 1.4rem;
         background: var(--color-brand-700);
         color: #fff;
         font-size: 0.85rem;
-        border-radius: 0 0 0.5rem 0;
+        border-radius: 0 0 var(--r-sm) 0;
       }
-      .skip-link:focus { left: 0; }
+      .salto:focus { left: 0; }
     </style>
   </body>
 </html>

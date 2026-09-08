@@ -1,0 +1,203 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+/**
+ * Portada con video en bucle.
+ *
+ * El video se coloca en /public/video/hero.mp4 (y .webm si se dispone). Hasta
+ * que exista, se ve el póster —una fotografía real del almacén—, de modo que
+ * la portada nunca queda en negro ni rota. El video se silencia, se reproduce
+ * en línea y no se descarga con `prefers-reduced-motion`.
+ */
+const poster = '/img/fotos/almacen-p1360310-1600.webp';
+---
+
+<section class="hero">
+  <div class="hero__fondo">
+    <video
+      class="hero__video"
+      poster={poster}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      tabindex="-1"
+      data-video-hero
+    >
+      <source src="/video/hero.webm" type="video/webm" />
+      <source src="/video/hero.mp4" type="video/mp4" />
+    </video>
+    <div class="hero__velo"></div>
+    <div class="hero__trama trama"></div>
+  </div>
+
+  <div class="caja hero__cuerpo">
+    <p class="ante ante-claro hero__ante">Droguería peruana · desde {site.fundacion}</p>
+
+    <h1 class="display-xl hero__titulo">
+      <span class="hero__linea"><span>Dispositivos médicos</span></span>
+      <span class="hero__linea"><span>y bioseguridad para las</span></span>
+      <span class="hero__linea"><span class="hero__enfasis">instituciones del país</span></span>
+    </h1>
+
+    <p class="hero__bajada">
+      {site.anios} años abasteciendo a hospitales, clínicas y laboratorios con
+      productos de alta calidad, respaldo documental y entregas confiables.
+    </p>
+
+    <div class="hero__acciones">
+      <a href="/catalogo" class="pill pill-papel">Ver catálogo<Icon name="flecha" size={16} /></a>
+      <a href="/contacto#cotizar" class="pill pill-claro">Solicitar cotización</a>
+    </div>
+  </div>
+
+  <!-- Pie de portada: los avales, en el filo inferior -->
+  <div class="hero__pie">
+    <div class="caja flex flex-wrap items-center justify-between gap-x-10 gap-y-4">
+      <ul class="flex flex-wrap gap-x-8 gap-y-2 text-[0.8rem] text-white/60">
+        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />BPA — DIGEMID</li>
+        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />ISO 37001 · ISO 14001</li>
+        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />Cobertura nacional</li>
+      </ul>
+      <a href="#lineas" class="hero__baja" aria-label="Ir a las líneas de producto">
+        <span class="ante ante-claro">Explorar</span>
+        <span class="hero__baja-disco"><Icon name="chevron" size={15} class="rotate-90" /></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100svh;
+    padding-top: 8rem;
+    background: var(--color-brand-950);
+    color: #fff;
+    overflow: hidden;
+    /* La portada se recorta por abajo: el papel de la sección siguiente
+       sube por delante, como una lámina impresa sobre otra. */
+    border-bottom-left-radius: var(--r-lamina);
+    border-bottom-right-radius: var(--r-lamina);
+  }
+
+  .hero__fondo { position: absolute; inset: 0; }
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Arranque sereno: el fondo entra con un acercamiento muy lento */
+    animation: acercar 18s var(--ease-editorial) forwards;
+  }
+  @keyframes acercar {
+    from { transform: scale(1.08); }
+    to { transform: scale(1); }
+  }
+  .hero__velo {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgba(7, 15, 43, 0.92) 0%, rgba(7, 15, 43, 0.45) 45%, rgba(7, 15, 43, 0.55) 100%),
+      linear-gradient(to right, rgba(7, 15, 43, 0.75) 0%, transparent 65%);
+  }
+  .hero__trama { position: absolute; inset: 0; opacity: 0.5; }
+
+  .hero__cuerpo { position: relative; padding-bottom: 4rem; }
+  @media (min-width: 1024px) { .hero__cuerpo { padding-bottom: 6rem; } }
+
+  /* Entrada por líneas: cada renglón asoma tras una máscara */
+  .hero__ante,
+  .hero__bajada,
+  .hero__acciones { animation: asoma 1s var(--ease-salida) both; }
+  .hero__ante { animation-delay: 0.15s; }
+
+  .hero__titulo { margin-top: 1.75rem; max-width: 18ch; }
+  .hero__linea { display: block; overflow: hidden; }
+  .hero__linea > span {
+    display: block;
+    transform: translateY(105%);
+    animation: sube-linea 1.1s var(--ease-salida) forwards;
+  }
+  .hero__linea:nth-child(1) > span { animation-delay: 0.25s; }
+  .hero__linea:nth-child(2) > span { animation-delay: 0.37s; }
+  .hero__linea:nth-child(3) > span { animation-delay: 0.49s; }
+  .hero__enfasis { color: rgba(255, 255, 255, 0.5); }
+
+  @keyframes sube-linea { to { transform: none; } }
+  @keyframes asoma {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .hero__bajada {
+    max-width: 34rem;
+    margin-top: 1.75rem;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.68);
+    animation-delay: 0.72s;
+  }
+  .hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    animation-delay: 0.85s;
+  }
+
+  .hero__pie {
+    position: relative;
+    padding-block: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    animation: asoma 1s var(--ease-salida) 1s both;
+  }
+  .hero__baja { display: inline-flex; align-items: center; gap: 0.75rem; }
+  .hero__baja-disco {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    transition: background-color 0.3s, transform 0.4s var(--ease-salida);
+  }
+  .hero__baja:hover .hero__baja-disco {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__video { animation: none; }
+    .hero__linea > span { transform: none; animation: none; }
+    .hero__ante, .hero__bajada, .hero__acciones, .hero__pie { animation: none; }
+  }
+</style>
+
+<script>
+  // El video solo se descarga si el visitante no ha pedido menos movimiento,
+  // y solo mientras la portada está en pantalla.
+  const video = document.querySelector<HTMLVideoElement>('[data-video-hero]');
+  if (video) {
+    const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (quieto) {
+      video.removeAttribute('autoplay');
+    } else {
+      video.preload = 'auto';
+      video.load();
+      video.play().catch(() => {
+        /* Si el navegador la bloquea, queda el póster: la portada nunca falla. */
+      });
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      });
+      io.observe(video);
+    }
+  }
+</script>

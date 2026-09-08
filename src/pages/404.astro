@@ -8,40 +8,45 @@ import { categorias } from '../data/catalogo';
   title="Página no encontrada"
   description="La página que busca no existe o cambió de dirección. Vuelva al inicio o explore el catálogo de Q-MEDICAL S.A.C."
 >
-  <section class="bg-white">
-    <div class="container-q grid min-h-[62vh] place-items-center py-20 text-center">
-      <div class="max-w-xl">
-        <p class="font-display text-6xl font-semibold text-brand-100">404</p>
-        <h1 class="title-lg mt-4">No encontramos esta página</h1>
-        <p class="prose-q mt-5">
-          Puede que la dirección haya cambiado con el rediseño del sitio. Le dejamos
-          los accesos directos a las secciones más consultadas.
-        </p>
+  <section class="grid min-h-[72svh] place-items-center bg-[var(--color-papel)] py-24">
+    <div class="caja text-center">
+      <p class="cifra text-[var(--color-linea-2)]">404</p>
+      <h1 class="display-lg mt-6 mx-auto max-w-[18ch]">No encontramos esta página</h1>
+      <p class="cuerpo-lg mx-auto mt-6 max-w-xl">
+        Puede que la dirección haya cambiado con el rediseño del sitio. Le dejamos los
+        accesos a las secciones más consultadas.
+      </p>
 
-        <div class="mt-9 flex flex-wrap justify-center gap-3">
-          <a href="/catalogo" class="btn btn-primary">
-            Ir al catálogo
-            <Icon name="arrow" size={16} />
-          </a>
-          <a href="/contacto" class="btn btn-outline">Contactar</a>
-        </div>
-
-        <ul class="mt-11 flex flex-wrap justify-center gap-2.5">
-          {
-            categorias.map((c) => (
-              <li>
-                <a
-                  href={`/catalogo/${c.slug}`}
-                  class="inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-[0.8rem] text-muted transition hover:border-brand-300 hover:text-brand-700"
-                >
-                  <Icon name={c.icono} size={14} />
-                  {c.corto}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        <a href="/catalogo" class="pill pill-tinta">Ir al catálogo<Icon name="flecha" size={16} /></a>
+        <a href="/contacto" class="pill pill-linea">Contactar</a>
       </div>
+
+      <ul class="mt-14 flex flex-wrap justify-center gap-2">
+        {categorias.map((c) => (
+          <li>
+            <a href={`/catalogo/${c.slug}`} class="atajo">
+              <Icon name={c.icono} size={15} class="text-[var(--color-brand-700)]" />{c.corto}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </Base>
+
+<style>
+  .atajo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    font-size: 0.83rem;
+    color: var(--color-tinta-70);
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .atajo:hover { border-color: var(--color-brand-300); color: var(--color-tinta); }
+</style>

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
+import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
 import FormularioBase from '../components/FormularioBase.astro';
 import { site, contactos, redes, whatsapp, waMensajes } from '../data/site';
@@ -8,6 +8,13 @@ import { categorias, productos } from '../data/catalogo';
 
 const mapa =
   'https://www.google.com/maps?q=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA&output=embed';
+
+const vias = [
+  { ic: 'telefono', t: 'Teléfonos', l: site.telefonos.map((t) => t.etiqueta), href: site.telefonos[0].href },
+  { ic: 'whatsapp', t: 'WhatsApp', l: [site.whatsapp.numero], href: whatsapp(waMensajes.cotizacion), externo: true },
+  { ic: 'correo', t: 'Cotizaciones', l: [site.correoPrincipal], href: `mailto:${site.correoPrincipal}` },
+  { ic: 'reloj', t: 'Horario', l: [site.horario] },
+];
 
 const schema = {
   '@context': 'https://schema.org',
@@ -22,298 +29,218 @@ const schema = {
   description="Solicite una cotización de dispositivos médicos y bioseguridad. Oficinas en Av. Arica 1442, Breña, Lima. Teléfonos (01) 424-7290 / (01) 433-4197 y WhatsApp +51 977 814 006."
   schema={schema}
 >
-  <PageHeader
-    eyebrow="Contacto"
+  <Portada
+    ante="Contacto"
     titulo="Cuéntenos qué necesita su institución"
     texto="Atendemos requerimientos de hospitales, clínicas, laboratorios y centros geriátricos en todo el país, tanto en compra directa como en procesos de licitación pública."
     migas={[{ nombre: 'Contacto' }]}
   />
 
   <!-- Vías de contacto -->
-  <section class="border-b border-line bg-white py-12 lg:py-14">
-    <div class="container-q">
-      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <li class="card flex flex-col p-6">
-          <Icon name="phone" size={21} class="text-brand-700" />
-          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
-            Teléfonos
-          </p>
-          <div class="mt-2 space-y-0.5 text-[0.95rem] font-medium">
-            {
-              site.telefonos.map((t) => (
-                <a href={t.href} class="block transition hover:text-brand-700">
-                  {t.etiqueta}
-                </a>
-              ))
-            }
-          </div>
-        </li>
-
-        <li class="card flex flex-col p-6">
-          <Icon name="whatsapp" size={21} class="text-brand-700" />
-          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
-            WhatsApp
-          </p>
-          <a
-            href={whatsapp(waMensajes.cotizacion)}
-            target="_blank"
-            rel="noopener"
-            class="mt-2 text-[0.95rem] font-medium transition hover:text-brand-700"
-          >
-            {site.whatsapp.numero}
-          </a>
-        </li>
-
-        <li class="card flex flex-col p-6">
-          <Icon name="mail" size={21} class="text-brand-700" />
-          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
-            Cotizaciones
-          </p>
-          <a
-            href={`mailto:${site.correoPrincipal}`}
-            class="mt-2 break-all text-[0.88rem] font-medium transition hover:text-brand-700"
-          >
-            {site.correoPrincipal}
-          </a>
-        </li>
-
-        <li class="card flex flex-col p-6">
-          <Icon name="clock" size={21} class="text-brand-700" />
-          <p class="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
-            Horario
-          </p>
-          <p class="mt-2 text-[0.9rem] font-medium">{site.horario}</p>
-        </li>
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+    <div class="caja">
+      <ul class="vias" data-anim-grupo="70">
+        {vias.map((v) => (
+          <li data-anim="sube">
+            <p class="via__ic"><Icon name={v.ic} size={20} /></p>
+            <p class="ante mt-4">{v.t}</p>
+            <div class="via__valor">
+              {v.l.map((x) =>
+                v.href ? (
+                  <a href={v.href} target={v.externo ? '_blank' : undefined} rel={v.externo ? 'noopener' : undefined}
+                    class="block break-words hover:text-[var(--color-brand-700)] transition">{x}</a>
+                ) : (<span class="block">{x}</span>)
+              )}
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   </section>
 
   <!-- Formulario + oficinas -->
-  <section id="cotizar" class="scroll-mt-24 bg-surface py-16 lg:py-24">
-    <div class="container-q grid gap-12 lg:grid-cols-12 lg:gap-16">
-      <!-- Formulario -->
-      <div class="lg:col-span-7">
-        <p class="eyebrow">Solicitud de cotización</p>
-        <h2 class="title-lg mt-4">Envíenos su requerimiento</h2>
-        <p class="prose-q mt-4">
+  <section id="cotizar" class="aire scroll-mt-20 bg-[var(--color-papel-2)]">
+    <div class="caja contacto">
+      <div class="min-w-0">
+        <p class="ante ante-brand">Solicitud de cotización</p>
+        <h2 class="display-lg mt-5 max-w-[14ch]">Envíenos su requerimiento</h2>
+        <p class="cuerpo-lg mt-6 max-w-xl">
           Complete el formulario y nuestro equipo comercial le responderá con precios,
           disponibilidad, tiempo de entrega y la documentación técnica que necesite.
         </p>
 
-        <FormularioBase
-          id="form-cotizacion"
-          asunto="Solicitud de cotización desde la web"
-          class="mt-9 rounded-2xl border border-line bg-white p-6 sm:p-8"
-        >
+        <FormularioBase id="form-cotizacion" asunto="Solicitud de cotización desde la web" class="formulario">
           <div class="grid gap-5 sm:grid-cols-2">
             <label>
-              <span class="label">Nombre y apellidos <span class="text-brand-700">*</span></span>
-              <input
-                id="c-nombre"
-                type="text"
-                name="Nombre"
-                class="field"
-                required
-                autocomplete="name"
-                placeholder="Nombre completo"
-              />
+              <span class="rotulo">Nombre y apellidos *</span>
+              <input id="c-nombre" type="text" name="Nombre" class="campo" required
+                autocomplete="name" placeholder="Nombre completo" />
             </label>
-
             <label>
-              <span class="label">Institución o empresa</span>
-              <input
-                id="c-institucion"
-                type="text"
-                name="Institución"
-                class="field"
-                autocomplete="organization"
-                placeholder="Hospital, clínica, laboratorio…"
-              />
+              <span class="rotulo">Institución o empresa</span>
+              <input id="c-institucion" type="text" name="Institución" class="campo"
+                autocomplete="organization" placeholder="Hospital, clínica, laboratorio…" />
             </label>
-
             <label>
-              <span class="label">Correo electrónico <span class="text-brand-700">*</span></span>
-              <input
-                id="c-correo"
-                type="email"
-                name="Correo"
-                class="field"
-                required
-                autocomplete="email"
-                placeholder="nombre@institucion.pe"
-              />
+              <span class="rotulo">Correo electrónico *</span>
+              <input id="c-correo" type="email" name="Correo" class="campo" required
+                autocomplete="email" placeholder="nombre@institucion.pe" />
             </label>
-
             <label>
-              <span class="label">Teléfono <span class="text-brand-700">*</span></span>
-              <input
-                id="c-telefono"
-                type="tel"
-                name="Teléfono"
-                class="field"
-                required
-                autocomplete="tel"
-                placeholder="+51 9XX XXX XXX"
-              />
+              <span class="rotulo">Teléfono *</span>
+              <input id="c-telefono" type="tel" name="Teléfono" class="campo" required
+                autocomplete="tel" placeholder="+51 9XX XXX XXX" />
             </label>
-
             <label class="sm:col-span-2">
-              <span class="label">Línea de producto de interés</span>
-              <select id="c-linea" name="Línea de interés" class="field">
+              <span class="rotulo">Línea de producto de interés</span>
+              <select id="c-linea" name="Línea de interés" class="campo">
                 <option value="">Seleccione una línea (opcional)</option>
                 {categorias.map((c) => <option value={c.nombre}>{c.nombre}</option>)}
                 <option value="Otra / varias líneas">Otra o varias líneas</option>
               </select>
             </label>
-
             <label class="sm:col-span-2">
-              <span class="label">Detalle de su requerimiento <span class="text-brand-700">*</span></span>
-              <textarea
-                id="c-mensaje"
-                name="Mensaje"
-                rows="6"
-                class="field resize-y"
-                required
+              <span class="rotulo">Detalle de su requerimiento *</span>
+              <textarea id="c-mensaje" name="Mensaje" rows="6" class="campo resize-y" required
                 placeholder="Indique productos, códigos, cantidades y fecha requerida de entrega."></textarea>
             </label>
-
             <label class="sm:col-span-2 flex items-start gap-3">
-              <input
-                type="checkbox"
-                name="Autoriza el tratamiento de datos"
-                value="Sí"
-                required
-                class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]"
-              />
-              <span class="text-[0.82rem] leading-relaxed text-muted">
-                Autorizo a {site.nombre} a utilizar mis datos para atender esta
-                solicitud, conforme a la Ley N.° 29733 de Protección de Datos
-                Personales. <span class="text-brand-700">*</span>
+              <input type="checkbox" name="Autoriza el tratamiento de datos" value="Sí" required
+                class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]" />
+              <span class="text-[0.83rem] leading-relaxed text-[var(--color-tinta-70)]">
+                Autorizo a {site.nombre} a utilizar mis datos para atender esta solicitud,
+                conforme a la Ley N.° 29733 de Protección de Datos Personales. *
               </span>
             </label>
           </div>
 
-          <button type="submit" class="btn btn-primary mt-7 w-full sm:w-auto">
-            Enviar solicitud
-            <Icon name="arrow" size={16} />
+          <button type="submit" class="pill pill-tinta mt-8 w-full sm:w-auto">
+            Enviar solicitud<Icon name="flecha" size={16} />
           </button>
-
-          <p class="mt-4 text-[0.78rem] text-muted">
-            Los campos marcados con <span class="text-brand-700">*</span> son obligatorios.
-            Le responderemos dentro del siguiente día hábil.
+          <p class="mt-4 text-[0.79rem] text-[var(--color-tinta-45)]">
+            Los campos con * son obligatorios. Le responderemos dentro del siguiente día hábil.
           </p>
         </FormularioBase>
       </div>
 
-      <!-- Oficinas y correos -->
-      <div class="lg:col-span-5">
-        <div class="rounded-2xl border border-line bg-white p-6 sm:p-8">
-          <h2 class="title-md">Nuestras oficinas</h2>
-          <p class="mt-4 flex gap-3 text-[0.92rem] leading-relaxed">
-            <Icon name="pin" size={18} class="mt-0.5 shrink-0 text-brand-700" />
-            <span>
-              {site.direccion.calle}<br />
-              {site.direccion.distrito} — {site.direccion.ciudad}, {site.direccion.pais}
-            </span>
+      <aside class="min-w-0 space-y-4">
+        <div class="tarjeta">
+          <h2 class="display-sm">Nuestras oficinas</h2>
+          <p class="mt-4 flex gap-3 text-[0.93rem] leading-relaxed">
+            <Icon name="lugar" size={17} class="mt-0.5 shrink-0 text-[var(--color-brand-700)]" />
+            <span>{site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {site.direccion.pais}</span>
           </p>
 
-          <!--
-            El mapa se carga solo cuando el visitante lo pide: evita la petición a
-            Google en cada visita y que quede un recuadro en blanco si el navegador
-            bloquea el embebido.
-          -->
-          <div
-            id="mapa"
-            class="relative mt-6 grid h-[260px] place-items-center overflow-hidden rounded-xl border border-line bg-brand-950"
-            data-mapa={mapa}
-          >
-            <div class="grid-bg absolute inset-0 opacity-40" aria-hidden="true"></div>
+          <!-- El mapa se carga a petición: evita la llamada a Google en cada
+               visita y que quede un recuadro en blanco si lo bloquean. -->
+          <div id="mapa" class="mapa" data-mapa={mapa}>
+            <div class="trama absolute inset-0 opacity-60" aria-hidden="true"></div>
             <div class="relative text-center">
-              <Icon name="pin" size={26} class="mx-auto text-white/50" />
-              <p class="mt-3 text-[0.86rem] font-medium text-white/90">Breña, Lima — Perú</p>
-              <button type="button" id="cargar-mapa" class="btn btn-light mt-4 !px-5 !py-2.5 !text-[0.8rem]">
+              <Icon name="lugar" size={24} class="mx-auto text-white/50" />
+              <p class="mt-3 text-[0.86rem] text-white/85">Breña, Lima — Perú</p>
+              <button type="button" id="cargar-mapa" class="pill pill-papel mt-4 !min-h-0 !px-4 !py-2 !text-[0.8rem]">
                 Ver mapa interactivo
               </button>
-              <p class="mt-3 text-[0.7rem] text-white/40">Se cargará contenido de Google Maps</p>
             </div>
           </div>
 
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA"
-            target="_blank"
-            rel="noopener"
-            class="btn btn-outline mt-5 w-full"
-          >
-            <Icon name="pin" size={15} />
-            Abrir en Google Maps
+          <a href="https://www.google.com/maps/search/?api=1&query=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA"
+            target="_blank" rel="noopener" class="pill pill-linea mt-4 w-full">
+            <Icon name="lugar" size={15} />Abrir en Google Maps
           </a>
         </div>
 
-        <div class="mt-5 rounded-2xl border border-line bg-white p-6 sm:p-8">
-          <h2 class="title-md">Correos por área</h2>
-          <ul class="mt-5 space-y-3.5">
-            {
-              contactos.map((c) => (
-                <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3.5 last:border-0 last:pb-0">
-                  <span class="text-[0.82rem] text-muted">{c.area}</span>
-                  <a
-                    href={`mailto:${c.correo}`}
-                    class="break-all text-[0.84rem] font-medium text-brand-700 hover:underline"
-                  >
-                    {c.correo}
-                  </a>
-                </li>
-              ))
-            }
+        <div class="tarjeta">
+          <h2 class="display-sm">Correos por área</h2>
+          <ul class="mt-5 divide-y divide-[var(--color-linea)]">
+            {contactos.map((c) => (
+              <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                <span class="text-[0.82rem] text-[var(--color-tinta-45)]">{c.area}</span>
+                <a href={`mailto:${c.correo}`} class="break-all text-[0.84rem] text-[var(--color-brand-700)] hover:underline">
+                  {c.correo}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
 
-        <div class="mt-5 rounded-2xl border border-line bg-white p-6 sm:p-8">
-          <h2 class="title-md">Síganos</h2>
-          <ul class="mt-5 flex flex-wrap gap-2.5">
-            {
-              redes.map((r) => (
-                <li>
-                  <a
-                    href={r.href}
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[0.84rem] transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
-                  >
-                    <Icon name={r.icono} size={16} />
-                    {r.nombre}
-                  </a>
-                </li>
-              ))
-            }
+        <div class="tarjeta">
+          <h2 class="display-sm">Síganos</h2>
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {redes.map((r) => (
+              <li>
+                <a href={r.href} target="_blank" rel="noopener" class="pill pill-linea !min-h-0 !px-4 !py-2 !text-[0.83rem]">
+                  <Icon name={r.icono} size={15} />{r.nombre}
+                </a>
+              </li>
+            ))}
           </ul>
-
-          <div class="mt-7 border-t border-line pt-6">
-            <p class="text-[0.85rem] leading-relaxed text-muted">
+          <div class="mt-6 border-t border-[var(--color-linea)] pt-5">
+            <p class="text-[0.85rem] text-[var(--color-tinta-70)]">
               ¿Tiene un reclamo o una queja sobre nuestros productos o servicios?
             </p>
-            <a
-              href="/libro-de-reclamaciones"
-              class="mt-3 inline-flex items-center gap-2 text-[0.86rem] font-semibold text-brand-700 hover:underline"
-            >
-              <Icon name="book" size={16} />
-              Libro de Reclamaciones
+            <a href="/libro-de-reclamaciones" class="enlace mt-3">
+              <Icon name="libro" size={16} />Libro de Reclamaciones
             </a>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
   </section>
 </Base>
 
+<style>
+  .vias { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  @media (min-width: 640px) { .vias { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .vias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .vias > li { padding: 2.25rem 1.5rem 2.25rem 0; border-top: 1px solid var(--color-linea); }
+  @media (min-width: 1024px) {
+    .vias > li { border-top: 0; }
+    .vias > li + li { border-left: 1px solid var(--color-linea); padding-left: 2.25rem; }
+  }
+  .via__ic { color: var(--color-brand-700); }
+  .via__valor { margin-top: 0.5rem; font-size: 0.93rem; }
+
+  .contacto { display: grid; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .contacto { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 4rem; align-items: start; }
+  }
+
+  .formulario {
+    margin-top: 2.5rem;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 640px) { .formulario { padding: 2.25rem; } }
+
+  .tarjeta {
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 640px) { .tarjeta { padding: 2rem; } }
+
+  .mapa {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 15rem;
+    margin-top: 1.5rem;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    background: var(--color-brand-950);
+  }
+</style>
+
 <script is:inline define:vars={{ productos: productos.map((p) => ({ slug: p.slug, nombre: p.nombre })) }}>
-  // Precarga el producto cuando se llega desde una ficha: /contacto?producto=slug
+  // Precarga el producto al llegar desde una ficha: /contacto?producto=slug
   (function () {
     var slug = new URLSearchParams(location.search).get('producto');
     if (!slug) return;
-    var prod = productos.find(function (p) {
-      return p.slug === slug;
-    });
+    var prod = productos.find(function (p) { return p.slug === slug; });
     if (!prod) return;
     var ta = document.getElementById('c-mensaje');
     if (ta && !ta.value) {
@@ -323,7 +250,6 @@ const schema = {
 </script>
 
 <script>
-  // Carga del mapa a petición del visitante.
   const contenedor = document.getElementById('mapa');
   document.getElementById('cargar-mapa')?.addEventListener('click', () => {
     if (!contenedor) return;
@@ -331,11 +257,11 @@ const schema = {
     marco.src = contenedor.dataset.mapa ?? '';
     marco.title = 'Ubicación de Q-MEDICAL S.A.C. en Av. Arica 1442, Breña, Lima';
     marco.width = '100%';
-    marco.height = '260';
+    marco.height = '240';
     marco.style.border = '0';
     marco.loading = 'lazy';
     marco.referrerPolicy = 'no-referrer-when-downgrade';
     contenedor.replaceChildren(marco);
-    contenedor.classList.remove('grid', 'place-items-center', 'bg-brand-950');
+    contenedor.classList.remove('grid', 'place-items-center');
   });
 </script>

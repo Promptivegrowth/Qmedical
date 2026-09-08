@@ -52,7 +52,7 @@ export const categorias: Categoria[] = [
       'Conjunto de principios, normas y tecnologías para evitar el riesgo que ' +
       'proviene de la exposición a agentes biológicos. Contenedores rígidos ' +
       'resistentes a la punción para cada tipo de residuo y volumen de servicio.',
-    icono: 'biohazard',
+    icono: 'bioseguridad',
   },
   {
     slug: 'antisepsia',
@@ -62,7 +62,7 @@ export const categorias: Categoria[] = [
       'Empleo de sustancias químicas para inhibir el crecimiento o disminuir ' +
       'el número de microorganismos de la piel y mucosas. Formulaciones de ' +
       'clorhexidina en aplicador, esponja, cepillo y toallita.',
-    icono: 'droplet',
+    icono: 'antisepsia',
   },
   {
     slug: 'laparoscopia',
@@ -72,7 +72,7 @@ export const categorias: Categoria[] = [
       'Técnica quirúrgica que permite la visión de la cavidad pélvico-abdominal ' +
       'con ayuda de una lente óptica. Trócares con punta de seguridad y hoja ' +
       'blindada, en unidades y kits.',
-    icono: 'scalpel',
+    icono: 'laparoscopia',
   },
   {
     slug: 'aspiracion',
@@ -82,7 +82,7 @@ export const categorias: Categoria[] = [
       'Sistemas cerrados para el almacenamiento temporal de secreciones y ' +
       'fluidos extraídos del cuerpo: bolsas descartables, cánister reusables, ' +
       'tubuladuras y toda la línea de soportes.',
-    icono: 'flask',
+    icono: 'aspiracion',
   },
   {
     slug: 'nutricion-enteral',
@@ -92,7 +92,7 @@ export const categorias: Categoria[] = [
       'Técnica de alimentación artificial que administra la solución nutritiva ' +
       'directamente al estómago o el intestino. Bombas, bolsas y sets ' +
       'compatibles con los accesos enterales de uso hospitalario.',
-    icono: 'bag',
+    icono: 'nutricion',
   },
   {
     slug: 'via-aerea',
@@ -102,7 +102,7 @@ export const categorias: Categoria[] = [
       'Videolaringoscopía para intubación endotraqueal precisa, con hojas ' +
       'desechables en todas las tallas, desde recién nacido hasta la vía aérea ' +
       'difícil del adulto.',
-    icono: 'monitor',
+    icono: 'viaAerea',
   },
   {
     slug: 'higiene-paciente',
@@ -112,7 +112,7 @@ export const categorias: Categoria[] = [
       'Baño en cama sin enjuague, secado corporal y paños clínicos de un solo ' +
       'uso, para reducir la contaminación cruzada y el tiempo de atención de ' +
       'enfermería.',
-    icono: 'sparkles',
+    icono: 'higiene',
   },
   {
     slug: 'absorbentes',
@@ -121,7 +121,7 @@ export const categorias: Categoria[] = [
     descripcion:
       'Mantas absorbentes antideslizantes y protectores impermeables que ' +
       'mantienen el quirófano limpio, seco y libre de riesgo de resbalones.',
-    icono: 'layers',
+    icono: 'absorbentes',
   },
   {
     slug: 'instrumental',
@@ -131,7 +131,7 @@ export const categorias: Categoria[] = [
       'Insumos de sala de operaciones y de central de esterilización: ' +
       'marcadores de piel, control de gasas, limpieza de puntas de ' +
       'electrocauterio y cepillería de instrumental.',
-    icono: 'tools',
+    icono: 'instrumental',
   },
   {
     slug: 'proteccion-personal',
@@ -140,7 +140,7 @@ export const categorias: Categoria[] = [
     descripcion:
       'Barrera para el equipo de salud frente a riesgos químicos, ' +
       'microbiológicos y citostáticos.',
-    icono: 'shield',
+    icono: 'proteccion',
   },
 ];
 

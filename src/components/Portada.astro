@@ -1,0 +1,122 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * Cabecera de página interior. Mantiene el registro de la portada —lámina
+ * oscura con esquinas inferiores redondeadas— pero en una altura menor, de
+ * modo que todas las páginas del sitio abren igual.
+ */
+interface Props {
+  ante?: string;
+  titulo: string;
+  texto?: string;
+  migas?: { nombre: string; href?: string }[];
+  /** Fotografía de fondo; sin ella queda la trama sobre el azul. */
+  foto?: string;
+  /** Dato al pie de la cabecera, a la derecha. */
+  dato?: { valor: string; etiqueta: string };
+}
+const { ante, titulo, texto, migas = [], foto, dato } = Astro.props;
+---
+
+<section class="portada">
+  {foto && (
+    <div class="portada__fondo">
+      <img src={foto} alt="" aria-hidden="true" class="portada__img parallax" data-parallax="0.12" />
+      <div class="portada__velo"></div>
+    </div>
+  )}
+  {!foto && <div class="portada__trama trama" aria-hidden="true"></div>}
+
+  <div class="caja portada__cuerpo">
+    {migas.length > 0 && (
+      <nav aria-label="Ruta de navegación" class="portada__migas">
+        <ol>
+          <li><a href="/">Inicio</a></li>
+          {migas.map((m) => (
+            <>
+              <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
+              <li>{m.href ? <a href={m.href}>{m.nombre}</a> : <span>{m.nombre}</span>}</li>
+            </>
+          ))}
+        </ol>
+      </nav>
+    )}
+
+    <div class="portada__texto">
+      {ante && <p class="ante ante-claro">{ante}</p>}
+      <h1 class="display-lg mt-5 max-w-[19ch]">{titulo}</h1>
+      {texto && <p class="portada__bajada">{texto}</p>}
+    </div>
+
+    {dato && (
+      <div class="portada__dato">
+        <span class="cifra block">{dato.valor}</span>
+        <span class="mt-2 block text-[0.82rem] text-white/50">{dato.etiqueta}</span>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .portada {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-brand-950);
+    color: #fff;
+    border-bottom-left-radius: var(--r-lamina);
+    border-bottom-right-radius: var(--r-lamina);
+  }
+  .portada__fondo { position: absolute; inset: 0; }
+  .portada__img { width: 100%; height: 118%; object-fit: cover; }
+  .portada__velo {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, rgba(7, 15, 43, 0.95) 0%, rgba(7, 15, 43, 0.7) 55%, rgba(7, 15, 43, 0.5) 100%);
+  }
+  .portada__trama { position: absolute; inset: 0; opacity: 0.6; }
+
+  .portada__cuerpo {
+    position: relative;
+    display: grid;
+    align-items: end;
+    gap: 2.5rem;
+    padding-block: 7rem 3.5rem;
+  }
+  @media (min-width: 1024px) {
+    .portada__cuerpo {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding-block: 9.5rem 4.5rem;
+    }
+  }
+
+  .portada__migas { grid-column: 1 / -1; margin-bottom: -0.75rem; }
+  .portada__migas ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .portada__migas a { transition: color 0.25s; }
+  .portada__migas a:hover { color: #fff; }
+  .portada__migas span { color: rgba(255, 255, 255, 0.8); }
+
+  .portada__bajada {
+    max-width: 38rem;
+    margin-top: 1.5rem;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .portada__dato {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  @media (min-width: 1024px) {
+    .portada__dato { border-top: 0; border-left: 1px solid rgba(255, 255, 255, 0.15); padding: 0 0 0 3rem; }
+  }
+</style>

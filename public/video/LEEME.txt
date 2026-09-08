@@ -1,0 +1,17 @@
+Video de la portada
+===================
+
+Coloque aquí el video en bucle del hero con estos nombres exactos:
+
+  hero.mp4    (H.264, obligatorio)
+  hero.webm   (VP9 o AV1, opcional pero recomendado: pesa menos)
+
+Recomendaciones
+  · 1920x1080, sin audio (el hero lo reproduce silenciado).
+  · Entre 8 y 15 segundos, con corte que empalme para que el bucle no salte.
+  · Por debajo de 4 MB. El video se descarga solo si el visitante no ha
+    pedido menos movimiento, y se pausa al salir de pantalla.
+
+Mientras no existan estos archivos la portada muestra el poster
+(/img/fotos/almacen-p1360310-1600.webp) y se ve correcta: no queda en negro
+ni rota. No hace falta tocar nada del codigo al subir el video.

@@ -3,74 +3,165 @@ import Icon from './Icon.astro';
 import { imagenPrincipal, categoriaPorSlug, type Producto } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
 
+/**
+ * Entrada de catálogo en registro magazine: la imagen manda, y bajo el filete
+ * van el crédito de marca, el título y el sumario, como el pie de una foto.
+ */
 interface Props {
   producto: Producto;
   eager?: boolean;
   mostrarCategoria?: boolean;
+  /** `ancha` ocupa dos columnas y coloca el texto al costado. */
+  formato?: 'normal' | 'ancha';
 }
-const { producto: p, eager = false, mostrarCategoria = true } = Astro.props;
+const { producto: p, eager = false, mostrarCategoria = true, formato = 'normal' } = Astro.props;
 
 const img = imagenPrincipal(p.slug, 900);
 const imgSm = imagenPrincipal(p.slug, 480);
 const marca = marcaPorSlug.get(p.marca);
 const cat = categoriaPorSlug.get(p.categoria);
-const nFichas = p.fichas.length;
 ---
 
-<article class="card group flex h-full flex-col overflow-hidden">
-  <a href={`/productos/${p.slug}`} class="block" tabindex="-1" aria-hidden="true">
-    <div class="relative aspect-square overflow-hidden bg-white p-6">
-      {
-        img && (
-          <img
-            src={imgSm}
-            srcset={`${imgSm} 480w, ${img} 900w`}
-            sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 80vw"
-            width="480"
-            height="480"
-            alt={p.nombre}
-            loading={eager ? 'eager' : 'lazy'}
-            decoding="async"
-            class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.06]"
-          />
-        )
-      }
-      {
-        nFichas > 0 && (
-          <span class="absolute left-3.5 top-3.5 inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-brand-700">
-            <Icon name="pdf" size={11} />
-            Ficha técnica
-          </span>
-        )
-      }
-    </div>
+<article class:list={['entrada', formato === 'ancha' && 'entrada--ancha']}>
+  <a href={`/productos/${p.slug}`} class="entrada__marco" tabindex="-1" aria-hidden="true">
+    {img && (
+      <img
+        src={imgSm}
+        srcset={`${imgSm} 480w, ${img} 900w`}
+        sizes={formato === 'ancha' ? '(min-width: 1024px) 40vw, 90vw' : '(min-width: 1024px) 22vw, (min-width: 640px) 44vw, 84vw'}
+        width="480" height="480" alt={p.nombre}
+        loading={eager ? 'eager' : 'lazy'} decoding="async" class="entrada__img"
+      />
+    )}
+    {p.fichas.length > 0 && (
+      <span class="entrada__sello"><Icon name="documento" size={11} />Ficha técnica</span>
+    )}
   </a>
 
-  <div class="flex flex-1 flex-col border-t border-line p-5">
-    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.68rem] font-semibold uppercase tracking-[0.1em]">
-      {marca && <span class="text-brand-700">{marca.nombre}</span>}
-      {mostrarCategoria && cat && <span class="text-muted/70">· {cat.corto}</span>}
-    </div>
+  <div class="entrada__pie">
+    <p class="entrada__credito">
+      {marca && <span class="text-[var(--color-brand-700)]">{marca.nombre}</span>}
+      {mostrarCategoria && cat && <span class="opacity-45">· {cat.corto}</span>}
+    </p>
 
-    <h3 class="mt-2 text-[1.02rem] font-semibold leading-snug text-ink">
-      <a href={`/productos/${p.slug}`} class="after:absolute after:inset-0 focus:outline-none">
-        {p.nombre}
-      </a>
+    <h3 class="entrada__titulo">
+      <a href={`/productos/${p.slug}`}>{p.nombre}</a>
     </h3>
 
-    <p class="mt-2 line-clamp-3 text-[0.86rem] leading-relaxed text-muted">{p.resumen}</p>
+    <p class="entrada__sumario">{p.resumen}</p>
 
-    <div class="mt-auto flex items-center gap-2 pt-4 text-[0.8rem] font-semibold text-brand-700">
-      Ver producto
-      <Icon
-        name="arrow"
-        size={15}
-        class="transition-transform duration-300 group-hover:translate-x-1"
-      />
-    </div>
+    <span class="entrada__accion">
+      Ver producto<span class="entrada__flecha"><Icon name="flecha" size={14} /></span>
+    </span>
   </div>
 </article>
 
 <style>
-  article { position: relative; }
+  .entrada {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .entrada__marco {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    transition: border-color 0.4s var(--ease-editorial);
+  }
+  .entrada:hover .entrada__marco { border-color: var(--color-linea-2); }
+
+  .entrada__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12%;
+    transition: transform 0.8s var(--ease-salida);
+  }
+  .entrada:hover .entrada__img { transform: scale(1.06); }
+
+  .entrada__sello {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-papel);
+    font-size: 0.63rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tinta-70);
+  }
+
+  .entrada__pie {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-top: 1.1rem;
+  }
+
+  .entrada__credito {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .entrada__titulo {
+    margin-top: 0.55rem;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.12rem;
+    line-height: 1.24;
+    letter-spacing: -0.008em;
+  }
+  /* La tarjeta entera es pulsable, pero el foco vive en el enlace del título */
+  .entrada__titulo a::after { content: ''; position: absolute; inset: 0; }
+
+  .entrada__sumario {
+    margin-top: 0.55rem;
+    font-size: 0.865rem;
+    line-height: 1.55;
+    color: var(--color-tinta-70);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .entrada__accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-tinta);
+  }
+  .entrada__flecha { display: inline-flex; transition: transform 0.4s var(--ease-salida); }
+  .entrada:hover .entrada__flecha { transform: translateX(4px); }
+
+  /* ── Formato ancho: imagen y texto en paralelo ─────────────────────── */
+  @media (min-width: 768px) {
+    .entrada--ancha {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 2rem;
+    }
+    .entrada--ancha .entrada__marco { aspect-ratio: 4 / 3; }
+    .entrada--ancha .entrada__pie { padding-top: 0; justify-content: center; }
+    .entrada--ancha .entrada__titulo { font-size: 1.6rem; }
+    .entrada--ancha .entrada__sumario { font-size: 0.95rem; -webkit-line-clamp: 4; }
+  }
 </style>

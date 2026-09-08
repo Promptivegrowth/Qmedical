@@ -1,14 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
-import PageHeader from '../../components/PageHeader.astro';
+import Portada from '../../components/Portada.astro';
 import Icon from '../../components/Icon.astro';
 import ProductoCard from '../../components/ProductoCard.astro';
 import CtaContacto from '../../components/CtaContacto.astro';
-import { categorias, productos, conteoProductos } from '../../data/catalogo';
+import {
+  categorias,
+  productos,
+  conteoProductos,
+  productosDeCategoria,
+  imagenPrincipal,
+} from '../../data/catalogo';
 import { marcaPorSlug } from '../../data/marcas';
 import { waMensajes } from '../../data/site';
 
-// Índice de búsqueda embebido: el filtrado ocurre en el navegador, sin peticiones.
+// Índice de búsqueda embebido: el filtrado ocurre en el navegador.
 const indice = productos.map((p) => ({
   slug: p.slug,
   buscar: [
@@ -24,6 +30,15 @@ const indice = productos.map((p) => ({
     .replace(/[̀-ͯ]/g, ''),
 }));
 
+const otrasLineas = [
+  'Bomba de infusión',
+  'Iluminador de venas',
+  'Anillo retractor de heridas',
+  'Contador de agujas doble imán',
+  'Pieza manual para cirugía laparoscópica',
+  'Organizador de cepillos de limpieza',
+];
+
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -37,118 +52,203 @@ const schema = {
   description={`Catálogo completo de Q-MEDICAL S.A.C.: ${productos.length} líneas de producto en ${categorias.length} especialidades, con características técnicas, presentaciones y ficha técnica descargable en PDF.`}
   schema={schema}
 >
-  <PageHeader
-    eyebrow="Catálogo"
-    titulo="Todo nuestro catálogo, con ficha técnica"
-    texto={`${productos.length} líneas de producto organizadas en ${categorias.length} especialidades. Seleccione una línea o busque por nombre, marca o código de referencia; cada producto incluye su documentación técnica oficial en PDF.`}
+  <Portada
+    ante="Catálogo"
+    titulo="Todo el catálogo, con su documentación técnica"
+    texto={`${productos.length} productos organizados en ${categorias.length} especialidades. Cada ficha publica características, presentaciones, códigos de referencia y el PDF oficial del fabricante.`}
     migas={[{ nombre: 'Catálogo' }]}
+    dato={{ valor: String(productos.length), etiqueta: 'productos publicados' }}
   />
 
-  <!-- Índice de categorías -->
-  <section class="border-b border-line bg-white py-14 lg:py-16">
-    <div class="container-q">
-      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        {
-          categorias.map((c, i) => (
-            <li class="reveal" data-delay={(i % 5) * 60}>
-              <a
-                href={`/catalogo/${c.slug}`}
-                class="card group flex h-full items-start gap-3.5 p-5"
-              >
-                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
-                  <Icon name={c.icono} size={19} />
-                </span>
-                <span>
-                  <span class="block text-[0.92rem] font-semibold leading-snug">{c.corto}</span>
-                  <span class="mt-1 block text-[0.76rem] text-muted">{conteoProductos(c.slug)}</span>
-                </span>
-              </a>
-            </li>
-          ))
-        }
+  <!-- ── Índice de líneas, en mosaico ─────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <p class="ante ante-brand">Índice de líneas</p>
+      <ul class="mosaico" data-anim-grupo="55">
+        {categorias.map((c, i) => (
+          <li data-anim="sube">
+            <a href={`/catalogo/${c.slug}`} class="tesela">
+              <span class="tesela__alto">
+                <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+                <span class="tesela__ic"><Icon name={c.icono} size={22} /></span>
+              </span>
+              <img
+                src={imagenPrincipal(productosDeCategoria(c.slug)[0]?.slug ?? '', 480)}
+                width="480" height="480" alt="" loading="lazy" decoding="async" class="tesela__img"
+              />
+              <span class="tesela__pie">
+                <span class="tesela__nombre">{c.corto}</span>
+                <span class="tesela__cuenta">{conteoProductos(c.slug)}</span>
+              </span>
+            </a>
+          </li>
+        ))}
       </ul>
     </div>
   </section>
 
-  <!-- Buscador + rejilla -->
-  <section class="bg-surface py-14 lg:py-20">
-    <div class="container-q">
-      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <label class="relative w-full sm:max-w-sm">
-          <span class="sr-only">Buscar en el catálogo</span>
-          <Icon
-            name="search"
-            size={17}
-            class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
-          />
+  <!-- ── Buscador y rejilla ───────────────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <div class="barra-busqueda">
+        <label class="relative block w-full sm:max-w-md">
+          <span class="solo-lector">Buscar en el catálogo</span>
+          <span class="lupa"><Icon name="buscar" size={17} /></span>
           <input
-            id="buscador"
-            type="search"
-            class="field !pl-11"
+            id="buscador" type="search" class="campo !pl-11" autocomplete="off"
             placeholder="Buscar producto, marca o código…"
-            autocomplete="off"
           />
         </label>
-        <p id="conteo" class="text-[0.85rem] text-muted" aria-live="polite">
+        <p id="conteo" class="text-[0.85rem] text-[var(--color-tinta-45)]" aria-live="polite">
           {productos.length} productos
         </p>
       </div>
 
-      <div id="rejilla" class="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {
-          productos.map((p, i) => (
-            <div data-slug={p.slug}>
-              <ProductoCard producto={p} eager={i < 4} />
-            </div>
-          ))
-        }
+      <div id="rejilla" class="rejilla-catalogo mt-10" data-anim-grupo="45">
+        {productos.map((p, i) => (
+          <div data-slug={p.slug} data-anim="sube"><ProductoCard producto={p} eager={i < 4} /></div>
+        ))}
       </div>
 
-      <p id="vacio" class="hidden py-16 text-center text-muted">
+      <p id="vacio" class="hidden py-20 text-center text-[var(--color-tinta-45)]">
         No encontramos productos con ese término.<br />
-        <a href="/contacto#cotizar" class="text-brand-700 underline underline-offset-4">
-          Escríbanos y le confirmamos disponibilidad.
-        </a>
+        <a href="/contacto#cotizar" class="enlace mt-4">Escríbanos y le confirmamos disponibilidad</a>
       </p>
     </div>
   </section>
 
-  <!-- Líneas sin ficha publicada -->
-  <section class="bg-white py-16 lg:py-20">
-    <div class="container-q">
-      <div class="rounded-2xl border border-line bg-surface p-8 sm:p-11 reveal">
-        <h2 class="title-md">Otras líneas disponibles bajo consulta</h2>
-        <p class="prose-q mt-3 max-w-3xl">
-          Además del catálogo publicado, atendemos requerimientos de equipamiento y
-          material quirúrgico que gestionamos directamente con el fabricante. Consúltenos
-          por disponibilidad, precios y documentación técnica.
-        </p>
-        <ul class="mt-7 flex flex-wrap gap-2.5">
-          {
-            [
-              'Bomba de infusión',
-              'Iluminador de venas',
-              'Anillo retractor de heridas',
-              'Contador de agujas doble imán',
-              'Pieza manual para cirugía laparoscópica',
-              'Organizador de cepillos de limpieza',
-            ].map((n) => (
-              <li class="rounded-full border border-line bg-white px-4 py-2 text-[0.82rem] text-ink/80">
-                {n}
-              </li>
-            ))
-          }
-        </ul>
-        <a href="/contacto#cotizar" class="btn btn-primary mt-8">
-          Consultar disponibilidad
-          <Icon name="arrow" size={15} />
-        </a>
+  <!-- ── Bajo consulta ────────────────────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="consulta" data-anim="sube">
+        <div>
+          <p class="ante ante-brand">Bajo consulta</p>
+          <h2 class="display-md mt-4 max-w-[18ch]">Otras líneas que gestionamos con el fabricante</h2>
+          <p class="cuerpo mt-5 max-w-2xl">
+            Además del catálogo publicado, atendemos requerimientos de equipamiento y
+            material quirúrgico. Consúltenos por disponibilidad, precios y documentación.
+          </p>
+        </div>
+        <div>
+          <ul class="etiquetas">
+            {otrasLineas.map((n) => <li>{n}</li>)}
+          </ul>
+          <a href="/contacto#cotizar" class="pill pill-tinta mt-7">
+            Consultar disponibilidad<Icon name="flecha" size={16} />
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
   <CtaContacto waMensaje={waMensajes.catalogo} />
 </Base>
+
+<style>
+  /* ── Mosaico de líneas ────────────────────────────────────────────── */
+  .mosaico {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 768px) { .mosaico { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .mosaico { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+  .tesela {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: border-color 0.35s, transform 0.45s var(--ease-salida);
+  }
+  .tesela:hover { border-color: var(--color-brand-300); transform: translateY(-3px); }
+
+  .tesela__alto { display: flex; align-items: center; justify-content: space-between; }
+  .tesela__ic {
+    color: var(--color-brand-700);
+    opacity: 0.35;
+    transition: opacity 0.35s;
+  }
+  .tesela:hover .tesela__ic { opacity: 1; }
+
+  .tesela__img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    padding: 12%;
+    transition: transform 0.6s var(--ease-salida);
+  }
+  .tesela:hover .tesela__img { transform: scale(1.07); }
+
+  .tesela__pie { margin-top: auto; }
+  .tesela__nombre {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+  .tesela__cuenta {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--color-tinta-45);
+  }
+
+  /* ── Buscador ─────────────────────────────────────────────────────── */
+  .barra-busqueda {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .barra-busqueda { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  .lupa {
+    display: inline-flex;
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-tinta-45);
+    pointer-events: none;
+  }
+
+  .rejilla-catalogo {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1400px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  /* ── Bajo consulta ────────────────────────────────────────────────── */
+  .consulta {
+    display: grid;
+    gap: 2.5rem;
+    padding: 2.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 1024px) {
+    .consulta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; padding: 3.5rem; }
+  }
+  .etiquetas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .etiquetas li {
+    padding: 0.5rem 0.95rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--color-tinta-70);
+  }
+</style>
 
 <script is:inline define:vars={{ indice }}>
   (function () {
@@ -170,16 +270,12 @@ const schema = {
       var q = normalizar(input.value);
       var terminos = q ? q.split(/\s+/) : [];
       var visibles = 0;
-
       tarjetas.forEach(function (el) {
         var texto = mapa[el.dataset.slug] || '';
-        var ok = terminos.every(function (t) {
-          return texto.indexOf(t) !== -1;
-        });
+        var ok = terminos.every(function (t) { return texto.indexOf(t) !== -1; });
         el.hidden = !ok;
         if (ok) visibles++;
       });
-
       conteo.textContent = visibles + (visibles === 1 ? ' producto' : ' productos');
       vacio.classList.toggle('hidden', visibles > 0);
     };
@@ -190,21 +286,7 @@ const schema = {
       t = setTimeout(filtrar, 120);
     });
 
-    // Permite enlazar directamente a una búsqueda: /catalogo?q=clorhexidina
     var q = new URLSearchParams(location.search).get('q');
-    if (q) {
-      input.value = q;
-      filtrar();
-    }
+    if (q) { input.value = q; filtrar(); }
   })();
 </script>
-
-<style>
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-  }
-</style>

@@ -19,18 +19,14 @@ export function getStaticPaths() {
   return productos.map((p) => ({ params: { slug: p.slug }, props: { producto: p } }));
 }
 
-interface Props {
-  producto: Producto;
-}
+interface Props { producto: Producto; }
 const { producto: p } = Astro.props;
 
 const cat = categoriaPorSlug.get(p.categoria)!;
 const marca = marcaPorSlug.get(p.marca);
 const imgs = imagenesDe(p.slug);
 const fichas = fichasDe(p.slug);
-const relacionados = productosDeCategoria(p.categoria)
-  .filter((o) => o.slug !== p.slug)
-  .slice(0, 4);
+const relacionados = productosDeCategoria(p.categoria).filter((o) => o.slug !== p.slug).slice(0, 4);
 
 const asunto = encodeURIComponent(`Cotización — ${p.nombre}`);
 const cuerpo = encodeURIComponent(
@@ -73,302 +69,196 @@ const schema = [
   schema={schema}
 >
   <!-- Ruta -->
-  <nav aria-label="Ruta de navegación" class="border-b border-line bg-white">
-    <div class="container-q py-4">
-      <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.76rem] text-muted">
-        <li><a href="/" class="transition hover:text-brand-700">Inicio</a></li>
-        <li aria-hidden="true"><Icon name="chevron" size={11} class="opacity-40" /></li>
-        <li><a href="/catalogo" class="transition hover:text-brand-700">Catálogo</a></li>
-        <li aria-hidden="true"><Icon name="chevron" size={11} class="opacity-40" /></li>
-        <li>
-          <a href={`/catalogo/${cat.slug}`} class="transition hover:text-brand-700">{cat.corto}</a>
-        </li>
-        <li aria-hidden="true"><Icon name="chevron" size={11} class="opacity-40" /></li>
-        <li class="text-ink">{p.nombre}</li>
+  <nav aria-label="Ruta de navegación" class="migas">
+    <div class="caja">
+      <ol>
+        <li><a href="/">Inicio</a></li>
+        <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
+        <li><a href="/catalogo">Catálogo</a></li>
+        <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
+        <li><a href={`/catalogo/${cat.slug}`}>{cat.corto}</a></li>
+        <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
+        <li><span>{p.nombre}</span></li>
       </ol>
     </div>
   </nav>
 
-  <!-- Ficha del producto -->
-  <section class="bg-white pb-16 pt-10 lg:pb-20 lg:pt-14">
-    <div class="container-q grid gap-12 lg:grid-cols-2 lg:gap-16">
-      <!-- Galería -->
-      <div class="min-w-0">
-        <div class="overflow-hidden rounded-2xl border border-line bg-white">
+  <!-- ── Apertura de la ficha ────────────────────────────────────────── -->
+  <section class="apertura">
+    <div class="caja apertura__cuerpo">
+      <div class="apertura__galeria min-w-0">
+        <div class="visor">
           <img
-            id="img-principal"
-            src={`/img/${imgs[0]}`}
-            width="900"
-            height="900"
-            alt={p.nombre}
-            fetchpriority="high"
-            decoding="async"
-            class="aspect-square w-full object-contain p-8 sm:p-12"
+            id="img-principal" src={`/img/${imgs[0]}`} width="900" height="900"
+            alt={p.nombre} fetchpriority="high" decoding="async" class="visor__img"
           />
         </div>
 
-        {
-          imgs.length > 1 && (
-            <ul
-              id="miniaturas"
-              class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1"
-              role="listbox"
-              aria-label="Imágenes del producto"
-            >
-              {imgs.map((src, i) => (
-                <li class="shrink-0">
-                  <button
-                    type="button"
-                    class:list={['thumb', i === 0 && 'is-active']}
-                    data-src={`/img/${src}`}
-                    aria-label={`Ver imagen ${i + 1} de ${imgs.length}`}
-                    aria-selected={i === 0 ? 'true' : 'false'}
-                    role="option"
-                  >
-                    <img
-                      src={`/img/${src.replace('.webp', '-480.webp')}`}
-                      width="480"
-                      height="480"
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      class="h-full w-full object-contain p-2"
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )
-        }
-      </div>
-
-      <!-- Datos -->
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2.5">
-          {
-            marca && (
-              <a
-                href={`/marcas#${marca.slug}`}
-                class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-[0.72rem] font-semibold uppercase tracking-wider text-brand-700 transition hover:bg-brand-100"
-              >
-                {marca.nombre}
-              </a>
-            )
-          }
-          <a
-            href={`/catalogo/${cat.slug}`}
-            class="inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-[0.72rem] font-medium text-muted transition hover:border-brand-300 hover:text-brand-700"
-          >
-            <Icon name={cat.icono} size={13} />
-            {cat.corto}
-          </a>
-        </div>
-
-        <h1 class="title-lg mt-5">{p.nombre}</h1>
-        <p class="prose-q mt-5 !text-[1.05rem]">{p.resumen}</p>
-
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a href={`/contacto?producto=${p.slug}#cotizar`} class="btn btn-primary">
-            Solicitar cotización
-            <Icon name="arrow" size={16} />
-          </a>
-          {
-            fichas.length > 0 && (
-              <a href="#fichas" class="btn btn-outline">
-                <Icon name="download" size={16} />
-                {fichas.length === 1 ? 'Descargar ficha técnica' : `Fichas técnicas (${fichas.length})`}
-              </a>
-            )
-          }
-        </div>
-
-        <p class="mt-4 text-[0.8rem] text-muted">
-          ¿Prefiere el correo?
-          <a
-            href={`mailto:${site.correoPrincipal}?subject=${asunto}&body=${cuerpo}`}
-            class="text-brand-700 underline underline-offset-4"
-          >
-            Escríbanos con este producto precargado
-          </a>
-        </p>
-
-        <!-- Descripción -->
-        <div class="prose-q mt-10 border-t border-line pt-9">
-          {p.descripcion.map((d) => <p>{d}</p>)}
-        </div>
-
-        {
-          p.presentacion && (
-            <div class="mt-8 rounded-xl border border-line bg-surface p-5">
-              <p class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted">
-                Presentación
-              </p>
-              <p class="mt-2 text-[0.9rem] leading-relaxed text-ink/85">{p.presentacion}</p>
-            </div>
-          )
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Características, variantes y usos -->
-  <section class="border-t border-line bg-surface py-16 lg:py-20">
-    <div class="container-q grid gap-12 lg:grid-cols-12 lg:gap-14">
-      <div class="min-w-0 lg:col-span-7">
-        <h2 class="title-md">Características técnicas</h2>
-        <ul class="mt-7 grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
-          {
-            p.caracteristicas.map((c) => (
-              <li class="flex gap-3 text-[0.9rem] leading-relaxed">
-                <Icon name="check" size={16} class="mt-1 shrink-0 text-brand-700" />
-                <span class="text-ink/85">{c}</span>
-              </li>
-            ))
-          }
-        </ul>
-
-        {
-          p.usos && (
-            <div class="mt-11">
-              <h2 class="title-md">Aplicaciones</h2>
-              <ul class="mt-6 flex flex-wrap gap-2.5">
-                {p.usos.map((u) => (
-                  <li class="rounded-full border border-line bg-white px-4 py-2 text-[0.84rem] text-ink/80">
-                    {u}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        }
-      </div>
-
-      {
-        p.variantes && (
-          <div class="min-w-0 lg:col-span-5">
-            <h2 class="title-md">Presentaciones y códigos</h2>
-            <div class="mt-7 overflow-x-auto rounded-xl border border-line bg-white">
-              <table class="w-full min-w-[19rem] text-left text-[0.86rem]">
-                <thead>
-                  <tr class="border-b border-line bg-surface/70 text-[0.68rem] uppercase tracking-[0.12em] text-muted">
-                    <th scope="col" class="px-5 py-3 font-semibold">Código</th>
-                    <th scope="col" class="px-5 py-3 font-semibold">Detalle</th>
-                    {fichas.length > 1 && <th scope="col" class="px-5 py-3 font-semibold">Ficha</th>}
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-line">
-                  {p.variantes.map((v) => (
-                    <tr class="align-top">
-                      <th scope="row" class="whitespace-nowrap px-5 py-3.5 font-semibold text-brand-700">
-                        {v.codigo}
-                      </th>
-                      <td class="px-5 py-3.5 leading-relaxed text-ink/80">{v.detalle}</td>
-                      {fichas.length > 1 && (
-                        <td class="px-5 py-3.5">
-                          {v.ficha && fichasIndex[v.ficha] ? (
-                            <a
-                              href={fichasIndex[v.ficha].archivo}
-                              download
-                              class="inline-flex items-center gap-1 text-brand-700 hover:underline"
-                              aria-label={`Descargar ficha técnica ${v.codigo}`}
-                            >
-                              <Icon name="pdf" size={14} />
-                              PDF
-                            </a>
-                          ) : (
-                            <span class="text-muted/60">—</span>
-                          )}
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )
-      }
-    </div>
-  </section>
-
-  <!-- Fichas técnicas -->
-  {
-    fichas.length > 0 && (
-      <section id="fichas" class="scroll-mt-24 bg-white py-16 lg:py-20">
-        <div class="container-q">
-          <div class="flex flex-wrap items-end justify-between gap-5">
-            <div>
-              <p class="eyebrow">Documentación</p>
-              <h2 class="title-md mt-3">Fichas técnicas descargables</h2>
-              <p class="prose-q mt-3 max-w-2xl">
-                Documentación oficial del producto en PDF, lista para adjuntar a un
-                requerimiento interno o a un expediente de licitación.
-              </p>
-            </div>
-          </div>
-
-          <ul class="mt-9 grid gap-3 md:grid-cols-2">
-            {fichas.map((f) => (
+        {imgs.length > 1 && (
+          <ul id="miniaturas" class="no-barra tiras" role="listbox" aria-label="Imágenes del producto">
+            {imgs.map((src, i) => (
               <li>
-                <a
-                  href={f.archivo}
-                  download
-                  class="card group flex items-center gap-4 p-5"
+                <button
+                  type="button" class:list={['tira', i === 0 && 'es-activa']}
+                  data-src={`/img/${src}`} role="option"
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  aria-label={`Ver imagen ${i + 1} de ${imgs.length}`}
                 >
-                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
-                    <Icon name="pdf" size={20} />
-                  </span>
-                  <span class="min-w-0 flex-1">
-                    <span class="block text-[0.9rem] font-medium leading-snug text-ink">
-                      {f.titulo}
-                    </span>
-                    <span class="mt-0.5 block text-[0.76rem] text-muted">PDF · {f.peso} KB</span>
-                  </span>
-                  <Icon
-                    name="download"
-                    size={18}
-                    class="shrink-0 text-muted transition group-hover:text-brand-700"
-                  />
-                </a>
+                  <img src={`/img/${src.replace('.webp', '-480.webp')}`} width="480" height="480"
+                    alt="" loading="lazy" decoding="async" />
+                </button>
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-    )
-  }
+        )}
+      </div>
 
-  <!-- Relacionados -->
-  {
-    relacionados.length > 0 && (
-      <section class="border-t border-line bg-surface py-16 lg:py-20">
-        <div class="container-q">
-          <div class="flex flex-wrap items-end justify-between gap-5">
-            <h2 class="title-md">También en {cat.corto.toLowerCase()}</h2>
-            <a
-              href={`/catalogo/${cat.slug}`}
-              class="inline-flex items-center gap-2 text-[0.85rem] font-semibold text-brand-700"
-            >
-              Ver la línea completa
-              <Icon name="arrow" size={15} />
+      <div class="apertura__texto min-w-0">
+        <p class="credito">
+          {marca && <a href={`/marcas#${marca.slug}`} class="credito__marca">{marca.nombre}</a>}
+          <a href={`/catalogo/${cat.slug}`} class="credito__cat">
+            <Icon name={cat.icono} size={13} />{cat.corto}
+          </a>
+        </p>
+
+        <h1 class="display-lg mt-6">{p.nombre}</h1>
+        <p class="cuerpo-lg mt-6">{p.resumen}</p>
+
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href={`/contacto?producto=${p.slug}#cotizar`} class="pill pill-tinta">
+            Solicitar cotización<Icon name="flecha" size={16} />
+          </a>
+          {fichas.length > 0 && (
+            <a href="#fichas" class="pill pill-linea">
+              <Icon name="descarga" size={16} />
+              {fichas.length === 1 ? 'Ficha técnica' : `Fichas técnicas (${fichas.length})`}
             </a>
+          )}
+        </div>
+
+        <p class="mt-4 text-[0.8rem] text-[var(--color-tinta-45)]">
+          ¿Prefiere el correo?
+          <a href={`mailto:${site.correoPrincipal}?subject=${asunto}&body=${cuerpo}`}
+            class="underline underline-offset-4">Escríbanos con este producto precargado</a>
+        </p>
+
+        <div class="cuerpo mt-10 border-t border-[var(--color-linea)] pt-9">
+          {p.descripcion.map((d) => <p>{d}</p>)}
+        </div>
+
+        {p.presentacion && (
+          <div class="presentacion">
+            <p class="ante">Presentación</p>
+            <p class="mt-2 text-[0.92rem] leading-relaxed">{p.presentacion}</p>
           </div>
-          <div
-            class:list={[
-              'mt-8 grid gap-5 sm:grid-cols-2',
-              relacionados.length >= 4 && 'lg:grid-cols-4',
-              relacionados.length === 3 && 'lg:grid-cols-3',
-              relacionados.length <= 2 && 'lg:max-w-2xl',
-            ]}
-          >
-            {relacionados.map((o) => (
-              <ProductoCard producto={o} mostrarCategoria={false} />
-            ))}
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Características y códigos ───────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja tecnico">
+      <div class="min-w-0">
+        <h2 class="display-md">Características técnicas</h2>
+        <ul class="caracteristicas" data-anim-grupo="35">
+          {p.caracteristicas.map((c) => (
+            <li data-anim="sube"><Icon name="visto" size={15} class="mt-[0.35rem] shrink-0 text-[var(--color-brand-700)]" /><span>{c}</span></li>
+          ))}
+        </ul>
+
+        {p.usos && (
+          <div class="mt-12">
+            <h2 class="display-md">Aplicaciones</h2>
+            <ul class="etiquetas mt-6">
+              {p.usos.map((u) => <li>{u}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {p.variantes && (
+        <div class="min-w-0">
+          <h2 class="display-md">Presentaciones y códigos</h2>
+          <div class="tabla-marco mt-6">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th scope="col">Código</th>
+                  <th scope="col">Detalle</th>
+                  {fichas.length > 1 && <th scope="col">Ficha</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {p.variantes.map((v) => (
+                  <tr>
+                    <th scope="row">{v.codigo}</th>
+                    <td>{v.detalle}</td>
+                    {fichas.length > 1 && (
+                      <td>
+                        {v.ficha && fichasIndex[v.ficha] ? (
+                          <a href={fichasIndex[v.ficha].archivo} download class="tabla__pdf"
+                            aria-label={`Descargar ficha técnica ${v.codigo}`}>
+                            <Icon name="documento" size={14} />PDF
+                          </a>
+                        ) : (<span class="opacity-35">—</span>)}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </section>
-    )
-  }
+      )}
+    </div>
+  </section>
+
+  <!-- ── Fichas técnicas ─────────────────────────────────────────────── -->
+  {fichas.length > 0 && (
+    <section id="fichas" class="aire scroll-mt-24 bg-[var(--color-papel)]">
+      <div class="caja">
+        <p class="ante ante-brand">Documentación</p>
+        <h2 class="display-md mt-4 max-w-[20ch]">Fichas técnicas descargables</h2>
+        <p class="cuerpo mt-5 max-w-2xl">
+          Documentación oficial del fabricante en PDF, lista para adjuntar a un
+          requerimiento interno o a un expediente de licitación.
+        </p>
+
+        <ul class="fichas" data-anim-grupo="50">
+          {fichas.map((f) => (
+            <li data-anim="sube">
+              <a href={f.archivo} download class="ficha-item">
+                <span class="ficha-item__ic"><Icon name="documento" size={19} /></span>
+                <span class="min-w-0 flex-1">
+                  <span class="block text-[0.93rem] leading-snug">{f.titulo}</span>
+                  <span class="mt-1 block text-[0.75rem] text-[var(--color-tinta-45)]">PDF · {f.peso} KB</span>
+                </span>
+                <Icon name="descarga" size={17} class="shrink-0 opacity-40" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- ── Relacionados ────────────────────────────────────────────────── -->
+  {relacionados.length > 0 && (
+    <section class="aire bg-[var(--color-papel-2)]">
+      <div class="caja">
+        <div class="flex flex-wrap items-end justify-between gap-5">
+          <h2 class="display-md">También en {cat.corto.toLowerCase()}</h2>
+          <a href={`/catalogo/${cat.slug}`} class="enlace">Ver la línea completa<Icon name="flecha" size={15} /></a>
+        </div>
+        <div class="rejilla-rel mt-10" data-anim-grupo="60">
+          {relacionados.map((o) => (
+            <div data-anim="sube"><ProductoCard producto={o} mostrarCategoria={false} /></div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <CtaContacto
     titulo={`¿Necesita cotizar ${p.nombre}?`}
@@ -378,21 +268,175 @@ const schema = [
 </Base>
 
 <style>
-  .thumb {
-    display: block;
-    width: 4.75rem;
-    height: 4.75rem;
+  /* ── Migas ────────────────────────────────────────────────────────── */
+  .migas {
+    background: var(--color-papel);
+    border-bottom: 1px solid var(--color-linea);
+    padding-block: 1rem;
+  }
+  .migas ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.76rem;
+    color: var(--color-tinta-45);
+  }
+  .migas a:hover { color: var(--color-tinta); }
+  .migas span { color: var(--color-tinta); }
+
+  /* ── Apertura ─────────────────────────────────────────────────────── */
+  .apertura { background: var(--color-papel); padding-block: 3rem 5rem; }
+  @media (min-width: 1024px) { .apertura { padding-block: 4rem 7rem; } }
+  .apertura__cuerpo { display: grid; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .apertura__cuerpo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; }
+  }
+
+  .visor {
     overflow: hidden;
     background: #fff;
-    border: 1px solid var(--color-line);
-    border-radius: 0.6rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
   }
-  .thumb:hover { border-color: var(--color-brand-300); }
-  .thumb.is-active {
+  .visor__img { aspect-ratio: 1; width: 100%; object-fit: contain; padding: 10%; }
+
+  .tiras { display: flex; gap: 0.7rem; margin-top: 0.9rem; overflow-x: auto; padding-bottom: 0.25rem; }
+  .tira {
+    display: block;
+    width: 4.6rem;
+    height: 4.6rem;
+    flex: none;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-sm);
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .tira img { width: 100%; height: 100%; object-fit: contain; padding: 0.5rem; }
+  .tira:hover { border-color: var(--color-brand-300); }
+  .tira.es-activa { border-color: var(--color-brand-700); box-shadow: inset 0 0 0 1px var(--color-brand-700); }
+
+  .credito { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+  .credito__marca {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-brand-700);
+  }
+  .credito__cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .credito__cat:hover { border-color: var(--color-brand-300); color: var(--color-brand-700); }
+
+  .presentacion {
+    margin-top: 2rem;
+    padding: 1.35rem 1.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-md);
+  }
+
+  /* ── Técnico ──────────────────────────────────────────────────────── */
+  .tecnico { display: grid; gap: 3.5rem; }
+  @media (min-width: 1024px) {
+    .tecnico { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 5rem; align-items: start; }
+  }
+  .caracteristicas { display: grid; gap: 0.9rem; margin-top: 2rem; }
+  @media (min-width: 640px) { .caracteristicas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem 2rem; } }
+  .caracteristicas li {
+    display: flex;
+    gap: 0.7rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-tinta-70);
+  }
+
+  .etiquetas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .etiquetas li {
+    padding: 0.5rem 0.95rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--color-tinta-70);
+  }
+
+  .tabla-marco {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+  }
+  .tabla { width: 100%; min-width: 19rem; text-align: left; font-size: 0.875rem; }
+  .tabla thead tr { border-bottom: 1px solid var(--color-linea); }
+  .tabla th[scope='col'] {
+    padding: 0.85rem 1.15rem;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .tabla tbody tr + tr { border-top: 1px solid var(--color-linea); }
+  .tabla th[scope='row'] {
+    padding: 0.95rem 1.15rem;
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--color-brand-700);
+    vertical-align: top;
+  }
+  .tabla td { padding: 0.95rem 1.15rem; color: var(--color-tinta-70); vertical-align: top; line-height: 1.5; }
+  .tabla__pdf { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--color-brand-700); }
+  .tabla__pdf:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ── Fichas ───────────────────────────────────────────────────────── */
+  .fichas { display: grid; gap: 0.7rem; margin-top: 2.5rem; }
+  @media (min-width: 768px) { .fichas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ficha-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.1rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    transition: border-color 0.3s, transform 0.4s var(--ease-salida);
+  }
+  .ficha-item:hover { border-color: var(--color-brand-300); transform: translateY(-2px); }
+  .ficha-item__ic {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    border-radius: 999px;
+    border: 1px solid var(--color-linea);
+    color: var(--color-brand-700);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .ficha-item:hover .ficha-item__ic {
+    background: var(--color-brand-700);
     border-color: var(--color-brand-700);
-    box-shadow: 0 0 0 1px var(--color-brand-700);
+    color: #fff;
   }
+
+  .rejilla-rel { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 2.5rem 1.75rem; }
+  @media (min-width: 640px) { .rejilla-rel { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-rel { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 </style>
 
 <script>
@@ -400,12 +444,12 @@ const schema = [
   const lista = document.getElementById('miniaturas');
 
   lista?.addEventListener('click', (ev) => {
-    const boton = (ev.target as HTMLElement).closest<HTMLButtonElement>('.thumb');
+    const boton = (ev.target as HTMLElement).closest<HTMLButtonElement>('.tira');
     if (!boton || !principal) return;
     principal.src = boton.dataset.src ?? principal.src;
-    lista.querySelectorAll('.thumb').forEach((b) => {
+    lista.querySelectorAll('.tira').forEach((b) => {
       const activo = b === boton;
-      b.classList.toggle('is-active', activo);
+      b.classList.toggle('es-activa', activo);
       b.setAttribute('aria-selected', String(activo));
     });
   });

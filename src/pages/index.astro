@@ -1,307 +1,462 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import Hero from '../components/Hero.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
-import CtaContacto from '../components/CtaContacto.astro';
-import Especialidades from '../components/Especialidades.astro';
-import { site, cifras, certificaciones } from '../data/site';
-import { marcas } from '../data/marcas';
-import { categorias, productos, productosDestacados } from '../data/catalogo';
+import { site, certificaciones } from '../data/site';
+import { marcas, marcaPorSlug } from '../data/marcas';
+import {
+  categorias,
+  productos,
+  productosDestacados,
+  productosDeCategoria,
+  imagenPrincipal,
+  conteoProductos,
+} from '../data/catalogo';
 
-const destacados = productosDestacados().slice(0, 8);
+const destacados = productosDestacados().slice(0, 5);
+
+// Sumario de especialidades: cada línea con su producto insignia
+const insignia: Record<string, string> = {
+  bioseguridad: 'contenedores-punzocortantes',
+  antisepsia: 'aplicador-clorhexidina-2',
+  laparoscopia: 'trocares-desechables',
+  aspiracion: 'bolsas-aspiracion',
+  'nutricion-enteral': 'bomba-nutricion-enteral',
+  'via-aerea': 'videolaringoscopio',
+  'higiene-paciente': 'pano-bano-facil',
+  absorbentes: 'manta-absorbente-xodus',
+  instrumental: 'marcador-piel-esteril',
+  'proteccion-personal': 'guantes-nitrilo',
+};
+
+const sumario = categorias.map((c, i) => ({
+  ...c,
+  n: String(i + 1).padStart(2, '0'),
+  foto: imagenPrincipal(insignia[c.slug] ?? productosDeCategoria(c.slug)[0]?.slug ?? '', 480),
+  firmas: [...new Set(productosDeCategoria(c.slug).map((p) => marcaPorSlug.get(p.marca)?.nombre))]
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' · '),
+}));
 ---
 
 <Base
   title="Q-MEDICAL S.A.C. — Dispositivos médicos y bioseguridad en el Perú"
   description={site.descripcion}
   preloader
+  cabeceraClara
 >
-  <!-- ══════════════════════════════════════════════ Portada -->
-  <section class="relative overflow-hidden bg-brand-950 text-white">
-    <img
-      src="/img/fotos/almacen-p1360310-1600.webp"
-      srcset="
-        /img/fotos/almacen-p1360310-640.webp   640w,
-        /img/fotos/almacen-p1360310-1000.webp 1000w,
-        /img/fotos/almacen-p1360310-1600.webp 1600w"
-      sizes="100vw"
-      width="1600"
-      height="1200"
-      alt="Almacén central de Q-MEDICAL S.A.C. certificado en Buenas Prácticas de Almacenamiento"
-      class="absolute inset-0 h-full w-full object-cover"
-      fetchpriority="high"
-      decoding="async"
-    />
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-brand-950/96 via-brand-900/88 to-brand-800/60"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="grid-bg absolute inset-0 opacity-25" aria-hidden="true"></div>
+  <Hero />
 
-    <div class="container-q relative">
-      <div class="grid items-center gap-12 py-20 lg:min-h-[38rem] lg:grid-cols-12 lg:py-28">
-        <div class="lg:col-span-7">
-          <p class="eyebrow eyebrow--light">Droguería peruana · desde {site.fundacion}</p>
-
-          <h1 class="title-xl mt-6">
-            Dispositivos médicos<br class="hidden sm:block" /> y bioseguridad
-            <span class="text-white/55">para la salud del país</span>
-          </h1>
-
-          <p class="prose-q mt-7 max-w-xl !text-[1.08rem] !text-white/75">
-            Abastecemos a instituciones de salud estatales y privadas con productos
-            de alta calidad, respaldo técnico y entregas confiables. Trabajamos con
-            fabricantes de todo el mundo bajo certificación BPA de DIGEMID.
-          </p>
-
-          <div class="mt-9 flex flex-wrap gap-3">
-            <a href="/catalogo" class="btn btn-light">
-              Ver catálogo
-              <Icon name="arrow" size={16} />
-            </a>
-            <a href="/contacto#cotizar" class="btn btn-ghost-light">Solicitar cotización</a>
-          </div>
-
-          <ul class="mt-11 flex flex-wrap gap-x-8 gap-y-3 text-[0.82rem] text-white/55">
-            <li class="flex items-center gap-2">
-              <Icon name="check" size={15} class="text-white/40" /> BPA — DIGEMID
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon name="check" size={15} class="text-white/40" /> ISO 37001 · ISO 14001
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon name="check" size={15} class="text-white/40" /> Cobertura nacional
-            </li>
-          </ul>
+  <!-- ══════════════════════════════ 01 · Sumario de especialidades -->
+  <section id="lineas" class="aire bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="sumario__intro" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">Especialidades</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">
+            Diez líneas, ordenadas por la realidad del servicio
+          </h2>
         </div>
-
-        <!-- Tarjeta de cifras -->
-        <div class="lg:col-span-5 lg:justify-self-end">
-          <div
-            class="w-full max-w-md rounded-2xl border border-white/12 bg-white/[0.06] p-7 backdrop-blur-md sm:p-8"
-          >
-            <p class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/45">
-              Q-MEDICAL en cifras
-            </p>
-            <dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-7">
-              {
-                cifras.map((c) => (
-                  <div>
-                    <dd class="font-display text-3xl font-semibold leading-none sm:text-[2.1rem]">
-                      {c.valor}
-                    </dd>
-                    <dt class="mt-2 text-[0.82rem] font-medium text-white/80">{c.etiqueta}</dt>
-                    <p class="mt-1 text-[0.72rem] leading-snug text-white/40">{c.nota}</p>
-                  </div>
-                ))
-              }
-            </dl>
-          </div>
+        <div class="sumario__intro-texto" data-anim="sube">
+          <p class="cuerpo-lg">
+            Lo que necesita sala de operaciones no es lo que necesita el punto de
+            acopio de residuos ni la unidad de nutrición. Por eso el catálogo no
+            está ordenado por proveedor, sino por el servicio que lo usa.
+          </p>
+          <a href="/catalogo" class="enlace mt-7">
+            Ver el catálogo completo<Icon name="flecha" size={15} />
+          </a>
         </div>
       </div>
+
+      <ol class="sumario" data-anim-grupo="55">
+        {sumario.map((c) => (
+          <li data-anim="lineas">
+            <a href={`/catalogo/${c.slug}`} class="renglon">
+              <span class="folio renglon__folio">{c.n}</span>
+
+              <span class="renglon__miniatura">
+                <img src={c.foto} width="480" height="480" alt="" loading="lazy" decoding="async" />
+              </span>
+
+              <span class="renglon__medio">
+                <span class="renglon__titulo">{c.corto}</span>
+                <span class="renglon__nota">{c.descripcion}</span>
+              </span>
+
+              <span class="renglon__meta">
+                <span class="renglon__firmas">{c.firmas}</span>
+                <span class="renglon__cuenta">{conteoProductos(c.slug)}</span>
+              </span>
+
+              <span class="renglon__flecha"><Icon name="flecha" size={17} /></span>
+            </a>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <Especialidades />
-
-  <!-- ══════════════════════════════════════════════ Compromiso -->
-  <section class="bg-surface py-20 lg:py-28">
-    <div class="container-q">
-      <div class="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
-        <div class="reveal">
-          <div class="relative overflow-hidden rounded-2xl">
+  <!-- ══════════════════════════════ 02 · El compromiso -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <div class="compromiso">
+        <div class="compromiso__figura">
+          <figure class="lamina compromiso__grande" data-anim="cortina">
             <img
               src="/img/fotos/equipo-almacen-1000.webp"
-              srcset="
-                /img/fotos/equipo-almacen-640.webp   640w,
-                /img/fotos/equipo-almacen-1000.webp 1000w,
-                /img/fotos/equipo-almacen-1600.webp 1600w"
+              srcset="/img/fotos/equipo-almacen-640.webp 640w, /img/fotos/equipo-almacen-1000.webp 1000w, /img/fotos/equipo-almacen-1600.webp 1600w"
               sizes="(min-width: 1024px) 46vw, 92vw"
-              width="1000"
-              height="563"
-              alt="Personal de Q-MEDICAL S.A.C. verificando existencias en el almacén central"
-              loading="lazy"
-              decoding="async"
-              class="w-full object-cover"
+              width="1000" height="563" loading="lazy" decoding="async"
+              alt="Personal de Q-MEDICAL verificando existencias en el almacén central"
+              class="parallax" data-parallax="0.1"
             />
-          </div>
-          <div class="mt-5 grid grid-cols-2 gap-5">
+          </figure>
+          <figure class="lamina compromiso__chica" data-anim="escala">
             <img
-              src="/img/fotos/almacen-p1360322-640.webp"
-              width="640"
-              height="480"
-              alt="Pasillo de racks del almacén central"
-              loading="lazy"
-              decoding="async"
-              class="w-full rounded-xl object-cover"
+              src="/img/fotos/almacen-p1360322-640.webp" width="640" height="480"
+              loading="lazy" decoding="async" alt="Pasillo de racks del almacén central"
             />
-            <img
-              src="/img/fotos/almacen-p1360266-640.webp"
-              width="640"
-              height="480"
-              alt="Estanterías con productos médicos correctamente rotulados"
-              loading="lazy"
-              decoding="async"
-              class="w-full rounded-xl object-cover"
-            />
-          </div>
+          </figure>
         </div>
 
-        <div class="reveal" data-delay="120">
-          <p class="eyebrow">El compromiso es de nosotros</p>
-          <h2 class="title-lg mt-4">
+        <div class="compromiso__texto" data-anim-grupo="80">
+          <p class="ante ante-brand" data-anim="sube">El compromiso es de nosotros</p>
+          <h2 class="display-lg mt-5" data-anim="sube">
             Cada entrega sostiene el trabajo de un equipo de salud
           </h2>
-          <div class="prose-q mt-6">
+          <div class="cuerpo-lg mt-7" data-anim="sube">
             <p>
-              Somos una empresa peruana comprometida con la salud del país. Trabajamos
-              incansablemente para que las instituciones de salud estatales y privadas
-              dispongan de productos médicos, de bioseguridad y de protección personal
-              de alta calidad, en beneficio del equipo asistencial y de los pacientes.
+              Somos una droguería, no un intermediario. Esa condición cambia lo que
+              podemos ofrecer: no solo colocamos un producto, respondemos por su
+              conservación, su trazabilidad documental y su ficha técnica frente al
+              área usuaria, al comité de compras y a la autoridad sanitaria.
             </p>
             <p>
-              Todos los trabajadores de Q-MEDICAL formamos un equipo comprometido con
-              satisfacer las necesidades y expectativas de nuestros clientes mediante
-              la entrega oportuna de productos de calidad y una atención posventa que
-              acompaña todo el ciclo del pedido.
+              Trabajamos para que las instituciones de salud estatales y privadas
+              dispongan de productos médicos, de bioseguridad y de protección
+              personal de alta calidad, en beneficio del equipo asistencial y de
+              los pacientes.
             </p>
           </div>
 
-          <dl class="mt-9 grid gap-6 sm:grid-cols-2">
-            <div class="flex gap-4">
-              <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-brand-700 shadow-sm">
-                <Icon name="truck" size={20} />
-              </span>
-              <div>
-                <dt class="text-[0.92rem] font-semibold">Entregas confiables</dt>
-                <dd class="mt-1 text-[0.84rem] leading-relaxed text-muted">
-                  Programación de despachos a instituciones de todas las regiones del país.
-                </dd>
-              </div>
+          <dl class="compromiso__datos" data-anim="sube">
+            <div>
+              <dt class="ante">Fundación</dt>
+              <dd class="compromiso__dato">{site.fundacion}</dd>
             </div>
-            <div class="flex gap-4">
-              <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-brand-700 shadow-sm">
-                <Icon name="building" size={20} />
-              </span>
-              <div>
-                <dt class="text-[0.92rem] font-semibold">Almacén certificado</dt>
-                <dd class="mt-1 text-[0.84rem] leading-relaxed text-muted">
-                  Condiciones de conservación y trazabilidad verificadas bajo BPA.
-                </dd>
-              </div>
+            <div>
+              <dt class="ante">Marcas</dt>
+              <dd class="compromiso__dato">{marcas.length}</dd>
+            </div>
+            <div>
+              <dt class="ante">Productos</dt>
+              <dd class="compromiso__dato">{productos.length}</dd>
             </div>
           </dl>
 
-          <a href="/nosotros" class="btn btn-outline mt-9">
-            Conocer la empresa
-            <Icon name="arrow" size={15} />
+          <a href="/nosotros" class="enlace mt-9" data-anim="sube">
+            Conocer la empresa<Icon name="flecha" size={15} />
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════ Marcas asociadas -->
+  <!-- ══════════════════════════════ 03 · La cifra -->
+  <section class="cifra-band">
+    <div class="caja text-center" data-anim-grupo="110">
+      <p class="ante ante-brand" data-anim="sube">Respaldo documental</p>
+      <p class="cifra mt-8 text-[var(--color-brand-700)]" data-anim="escala">49</p>
+      <h2 class="display-md mx-auto mt-6 max-w-[22ch]" data-anim="sube">
+        fichas técnicas oficiales, en PDF y listas para su expediente de licitación
+      </h2>
+      <p class="cuerpo mx-auto mt-6 max-w-xl" data-anim="sube">
+        Cada producto del catálogo publica la documentación del fabricante. El área
+        usuaria evalúa, el comité de compras adjunta y la dirección técnica verifica,
+        sin tener que pedir nada por correo.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-3" data-anim="sube">
+        <a href="/fichas-tecnicas" class="pill pill-tinta">
+          <Icon name="descarga" size={16} />Ver la biblioteca
+        </a>
+        <a href="/catalogo" class="pill pill-linea">Explorar el catálogo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 04 · Catálogo destacado -->
+  <section class="aire bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="cabecera-seccion" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">Catálogo</p>
+          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">Piezas que definen la línea</h2>
+        </div>
+        <a href="/catalogo" class="enlace shrink-0" data-anim="sube">
+          Los {productos.length} productos<Icon name="flecha" size={15} />
+        </a>
+      </div>
+
+      <div class="mt-14" data-anim="sube">
+        <ProductoCard producto={destacados[0]} formato="ancha" eager />
+      </div>
+
+      <hr class="filete my-14" />
+
+      <div class="rejilla-catalogo" data-anim-grupo="70">
+        {destacados.slice(1).map((p) => (
+          <div data-anim="sube"><ProductoCard producto={p} /></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 05 · Certificaciones -->
+  <section class="certif">
+    <div class="caja">
+      <div class="cabecera-seccion" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-claro" data-anim="sube">Respaldo</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">
+            Estándares que se auditan, no que se declaran
+          </h2>
+        </div>
+        <p class="certif__nota" data-anim="sube">
+          Atendemos instituciones médicas de todas las regiones del país, incluyendo
+          procesos de licitación pública y compras corporativas.
+        </p>
+      </div>
+
+      <ol class="certif__lista" data-anim-grupo="100">
+        {certificaciones.map((c, i) => (
+          <li class="certif__item" data-anim="sube">
+            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
+            <p class="certif__sigla">{c.sigla}</p>
+            <p class="certif__nombre">{c.nombre}</p>
+            <p class="certif__detalle">{c.detalle}</p>
+            <p class="certif__emisor">{c.emisor}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 06 · Marcas (anillo, intacto) -->
   <MarcasConstelacion />
-
-  <!-- ══════════════════════════════════════════════ Productos destacados -->
-  <section class="bg-white py-20 lg:py-28">
-    <div class="container-q">
-      <div class="flex flex-wrap items-end justify-between gap-6 reveal">
-        <div class="max-w-2xl">
-          <p class="eyebrow">Catálogo</p>
-          <h2 class="title-lg mt-4">Productos destacados</h2>
-          <p class="prose-q mt-5">
-            Una selección de nuestras líneas más solicitadas. Cada producto incluye
-            sus características técnicas, presentaciones y la ficha técnica oficial
-            en PDF lista para descargar.
-          </p>
-        </div>
-        <a href="/catalogo" class="btn btn-outline">
-          Todo el catálogo
-          <Icon name="arrow" size={15} />
-        </a>
-      </div>
-
-      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          destacados.map((p, i) => (
-            <div class="reveal" data-delay={(i % 4) * 80}>
-              <ProductoCard producto={p} />
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════ Certificaciones -->
-  <section class="relative overflow-hidden bg-brand-950 py-20 text-white lg:py-28">
-    <div class="grid-bg absolute inset-0 opacity-30" aria-hidden="true"></div>
-    <div class="container-q relative">
-      <div class="grid gap-14 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-4 reveal">
-          <p class="eyebrow eyebrow--light">Respaldo</p>
-          <h2 class="title-lg mt-4">Certificaciones y acreditaciones</h2>
-          <p class="prose-q mt-5 !text-white/70">
-            Operamos bajo estándares auditables que sostienen la calidad del producto,
-            la transparencia comercial y el cuidado del entorno.
-          </p>
-          <p class="mt-8 text-[0.84rem] text-white/45">
-            Atendemos instituciones médicas de todas las regiones del Perú, incluyendo
-            procesos de licitación pública y compras corporativas.
-          </p>
-        </div>
-
-        <ul class="lg:col-span-8 grid gap-4 sm:grid-cols-3">
-          {
-            certificaciones.map((c, i) => (
-              <li
-                class="flex flex-col rounded-2xl border border-white/12 bg-white/[0.04] p-7 reveal"
-                data-delay={i * 100}
-              >
-                <Icon name="award" size={26} class="text-white/35" />
-                <p class="mt-6 font-display text-2xl font-semibold">{c.sigla}</p>
-                <p class="mt-1.5 text-[0.9rem] font-medium text-white/85">{c.nombre}</p>
-                <p class="mt-4 flex-1 text-[0.82rem] leading-relaxed text-white/50">{c.detalle}</p>
-                <p class="mt-5 border-t border-white/10 pt-4 text-[0.72rem] uppercase tracking-wider text-white/35">
-                  {c.emisor}
-                </p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════ Fichas técnicas -->
-  <section class="bg-surface py-20 lg:py-24">
-    <div class="container-q">
-      <div
-        class="flex flex-col items-start justify-between gap-8 rounded-2xl border border-line bg-white p-8 sm:p-11 lg:flex-row lg:items-center reveal"
-      >
-        <div class="max-w-2xl">
-          <span class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-700">
-            <Icon name="pdf" size={22} />
-          </span>
-          <h2 class="title-md mt-6">Fichas técnicas descargables</h2>
-          <p class="prose-q mt-3">
-            Ponemos a disposición del área usuaria, del comité de compras y del
-            especialista las {productos.length} líneas de nuestro catálogo con su
-            documentación técnica oficial en PDF, lista para adjuntar a un
-            requerimiento o a un expediente de licitación.
-          </p>
-        </div>
-        <a href="/fichas-tecnicas" class="btn btn-primary shrink-0">
-          <Icon name="download" size={16} />
-          Ver todas las fichas
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <CtaContacto />
 </Base>
+
+<style>
+  /* ── Sumario de especialidades ────────────────────────────────────── */
+  .sumario__intro { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .sumario__intro { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  }
+  .sumario__intro-texto { max-width: 34rem; }
+
+  .sumario { margin-top: 4rem; border-top: 1px solid var(--color-linea); }
+  .sumario > li { border-bottom: 1px solid var(--color-linea); }
+
+  .renglon {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    padding: 1.35rem 0;
+    transition: padding-inline 0.5s var(--ease-salida), background-color 0.4s var(--ease-editorial);
+  }
+  @media (min-width: 900px) {
+    .renglon {
+      grid-template-columns: 3rem 5.5rem minmax(0, 1fr) 13rem 2.75rem;
+      gap: 2rem;
+      padding-block: 1.5rem;
+    }
+    .renglon:hover { padding-inline: 1.25rem; }
+  }
+  .renglon:hover { background: rgba(20, 22, 28, 0.025); }
+
+  .renglon__folio { display: none; }
+  @media (min-width: 900px) { .renglon__folio { display: block; } }
+
+  .renglon__miniatura {
+    display: grid;
+    place-items: center;
+    width: 3.75rem;
+    height: 3.75rem;
+    flex: none;
+    border-radius: var(--r-sm);
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    overflow: hidden;
+  }
+  @media (min-width: 900px) { .renglon__miniatura { width: 5.5rem; height: 5.5rem; } }
+  .renglon__miniatura img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 14%;
+    transition: transform 0.6s var(--ease-salida);
+  }
+  .renglon:hover .renglon__miniatura img { transform: scale(1.08); }
+
+  .renglon__medio { min-width: 0; }
+  .renglon__titulo {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.15rem, 2vw, 1.65rem);
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+  }
+  .renglon__nota {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 0.4rem;
+    font-size: 0.865rem;
+    line-height: 1.5;
+    color: var(--color-tinta-70);
+  }
+
+  .renglon__meta { display: none; text-align: right; }
+  @media (min-width: 900px) { .renglon__meta { display: block; } }
+  .renglon__firmas {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .renglon__cuenta { display: block; margin-top: 0.4rem; font-size: 0.82rem; color: var(--color-tinta-70); }
+
+  .renglon__flecha {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: none;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    color: var(--color-tinta);
+    transition: background-color 0.35s, color 0.35s, border-color 0.35s, transform 0.45s var(--ease-salida);
+  }
+  .renglon:hover .renglon__flecha {
+    background: var(--color-brand-700);
+    border-color: var(--color-brand-700);
+    color: #fff;
+    transform: translateX(3px);
+  }
+
+  /* ── Compromiso ───────────────────────────────────────────────────── */
+  .compromiso { display: grid; gap: 3.5rem; }
+  @media (min-width: 1024px) {
+    .compromiso { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: center; }
+  }
+  .compromiso__figura { position: relative; }
+  .compromiso__grande { aspect-ratio: 4 / 3; }
+  .compromiso__grande::after { display: none; }
+  .compromiso__grande img { height: 118%; }
+  .compromiso__chica {
+    width: 46%;
+    aspect-ratio: 4 / 3;
+    margin: -18% -1rem 0 auto;
+    border: 6px solid var(--color-papel-2);
+    border-radius: calc(var(--r-lg) + 6px);
+  }
+  .compromiso__chica::after { display: none; }
+  @media (min-width: 1024px) { .compromiso__chica { margin-right: -3rem; } }
+
+  .compromiso__datos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-linea);
+  }
+  .compromiso__dato {
+    margin-top: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1;
+    color: var(--color-brand-700);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  /* ── Cifra ────────────────────────────────────────────────────────── */
+  .cifra-band {
+    padding-block: 6rem;
+    background: var(--color-papel);
+    border-block: 1px solid var(--color-linea);
+  }
+  @media (min-width: 1024px) { .cifra-band { padding-block: 9rem; } }
+
+  /* ── Cabeceras de sección y rejilla ───────────────────────────────── */
+  .cabecera-seccion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .rejilla-catalogo {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  /* ── Certificaciones ──────────────────────────────────────────────── */
+  .certif {
+    padding-block: 5rem;
+    background: var(--color-brand-700);
+    color: #fff;
+  }
+  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
+  .certif__nota {
+    max-width: 22rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .certif__lista {
+    display: grid;
+    margin-top: 4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) {
+    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
+    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
+  }
+  .certif__folio { color: rgba(255, 255, 255, 0.4); }
+  .certif__sigla {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 3.4vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
+  .certif__detalle {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .certif__emisor {
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+</style>

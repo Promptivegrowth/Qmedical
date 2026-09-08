@@ -1,74 +1,81 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
+import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
-import MarcasCarrusel from '../components/MarcasCarrusel.astro';
 import CtaContacto from '../components/CtaContacto.astro';
-import { site, valores, certificaciones, cifras } from '../data/site';
+import { site, valores, certificaciones } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos } from '../data/catalogo';
 
 const galeria = [
-  { src: 'almacen-p1360322', alt: 'Pasillo principal de racks del almacén central de Q-MEDICAL' },
+  { src: 'almacen-p1360322', alt: 'Pasillo principal de racks del almacén central de Q-MEDICAL', ancho: true },
   { src: 'almacen-p1360352', alt: 'Racks selectivos con productos identificados y rotulados' },
   { src: 'almacen-p1360349', alt: 'Zona de acopio con productos paletizados y señalización de piso' },
   { src: 'almacen-p1360288', alt: 'Estanterías con cajas de producto terminado ordenadas por lote' },
   { src: 'almacen-p1360328', alt: 'Vista del almacén hacia la zona de despacho' },
-  { src: 'almacen-p1360232', alt: 'Área de preparación de pedidos con transpaleta' },
+];
+
+const controles = [
+  { t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
+  { t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
+  { t: 'Rotación', d: 'Bajo criterio de primero en vencer, primero en salir, sin excepciones.' },
+  { t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
 ];
 ---
 
 <Base
-  title="Nosotros — 23 años abasteciendo al sector salud del Perú"
+  title={`Nosotros — ${site.anios} años abasteciendo al sector salud del Perú`}
   description="Q-MEDICAL S.A.C. es una droguería peruana fundada en 2003, certificada en Buenas Prácticas de Almacenamiento por DIGEMID, ISO 37001 e ISO 14001. Conozca nuestra misión, infraestructura y certificaciones."
   image="/img/fotos/equipo-almacen-1600.webp"
 >
-  <PageHeader
-    eyebrow={`Desde ${site.fundacion} · ${site.anios} años`}
+  <Portada
+    ante={`Desde ${site.fundacion} · ${site.anios} años`}
     titulo="Una empresa peruana comprometida con la salud del país"
     texto="Trabajamos para que las instituciones de salud estatales y privadas dispongan de productos médicos, de bioseguridad y de protección personal de alta calidad, junto a nuestros proveedores alrededor del mundo."
     migas={[{ nombre: 'Nosotros' }]}
     foto="/img/fotos/almacen-p1360352-1600.webp"
+    dato={{ valor: String(site.anios), etiqueta: 'años de operación' }}
   />
 
-  <!-- Cifras -->
-  <section class="border-b border-line bg-white">
-    <div class="container-q">
-      <dl class="grid gap-px divide-line sm:grid-cols-2 lg:grid-cols-4">
-        {
-          cifras.map((c) => (
-            <div class="py-9 lg:py-11">
-              <dd class="font-display text-4xl font-semibold text-brand-700">{c.valor}</dd>
-              <dt class="mt-2 text-[0.9rem] font-semibold">{c.etiqueta}</dt>
-              <p class="mt-1 text-[0.8rem] leading-snug text-muted">{c.nota}</p>
-            </div>
-          ))
-        }
+  <!-- ── Cifras ──────────────────────────────────────────────────────── -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+    <div class="caja">
+      <dl class="cifras" data-anim-grupo="80">
+        {[
+          { v: String(site.fundacion), e: 'Año de fundación', n: 'Más de dos décadas en el sector' },
+          { v: String(marcas.length), e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
+          { v: String(productos.length), e: 'Productos en catálogo', n: `En ${categorias.length} especialidades` },
+          { v: '49', e: 'Fichas técnicas', n: 'Documentación pública en PDF' },
+        ].map((c) => (
+          <div data-anim="sube">
+            <dd class="cifras__valor">{c.v}</dd>
+            <dt class="cifras__etiqueta">{c.e}</dt>
+            <p class="cifras__nota">{c.n}</p>
+          </div>
+        ))}
       </dl>
     </div>
   </section>
 
-  <!-- Quiénes somos -->
-  <section class="bg-white py-20 lg:py-28">
-    <div class="container-q grid gap-14 lg:grid-cols-12 lg:gap-16">
-      <div class="lg:col-span-5 reveal">
-        <p class="eyebrow">Quiénes somos</p>
-        <h2 class="title-lg mt-4">Una droguería, no un intermediario</h2>
+  <!-- ── Quiénes somos ───────────────────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel)]">
+    <div class="caja quienes" data-anim-grupo="90">
+      <div>
+        <p class="ante ante-brand" data-anim="sube">Quiénes somos</p>
+        <h2 class="display-lg mt-5 max-w-[13ch]" data-anim="sube">Una droguería, no un intermediario</h2>
       </div>
-      <div class="prose-q lg:col-span-7 reveal" data-delay="100">
+      <div class="cuerpo-lg" data-anim="sube">
         <p>
-          Q-MEDICAL S.A.C. inició actividades en enero de {site.fundacion} y hoy es
-          una droguería especializada en la comercialización de dispositivos médicos
-          de alta calidad. Contamos con la certificación de Buenas Prácticas de
-          Almacenamiento otorgada por DIGEMID y representamos y distribuimos productos
-          de compañías reconocidas a nivel mundial.
+          Q-MEDICAL S.A.C. inició actividades en enero de {site.fundacion} y hoy es una
+          droguería especializada en la comercialización de dispositivos médicos de alta
+          calidad. Contamos con la certificación de Buenas Prácticas de Almacenamiento
+          otorgada por DIGEMID y representamos y distribuimos productos de compañías
+          reconocidas a nivel mundial.
         </p>
         <p>
           Esa condición cambia lo que podemos ofrecer: no solo colocamos un producto,
-          respondemos por su conservación, su trazabilidad documental y su ficha
-          técnica frente al área usuaria, al comité de compras y a la autoridad
-          sanitaria. Nuestro catálogo reúne hoy {productos.length} líneas de producto
-          de {marcas.length} marcas, organizadas en {categorias.length} especialidades.
+          respondemos por su conservación, su trazabilidad documental y su ficha técnica
+          frente al área usuaria, al comité de compras y a la autoridad sanitaria.
         </p>
         <p>
           Atendemos a instituciones médicas de todas las regiones del país —hospitales,
@@ -79,140 +86,197 @@ const galeria = [
     </div>
   </section>
 
-  <!-- Misión, visión, filosofía -->
-  <section class="bg-surface py-20 lg:py-24">
-    <div class="container-q">
-      <div class="grid gap-5 md:grid-cols-3">
-        {
-          valores.map((v, i) => (
-            <div class="card flex flex-col p-8 reveal" data-delay={i * 100}>
-              <span class="font-display text-[0.8rem] font-semibold uppercase tracking-[0.2em] text-brand-700">
-                {v.titulo}
-              </span>
-              <p class="mt-5 text-[1.02rem] leading-relaxed text-ink/85">{v.texto}</p>
-            </div>
-          ))
-        }
-      </div>
+  <!-- ── Misión, visión, filosofía ───────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <ol class="valores" data-anim-grupo="100">
+        {valores.map((v, i) => (
+          <li class="valor" data-anim="sube">
+            <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="valor__titulo">{v.titulo}</h2>
+            <p class="valor__texto">{v.texto}</p>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <!-- Infraestructura -->
-  <section class="bg-white py-20 lg:py-28">
-    <div class="container-q">
-      <div class="grid items-end gap-8 lg:grid-cols-12">
-        <div class="lg:col-span-7 reveal">
-          <p class="eyebrow">Infraestructura</p>
-          <h2 class="title-lg mt-4">Un almacén que responde por el producto</h2>
-          <p class="prose-q mt-5">
-            La certificación BPA no es un sello en la pared: es un régimen de control
-            sobre la recepción, el almacenamiento, la conservación y el despacho de
-            cada lote. Racks selectivos identificados, control de condiciones
-            ambientales, segregación de productos y registros que permiten rastrear
-            cualquier unidad hasta su origen.
-          </p>
+  <!-- ── Infraestructura ─────────────────────────────────────────────── -->
+  <section id="infraestructura" class="aire scroll-mt-20 bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="infra__intro" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">Infraestructura</p>
+          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">
+            Un almacén que responde por el producto
+          </h2>
         </div>
-        <div class="lg:col-span-5 reveal" data-delay="120">
-          <ul class="space-y-3.5 text-[0.9rem]">
-            <li class="flex gap-3">
-              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
-              Recepción con verificación documental y de integridad de empaque
-            </li>
-            <li class="flex gap-3">
-              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
-              Almacenamiento segregado y rotulado por lote y fecha de vencimiento
-            </li>
-            <li class="flex gap-3">
-              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
-              Rotación controlada bajo criterio de primero en vencer, primero en salir
-            </li>
-            <li class="flex gap-3">
-              <Icon name="check" size={17} class="mt-0.5 shrink-0 text-brand-700" />
-              Trazabilidad completa desde la recepción hasta el despacho
-            </li>
-          </ul>
+        <p class="cuerpo-lg max-w-xl" data-anim="sube">
+          La certificación BPA no es un sello en la pared: es un régimen de control sobre
+          la recepción, el almacenamiento, la conservación y el despacho de cada lote.
+        </p>
+      </div>
+
+      <ol class="controles" data-anim-grupo="70">
+        {controles.map((c, i) => (
+          <li class="control" data-anim="sube">
+            <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="control__titulo">{c.t}</h3>
+            <p class="control__texto">{c.d}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="galeria" data-anim-grupo="60">
+        {galeria.map((g) => (
+          <figure class:list={['lamina galeria__pieza', g.ancho && 'galeria__pieza--ancha']} data-anim="cortina">
+            <img
+              src={`/img/fotos/${g.src}-1000.webp`}
+              srcset={`/img/fotos/${g.src}-640.webp 640w, /img/fotos/${g.src}-1000.webp 1000w, /img/fotos/${g.src}-1600.webp 1600w`}
+              sizes={g.ancho ? '(min-width: 768px) 62vw, 92vw' : '(min-width: 768px) 30vw, 92vw'}
+              width="1000" height="750" alt={g.alt} loading="lazy" decoding="async"
+            />
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Certificaciones ─────────────────────────────────────────────── -->
+  <section id="certificaciones" class="certif scroll-mt-20">
+    <div class="caja">
+      <div class="flex flex-wrap items-end justify-between gap-8" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-claro" data-anim="sube">Certificaciones y acreditaciones</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">
+            Estándares que se auditan, no que se declaran
+          </h2>
         </div>
       </div>
 
-      <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          galeria.map((g, i) => (
-            <figure
-              class:list={[
-                'overflow-hidden rounded-xl bg-surface reveal',
-                i === 0 && 'sm:col-span-2 sm:row-span-2',
-              ]}
-              data-delay={(i % 3) * 80}
-            >
-              <img
-                src={`/img/fotos/${g.src}-1000.webp`}
-                srcset={`/img/fotos/${g.src}-640.webp 640w, /img/fotos/${g.src}-1000.webp 1000w, /img/fotos/${g.src}-1600.webp 1600w`}
-                sizes={i === 0 ? '(min-width: 640px) 62vw, 92vw' : '(min-width: 1024px) 31vw, 46vw'}
-                width="1000"
-                height="750"
-                alt={g.alt}
-                loading="lazy"
-                decoding="async"
-                class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-              />
-            </figure>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+      <ol class="certif__lista" data-anim-grupo="100">
+        {certificaciones.map((c, i) => (
+          <li class="certif__item" data-anim="sube">
+            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
+            <p class="certif__sigla">{c.sigla}</p>
+            <p class="certif__nombre">{c.nombre}</p>
+            <p class="certif__detalle">{c.detalle}</p>
+            <p class="certif__emisor">{c.emisor}</p>
+          </li>
+        ))}
+      </ol>
 
-  <!-- Certificaciones -->
-  <section class="relative overflow-hidden bg-brand-950 py-20 text-white lg:py-28">
-    <div class="grid-bg absolute inset-0 opacity-30" aria-hidden="true"></div>
-    <div class="container-q relative">
-      <div class="max-w-2xl reveal">
-        <p class="eyebrow eyebrow--light">Certificaciones y acreditaciones</p>
-        <h2 class="title-lg mt-4">Estándares que se auditan, no que se declaran</h2>
-      </div>
-
-      <ul class="mt-14 grid gap-5 md:grid-cols-3">
-        {
-          certificaciones.map((c, i) => (
-            <li
-              class="flex flex-col rounded-2xl border border-white/12 bg-white/[0.04] p-8 reveal"
-              data-delay={i * 100}
-            >
-              <Icon name="award" size={28} class="text-white/35" />
-              <p class="mt-7 font-display text-[1.7rem] font-semibold leading-none">{c.sigla}</p>
-              <p class="mt-2 text-[0.95rem] font-medium text-white/85">{c.nombre}</p>
-              <p class="mt-5 flex-1 text-[0.86rem] leading-relaxed text-white/50">{c.detalle}</p>
-              <p class="mt-6 border-t border-white/10 pt-5 text-[0.72rem] uppercase tracking-wider text-white/35">
-                {c.emisor}
-              </p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <!-- Marcas -->
-  <section class="bg-white py-20 lg:py-24">
-    <div class="container-q text-center reveal">
-      <p class="eyebrow justify-center">Alianzas</p>
-      <h2 class="title-lg mt-4">Representamos a {marcas.length} fabricantes</h2>
-      <p class="prose-q mx-auto mt-5 max-w-2xl">
-        Seleccionamos a nuestros proveedores por la consistencia de su documentación
-        técnica y la estabilidad de su suministro, dos condiciones sin las cuales una
-        institución de salud no puede planificar.
-      </p>
-    </div>
-    <div class="mt-12">
-      <MarcasCarrusel titulo="Marcas asociadas" />
-    </div>
-    <div class="container-q mt-10 text-center">
-      <a href="/marcas" class="btn btn-outline">
-        Conocer cada marca
-        <Icon name="arrow" size={15} />
+      <a href="/fichas-tecnicas" class="pill pill-papel mt-12" data-anim="sube">
+        <Icon name="documento" size={16} />Ver la documentación técnica
       </a>
     </div>
   </section>
 
   <CtaContacto />
 </Base>
+
+<style>
+  /* ── Cifras ───────────────────────────────────────────────────────── */
+  .cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 900px) { .cifras { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .cifras > div { padding: 2.5rem 1.5rem 2.5rem 0; border-top: 1px solid var(--color-linea); }
+  @media (min-width: 900px) {
+    .cifras > div { border-top: 0; }
+    .cifras > div + div { border-left: 1px solid var(--color-linea); padding-left: 2.5rem; }
+  }
+  .cifras__valor {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    line-height: 1;
+    color: var(--color-brand-700);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .cifras__etiqueta { margin-top: 0.85rem; font-size: 0.9rem; font-weight: 500; }
+  .cifras__nota { margin-top: 0.3rem; font-size: 0.8rem; color: var(--color-tinta-45); }
+
+  /* ── Quiénes somos ────────────────────────────────────────────────── */
+  .quienes { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .quienes { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: 5rem; }
+  }
+
+  /* ── Valores ──────────────────────────────────────────────────────── */
+  .valores { display: grid; border-top: 1px solid var(--color-linea-2); }
+  @media (min-width: 900px) { .valores { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .valor { padding: 2.5rem 0; border-bottom: 1px solid var(--color-linea-2); }
+  @media (min-width: 900px) {
+    .valor { padding: 3rem 2.5rem 3rem 0; border-bottom: 0; }
+    .valor + .valor { border-left: 1px solid var(--color-linea-2); padding-left: 2.5rem; }
+  }
+  .valor__titulo {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    letter-spacing: -0.015em;
+  }
+  .valor__texto { margin-top: 1rem; font-size: 0.95rem; line-height: 1.65; color: var(--color-tinta-70); }
+
+  /* ── Infraestructura ──────────────────────────────────────────────── */
+  .infra__intro { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .infra__intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  }
+  .controles {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--color-linea);
+  }
+  @media (min-width: 640px) { .controles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .controles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .control { padding: 1.75rem 1.5rem 1.75rem 0; border-bottom: 1px solid var(--color-linea); }
+  @media (min-width: 1100px) {
+    .control { border-bottom: 0; }
+    .control + .control { border-left: 1px solid var(--color-linea); padding-left: 1.75rem; }
+  }
+  .control__titulo { margin-top: 0.85rem; font-size: 1rem; font-weight: 500; }
+  .control__texto { margin-top: 0.5rem; font-size: 0.865rem; line-height: 1.55; color: var(--color-tinta-70); }
+
+  .galeria {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin-top: 3.5rem;
+  }
+  @media (min-width: 768px) { .galeria { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; } }
+  .galeria__pieza { aspect-ratio: 4 / 3; }
+  .galeria__pieza::after { display: none; }
+  .galeria__pieza--ancha { grid-column: span 2; aspect-ratio: 16 / 9; }
+
+  /* ── Certificaciones ──────────────────────────────────────────────── */
+  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
+  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
+  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) {
+    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
+    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
+  }
+  .certif__folio { color: rgba(255, 255, 255, 0.4); }
+  .certif__sigla {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 3.4vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
+  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
+  .certif__emisor {
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+</style>

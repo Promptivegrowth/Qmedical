@@ -3,17 +3,15 @@
  * Envoltorio de formulario que funciona sin servidor propio, de modo que el
  * sitio se comporta igual en Vercel que en el hosting compartido de cPanel.
  *
- * · Si `site.formAccessKey` tiene valor, el formulario se envía a Web3Forms
- *   (servicio gratuito que reenvía el mensaje al correo de la empresa).
- * · Si no, el formulario abre el gestor de correo del visitante con todos los
- *   campos ya redactados. Nunca queda un botón que no hace nada.
+ * · Si `site.formAccessKey` tiene valor, se envía a Web3Forms.
+ * · Si no, abre el gestor de correo del visitante con todos los campos ya
+ *   redactados. Nunca queda un botón que no hace nada.
  */
 import { site } from '../data/site';
 
 interface Props {
   id: string;
   asunto: string;
-  /** Correo de destino del área correspondiente. */
   destino?: string;
   class?: string;
 }
@@ -37,28 +35,27 @@ const conServicio = Boolean(site.formAccessKey);
   <input type="hidden" name="redirect" value={`${site.url}/gracias`} />
 
   <!-- Trampa antispam: invisible para las personas, tentadora para los bots -->
-  <input
-    type="checkbox"
-    name="botcheck"
-    class="hidden"
-    style="display:none"
-    tabindex="-1"
-    autocomplete="off"
-    aria-hidden="true"
-  />
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none"
+    tabindex="-1" autocomplete="off" aria-hidden="true" />
 
   <slot />
 
-  <p
-    data-form-error
-    class="mt-4 hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[0.85rem] text-red-700"
-    role="alert"
-  >
-  </p>
+  <p data-form-error class="aviso-error hidden" role="alert"></p>
 </form>
 
+<style>
+  .aviso-error {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid #e4c4c4;
+    border-radius: var(--r-sm);
+    background: #fbf1f1;
+    font-size: 0.86rem;
+    color: #8c2f2f;
+  }
+</style>
+
 <script>
-  // Validación accesible + envío por correo cuando no hay servicio configurado.
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     const error = form.querySelector<HTMLElement>('[data-form-error]');
 
@@ -72,11 +69,9 @@ const conServicio = Boolean(site.formAccessKey);
     form.addEventListener('submit', (ev) => {
       error?.classList.add('hidden');
 
-      // Validación nativa con mensaje agrupado
       if (!form.checkValidity()) {
         ev.preventDefault();
-        const primero = form.querySelector<HTMLInputElement>(':invalid');
-        primero?.focus();
+        form.querySelector<HTMLInputElement>(':invalid')?.focus();
         mostrarError('Revise los campos marcados: falta información obligatoria.');
         return;
       }
@@ -92,7 +87,7 @@ const conServicio = Boolean(site.formAccessKey);
           if (typeof valor !== 'string' || !valor.trim()) continue;
           const campo = form.querySelector(`[name="${CSS.escape(clave)}"]`);
           const etiqueta =
-            campo?.closest('label')?.querySelector('.label')?.textContent?.trim() ||
+            campo?.closest('label')?.querySelector('.rotulo')?.textContent?.trim() ||
             form.querySelector(`label[for="${CSS.escape(campo?.id ?? '')}"]`)?.textContent?.trim() ||
             clave;
           lineas.push(`${etiqueta.replace(/\s+/g, ' ')}: ${valor}`);
@@ -111,7 +106,6 @@ const conServicio = Boolean(site.formAccessKey);
       }
     });
 
-    // Limpia el estado de error al corregir
     form.addEventListener('input', () => error?.classList.add('hidden'));
   });
 </script>
