@@ -7,10 +7,19 @@ import { textos } from '../i18n/textos';
 /**
  * Portada con video en bucle.
  *
- * El video se coloca en /public/video/hero.mp4 (y .webm si se dispone). Hasta
- * que exista, se ve el póster —una fotografía real del almacén—, de modo que
- * la portada nunca queda en negro ni rota. El video se silencia, se reproduce
- * en línea y no se descarga con `prefers-reduced-motion`.
+ * El video (public/video/hero.mp4) se reproduce en bucle infinito, silenciado
+ * y en línea. El póster es su primer fotograma, de modo que la portada se ve
+ * llena desde el primer pintado y el video entra encima cuando está listo:
+ * nunca hay un rectángulo negro ni un salto de imagen.
+ *
+ * Qué se hace para que no pese en la carga:
+ *   · la fuente no se declara en el HTML; la pone el guion solo cuando decide
+ *     reproducir, así que quien no lo va a ver no lo descarga;
+ *   · no se descarga con `prefers-reduced-motion`, ni con el ahorro de datos
+ *     activado, ni en conexiones 2G o 3G;
+ *   · se pausa en cuanto la portada sale de pantalla;
+ *   · el póster va en WebP y con prioridad alta de carga, que es lo que de
+ *     verdad percibe quien abre la página.
  */
 interface Props {
   lang?: Idioma;
@@ -18,7 +27,8 @@ interface Props {
 const { lang = 'es' } = Astro.props;
 const t = textos(lang);
 
-const poster = '/img/fotos/almacen-p1360310-1600.webp';
+// Primer fotograma del video, extraido por scripts/poster_video.py.
+const poster = '/img/fotos/hero-poster-1280.webp';
 
 // El titular entra renglon a renglon, asi que se guarda partido: cada idioma
 // decide donde corta su propia frase.
@@ -50,21 +60,32 @@ const T = {
 
 <section class="hero">
   <div class="hero__fondo">
+<!-- El póster se pinta como imagen propia, no como atributo del video:
+         así entra en la cola de carga con prioridad alta y aparece antes. -->
+    <img
+      class="hero__poster"
+      src={poster}
+      srcset="/img/fotos/hero-poster-800.webp 800w, /img/fotos/hero-poster-1280.webp 1280w"
+      sizes="100vw"
+      width="1280"
+      height="720"
+      alt=""
+      aria-hidden="true"
+      fetchpriority="high"
+      decoding="async"
+    />
     <video
       class="hero__video"
-      poster={poster}
-      autoplay
       muted
       loop
       playsinline
       preload="none"
+      disablepictureinpicture
       aria-hidden="true"
       tabindex="-1"
       data-video-hero
-    >
-      <source src="/video/hero.webm" type="video/webm" />
-      <source src="/video/hero.mp4" type="video/mp4" />
-    </video>
+      data-src="/video/hero.mp4"
+    ></video>
     <div class="hero__velo"></div>
     <div class="hero__trama trama"></div>
   </div>
@@ -90,7 +111,7 @@ const T = {
   <!-- Pie de portada: los avales, en el filo inferior -->
   <div class="hero__pie">
     <div class="caja flex flex-wrap items-center justify-between gap-x-10 gap-y-4">
-      <ul class="flex flex-wrap gap-x-8 gap-y-2 text-[0.8rem] text-white/60">
+      <ul class="flex flex-wrap gap-x-8 gap-y-2 text-[0.8rem] text-white/75">
         {T.avales.map((a) => (
           <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />{a}</li>
         ))}
@@ -121,27 +142,85 @@ const T = {
   }
 
   .hero__fondo { position: absolute; inset: 0; }
+
+  .hero__poster,
   .hero__video {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Arranque sereno: el fondo entra con un acercamiento muy lento */
-    animation: acercar 18s var(--ease-editorial) forwards;
   }
+  /* Arranque sereno: el fondo entra con un acercamiento muy lento */
+  .hero__poster { animation: acercar 18s var(--ease-editorial) forwards; }
+
+  /* En pantallas estrechas el recorte se corre hacia la estanteria: el centro
+     del plano es el punto de fuga, lo mas claro del video, y ahi el titular
+     perdia contraste. */
+  @media (max-width: 899px) {
+    .hero__poster,
+    .hero__video { object-position: 28% center; }
+  }
+
+  /* El video aparece por encima del póster cuando ya tiene fotogramas, así el
+     relevo no se nota. */
+  .hero__video {
+    opacity: 0;
+    transition: opacity 0.9s var(--ease-editorial);
+  }
+  .hero__video.es-visible { opacity: 1; }
   @keyframes acercar {
     from { transform: scale(1.08); }
     to { transform: scale(1); }
   }
+  /* Velo ligero: lo justo para que el texto se lea. Se concentra abajo a la
+     izquierda, que es donde está el titular, y deja el resto de la imagen casi
+     limpia. */
+  /* Velo.
+     El video es un pasillo blanco y el titular va en blanco, asi que el velo
+     no puede ser el mismo en las dos formas de la pagina:
+
+       · En movil el titular ocupa todo el ancho y no hay a donde apartarse:
+         el velo es parejo y sube de abajo arriba, que es donde esta el texto.
+       · A partir de 900 px el texto vive en la columna izquierda, asi que el
+         velo se concentra ahi y suelta la derecha —el fondo del pasillo y el
+         logotipo sobre el cristal— practicamente limpia.
+
+     Los valores no estan puestos a ojo: se midio el contraste del blanco
+     contra el fondo real, en varios momentos del video y en los dos anchos.  */
   .hero__velo {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(to top, rgba(7, 15, 43, 0.92) 0%, rgba(7, 15, 43, 0.45) 45%, rgba(7, 15, 43, 0.55) 100%),
-      linear-gradient(to right, rgba(7, 15, 43, 0.75) 0%, transparent 65%);
+    background: linear-gradient(
+      to top,
+      rgba(6, 12, 36, 0.92) 0%,
+      rgba(6, 12, 36, 0.82) 42%,
+      rgba(6, 12, 36, 0.6) 72%,
+      rgba(6, 12, 36, 0.5) 100%
+    );
   }
-  .hero__trama { position: absolute; inset: 0; opacity: 0.5; }
+  @media (min-width: 900px) {
+    .hero__velo {
+      background:
+        linear-gradient(
+          to right,
+          rgba(6, 12, 36, 0.94) 0%,
+          rgba(6, 12, 36, 0.9) 34%,
+          rgba(6, 12, 36, 0.78) 52%,
+          rgba(6, 12, 36, 0.34) 72%,
+          rgba(6, 12, 36, 0.05) 88%,
+          rgba(6, 12, 36, 0) 100%
+        ),
+        linear-gradient(
+          to top,
+          rgba(6, 12, 36, 0.6) 0%,
+          rgba(6, 12, 36, 0.18) 45%,
+          rgba(6, 12, 36, 0) 72%
+        );
+    }
+  }
 
-  .hero__cuerpo { position: relative; padding-bottom: 4rem; }
+  .hero__cuerpo { position: relative; z-index: 2; padding-bottom: 4rem; }
   @media (min-width: 1024px) { .hero__cuerpo { padding-bottom: 6rem; } }
 
   /* Entrada por líneas: cada renglón asoma tras una máscara */
@@ -160,7 +239,7 @@ const T = {
   .hero__linea:nth-child(1) > span { animation-delay: 0.25s; }
   .hero__linea:nth-child(2) > span { animation-delay: 0.37s; }
   .hero__linea:nth-child(3) > span { animation-delay: 0.49s; }
-  .hero__enfasis { color: rgba(255, 255, 255, 0.5); }
+  .hero__enfasis { color: rgba(255, 255, 255, 0.62); }
 
   @keyframes sube-linea { to { transform: none; } }
   @keyframes asoma {
@@ -173,7 +252,7 @@ const T = {
     margin-top: 1.75rem;
     font-size: 1.05rem;
     line-height: 1.65;
-    color: rgba(255, 255, 255, 0.68);
+    color: rgba(255, 255, 255, 0.85);
     animation-delay: 0.72s;
   }
   .hero__acciones {
@@ -186,7 +265,11 @@ const T = {
 
   .hero__pie {
     position: relative;
+    z-index: 2;
     padding-block: 1.5rem;
+    /* Deja libre la esquina inferior derecha, que ocupa el botón flotante
+       de WhatsApp. */
+    padding-right: 4.25rem;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     animation: asoma 1s var(--ease-salida) 1s both;
   }
@@ -206,31 +289,54 @@ const T = {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero__video { animation: none; }
+    .hero__poster { animation: none; }
     .hero__linea > span { transform: none; animation: none; }
     .hero__ante, .hero__bajada, .hero__acciones, .hero__pie { animation: none; }
   }
 </style>
 
 <script>
-  // El video solo se descarga si el visitante no ha pedido menos movimiento,
-  // y solo mientras la portada está en pantalla.
+  /* El video de portada.
+     La fuente no está en el HTML: se decide aquí si vale la pena bajarla. Si
+     no, la portada se queda con el póster, que ya se ve lleno. */
   const video = document.querySelector<HTMLVideoElement>('[data-video-hero]');
+
   if (video) {
+    const conexion = (navigator as any).connection;
+    const ahorro = Boolean(conexion?.saveData);
+    const lenta = /^(slow-)?2g$|^3g$/.test(conexion?.effectiveType ?? '');
     const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (quieto) {
-      video.removeAttribute('autoplay');
-    } else {
-      video.preload = 'auto';
-      video.load();
-      video.play().catch(() => {
-        /* Si el navegador la bloquea, queda el póster: la portada nunca falla. */
-      });
-      const io = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting) video.play().catch(() => {});
-        else video.pause();
-      });
-      io.observe(video);
+
+    if (!quieto && !ahorro && !lenta) {
+      const arrancar = () => {
+        video.src = video.dataset.src ?? '';
+        video.preload = 'auto';
+        video.load();
+
+        // Solo se muestra cuando ya hay imagen que mostrar.
+        video.addEventListener(
+          'loadeddata',
+          () => {
+            video.classList.add('es-visible');
+            video.play().catch(() => {
+              /* Si el navegador bloquea la reproducción automática queda el
+                 póster: la portada nunca se ve rota. */
+            });
+          },
+          { once: true }
+        );
+
+        // Fuera de pantalla no se reproduce: ni batería ni CPU de balde.
+        const io = new IntersectionObserver(([e]) => {
+          if (e.isIntersecting) video.play().catch(() => {});
+          else video.pause();
+        });
+        io.observe(video);
+      };
+
+      // Se espera a que la página termine de cargar lo importante.
+      if (document.readyState === 'complete') arrancar();
+      else window.addEventListener('load', arrancar, { once: true });
     }
   }
 </script>

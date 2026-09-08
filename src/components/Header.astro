@@ -269,23 +269,52 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 <style>
   .cabecera { position: sticky; top: 0; z-index: 60; }
 
-  /* Conmutador de idioma: el actual en firme, el otro atenuado hasta que se
-     apunta. Ocupa lo mismo en los dos estados, así la barra no se mueve. */
+  /* Conmutador de idioma.
+     Se le da cuerpo —recuadro propio, mas tamano y mas espacio— porque en el
+     cintillo, entre telefonos y WhatsApp, dos siglas sueltas se perdian. El
+     idioma activo va en solido; el otro, en hueco, y se rellena al apuntarlo.
+     Los dos rotulos miden igual, asi que la barra no se mueve al cambiar. */
   .idioma {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+    gap: 0.2rem;
+    padding: 0.15rem;
+    border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
   }
-  .idioma__actual { opacity: 1; }
+  .idioma__actual,
   .idioma__otro {
-    opacity: 0.45;
-    transition: opacity 0.3s var(--ease-editorial);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.15rem;
+    padding: 0.28rem 0.5rem;
+    border-radius: 999px;
+    line-height: 1;
+    transition: background-color 0.3s var(--ease-editorial),
+      color 0.3s var(--ease-editorial), opacity 0.3s var(--ease-editorial);
   }
+  /* El rotulo activo va en solido. Su color se declara para los dos estados
+     de la cabecera —papel y transparente sobre el hero— en vez de deducirlo
+     de currentColor, que dejaria blanco sobre blanco. */
+  .idioma__actual {
+    background: var(--color-tinta);
+    color: var(--color-papel);
+    opacity: 1;
+  }
+  .cabecera.es-clara:not(.compacta):not(.abierta):not(.movil-abierto) .idioma__actual {
+    background: #fff;
+    color: var(--color-brand-950);
+  }
+  .idioma__otro { opacity: 0.6; }
   .idioma__otro:hover,
-  .idioma__otro:focus-visible { opacity: 1; }
+  .idioma__otro:focus-visible {
+    opacity: 1;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
 
   /* Una sola superficie continua: cintillo, barra y lámina del menú.
      Al desplegarse, sus esquinas inferiores se redondean. */
@@ -318,8 +347,11 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
     transition: margin-top 0.45s var(--ease-editorial), opacity 0.3s;
   }
   :global(.cabecera.compacta:not(.abierta)) .cintillo { margin-top: -2.25rem; opacity: 0; }
+  /* Sin `display`: lo deciden las utilidades del marcado, que es donde se
+     dice en que anchos aparece cada enlace. Declararlo aqui ganaria a
+     `hidden` por especificidad y el telefono se colaria en el movil,
+     estrujando el resto del cintillo. */
   .cintillo__enlace {
-    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     opacity: 0.75;

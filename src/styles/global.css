@@ -64,7 +64,14 @@
     --r-md: 12px;
     --r-lg: 24px;
     --r-lamina: 40px;
+
+    /* Medianil de la retícula. Acompaña al aire lateral de .caja, de modo
+       que los huecos entre columnas y los márgenes de página se leen como
+       parte del mismo sistema. */
+    --medianil: 1.25rem;
   }
+  @media (min-width: 768px) { :root { --medianil: 1.5rem; } }
+  @media (min-width: 1280px) { :root { --medianil: 2rem; } }
 
   @media (prefers-reduced-motion: reduce) {
     :root { scroll-behavior: auto; }
@@ -398,11 +405,17 @@
   .js [data-anim='izq'] { transform: translateX(-28px); }
   .js [data-anim='der'] { transform: translateX(28px); }
   .js [data-anim='escala'] { transform: scale(0.96); }
-  /* Cortina: la imagen se descubre de abajo hacia arriba */
-  .js [data-anim='cortina'] {
-    opacity: 1;
+  /* Cortina: la imagen se descubre de abajo hacia arriba.
+     El recorte va sobre el primer hijo, nunca sobre el elemento observado:
+     un elemento recortado a cero tiene area de interseccion cero, y el
+     observador de entradas —que pide un 5 % visible— no lo activaria jamas.
+     Asi el marco conserva su caja y solo su contenido queda tapado. */
+  .js [data-anim='cortina'] { opacity: 1; }
+  .js [data-anim='cortina'] > :first-child {
     clip-path: inset(100% 0 0 0);
+    transition: clip-path 1.1s var(--ease-salida) var(--retraso, 0ms);
   }
+  .js [data-anim='cortina'].visible > :first-child { clip-path: inset(0 0 0 0); }
   .js [data-anim='lineas'] { transform: translateY(22px); }
 
   .js [data-anim].visible {

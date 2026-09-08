@@ -40,23 +40,53 @@ const enlacesEmpresa = [
 ---
 
 <footer class="pie">
-  <div class="caja">
-    <!-- Cierre editorial: la última llamada, en grande -->
-    <div class="pie__cierre" data-anim="sube">
-      <p class="ante ante-claro">{t.pie.ante}</p>
-      <h2 class="display-lg mt-5 max-w-4xl">{t.pie.titulo}</h2>
-      <div class="mt-9 flex flex-wrap gap-3">
-        <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-papel">
+  <!-- ── Cierre editorial: la última llamada, sobre el almacén ──────────
+       La fotografía va a sangre y se mueve con parallax; encima, un velo
+       firme que sostiene el contraste del texto en blanco. -->
+  <section class="cierre-hero">
+    <div class="cierre-hero__fondo" aria-hidden="true">
+      <img
+        class="cierre-hero__img parallax"
+        data-parallax="0.16"
+        src="/img/fotos/almacen-p1360310-1600.webp"
+        srcset="/img/fotos/almacen-p1360310-1000.webp 1000w, /img/fotos/almacen-p1360310-1600.webp 1600w"
+        sizes="100vw"
+        width="1600"
+        height="1200"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="cierre-hero__velo"></div>
+      <div class="cierre-hero__trama trama"></div>
+    </div>
+
+    <div class="caja cierre-hero__cuerpo" data-anim-grupo="110">
+      <p class="ante ante-claro" data-anim="sube">{t.pie.ante}</p>
+      <h2 class="display-lg mt-5 max-w-4xl" data-anim="sube">{t.pie.titulo}</h2>
+
+      <div class="cierre-hero__acciones">
+        <a
+          href={via(lang, 'contacto', undefined, 'cotizar')}
+          class="pill relleno relleno--papel"
+          data-anim="sube"
+        >
           {t.cotizar}<Icon name="flecha" size={16} />
         </a>
-        <a href={whatsapp(wa.cotizacion)} target="_blank" rel="noopener" class="pill pill-claro">
+        <a
+          href={whatsapp(wa.cotizacion)}
+          target="_blank"
+          rel="noopener"
+          class="pill relleno relleno--claro"
+          data-anim="sube"
+        >
           <Icon name="whatsapp" size={17} />WhatsApp {site.whatsapp.numero}
         </a>
       </div>
     </div>
+  </section>
 
-    <hr class="pie__filete" />
-
+  <div class="caja">
     <div class="grid gap-x-10 gap-y-12 py-16 lg:grid-cols-12">
       <div class="lg:col-span-4">
         <img
@@ -170,10 +200,97 @@ const enlacesEmpresa = [
     color: #fff;
   }
 
-  .pie__cierre { padding-block: 5.5rem 4.5rem; }
-  @media (min-width: 1024px) { .pie__cierre { padding-block: 7.5rem 6rem; } }
+  /* ── Banda de cierre ──────────────────────────────────────────────── */
+  .cierre-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: 6rem 5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @media (min-width: 1024px) { .cierre-hero { padding-block: 9rem 7.5rem; } }
 
-  .pie__filete { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+  .cierre-hero__fondo { position: absolute; inset: 0; }
+  .cierre-hero__img {
+    /* Más alta que la banda: el parallax se mueve sin descubrir los bordes. */
+    position: absolute;
+    top: -14%;
+    left: 0;
+    width: 100%;
+    height: 128%;
+    object-fit: cover;
+  }
+  /* Velo firme: la fotografía del almacén es clara y el titular va en blanco.
+     Se refuerza a la izquierda, que es donde se apoya el texto. */
+  /* Velo direccional, como en la portada: firme en la columna del texto y
+     suelto a la derecha, donde la fotografía se ve. */
+  .cierre-hero__velo {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        to right,
+        rgba(6, 12, 36, 0.92) 0%,
+        rgba(6, 12, 36, 0.82) 38%,
+        rgba(6, 12, 36, 0.5) 68%,
+        rgba(6, 12, 36, 0.34) 100%
+      ),
+      linear-gradient(to top, rgba(6, 12, 36, 0.45) 0%, rgba(6, 12, 36, 0.1) 55%, transparent 100%);
+  }
+  .cierre-hero__trama { position: absolute; inset: 0; opacity: 0.35; }
+  .cierre-hero__cuerpo { position: relative; }
+
+  .cierre-hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2.5rem;
+  }
+
+  /* ── Botón que se rellena de izquierda a derecha ───────────────────
+     El relleno entra al aparecer el botón, no al pasar el cursor: es parte
+     de la entrada de la sección. El color del texto cambia con retraso, ya
+     pasada la mitad del barrido, para que nunca quede ilegible. */
+  .relleno {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #fff;
+    transition: color 0.35s var(--ease-editorial) calc(var(--retraso, 0ms) + 620ms),
+      border-color 0.4s var(--ease-editorial);
+  }
+  .relleno::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.85s var(--ease-salida) calc(var(--retraso, 0ms) + 260ms);
+  }
+  .relleno--papel::before { background: var(--color-papel); }
+  .relleno--claro::before { background: rgba(255, 255, 255, 0.14); }
+
+  .relleno.visible::before { transform: scaleX(1); }
+  .relleno--papel.visible { color: var(--color-tinta); border-color: var(--color-papel); }
+  .relleno--claro.visible { border-color: rgba(255, 255, 255, 0.55); }
+
+  /* Sin JavaScript la clase `visible` no llega nunca: el botón se muestra ya
+     relleno en vez de quedarse a medias. */
+  html:not(.js) .relleno::before { transform: scaleX(1); }
+  html:not(.js) .relleno--papel { color: var(--color-tinta); border-color: var(--color-papel); }
+
+  .relleno--papel:hover { border-color: #fff; }
+  .relleno--papel:hover::before { background: #fff; }
+  .relleno--claro:hover { border-color: rgba(255, 255, 255, 0.85); }
+  .relleno--claro:hover::before { background: rgba(255, 255, 255, 0.24); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .relleno,
+    .relleno::before { transition-delay: 0ms; }
+  }
+
 
   .pie__enlace {
     color: rgba(255, 255, 255, 0.7);

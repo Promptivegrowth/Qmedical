@@ -81,6 +81,16 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
 
 ### Detalles de implementación
 
+- **Portada con video**: `public/video/hero.mp4` se reproduce en bucle infinito,
+  silenciado y en línea. El póster es su primer fotograma, extraído por
+  `scripts/poster_video.py`, así que la portada se ve llena desde el primer pintado
+  y el video entra encima cuando está listo. La fuente no va en el HTML: la pone el
+  guion solo si decide reproducir, y no lo hace con `prefers-reduced-motion`, con el
+  ahorro de datos activado ni en 2G/3G. Se pausa al salir de pantalla.
+- **Contraste sobre imagen**: el velo de la portada y el de la banda de cierre no
+  están puestos a ojo. Se midió la relación de contraste del texto blanco contra el
+  fondo real —con el texto oculto, en varios momentos del video y de 320 a 1920 px—
+  y los valores se ajustaron hasta superar el mínimo AA en todos los casos.
 - **Preloader**: el logotipo corporativo sobre un trazo electrocardiográfico. Aparece
   una sola vez por sesión (`sessionStorage`), se cierra al terminar la carga con un
   tope de seguridad de 4 s y no se muestra con `prefers-reduced-motion` ni sin

@@ -20,6 +20,7 @@
 # ------------------------------------------------------------------ Tipos MIME
 <IfModule mod_mime.c>
   AddType image/webp                   .webp
+  AddType video/mp4                    .mp4
   AddType image/avif                   .avif
   AddType application/manifest+json    .webmanifest
   AddType font/woff2                   .woff2
@@ -33,6 +34,7 @@
   ExpiresByType application/json          "access plus 0 seconds"
   ExpiresByType text/xml                  "access plus 1 hour"
   ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType video/mp4                 "access plus 1 year"
   ExpiresByType image/png                 "access plus 1 year"
   ExpiresByType image/svg+xml             "access plus 1 year"
   ExpiresByType application/pdf           "access plus 1 month"

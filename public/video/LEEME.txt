@@ -1,17 +1,27 @@
 Video de la portada
 ===================
 
-Coloque aquí el video en bucle del hero con estos nombres exactos:
+hero.mp4 es el video que se reproduce en bucle detras del titular de la
+portada. Lo entrego la empresa: 1280x720, 8 segundos, 2,4 MB.
 
-  hero.mp4    (H.264, obligatorio)
-  hero.webm   (VP9 o AV1, opcional pero recomendado: pesa menos)
+Si se reemplaza por otro:
 
-Recomendaciones
-  · 1920x1080, sin audio (el hero lo reproduce silenciado).
-  · Entre 8 y 15 segundos, con corte que empalme para que el bucle no salte.
-  · Por debajo de 4 MB. El video se descarga solo si el visitante no ha
-    pedido menos movimiento, y se pausa al salir de pantalla.
+  1. Guardelo aqui con el mismo nombre, hero.mp4.
+  2. Vuelva a generar el poster:
 
-Mientras no existan estos archivos la portada muestra el poster
-(/img/fotos/almacen-p1360310-1600.webp) y se ve correcta: no queda en negro
-ni rota. No hace falta tocar nada del codigo al subir el video.
+         python scripts/poster_video.py
+
+     Ese guion saca el primer fotograma del video y lo publica como
+     hero-poster-1280.webp y hero-poster-800.webp en public/img/fotos/. El
+     poster es lo que se ve mientras el video carga, asi que tiene que salir
+     del video nuevo; si no, se notaria el relevo.
+
+Recomendaciones para el video:
+
+  · 1280x720 o 1920x1080, sin audio (se reproduce silenciado de todos modos,
+    y la pista de sonido solo suma peso).
+  · Entre 6 y 12 segundos, con un corte que enlace bien consigo mismo: se
+    reproduce en bucle infinito.
+  · Por debajo de 3 MB. La pagina no lo descarga cuando el visitante tiene el
+    ahorro de datos activado, va por 2G o 3G, o ha pedido menos movimiento en
+    su sistema: en esos casos se queda el poster.
