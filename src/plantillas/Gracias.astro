@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site, whatsapp, waMensajes } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { waMensajesEn } from '../i18n/contenido';
+
+/**
+ * Acuse de recibo del formulario. Es la página a la que Web3Forms redirige
+ * tras un envío correcto, y por eso existe en los dos idiomas: quien escribe
+ * en inglés no debe aterrizar en una confirmación en castellano.
+ */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+
+const T = {
+  es: {
+    meta: 'Mensaje recibido',
+    metaDesc:
+      'Hemos recibido su mensaje. El equipo de Q-MEDICAL S.A.C. le responderá a la brevedad.',
+    ante: 'Solicitud registrada',
+    titulo: 'Recibimos su mensaje',
+    cuerpo:
+      'Gracias por escribirnos. Nuestro equipo revisará su solicitud y le ' +
+      'responderá dentro del siguiente día hábil al correo que registró.',
+    urgente: 'Si su requerimiento es urgente, escríbanos por WhatsApp al',
+    oLlame: 'o llámenos al',
+    volver: 'Volver al inicio',
+  },
+  en: {
+    meta: 'Message received',
+    metaDesc:
+      'We have received your message. The Q-MEDICAL S.A.C. team will reply shortly.',
+    ante: 'Enquiry registered',
+    titulo: 'We have your message',
+    cuerpo:
+      'Thank you for writing to us. Our team will review your enquiry and reply ' +
+      'by the next working day to the address you provided.',
+    urgente: 'If your request is urgent, message us on WhatsApp at',
+    oLlame: 'or call us on',
+    volver: 'Back to home',
+  },
+}[lang];
+---
+
+<Base lang={lang} clave="gracias" title={T.meta} description={T.metaDesc}>
+  <section class="grid min-h-[70svh] place-items-center bg-[var(--color-papel)] py-24">
+    <div class="caja text-center">
+      <p class="disco-visto"><Icon name="visto" size={30} /></p>
+      <p class="ante ante-brand mt-8">{T.ante}</p>
+      <h1 class="display-lg mt-5 mx-auto max-w-[16ch]">{T.titulo}</h1>
+      <p class="cuerpo-lg mx-auto mt-6 max-w-xl">{T.cuerpo}</p>
+      <p class="mt-6 text-[0.88rem] text-[var(--color-tinta-45)]">
+        {T.urgente}
+        <a href={whatsapp(wa.general)} target="_blank" rel="noopener"
+          class="text-[var(--color-brand-700)] underline underline-offset-4">{site.whatsapp.numero}</a>
+        {T.oLlame} {site.telefonos[0].etiqueta}.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        <a href={via(lang, 'catalogo')} class="pill pill-tinta">{t.verCatalogo}<Icon name="flecha" size={16} /></a>
+        <a href={via(lang, 'inicio')} class="pill pill-linea">{T.volver}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .disco-visto {
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+  }
+</style>

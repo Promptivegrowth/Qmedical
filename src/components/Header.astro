@@ -1,27 +1,49 @@
 ---
 import Icon from './Icon.astro';
 import { site, whatsapp, waMensajes } from '../data/site';
-import { categorias, productos, conteoProductos, imagenPrincipal, productoPorSlug } from '../data/catalogo';
+import { categorias, productos, productosDeCategoria, imagenPrincipal, productoPorSlug } from '../data/catalogo';
 import { marcas } from '../data/marcas';
+import { ruta as via, otroIdioma, NOMBRE_IDIOMA, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
+  lang?: Idioma;
   /** Sobre fondo oscuro la cabecera se invierte hasta que se hace scroll. */
   claro?: boolean;
+  /** Las dos direcciones de esta misma página, para el botón de idioma. */
+  alternas?: Record<Idioma, string>;
 }
-const { claro = false } = Astro.props;
+const { lang = 'es', claro = false, alternas } = Astro.props;
 
-const ruta = Astro.url.pathname.replace(/\/$/, '') || '/';
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+
+const aqui = Astro.url.pathname.replace(/\/$/, '') || '/';
+const inicio = via(lang, 'inicio');
 const activo = (href: string) =>
-  href === '/' ? ruta === '/' : ruta === href || ruta.startsWith(href + '/');
+  href === inicio ? aqui === inicio : aqui === href || aqui.startsWith(href + '/');
 
-const destCatalogo = productoPorSlug.get('videolaringoscopio')!;
+const lineas = categorias.map((c) => ({
+  ...categoriaEn(c, lang),
+  href: via(lang, 'categoria', c.slug),
+  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+}));
+
+const destCatalogo = productoEn(productoPorSlug.get('videolaringoscopio')!, lang);
 
 const empresa = [
-  { nombre: 'Marcas asociadas', href: '/marcas', nota: `${marcas.length} fabricantes representados`, icono: 'reticula' },
-  { nombre: 'Infraestructura', href: '/nosotros#infraestructura', nota: 'Almacén certificado BPA', icono: 'almacen' },
-  { nombre: 'Certificaciones', href: '/nosotros#certificaciones', nota: 'BPA · ISO 37001 · ISO 14001', icono: 'certificado' },
-  { nombre: 'Entregas', href: '/nosotros#infraestructura', nota: 'Cobertura en todas las regiones', icono: 'entrega' },
+  { nombre: t.nav.marcas, href: via(lang, 'marcas'), nota: t.megaEmpresa.marcasNota(marcas.length), icono: 'reticula' },
+  { nombre: t.megaEmpresa.infraestructura, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.infraestructuraNota, icono: 'almacen' },
+  { nombre: t.megaEmpresa.certificaciones, href: via(lang, 'nosotros', undefined, 'certificaciones'), nota: t.megaEmpresa.certificacionesNota, icono: 'certificado' },
+  { nombre: t.megaEmpresa.entregas, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.entregasNota, icono: 'entrega' },
 ];
+
+// El conmutador necesita saber a dónde ir. Si la página no declara sus
+// gemelas, cae con elegancia en la portada del otro idioma en vez de
+// componer una dirección que podría no existir.
+const otro = otroIdioma(lang);
+const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 ---
 
 <header id="cabecera" class:list={['cabecera', claro && 'es-clara']}>
@@ -32,21 +54,36 @@ const empresa = [
         <p class="flex min-w-0 items-center gap-2">
           <Icon name="certificado" size={13} class="shrink-0 opacity-55" />
           <span class="hidden sm:inline truncate">
-            <span class="hidden lg:inline">Droguería certificada en </span>Buenas Prácticas de
-            Almacenamiento — DIGEMID
+            <span class="hidden lg:inline">{t.cintilloPrefijo}</span>{t.cintilloMedio}
           </span>
-          <span class="sm:hidden truncate">Certificación BPA</span>
+          <span class="sm:hidden truncate">{t.cintilloCorto}</span>
         </p>
         <div class="flex shrink-0 items-center gap-3">
           <a href={site.telefonos[0].href} class="cintillo__enlace hidden lg:inline-flex">
             <Icon name="telefono" size={12} />{site.telefonos[0].etiqueta}
           </a>
           <span class="hidden lg:block h-3 w-px bg-current opacity-20" aria-hidden="true"></span>
-          <a href={whatsapp(waMensajes.general)} target="_blank" rel="noopener" class="cintillo__enlace inline-flex">
+          <a href={whatsapp(wa.general)} target="_blank" rel="noopener" class="cintillo__enlace inline-flex">
             <Icon name="whatsapp" size={12} />
             <span class="hidden sm:inline">{site.whatsapp.numero}</span>
             <span class="sm:hidden">WhatsApp</span>
           </a>
+
+          <span class="h-3 w-px bg-current opacity-20" aria-hidden="true"></span>
+
+          <!-- Conmutador de idioma: dos rótulos, no un desplegable. Se ve de
+               un vistazo en qué idioma se está, y el enlace lleva a esta misma
+               página en el otro, no a la portada. -->
+          <p class="idioma">
+            <span class="idioma__actual" aria-current="true">{lang === 'es' ? 'ES' : 'EN'}</span>
+            <a
+              href={destinoIdioma}
+              class="idioma__otro"
+              hreflang={otro}
+              lang={otro}
+              title={textos(otro).verEn(NOMBRE_IDIOMA[otro])}
+            >{otro === 'es' ? 'ES' : 'EN'}</a>
+          </p>
         </div>
       </div>
     </div>
@@ -54,7 +91,7 @@ const empresa = [
     <!-- Barra principal -->
     <div class="barra">
       <div class="caja flex items-center justify-between gap-6">
-        <a href="/" class="marca" aria-label="Q-MEDICAL S.A.C. — Inicio">
+        <a href={inicio} class="marca" aria-label={'Q-MEDICAL S.A.C. — ' + t.irInicio}>
           <img
             src="/img/logo/qmedical-azul.webp"
             srcset="/img/logo/qmedical-azul-1x.webp 1x, /img/logo/qmedical-azul.webp 2x"
@@ -68,32 +105,39 @@ const empresa = [
           />
         </a>
 
-        <nav class="nav" aria-label="Navegación principal">
-          <a href="/nosotros" class:list={['nav__enlace', activo('/nosotros') && 'es-activo']}>Nosotros</a>
+        <nav class="nav" aria-label={t.navPrincipal}>
+          <a
+            href={via(lang, 'nosotros')}
+            class:list={['nav__enlace', activo(via(lang, 'nosotros')) && 'es-activo']}
+          >{t.nav.nosotros}</a>
           <div class="nav__item" data-menu="catalogo">
-            <button type="button" class:list={['nav__enlace', activo('/catalogo') && 'es-activo']}
+            <button type="button" class:list={['nav__enlace', activo(via(lang, 'catalogo')) && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-catalogo">
-              Catálogo<span class="nav__punta"><Icon name="chevron" size={11} /></span>
+              {t.nav.catalogo}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
           <div class="nav__item" data-menu="empresa">
-            <button type="button" class:list={['nav__enlace', activo('/marcas') && 'es-activo']}
+            <button type="button" class:list={['nav__enlace', activo(via(lang, 'marcas')) && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-empresa">
-              Empresa<span class="nav__punta"><Icon name="chevron" size={11} /></span>
+              {t.nav.empresa}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
-          <a href="/contacto" class:list={['nav__enlace', activo('/contacto') && 'es-activo']}>Contacto</a>
+          <a
+            href={via(lang, 'contacto')}
+            class:list={['nav__enlace', activo(via(lang, 'contacto')) && 'es-activo']}
+          >{t.nav.contacto}</a>
         </nav>
 
         <div class="flex shrink-0 items-center gap-2">
-          <a href="/contacto#cotizar" class="pill pill-tinta cta-barra">
-            <span class="hidden md:inline">Solicitar cotización</span>
-            <span class="md:hidden">Cotizar</span>
+          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta cta-barra">
+            <span class="hidden md:inline">{t.cotizar}</span>
+            <span class="md:hidden">{t.cotizarCorto}</span>
           </a>
           <button id="hamburguesa" type="button" class="hamburguesa"
-            aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-movil">
-            <Icon name="menu" size={20} class="ic-abrir" />
-            <Icon name="cerrar" size={20} class="ic-cerrar" />
+            aria-label={t.abrirMenu} aria-expanded="false" aria-controls="menu-movil"
+            data-abrir={t.abrirMenu} data-cerrar={t.cerrarMenu}>
+            <span class="ic-abrir"><Icon name="menu" size={20} /></span>
+            <span class="ic-cerrar"><Icon name="cerrar" size={20} /></span>
           </button>
         </div>
       </div>
@@ -102,12 +146,12 @@ const empresa = [
     <!-- ── Láminas del mega-menú ─────────────────────────────────────── -->
     <div class="lamina-menu" id="lamina-catalogo" data-lamina="catalogo" hidden>
       <div class="caja lamina-menu__cuerpo">
-        <a href={`/productos/${destCatalogo.slug}`} class="lamina destacado">
+        <a href={via(lang, 'producto', destCatalogo.slug)} class="lamina destacado">
           <img src={imagenPrincipal(destCatalogo.slug, 900)} width="900" height="900" alt=""
             loading="lazy" class="destacado__img" />
           <span class="lamina__pie">
             <span>
-              <span class="ante ante-claro">Destacado</span>
+              <span class="ante ante-claro">{t.megaCatalogo.destacado}</span>
               <span class="mt-1 block display-sm text-white">{destCatalogo.nombre}</span>
             </span>
             <span class="disco-flecha"><Icon name="flecha" size={17} /></span>
@@ -115,23 +159,23 @@ const empresa = [
         </a>
 
         <div class="lamina-menu__lista">
-          <p class="ante mb-5">Líneas de producto · {categorias.length}</p>
+          <p class="ante mb-5">{t.megaCatalogo.lineas} · {categorias.length}</p>
           <ul class="rejilla-lineas">
-            {categorias.map((c) => (
+            {lineas.map((c) => (
               <li>
-                <a href={`/catalogo/${c.slug}`} class="linea">
+                <a href={c.href} class="linea">
                   <span class="linea__ic"><Icon name={c.icono} size={19} /></span>
                   <span class="min-w-0">
                     <span class="block truncate font-medium">{c.corto}</span>
-                    <span class="block text-[0.75rem] text-[var(--color-tinta-45)]">{conteoProductos(c.slug)}</span>
+                    <span class="block text-[0.75rem] text-[var(--color-tinta-45)]">{c.cuenta}</span>
                   </span>
                 </a>
               </li>
             ))}
           </ul>
           <div class="lamina-menu__pie">
-            <a href="/catalogo" class="enlace">Todo el catálogo · {productos.length} productos<Icon name="flecha" size={15} /></a>
-            <a href="/contacto#cotizar" class="enlace">Solicitar una cotización<Icon name="flecha" size={15} /></a>
+            <a href={via(lang, 'catalogo')} class="enlace">{t.megaCatalogo.todo(productos.length)}<Icon name="flecha" size={15} /></a>
+            <a href={via(lang, 'contacto', undefined, 'cotizar')} class="enlace">{t.megaCatalogo.cotizar}<Icon name="flecha" size={15} /></a>
           </div>
         </div>
       </div>
@@ -139,20 +183,20 @@ const empresa = [
 
     <div class="lamina-menu" id="lamina-empresa" data-lamina="empresa" hidden>
       <div class="caja lamina-menu__cuerpo">
-        <a href="/nosotros" class="lamina destacado destacado--foto">
+        <a href={via(lang, 'nosotros')} class="lamina destacado destacado--foto">
           <img src="/img/fotos/equipo-almacen-1000.webp" width="1000" height="563" alt=""
             loading="lazy" class="destacado__img destacado__img--cubre" />
           <span class="lamina__pie">
             <span>
-              <span class="ante ante-claro">Desde {site.fundacion}</span>
-              <span class="mt-1 block display-sm text-white">Nuestro almacén</span>
+              <span class="ante ante-claro">{t.megaEmpresa.desde(site.fundacion)}</span>
+              <span class="mt-1 block display-sm text-white">{t.megaEmpresa.almacen}</span>
             </span>
             <span class="disco-flecha"><Icon name="flecha" size={17} /></span>
           </span>
         </a>
 
         <div class="lamina-menu__lista">
-          <p class="ante mb-5">La empresa</p>
+          <p class="ante mb-5">{t.megaEmpresa.titulo}</p>
           <ul class="rejilla-lineas rejilla-lineas--anchas">
             {empresa.map((e) => (
               <li>
@@ -167,7 +211,7 @@ const empresa = [
             ))}
           </ul>
           <div class="lamina-menu__pie">
-            <a href="/libro-de-reclamaciones" class="enlace">Libro de Reclamaciones<Icon name="libro" size={15} /></a>
+            <a href={via(lang, 'reclamos')} class="enlace">{t.megaEmpresa.reclamos}<Icon name="libro" size={15} /></a>
           </div>
         </div>
       </div>
@@ -176,12 +220,12 @@ const empresa = [
 
   <!-- ── Menú móvil ──────────────────────────────────────────────────── -->
   <div id="menu-movil" class="movil" hidden>
-    <nav class="caja movil__cuerpo" aria-label="Navegación móvil">
-      <p class="ante">Líneas de producto</p>
+    <nav class="caja movil__cuerpo" aria-label={t.navMovil}>
+      <p class="ante">{t.megaCatalogo.lineas}</p>
       <ul class="mt-4 grid grid-cols-2 gap-2">
-        {categorias.map((c) => (
+        {lineas.map((c) => (
           <li>
-            <a href={`/catalogo/${c.slug}`} class="movil__linea">
+            <a href={c.href} class="movil__linea">
               <Icon name={c.icono} size={17} class="shrink-0 text-[var(--color-brand-700)]" />
               <span class="min-w-0 truncate">{c.corto}</span>
             </a>
@@ -191,10 +235,10 @@ const empresa = [
 
       <ul class="mt-8 divide-y divide-[var(--color-linea)] border-y border-[var(--color-linea)]">
         {[
-          { n: 'Nosotros', h: '/nosotros' },
-          { n: 'Catálogo', h: '/catalogo' },
-          { n: 'Marcas asociadas', h: '/marcas' },
-          { n: 'Contacto', h: '/contacto' },
+          { n: t.nav.nosotros, h: via(lang, 'nosotros') },
+          { n: t.nav.catalogo, h: via(lang, 'catalogo') },
+          { n: t.nav.marcas, h: via(lang, 'marcas') },
+          { n: t.nav.contacto, h: via(lang, 'contacto') },
         ].map((i) => (
           <li>
             <a href={i.h} class:list={['movil__enlace', activo(i.h) && 'es-activo']}>
@@ -205,12 +249,15 @@ const empresa = [
       </ul>
 
       <div class="mt-7 grid gap-2.5">
-        <a href="/contacto#cotizar" class="pill pill-tinta w-full">Solicitar cotización</a>
-        <a href={whatsapp(waMensajes.general)} target="_blank" rel="noopener" class="pill pill-linea w-full">
-          <Icon name="whatsapp" size={16} />Escribir por WhatsApp
+        <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta w-full">{t.cotizar}</a>
+        <a href={whatsapp(wa.general)} target="_blank" rel="noopener" class="pill pill-linea w-full">
+          <Icon name="whatsapp" size={16} />{t.escribirWa}
         </a>
         <a href={site.telefonos[0].href} class="pill pill-linea w-full">
           <Icon name="telefono" size={15} />{site.telefonos[0].etiqueta}
+        </a>
+        <a href={destinoIdioma} hreflang={otro} lang={otro} class="pill pill-linea w-full">
+          {textos(otro).verEn(NOMBRE_IDIOMA[otro])}
         </a>
       </div>
     </nav>
@@ -221,6 +268,24 @@ const empresa = [
 
 <style>
   .cabecera { position: sticky; top: 0; z-index: 60; }
+
+  /* Conmutador de idioma: el actual en firme, el otro atenuado hasta que se
+     apunta. Ocupa lo mismo en los dos estados, así la barra no se mueve. */
+  .idioma {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+  .idioma__actual { opacity: 1; }
+  .idioma__otro {
+    opacity: 0.45;
+    transition: opacity 0.3s var(--ease-editorial);
+  }
+  .idioma__otro:hover,
+  .idioma__otro:focus-visible { opacity: 1; }
 
   /* Una sola superficie continua: cintillo, barra y lámina del menú.
      Al desplegarse, sus esquinas inferiores se redondean. */
@@ -334,9 +399,13 @@ const empresa = [
     background: none;
   }
   @media (min-width: 1024px) { .hamburguesa { display: none; } }
+  /* Un solo icono a la vista. Los span pertenecen a esta plantilla, de modo
+     que el alcance de estos estilos si los alcanza. */
+  .ic-abrir,
+  .ic-cerrar { display: grid; place-items: center; }
   .ic-cerrar { display: none; }
   :global(.cabecera.movil-abierto) .ic-abrir { display: none; }
-  :global(.cabecera.movil-abierto) .ic-cerrar { display: block; }
+  :global(.cabecera.movil-abierto) .ic-cerrar { display: grid; }
 
   /* ── Lámina del mega-menú ─────────────────────────────────────────── */
   /* La lámina abre despacio: primero cede la altura y luego asoma el
@@ -533,8 +602,10 @@ const empresa = [
       if (!movil || movil.hidden) return;
       movil.hidden = true;
       cabecera.classList.remove('movil-abierto');
-      hamburguesa?.setAttribute('aria-expanded', 'false');
-      hamburguesa?.setAttribute('aria-label', 'Abrir menú');
+      if (hamburguesa) {
+        hamburguesa.setAttribute('aria-expanded', 'false');
+        hamburguesa.setAttribute('aria-label', hamburguesa.dataset.abrir ?? '');
+      }
     };
 
     items.forEach((item) => {
@@ -568,7 +639,7 @@ const empresa = [
       movil.hidden = false;
       cabecera.classList.add('movil-abierto');
       hamburguesa.setAttribute('aria-expanded', 'true');
-      hamburguesa.setAttribute('aria-label', 'Cerrar menú');
+      hamburguesa.setAttribute('aria-label', hamburguesa.dataset.cerrar ?? '');
     });
     window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
       if (e.matches) cerrarMovil();

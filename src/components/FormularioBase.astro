@@ -8,14 +8,16 @@
  *   redactados. Nunca queda un botón que no hace nada.
  */
 import { site } from '../data/site';
+import { ruta, type Idioma } from '../i18n/rutas';
 
 interface Props {
+  lang?: Idioma;
   id: string;
   asunto: string;
   destino?: string;
   class?: string;
 }
-const { id, asunto, destino = site.correoPrincipal, class: klass = '' } = Astro.props;
+const { lang = 'es', id, asunto, destino = site.correoPrincipal, class: klass = '' } = Astro.props;
 const conServicio = Boolean(site.formAccessKey);
 ---
 
@@ -27,12 +29,15 @@ const conServicio = Boolean(site.formAccessKey);
   data-form
   data-destino={destino}
   data-asunto={asunto}
+  data-lang={lang}
   novalidate
 >
   {conServicio && <input type="hidden" name="access_key" value={site.formAccessKey} />}
   <input type="hidden" name="subject" value={asunto} />
   <input type="hidden" name="from_name" value="Formulario web — Q-MEDICAL S.A.C." />
-  <input type="hidden" name="redirect" value={`${site.url}/gracias`} />
+  <input type="hidden" name="redirect" value={site.url + ruta(lang, 'gracias')} />
+  <!-- El idioma viaja con el envio: quien responde sabe en que lengua escribir -->
+  <input type="hidden" name="idioma" value={lang === 'en' ? 'English' : 'Espanol'} />
 
   <!-- Trampa antispam: invisible para las personas, tentadora para los bots -->
   <input type="checkbox" name="botcheck" class="hidden" style="display:none"
@@ -56,8 +61,28 @@ const conServicio = Boolean(site.formAccessKey);
 </style>
 
 <script>
+  const AVISOS = {
+    es: {
+      faltan: 'Revise los campos marcados: falta información obligatoria.',
+      asunto: 'Consulta desde la web',
+      correoAbierto: (d: string) =>
+        'Se abrió su gestor de correo con el mensaje redactado. Si no ocurrió ' +
+        `nada, escríbanos directamente a ${d}.`,
+      idioma: 'Idioma',
+    },
+    en: {
+      faltan: 'Please check the highlighted fields: required information is missing.',
+      asunto: 'Enquiry from the website',
+      correoAbierto: (d: string) =>
+        'Your email client should have opened with the message ready. If nothing ' +
+        `happened, write to us directly at ${d}.`,
+      idioma: 'Language',
+    },
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     const error = form.querySelector<HTMLElement>('[data-form-error]');
+    const idioma = form.dataset.lang === 'en' ? 'en' : 'es';
 
     const mostrarError = (msg: string) => {
       if (!error) return;
@@ -72,7 +97,7 @@ const conServicio = Boolean(site.formAccessKey);
       if (!form.checkValidity()) {
         ev.preventDefault();
         form.querySelector<HTMLInputElement>(':invalid')?.focus();
-        mostrarError('Revise los campos marcados: falta información obligatoria.');
+        mostrarError(AVISOS[idioma].faltan);
         return;
       }
 
@@ -83,7 +108,7 @@ const conServicio = Boolean(site.formAccessKey);
         const lineas: string[] = [];
 
         for (const [clave, valor] of datos.entries()) {
-          if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].includes(clave)) continue;
+          if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck', 'idioma'].includes(clave)) continue;
           if (typeof valor !== 'string' || !valor.trim()) continue;
           const campo = form.querySelector(`[name="${CSS.escape(clave)}"]`);
           const etiqueta =
@@ -98,10 +123,7 @@ const conServicio = Boolean(site.formAccessKey);
         window.location.href = `mailto:${form.dataset.destino}?subject=${asunto}&body=${cuerpo}`;
 
         setTimeout(() => {
-          mostrarError(
-            'Se abrió su gestor de correo con el mensaje redactado. Si no ocurrió nada, ' +
-              `escríbanos directamente a ${form.dataset.destino}.`
-          );
+          mostrarError(AVISOS[idioma].correoAbierto(form.dataset.destino ?? ''));
         }, 1200);
       }
     });

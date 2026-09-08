@@ -1,0 +1,374 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import {
+  categorias,
+  productos,
+  productosDeCategoria,
+  imagenPrincipal,
+} from '../data/catalogo';
+import { marcaPorSlug } from '../data/marcas';
+import { waMensajes } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+
+const T = {
+  es: {
+    meta: 'Catálogo de dispositivos médicos y bioseguridad',
+    metaDesc:
+      `Catálogo completo de Q-MEDICAL S.A.C.: ${productos.length} productos en ` +
+      `${categorias.length} líneas, con características técnicas, presentaciones ` +
+      'y ficha técnica descargable en PDF.',
+    ante: 'Catálogo',
+    titulo: 'Todo el catálogo, con su documentación técnica',
+    bajada:
+      `${productos.length} productos organizados en ${categorias.length} líneas. ` +
+      'Cada ficha publica características, presentaciones, códigos de referencia ' +
+      'y el PDF oficial del fabricante.',
+    dato: 'productos publicados',
+    indice: 'Índice de líneas',
+    buscarRotulo: 'Buscar en el catálogo',
+    buscarPista: 'Buscar producto, marca o código…',
+    sinResultados: 'No encontramos productos con ese término.',
+    escribanos: 'Escríbanos y le confirmamos disponibilidad',
+    consultaAnte: 'Bajo consulta',
+    consultaTitulo: 'Otras líneas que gestionamos con el fabricante',
+    consultaTexto:
+      'Además del catálogo publicado, atendemos requerimientos de equipamiento y ' +
+      'material quirúrgico. Consúltenos por disponibilidad, precios y documentación.',
+    consultaBoton: 'Consultar disponibilidad',
+    otras: [
+      'Bomba de infusión',
+      'Iluminador de venas',
+      'Anillo retractor de heridas',
+      'Contador de agujas doble imán',
+      'Pieza manual para cirugía laparoscópica',
+      'Organizador de cepillos de limpieza',
+    ],
+    schemaNombre: 'Catálogo de productos Q-MEDICAL S.A.C.',
+  },
+  en: {
+    meta: 'Catalogue of medical devices and biosafety products',
+    metaDesc:
+      `The full Q-MEDICAL S.A.C. catalogue: ${productos.length} products across ` +
+      `${categorias.length} lines, with technical features, presentations and a ` +
+      'downloadable PDF datasheet.',
+    ante: 'Catalogue',
+    titulo: 'The whole catalogue, with its technical documentation',
+    bajada:
+      `${productos.length} products organised into ${categorias.length} lines. ` +
+      'Every page publishes features, presentations, reference codes and the ' +
+      'manufacturer’s official PDF.',
+    dato: 'products published',
+    indice: 'Index of lines',
+    buscarRotulo: 'Search the catalogue',
+    buscarPista: 'Search by product, brand or code…',
+    sinResultados: 'We found no products matching that term.',
+    escribanos: 'Write to us and we will confirm availability',
+    consultaAnte: 'On request',
+    consultaTitulo: 'Other lines we source directly from the manufacturer',
+    consultaTexto:
+      'Beyond the published catalogue, we handle requirements for equipment and ' +
+      'surgical material. Ask us about availability, prices and documentation.',
+    consultaBoton: 'Ask about availability',
+    otras: [
+      'Infusion pump',
+      'Vein illuminator',
+      'Wound retractor ring',
+      'Double-magnet needle counter',
+      'Handpiece for laparoscopic surgery',
+      'Cleaning brush organiser',
+    ],
+    schemaNombre: 'Q-MEDICAL S.A.C. product catalogue',
+  },
+}[lang];
+
+const lineas = categorias.map((c, i) => ({
+  ...categoriaEn(c, lang),
+  n: String(i + 1).padStart(2, '0'),
+  href: via(lang, 'categoria', c.slug),
+  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+  foto: imagenPrincipal(productosDeCategoria(c.slug)[0]?.slug ?? '', 480),
+}));
+
+// Índice de búsqueda embebido: el filtrado ocurre en el navegador, y se
+// construye con el texto del idioma que se está viendo. Los códigos de
+// fabricante se incluyen siempre: se busca por «MA1112» en los dos idiomas.
+const indice = productos.map((base) => {
+  const p = productoEn(base, lang);
+  return {
+    slug: base.slug,
+    buscar: [
+      p.nombre,
+      p.resumen,
+      marcaPorSlug.get(base.marca)?.nombre ?? '',
+      ...(p.variantes?.map((v) => `${v.codigo} ${v.detalle}`) ?? []),
+      ...p.caracteristicas,
+    ]
+      .join(' ')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''),
+  };
+});
+
+// Singular y plural para el contador vivo del buscador.
+const unidades = { uno: t.productosCuenta(1), varios: t.productosCuenta(2).replace('2 ', '') };
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: T.schemaNombre,
+  numberOfItems: productos.length,
+};
+---
+
+<Base lang={lang} clave="catalogo" title={T.meta} description={T.metaDesc} schema={schema}>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    migas={[{ nombre: T.ante }]}
+    dato={{ valor: String(productos.length), etiqueta: T.dato }}
+  />
+
+  <!-- ── Índice de líneas, en mosaico ─────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <p class="ante ante-brand">{T.indice}</p>
+      <ul class="mosaico" data-anim-grupo="55">
+        {lineas.map((c) => (
+          <li data-anim="sube">
+            <a href={c.href} class="tesela">
+              <span class="tesela__alto">
+                <span class="folio">{c.n}</span>
+                <span class="tesela__ic"><Icon name={c.icono} size={22} /></span>
+              </span>
+              <img
+                src={c.foto}
+                width="480" height="480" alt="" loading="lazy" decoding="async" class="tesela__img"
+              />
+              <span class="tesela__pie">
+                <span class="tesela__nombre">{c.corto}</span>
+                <span class="tesela__cuenta">{c.cuenta}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Buscador y rejilla ───────────────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <div class="barra-busqueda">
+        <label class="relative block w-full sm:max-w-md">
+          <span class="solo-lector">{T.buscarRotulo}</span>
+          <span class="lupa"><Icon name="buscar" size={17} /></span>
+          <input
+            id="buscador" type="search" class="campo !pl-11" autocomplete="off"
+            placeholder={T.buscarPista}
+          />
+        </label>
+        <p id="conteo" class="text-[0.85rem] text-[var(--color-tinta-45)]" aria-live="polite">
+          {t.productosCuenta(productos.length)}
+        </p>
+      </div>
+
+      <div id="rejilla" class="rejilla-catalogo mt-10" data-anim-grupo="45">
+        {productos.map((p, i) => (
+          <div data-slug={p.slug} data-anim="sube"><ProductoCard lang={lang} producto={p} eager={i < 4} /></div>
+        ))}
+      </div>
+
+      <p id="vacio" class="hidden py-20 text-center text-[var(--color-tinta-45)]">
+        {T.sinResultados}<br />
+        <a href={via(lang, 'contacto', undefined, 'cotizar')} class="enlace mt-4">{T.escribanos}</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Bajo consulta ────────────────────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="consulta" data-anim="sube">
+        <div>
+          <p class="ante ante-brand">{T.consultaAnte}</p>
+          <h2 class="display-md mt-4 max-w-[18ch]">{T.consultaTitulo}</h2>
+          <p class="cuerpo mt-5 max-w-2xl">{T.consultaTexto}</p>
+        </div>
+        <div>
+          <ul class="etiquetas">
+            {T.otras.map((n) => <li>{n}</li>)}
+          </ul>
+          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta mt-7">
+            {T.consultaBoton}<Icon name="flecha" size={16} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaContacto lang={lang} waMensaje={wa.catalogo} />
+</Base>
+
+<style>
+  /* ── Mosaico de líneas ────────────────────────────────────────────── */
+  .mosaico {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 768px) { .mosaico { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .mosaico { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+  .tesela {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: border-color 0.35s, transform 0.45s var(--ease-salida);
+  }
+  .tesela:hover { border-color: var(--color-brand-300); transform: translateY(-3px); }
+
+  .tesela__alto { display: flex; align-items: center; justify-content: space-between; }
+  .tesela__ic {
+    color: var(--color-brand-700);
+    opacity: 0.35;
+    transition: opacity 0.35s;
+  }
+  .tesela:hover .tesela__ic { opacity: 1; }
+
+  .tesela__img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    padding: 12%;
+    transition: transform 0.6s var(--ease-salida);
+  }
+  .tesela:hover .tesela__img { transform: scale(1.07); }
+
+  .tesela__pie { margin-top: auto; }
+  .tesela__nombre {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+  .tesela__cuenta {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--color-tinta-45);
+  }
+
+  /* ── Buscador ─────────────────────────────────────────────────────── */
+  .barra-busqueda {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .barra-busqueda { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  .lupa {
+    display: inline-flex;
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-tinta-45);
+    pointer-events: none;
+  }
+
+  .rejilla-catalogo {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1400px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  /* ── Bajo consulta ────────────────────────────────────────────────── */
+  .consulta {
+    display: grid;
+    gap: 2.5rem;
+    padding: 2.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 1024px) {
+    .consulta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; padding: 3.5rem; }
+  }
+  .etiquetas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .etiquetas li {
+    padding: 0.5rem 0.95rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--color-tinta-70);
+  }
+</style>
+
+<script is:inline define:vars={{ indice, unidades }}>
+  (function () {
+    var input = document.getElementById('buscador');
+    var rejilla = document.getElementById('rejilla');
+    var conteo = document.getElementById('conteo');
+    var vacio = document.getElementById('vacio');
+    if (!input || !rejilla || !conteo || !vacio) return;
+
+    var mapa = {};
+    for (var i = 0; i < indice.length; i++) mapa[indice[i].slug] = indice[i].buscar;
+    var tarjetas = Array.prototype.slice.call(rejilla.children);
+
+    var normalizar = function (s) {
+      return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    };
+
+    var filtrar = function () {
+      var q = normalizar(input.value);
+      var terminos = q ? q.split(/\s+/) : [];
+      var visibles = 0;
+      tarjetas.forEach(function (el) {
+        var texto = mapa[el.dataset.slug] || '';
+        var ok = terminos.every(function (t) { return texto.indexOf(t) !== -1; });
+        el.hidden = !ok;
+        if (ok) visibles++;
+      });
+      conteo.textContent = visibles === 1 ? unidades.uno : visibles + ' ' + unidades.varios;
+      vacio.classList.toggle('hidden', visibles > 0);
+    };
+
+    var t;
+    input.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(filtrar, 120);
+    });
+
+    var q = new URLSearchParams(location.search).get('q');
+    if (q) { input.value = q; filtrar(); }
+  })();
+</script>

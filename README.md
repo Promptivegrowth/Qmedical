@@ -25,19 +25,59 @@ Requiere Node.js 20 o superior.
 
 ## Qué incluye
 
-| Sección | Ruta |
-| --- | --- |
-| Portada con preloader temático | `/` |
-| Nosotros, certificaciones e infraestructura | `/nosotros` |
-| Catálogo con buscador instantáneo | `/catalogo` |
-| 10 líneas de producto | `/catalogo/<linea>` |
-| 32 fichas de producto | `/productos/<producto>` |
-| 15 marcas asociadas | `/marcas` |
-| Biblioteca de 49 fichas técnicas en PDF | `/fichas-tecnicas` |
-| Contacto y solicitud de cotización | `/contacto` |
-| Libro de Reclamaciones (Ley N.° 29571) | `/libro-de-reclamaciones` |
+El sitio es bilingüe: cada página existe en castellano y en inglés.
 
-En total, 51 páginas estáticas más `sitemap-index.xml`, `robots.txt` y `404.html`.
+| Sección | Castellano | Inglés |
+| --- | --- | --- |
+| Portada con preloader temático | `/` | `/en` |
+| Nosotros, certificaciones e infraestructura | `/nosotros` | `/en/about` |
+| Catálogo con buscador instantáneo | `/catalogo` | `/en/catalog` |
+| 10 líneas de producto | `/catalogo/<linea>` | `/en/catalog/<linea>` |
+| 32 fichas de producto | `/productos/<producto>` | `/en/products/<producto>` |
+| 15 marcas asociadas | `/marcas` | `/en/brands` |
+| Biblioteca de 49 fichas técnicas en PDF | `/fichas-tecnicas` | `/en/datasheets` |
+| Contacto y solicitud de cotización | `/contacto` | `/en/contact` |
+| Libro de Reclamaciones (Ley N.° 29571) | `/libro-de-reclamaciones` | `/en/complaints-book` |
+
+En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
+`robots.txt` y `404.html`.
+
+### Sitio bilingüe
+
+- **El castellano no lleva prefijo.** `/catalogo` sigue siendo `/catalogo`, de modo
+  que las direcciones que ya circulan y las redirecciones 301 desde la web anterior
+  no se rompen. El inglés vive bajo `/en/` y traduce el tramo de la página, porque
+  «/en/nosotros» no le sirve de nada a quien lee en inglés.
+- **El identificador de cada producto y de cada línea es el mismo en los dos
+  idiomas**: `/catalogo/via-aerea` y `/en/catalog/via-aerea`. Ese tramo identifica
+  una ficha técnica y un código de fabricante; mantenerlo idéntico garantiza que
+  toda página tenga su gemela exacta, que el conmutador de idioma nunca caiga en un
+  404 y que las etiquetas `hreflang` se emparejen sin una tabla de 42 equivalencias
+  que mantener a mano.
+- **Una sola fuente de direcciones**: `src/i18n/mapa-rutas.mjs`. De ella salen los
+  enlaces de las plantillas, el botón de idioma, las etiquetas `hreflang` de cada
+  página y las alternativas del sitemap, así que las cuatro cosas no pueden
+  discrepar. Se escribió en JavaScript llano porque la lee también
+  `astro.config.mjs`.
+- **Sin redirección automática por idioma del navegador.** Un visitante limeño que
+  llega a `/catalogo` ve `/catalogo`, no lo desvía la configuración de su equipo. El
+  cambio de idioma es siempre una decisión suya, y el botón lleva a *esta misma*
+  página en el otro idioma, no a la portada.
+- **Qué no se traduce, a propósito**: los códigos de fabricante (`MA1112`,
+  `GYTR-III`), los nombres comerciales y las marcas registradas, y el nombre legal
+  «Libro de Reclamaciones», que es la figura que exige la norma peruana. Los
+  atributos `name` de los formularios se mantienen en castellano en los dos idiomas
+  para que el equipo comercial reciba siempre los correos con los mismos campos; se
+  añade una línea con el idioma en que escribió el visitante.
+- **Las fichas técnicas en PDF son las que emite cada fabricante, en castellano.**
+  La versión inglesa lo advierte junto a la descarga en vez de dar a entender que
+  existe una traducción.
+- **El 404 se traduce solo.** El servidor entrega un único `404.html` para cualquier
+  dirección desconocida, incluidas las que empiezan por `/en/`; un guion mínimo, antes
+  del primer pintado, cambia los textos y los enlaces si la dirección fallida era del
+  sitio en inglés. Sin JavaScript queda en castellano.
+
+---
 
 ### Detalles de implementación
 
@@ -45,8 +85,11 @@ En total, 51 páginas estáticas más `sitemap-index.xml`, `robots.txt` y `404.h
   una sola vez por sesión (`sessionStorage`), se cierra al terminar la carga con un
   tope de seguridad de 4 s y no se muestra con `prefers-reduced-motion` ni sin
   JavaScript.
-- **Carrusel de marcas**: desplazamiento continuo en CSS puro, en escala de grises
-  que recupera el color al pasar el cursor; se detiene al enfocar o pasar el mouse.
+- **Anillo de marcas**: un único aro tridimensional que envuelve al titular y gira
+  solo, de forma continua. El aspecto de cada logotipo depende de dónde esté en ese
+  momento —blanco y por delante del texto en la mitad cercana, apagado y por detrás
+  en la lejana—. Se resuelve entero en CSS, sin un cálculo por fotograma, y se
+  detiene mientras se hace scroll.
 - **Fichas técnicas**: las 49 fichas oficiales se publican como PDF descargable, tanto
   en cada ficha de producto como en la biblioteca general con buscador.
 - **Búsqueda**: índice embebido en la página, filtrado en el navegador. Sin peticiones
@@ -166,13 +209,22 @@ qmedical-web/
 ├── scripts/                   Utilidades Python de preparación de recursos
 ├── src/
 │   ├── components/            Header, Footer, Preloader, tarjetas, formularios…
-│   ├── data/
+│   ├── data/                  Contenido original, en castellano
 │   │   ├── site.ts            Datos institucionales, contactos, certificaciones
 │   │   ├── marcas.ts          Las 15 marcas representadas
 │   │   ├── catalogo.ts        Categorías y productos (contenido técnico)
+│   │   ├── especialidades.ts  Las 6 especialidades clínicas que se abastecen
 │   │   └── fichas.json        Índice de PDF (generado)
-│   ├── layouts/Base.astro     Shell HTML, SEO, JSON-LD
-│   ├── pages/                 Rutas del sitio
+│   ├── i18n/                  Capa bilingüe
+│   │   ├── mapa-rutas.mjs     Tabla de direcciones (la lee también astro.config)
+│   │   ├── rutas.ts           Ayudantes de enlace, idioma y alternativas
+│   │   ├── textos.ts          Textos que se repiten (cabecera, pie, formularios)
+│   │   ├── contenido.ts       Traducción de líneas, marcas, especialidades…
+│   │   └── productos-en.ts    Contenido de los 32 productos en inglés
+│   ├── plantillas/            Maqueta de cada página, parametrizada por idioma
+│   ├── icons/                 Iconos de Tabler (MIT), incrustados al compilar
+│   ├── layouts/Base.astro     Shell HTML, SEO, JSON-LD, hreflang
+│   ├── pages/                 Rutas: castellano en la raíz, inglés bajo en/
 │   └── styles/global.css      Sistema de diseño y tokens de marca
 ├── astro.config.mjs
 └── vercel.json
@@ -180,6 +232,13 @@ qmedical-web/
 
 El contenido editable del catálogo está concentrado en `src/data/`. Para cambiar un
 texto, un correo o una característica de producto no hace falta tocar ninguna plantilla.
+
+Las páginas de `src/pages/` son entradas de tres líneas: eligen el idioma y delegan
+en la plantilla compartida de `src/plantillas/`. La maqueta se escribe una sola vez y
+sirve a los dos idiomas, de modo que un cambio de diseño no puede quedar aplicado en
+una versión y olvidado en la otra. La prosa propia de cada página vive en un bloque
+`T` en su plantilla, junto a la maqueta que la usa; en `src/i18n/textos.ts` solo está
+lo que se repite en varias páginas.
 
 ---
 

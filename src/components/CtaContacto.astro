@@ -1,6 +1,9 @@
 ---
 import Icon from './Icon.astro';
 import { site, whatsapp, waMensajes } from '../data/site';
+import { ruta, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { waMensajesEn } from '../i18n/contenido';
 
 /**
  * Banda de cierre de página. Es deliberadamente más contenida que el cierre
@@ -8,35 +11,38 @@ import { site, whatsapp, waMensajes } from '../data/site';
  * y el pie se reserva la llamada general.
  */
 interface Props {
+  lang?: Idioma;
   titulo?: string;
   texto?: string;
   waMensaje?: string;
 }
-const {
-  titulo = '¿Necesita una cotización para su institución?',
-  texto = 'Indíquenos productos, cantidades y fecha requerida. Le respondemos con precio, disponibilidad y la documentación técnica que pida su expediente.',
-  waMensaje = waMensajes.cotizacion,
-} = Astro.props;
+const { lang = 'es', titulo, texto, waMensaje } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+const encabezado = titulo ?? t.cierre.titulo;
+const bajada = texto ?? t.cierre.texto;
+const mensaje = waMensaje ?? wa.cotizacion;
 ---
 
 <section class="cierre">
   <div class="caja">
     <div class="cierre__cuerpo" data-anim-grupo="90">
       <div class="cierre__texto">
-        <p class="ante ante-brand" data-anim="sube">Siguiente paso</p>
-        <h2 class="display-md mt-4" data-anim="sube">{titulo}</h2>
-        <p class="cuerpo mt-5 max-w-xl" data-anim="sube">{texto}</p>
+        <p class="ante ante-brand" data-anim="sube">{t.cierre.ante}</p>
+        <h2 class="display-md mt-4" data-anim="sube">{encabezado}</h2>
+        <p class="cuerpo mt-5 max-w-xl" data-anim="sube">{bajada}</p>
       </div>
 
       <div class="cierre__acciones" data-anim="sube">
-        <a href="/contacto#cotizar" class="pill pill-tinta">
-          Solicitar cotización<Icon name="flecha" size={16} />
+        <a href={ruta(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta">
+          {t.cotizar}<Icon name="flecha" size={16} />
         </a>
-        <a href={whatsapp(waMensaje)} target="_blank" rel="noopener" class="pill pill-linea">
+        <a href={whatsapp(mensaje)} target="_blank" rel="noopener" class="pill pill-linea">
           <Icon name="whatsapp" size={17} />WhatsApp
         </a>
         <p class="cierre__nota">
-          o escriba a
+          {t.cierre.oEscriba}
           <a href={`mailto:${site.correoPrincipal}`} class="underline underline-offset-4">
             {site.correoPrincipal}
           </a>

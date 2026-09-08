@@ -2,6 +2,9 @@
 import Icon from './Icon.astro';
 import { especialidades } from '../data/especialidades';
 import { categoriaPorSlug, productosDeCategoria } from '../data/catalogo';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, especialidadEn } from '../i18n/contenido';
 
 /**
  * Especialidades clínicas, en panel interactivo.
@@ -14,11 +17,44 @@ import { categoriaPorSlug, productosDeCategoria } from '../data/catalogo';
  * Sin JavaScript se ven las seis fichas una tras otra: la mejora es
  * progresiva, nunca un requisito.
  */
-const fichas = especialidades.map((e, i) => {
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+const t = textos(lang);
+
+const T = {
+  es: {
+    ante: 'Especialidades clínicas',
+    titulo: 'Los servicios a los que abastecemos',
+    bajada:
+      'No vendemos un catálogo: abastecemos servicios. Cada especialidad tiene ' +
+      'su propia lógica de consumo, y de ahí sale el orden de nuestras líneas.',
+    abastecemos: 'Qué abastecemos',
+    lineasQue: 'Líneas que la abastecen',
+  },
+  en: {
+    ante: 'Clinical specialties',
+    titulo: 'The services we supply',
+    bajada:
+      'We do not sell a catalogue: we supply services. Each specialty has its ' +
+      'own logic of consumption, and that is where the order of our lines ' +
+      'comes from.',
+    abastecemos: 'What we supply',
+    lineasQue: 'Lines that supply it',
+  },
+}[lang];
+
+const fichas = especialidades.map((base, i) => {
+  const e = especialidadEn(base, lang);
   const lineas = e.lineas
     .map((slug) => categoriaPorSlug.get(slug))
     .filter(Boolean)
-    .map((c) => ({ ...c!, total: productosDeCategoria(c!.slug).length }));
+    .map((c) => ({
+      ...categoriaEn(c!, lang),
+      href: via(lang, 'categoria', c!.slug),
+      total: productosDeCategoria(c!.slug).length,
+    }));
   return {
     ...e,
     n: String(i + 1).padStart(2, '0'),
@@ -34,20 +70,15 @@ const fichas = especialidades.map((e, i) => {
   <div class="caja relative">
     <div class="esp__intro" data-anim-grupo="80">
       <div>
-        <p class="ante ante-claro" data-anim="sube">Especialidades clínicas</p>
-        <h2 class="display-lg mt-5 max-w-[17ch]" data-anim="sube">
-          Los servicios a los que abastecemos
-        </h2>
+        <p class="ante ante-claro" data-anim="sube">{T.ante}</p>
+        <h2 class="display-lg mt-5 max-w-[17ch]" data-anim="sube">{T.titulo}</h2>
       </div>
-      <p class="esp__bajada" data-anim="sube">
-        No vendemos un catálogo: abastecemos servicios. Cada especialidad tiene su
-        propia lógica de consumo, y de ahí sale el orden de nuestras líneas.
-      </p>
+      <p class="esp__bajada" data-anim="sube">{T.bajada}</p>
     </div>
 
     <div class="esp__cuerpo" data-anim="sube">
       <!-- Selector -->
-      <div class="esp__lista" role="tablist" aria-label="Especialidades clínicas" aria-orientation="vertical">
+      <div class="esp__lista" role="tablist" aria-label={T.ante} aria-orientation="vertical">
         {fichas.map((f, i) => (
           <button
             type="button"
@@ -87,18 +118,18 @@ const fichas = especialidades.map((e, i) => {
             <p class="esp__definicion">{f.definicion}</p>
 
             <div class="esp__aporte">
-              <p class="ante ante-claro">Qué abastecemos</p>
+              <p class="ante ante-claro">{T.abastecemos}</p>
               <p class="mt-3">{f.aporte}</p>
             </div>
 
             <div class="esp__lineas">
               <p class="ante ante-claro">
-                Líneas que la abastecen · {f.productos} producto{f.productos === 1 ? '' : 's'}
+                {T.lineasQue} · {t.productosCuenta(f.productos)}
               </p>
               <ul class="mt-4">
                 {f.lineas.map((l) => (
                   <li>
-                    <a href={`/catalogo/${l.slug}`} class="esp__chip">
+                    <a href={l.href} class="esp__chip">
                       <Icon name={l.icono} size={16} />
                       <span>{l.corto}</span>
                       <span class="esp__chip-n">{l.total}</span>

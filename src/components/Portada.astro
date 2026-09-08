@@ -1,5 +1,7 @@
 ---
 import Icon from './Icon.astro';
+import { ruta, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
 
 /**
  * Cabecera de página interior. Mantiene el registro de la portada —lámina
@@ -7,6 +9,7 @@ import Icon from './Icon.astro';
  * modo que todas las páginas del sitio abren igual.
  */
 interface Props {
+  lang?: Idioma;
   ante?: string;
   titulo: string;
   texto?: string;
@@ -16,7 +19,8 @@ interface Props {
   /** Dato al pie de la cabecera, a la derecha. */
   dato?: { valor: string; etiqueta: string };
 }
-const { ante, titulo, texto, migas = [], foto, dato } = Astro.props;
+const { lang = 'es', ante, titulo, texto, migas = [], foto, dato } = Astro.props;
+const t = textos(lang);
 ---
 
 <section class="portada">
@@ -30,9 +34,9 @@ const { ante, titulo, texto, migas = [], foto, dato } = Astro.props;
 
   <div class="caja portada__cuerpo">
     {migas.length > 0 && (
-      <nav aria-label="Ruta de navegación" class="portada__migas">
+      <nav aria-label={t.rutaNavegacion} class="portada__migas">
         <ol>
-          <li><a href="/">Inicio</a></li>
+          <li><a href={ruta(lang, 'inicio')}>{t.irInicio}</a></li>
           {migas.map((m) => (
             <>
               <li aria-hidden="true"><Icon name="chevron" size={10} /></li>

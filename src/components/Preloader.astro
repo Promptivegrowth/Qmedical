@@ -1,4 +1,18 @@
 ---
+import type { Idioma } from '../i18n/rutas';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+// Lo unico que se lee aqui es el aviso para lectores de pantalla.
+const cargando = lang === 'en'
+  ? 'Loading Q-MEDICAL S.A.C.'
+  : 'Cargando Q-MEDICAL S.A.C.';
+const lema = lang === 'en'
+  ? 'Medical devices and biosafety'
+  : 'Dispositivos medicos y bioseguridad';
 /**
  * Preloader temático del sector: el logotipo corporativo sobre un trazo
  * electrocardiográfico que se dibuja mientras carga la página.
@@ -13,7 +27,7 @@
 ---
 
 <div id="preloader" class="preloader" role="status" aria-live="polite">
-  <span class="sr-only">Cargando Q-MEDICAL S.A.C.</span>
+  <span class="sr-only">{cargando}</span>
 
   <div class="preloader__inner">
     <img
@@ -37,7 +51,7 @@
       ></path>
     </svg>
 
-    <p class="preloader__label">Dispositivos médicos y bioseguridad</p>
+    <p class="preloader__label">{lema}</p>
     <div class="preloader__bar"><span></span></div>
   </div>
 </div>

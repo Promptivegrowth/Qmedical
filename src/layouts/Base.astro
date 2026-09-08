@@ -4,8 +4,24 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
 import { site } from '../data/site';
+import {
+  alternas as alternasDe,
+  ETIQUETA_HREF,
+  ETIQUETA_HTML,
+  ETIQUETA_OG,
+  IDIOMAS,
+  type Clave,
+  type Idioma,
+} from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { empresaEn } from '../i18n/contenido';
 
 interface Props {
+  lang?: Idioma;
+  /** Qué página es. De aquí salen las alternativas hreflang y el botón de idioma. */
+  clave?: Clave;
+  /** Identificador de la línea o del producto, cuando la página lo lleva. */
+  slug?: string;
   title: string;
   description: string;
   image?: string;
@@ -17,6 +33,9 @@ interface Props {
 }
 
 const {
+  lang = 'es',
+  clave = 'inicio',
+  slug,
   title,
   description,
   image = '/img/fotos/almacen-p1360310-1600.webp',
@@ -25,7 +44,19 @@ const {
   schema,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href.replace(/(.)\/$/, '$1');
+const t = textos(lang);
+
+/* Las dos direcciones de esta misma página: alimentan a la vez el botón de
+   idioma de la cabecera y las etiquetas hreflang. Una sola fuente, de modo
+   que el conmutador y lo que se le declara al buscador nunca discrepen. */
+const gemelas = alternasDe(clave, slug);
+const base = Astro.site ?? new URL(site.url);
+const enlacesIdioma = IDIOMAS.map((i) => ({
+  hreflang: ETIQUETA_HREF[i],
+  href: new URL(gemelas[i], base).href.replace(/(.)\/$/, '$1'),
+}));
+
+const canonical = new URL(Astro.url.pathname, base).href.replace(/(.)\/$/, '$1');
 const socialImage = new URL(image, Astro.site ?? site.url).href;
 const titleFull = title.includes(site.nombreCorto) ? title : `${title} | ${site.nombre}`;
 
@@ -37,18 +68,20 @@ const organizacion = {
   alternateName: 'Q-MEDICAL',
   url: site.url,
   logo: site.url + '/img/logo/qmedical-azul.png',
-  description: site.descripcion,
+  description: lang === 'en' ? empresaEn.descripcion : site.descripcion,
   foundingDate: String(site.fundacion),
   telephone: site.telefonos.map((t) => t.etiqueta),
   email: site.correoPrincipal,
   address: {
     '@type': 'PostalAddress',
     streetAddress: site.direccion.calle,
+    // El país sí se traduce; la calle es un dato postal y no.
     addressLocality: site.direccion.distrito,
     addressRegion: site.direccion.ciudad,
     addressCountry: 'PE',
   },
-  areaServed: { '@type': 'Country', name: 'Perú' },
+  areaServed: { '@type': 'Country', name: lang === 'en' ? 'Peru' : 'Perú' },
+  inLanguage: ETIQUETA_HTML[lang],
   sameAs: [
     'https://www.instagram.com/qmedicalperu/',
     'https://www.facebook.com/Drogueria.QMedicalsac',
@@ -60,13 +93,17 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
 ---
 
 <!doctype html>
-<html lang="es-PE">
+<html lang={ETIQUETA_HTML[lang]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titleFull}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {enlacesIdioma.map((e) => (
+      <link rel="alternate" hreflang={e.hreflang} href={e.href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={enlacesIdioma[0].href} />
     <meta name="theme-color" content="#152e7f" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="author" content={site.nombre} />
@@ -79,7 +116,7 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.nombre} />
-    <meta property="og:locale" content="es_PE" />
+    <meta property="og:locale" content={ETIQUETA_OG[lang]} />
     <meta property="og:title" content={titleFull} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -112,17 +149,17 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
   </head>
 
   <body class:list={[cabeceraClara && 'cabecera-superpuesta']}>
-    {preloader && <Preloader />}
+    {preloader && <Preloader lang={lang} />}
 
-    <a href="#contenido" class="salto">Ir al contenido</a>
+    <a href="#contenido" class="salto">{lang === 'en' ? 'Skip to content' : 'Ir al contenido'}</a>
 
-    <Header claro={cabeceraClara} />
+    <Header lang={lang} claro={cabeceraClara} alternas={gemelas} />
 
     <main id="contenido">
       <slot />
     </main>
 
-    <Footer />
+    <Footer lang={lang} />
 
     <script>
       const raiz = document.documentElement;

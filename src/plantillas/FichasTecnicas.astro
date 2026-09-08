@@ -1,0 +1,331 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import { categorias, fichasIndex, productosDeCategoria } from '../data/catalogo';
+import { marcaPorSlug } from '../data/marcas';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { categoriaEn, productoEn } from '../i18n/contenido';
+
+/**
+ * Biblioteca de fichas técnicas.
+ *
+ * Los PDF son los que emite cada fabricante y están redactados en castellano.
+ * La versión en inglés lo dice abiertamente en lugar de sugerir que hay una
+ * traducción: lo que se traduce es la página, no el documento.
+ */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const T = {
+  es: {
+    meta: 'Fichas técnicas descargables',
+    ante: 'Documentación',
+    titulo: 'Biblioteca de fichas técnicas',
+    bajada:
+      'Documentación oficial del fabricante, en PDF y organizada por línea de ' +
+      'producto. Descárguela para su expediente de licitación, su requerimiento ' +
+      'interno o la evaluación del área usuaria.',
+    miga: 'Fichas técnicas',
+    dato: 'documentos en PDF',
+    buscarRotulo: 'Buscar ficha técnica',
+    buscarPista: 'Buscar por producto, marca o código…',
+    verLinea: 'Ver la línea',
+    sinResultados: 'No encontramos fichas con ese término.',
+    adicionalAnte: 'Para licitaciones',
+    adicionalTitulo: '¿Necesita documentación adicional?',
+    adicionalTexto:
+      'Para procesos de licitación y homologación entregamos registro sanitario, ' +
+      'certificado de análisis del lote, certificados de calidad del fabricante y ' +
+      'la documentación de nuestra certificación BPA.',
+    escribirDT: 'Escribir a dirección técnica',
+    verCatalogo: 'Ver catálogo',
+    idiomaAviso: null as string | null,
+  },
+  en: {
+    meta: 'Downloadable datasheets',
+    ante: 'Documentation',
+    titulo: 'Datasheet library',
+    bajada:
+      'Official manufacturer documentation, in PDF and organised by product ' +
+      'line. Download it for your tender file, your internal requisition or the ' +
+      'end user’s evaluation.',
+    miga: 'Datasheets',
+    dato: 'PDF documents',
+    buscarRotulo: 'Search datasheets',
+    buscarPista: 'Search by product, brand or code…',
+    verLinea: 'See the line',
+    sinResultados: 'We found no datasheets matching that term.',
+    adicionalAnte: 'For tenders',
+    adicionalTitulo: 'Do you need further documentation?',
+    adicionalTexto:
+      'For tender and homologation processes we supply the sanitary ' +
+      'registration, the batch certificate of analysis, the manufacturer’s ' +
+      'quality certificates and the documentation of our BPA certification.',
+    escribirDT: 'Write to the technical department',
+    verCatalogo: 'View catalogue',
+    idiomaAviso:
+      'These documents are issued by each manufacturer in Spanish. If you need ' +
+      'a specification translated for a tender file, ask our technical ' +
+      'department and we will provide it.',
+  },
+}[lang];
+
+// Agrupa las fichas por línea y evita repetir un mismo PDF.
+const grupos = categorias
+  .map((base) => {
+    const items = productosDeCategoria(base.slug).flatMap((p) =>
+      p.fichas
+        .map((f) => fichasIndex[f])
+        .filter(Boolean)
+        .map((f) => ({
+          ...f,
+          producto: productoEn(p, lang).nombre,
+          marca: marcaPorSlug.get(p.marca)?.nombre ?? '',
+        }))
+    );
+    const vistos = new Set<string>();
+    return {
+      categoria: categoriaEn(base, lang),
+      href: via(lang, 'categoria', base.slug),
+      slug: base.slug,
+      fichas: items.filter((f) => !vistos.has(f.archivo) && vistos.add(f.archivo)),
+    };
+  })
+  .filter((g) => g.fichas.length > 0);
+
+const total = new Set(Object.values(fichasIndex).map((f) => f.archivo)).size;
+
+// Singular y plural del contador vivo del buscador.
+const unidades =
+  lang === 'en'
+    ? { uno: '1 datasheet', varios: 'datasheets' }
+    : { uno: '1 ficha técnica', varios: 'fichas técnicas' };
+---
+
+<Base
+  lang={lang}
+  clave="fichas"
+  title={T.meta}
+  description={lang === 'en'
+    ? `A library of ${total} official PDF datasheets for Q-MEDICAL S.A.C. products, organised by line and ready to attach to a requisition or a tender file.`
+    : `Biblioteca de ${total} fichas técnicas oficiales en PDF de los productos Q-MEDICAL S.A.C., organizadas por línea, listas para adjuntar a un requerimiento o expediente de licitación.`}
+>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    migas={[{ nombre: T.miga }]}
+    dato={{ valor: String(total), etiqueta: T.dato }}
+  />
+
+  {T.idiomaAviso && (
+    <p class="aviso-idioma">
+      <span class="caja block">{T.idiomaAviso}</span>
+    </p>
+  )}
+
+  <!-- Buscador -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)] py-8">
+    <div class="caja barra-busqueda">
+      <label class="relative block w-full sm:max-w-md">
+        <span class="solo-lector">{T.buscarRotulo}</span>
+        <span class="lupa"><Icon name="buscar" size={17} /></span>
+        <input id="buscador-fichas" type="search" class="campo !pl-11" autocomplete="off"
+          placeholder={T.buscarPista} />
+      </label>
+      <p id="conteo-fichas" class="text-[0.85rem] text-[var(--color-tinta-45)]" aria-live="polite">
+        {total} {unidades.varios}
+      </p>
+    </div>
+  </section>
+
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja space-y-14">
+      {grupos.map((g, gi) => (
+        <div class="grupo-fichas" data-grupo={g.slug}>
+          <div class="grupo__alto">
+            <span class="folio">{String(gi + 1).padStart(2, '0')}</span>
+            <Icon name={g.categoria.icono} size={20} class="text-[var(--color-brand-700)]" />
+            <h2 class="grupo__titulo">{g.categoria.nombre}</h2>
+            <a href={g.href} class="enlace ml-auto hidden sm:inline-flex">
+              {T.verLinea}<Icon name="flecha" size={14} />
+            </a>
+          </div>
+
+          <ul class="rejilla-fichas" data-anim-grupo="40">
+            {g.fichas.map((f) => (
+              <li class="item-ficha" data-buscar={`${f.titulo} ${f.producto} ${f.marca}`.toLowerCase()} data-anim="sube">
+                <a href={f.archivo} download class="ficha-item">
+                  <span class="ficha-item__ic"><Icon name="documento" size={19} /></span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-[0.92rem] leading-snug">{f.titulo}</span>
+                    <span class="mt-1 block text-[0.75rem] text-[var(--color-tinta-45)]">
+                      PDF · {f.peso} KB{f.marca && ` · ${f.marca}`}
+                    </span>
+                  </span>
+                  <Icon name="descarga" size={17} class="shrink-0 opacity-40" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <p id="vacio-fichas" class="hidden py-16 text-center text-[var(--color-tinta-45)]">
+        {T.sinResultados}
+      </p>
+    </div>
+  </section>
+
+  <!-- Documentación adicional -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="adicional" data-anim="sube">
+        <div>
+          <p class="ante ante-brand">{T.adicionalAnte}</p>
+          <h2 class="display-md mt-4 max-w-[20ch]">{T.adicionalTitulo}</h2>
+          <p class="cuerpo mt-5 max-w-2xl">{T.adicionalTexto}</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="mailto:direccion_tecnica@qmedicalsac.com" class="pill pill-tinta">
+            <Icon name="correo" size={16} />{T.escribirDT}
+          </a>
+          <a href={via(lang, 'catalogo')} class="pill pill-linea">{T.verCatalogo}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaContacto lang={lang} />
+</Base>
+
+<style>
+  /* Aviso del idioma de los PDF: solo aparece en la versión en inglés. */
+  .aviso-idioma {
+    padding-block: 1.1rem;
+    background: var(--color-brand-50);
+    border-bottom: 1px solid var(--color-linea);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--color-brand-800, var(--color-brand-700));
+  }
+
+  .barra-busqueda { display: flex; flex-direction: column; gap: 1rem; }
+  @media (min-width: 640px) {
+    .barra-busqueda { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  .lupa {
+    display: inline-flex;
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-tinta-45);
+    pointer-events: none;
+  }
+
+  .grupo__alto {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--color-linea-2);
+  }
+  .grupo__titulo {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    letter-spacing: -0.01em;
+  }
+
+  .rejilla-fichas { display: grid; gap: 0.7rem; margin-top: 1.5rem; }
+  @media (min-width: 768px) { .rejilla-fichas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .rejilla-fichas { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .ficha-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.1rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    transition: border-color 0.3s, transform 0.4s var(--ease-salida);
+  }
+  .ficha-item:hover { border-color: var(--color-brand-300); transform: translateY(-2px); }
+  .ficha-item__ic {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    border-radius: 999px;
+    border: 1px solid var(--color-linea);
+    color: var(--color-brand-700);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .ficha-item:hover .ficha-item__ic {
+    background: var(--color-brand-700);
+    border-color: var(--color-brand-700);
+    color: #fff;
+  }
+
+  .adicional {
+    display: grid;
+    gap: 2rem;
+    padding: 2.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 1024px) {
+    .adicional { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3.5rem; padding: 3.5rem; }
+  }
+</style>
+
+<script>
+  const raiz = document.documentElement;
+  const enIngles = raiz.lang.startsWith('en');
+  const UNIDADES = enIngles
+    ? { uno: '1 datasheet', varios: 'datasheets' }
+    : { uno: '1 ficha técnica', varios: 'fichas técnicas' };
+
+  const input = document.getElementById('buscador-fichas') as HTMLInputElement | null;
+  const conteo = document.getElementById('conteo-fichas');
+  const vacio = document.getElementById('vacio-fichas');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.item-ficha'));
+  const grupos = Array.from(document.querySelectorAll<HTMLElement>('.grupo-fichas'));
+
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+
+  const filtrar = () => {
+    if (!input || !conteo || !vacio) return;
+    const terminos = normalizar(input.value).split(/\s+/).filter(Boolean);
+    let visibles = 0;
+
+    for (const el of items) {
+      const texto = normalizar(el.dataset.buscar ?? '');
+      const ok = terminos.every((t) => texto.includes(t));
+      el.hidden = !ok;
+      if (ok) visibles++;
+    }
+    for (const g of grupos) {
+      g.hidden = !g.querySelector<HTMLElement>('.item-ficha:not([hidden])');
+    }
+
+    conteo.textContent = visibles === 1 ? UNIDADES.uno : `${visibles} ${UNIDADES.varios}`;
+    vacio.classList.toggle('hidden', visibles > 0);
+  };
+
+  let t: number;
+  input?.addEventListener('input', () => {
+    clearTimeout(t);
+    t = window.setTimeout(filtrar, 120);
+  });
+</script>

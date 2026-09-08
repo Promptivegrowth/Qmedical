@@ -2,28 +2,43 @@
 import Icon from './Icon.astro';
 import { imagenPrincipal, categoriaPorSlug, type Producto } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
+import { ruta, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, productoEn } from '../i18n/contenido';
 
 /**
  * Entrada de catálogo en registro magazine: la imagen manda, y bajo el filete
  * van el crédito de marca, el título y el sumario, como el pie de una foto.
  */
 interface Props {
+  lang?: Idioma;
   producto: Producto;
   eager?: boolean;
   mostrarCategoria?: boolean;
   /** `ancha` ocupa dos columnas y coloca el texto al costado. */
   formato?: 'normal' | 'ancha';
 }
-const { producto: p, eager = false, mostrarCategoria = true, formato = 'normal' } = Astro.props;
+const {
+  lang = 'es',
+  producto,
+  eager = false,
+  mostrarCategoria = true,
+  formato = 'normal',
+} = Astro.props;
+
+const t = textos(lang);
+const p = productoEn(producto, lang);
 
 const img = imagenPrincipal(p.slug, 900);
 const imgSm = imagenPrincipal(p.slug, 480);
 const marca = marcaPorSlug.get(p.marca);
-const cat = categoriaPorSlug.get(p.categoria);
+const catBase = categoriaPorSlug.get(p.categoria);
+const cat = catBase ? categoriaEn(catBase, lang) : undefined;
+const href = ruta(lang, 'producto', p.slug);
 ---
 
 <article class:list={['entrada', formato === 'ancha' && 'entrada--ancha']}>
-  <a href={`/productos/${p.slug}`} class="entrada__marco" tabindex="-1" aria-hidden="true">
+  <a href={href} class="entrada__marco" tabindex="-1" aria-hidden="true">
     {img && (
       <img
         src={imgSm}
@@ -34,7 +49,7 @@ const cat = categoriaPorSlug.get(p.categoria);
       />
     )}
     {p.fichas.length > 0 && (
-      <span class="entrada__sello"><Icon name="documento" size={11} />Ficha técnica</span>
+      <span class="entrada__sello"><Icon name="documento" size={11} />{t.fichaTecnica}</span>
     )}
   </a>
 
@@ -45,13 +60,13 @@ const cat = categoriaPorSlug.get(p.categoria);
     </p>
 
     <h3 class="entrada__titulo">
-      <a href={`/productos/${p.slug}`}>{p.nombre}</a>
+      <a href={href}>{p.nombre}</a>
     </h3>
 
     <p class="entrada__sumario">{p.resumen}</p>
 
     <span class="entrada__accion">
-      Ver producto<span class="entrada__flecha"><Icon name="flecha" size={14} /></span>
+      {t.verProducto}<span class="entrada__flecha"><Icon name="flecha" size={14} /></span>
     </span>
   </div>
 </article>

@@ -1,0 +1,554 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Hero from '../components/Hero.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import MarcasConstelacion from '../components/MarcasConstelacion.astro';
+import Especialidades from '../components/Especialidades.astro';
+import { site, certificaciones } from '../data/site';
+import { marcas } from '../data/marcas';
+import { categorias, productos, productosDeCategoria, productosDestacados } from '../data/catalogo';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, certificacionesEn, empresaEn } from '../i18n/contenido';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+const t = textos(lang);
+
+const destacados = productosDestacados().slice(0, 5);
+
+/**
+ * Índice de líneas. La síntesis describe la función clínica de cada línea, no
+ * sus productos: la matriz es el índice general del catálogo, y el detalle
+ * vive dentro de cada línea.
+ */
+const SINTESIS: Record<Idioma, Record<string, string>> = {
+  es: {
+    bioseguridad: 'Contención y descarte seguro de residuos',
+    antisepsia: 'Preparación de piel y lavado quirúrgico',
+    laparoscopia: 'Acceso mínimamente invasivo a la cavidad',
+    aspiracion: 'Manejo cerrado de secreciones y fluidos',
+    'nutricion-enteral': 'Soporte nutricional del paciente',
+    'via-aerea': 'Intubación y control de la vía aérea',
+    'higiene-paciente': 'Higiene y confort del paciente encamado',
+    absorbentes: 'Superficies limpias, secas y sin resbalones',
+    instrumental: 'Insumos de sala y central de esterilización',
+    'proteccion-personal': 'Barrera para el equipo asistencial',
+  },
+  en: {
+    bioseguridad: 'Safe containment and disposal of waste',
+    antisepsia: 'Skin preparation and surgical scrub',
+    laparoscopia: 'Minimally invasive access to the cavity',
+    aspiracion: 'Closed handling of secretions and fluids',
+    'nutricion-enteral': 'Nutritional support for the patient',
+    'via-aerea': 'Intubation and airway control',
+    'higiene-paciente': 'Hygiene and comfort of the bedridden patient',
+    absorbentes: 'Surfaces kept clean, dry and slip-free',
+    instrumental: 'Supplies for theatre and sterile processing',
+    'proteccion-personal': 'A barrier for the clinical team',
+  },
+};
+
+const T = {
+  es: {
+    meta: 'Q-MEDICAL S.A.C. — Dispositivos médicos y bioseguridad en el Perú',
+    metaDesc: site.descripcion,
+    lineasAnte: 'Líneas de producto',
+    lineasTitulo: 'El catálogo, ordenado en diez líneas',
+    lineasTexto:
+      'Cada línea agrupa los productos por la función que cumplen, no por el ' +
+      'proveedor que los fabrica. Así el área usuaria encuentra lo que busca ' +
+      'por donde lo busca.',
+    verCatalogo: 'Ver el catálogo completo',
+    selloBpa: 'Almacén certificado BPA',
+    compromisoAnte: 'El compromiso es de nosotros',
+    compromisoTitulo: 'Cada entrega sostiene el trabajo de un equipo de salud',
+    compromiso: [
+      'Somos una droguería, no un intermediario. Esa condición cambia lo que ' +
+        'podemos ofrecer: no solo colocamos un producto, respondemos por su ' +
+        'conservación, su trazabilidad documental y su ficha técnica frente al ' +
+        'área usuaria, al comité de compras y a la autoridad sanitaria.',
+      'Trabajamos para que las instituciones de salud estatales y privadas ' +
+        'dispongan de productos médicos, de bioseguridad y de protección ' +
+        'personal de alta calidad, en beneficio del equipo asistencial y de los ' +
+        'pacientes.',
+    ],
+    anios: 'Años operando',
+    marcasDato: 'Marcas',
+    productosDato: 'Productos',
+    conocer: 'Conocer la empresa',
+    catalogoAnte: 'Catálogo',
+    catalogoTitulo: 'Piezas que definen la línea',
+    losProductos: (n: number) => `Los ${n} productos`,
+    respaldo: 'Respaldo',
+    respaldoTitulo: 'Estándares que se auditan, no que se declaran',
+    respaldoNota:
+      'Atendemos instituciones médicas de todas las regiones del país, ' +
+      'incluyendo procesos de licitación pública y compras corporativas.',
+    fotos: [
+      'Pasillo principal del almacén central de Q-MEDICAL',
+      'Operario de Q-MEDICAL verificando existencias',
+      'Estanterías con producto rotulado por lote',
+      'Racks selectivos del almacén',
+    ],
+  },
+  en: {
+    meta: 'Q-MEDICAL S.A.C. — Medical devices and biosafety in Peru',
+    metaDesc: empresaEn.descripcion,
+    lineasAnte: 'Product lines',
+    lineasTitulo: 'The catalogue, ordered into ten lines',
+    lineasTexto:
+      'Each line groups products by the function they perform, not by the ' +
+      'supplier who makes them. That way the end user finds what they are ' +
+      'looking for where they look for it.',
+    verCatalogo: 'See the full catalogue',
+    selloBpa: 'BPA-certified warehouse',
+    compromisoAnte: 'The commitment is ours',
+    compromisoTitulo: 'Every delivery sustains the work of a healthcare team',
+    compromiso: [
+      'We are a drugstore, not a middleman. That status changes what we can ' +
+        'offer: we do not merely place a product, we answer for its storage, ' +
+        'its documentary traceability and its datasheet before the end user, ' +
+        'the purchasing committee and the health authority.',
+      'We work so that public and private healthcare institutions have ' +
+        'high-quality medical, biosafety and personal protection products, for ' +
+        'the benefit of the clinical team and of patients.',
+    ],
+    anios: 'Years in operation',
+    marcasDato: 'Brands',
+    productosDato: 'Products',
+    conocer: 'About the company',
+    catalogoAnte: 'Catalogue',
+    catalogoTitulo: 'The pieces that define the line',
+    losProductos: (n: number) => `All ${n} products`,
+    respaldo: 'Credentials',
+    respaldoTitulo: 'Standards that are audited, not merely declared',
+    respaldoNota:
+      'We serve medical institutions in every region of the country, including ' +
+      'public tenders and corporate purchasing.',
+    fotos: [
+      'Main aisle of the Q-MEDICAL central warehouse',
+      'A Q-MEDICAL operator checking stock',
+      'Shelving with product labelled by batch',
+      'Selective racking in the warehouse',
+    ],
+  },
+}[lang];
+
+const matriz = categorias.map((c, i) => ({
+  ...categoriaEn(c, lang),
+  n: String(i + 1).padStart(2, '0'),
+  href: via(lang, 'categoria', c.slug),
+  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+  sintesis: SINTESIS[lang][c.slug] ?? categoriaEn(c, lang).corto,
+}));
+
+const avales = certificaciones.map((c, i) =>
+  lang === 'en' ? { ...c, ...(certificacionesEn[i] ?? {}) } : c
+);
+---
+
+<Base
+  lang={lang}
+  clave="inicio"
+  title={T.meta}
+  description={T.metaDesc}
+  preloader
+  cabeceraClara
+>
+  <Hero lang={lang} />
+
+  <!-- ══════════════════════════════ 01 · Especialidades clínicas -->
+  <Especialidades lang={lang} />
+
+  <!-- ══════════════════════════════ 02 · Índice de líneas -->
+  <section id="lineas" class="aire bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="matriz__intro" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.lineasAnte}</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.lineasTitulo}</h2>
+        </div>
+        <div class="matriz__intro-texto" data-anim="sube">
+          <p class="cuerpo-lg">{T.lineasTexto}</p>
+          <a href={via(lang, 'catalogo')} class="enlace mt-7">
+            {T.verCatalogo}<Icon name="flecha" size={15} />
+          </a>
+        </div>
+      </div>
+
+      <!-- Matriz: retícula de filetes finos, sin fotografía de producto.
+           Cada celda dibuja su icono al entrar en pantalla. -->
+      <ol class="matriz" data-anim-grupo="70">
+        {matriz.map((c) => (
+          <li data-anim="escala">
+            <a href={c.href} class="celda">
+              <span class="celda__alto">
+                <span class="folio celda__folio">{c.n}</span>
+                <span class="celda__cuenta">{c.cuenta}</span>
+              </span>
+
+              <span class="celda__ic">
+                <Icon name={c.icono} size={52} stroke={0.9} anim />
+              </span>
+
+              <span class="celda__pie">
+                <span class="celda__nombre">{c.corto}</span>
+                <span class="celda__sintesis">{c.sintesis}</span>
+              </span>
+
+              <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 02 · El compromiso -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <div class="compromiso">
+        <!-- Collage: cuatro fotografías montadas con reborde de papel, a
+             distinta profundidad de parallax, como recortes sobre una mesa. -->
+        <div class="collage" data-anim="sube">
+          <figure class="recorte recorte--a">
+            <img
+              src="/img/fotos/almacen-p1360310-1000.webp"
+              srcset="/img/fotos/almacen-p1360310-640.webp 640w, /img/fotos/almacen-p1360310-1000.webp 1000w"
+              sizes="(min-width: 1024px) 30vw, 55vw" width="1000" height="750"
+              loading="lazy" decoding="async"
+              alt={T.fotos[0]}
+              class="parallax" data-parallax="0.06"
+            />
+          </figure>
+
+          <figure class="recorte recorte--b">
+            <img
+              src="/img/fotos/equipo-almacen-1000.webp"
+              srcset="/img/fotos/equipo-almacen-640.webp 640w, /img/fotos/equipo-almacen-1000.webp 1000w"
+              sizes="(min-width: 1024px) 26vw, 48vw" width="1000" height="563"
+              loading="lazy" decoding="async"
+              alt={T.fotos[1]}
+              class="parallax" data-parallax="0.15"
+            />
+          </figure>
+
+          <figure class="recorte recorte--c">
+            <img
+              src="/img/fotos/almacen-p1360266-640.webp" width="640" height="480"
+              loading="lazy" decoding="async"
+              alt={T.fotos[2]}
+              class="parallax" data-parallax="0.22"
+            />
+          </figure>
+
+          <figure class="recorte recorte--d">
+            <img
+              src="/img/fotos/almacen-p1360352-640.webp" width="640" height="480"
+              loading="lazy" decoding="async"
+              alt={T.fotos[3]}
+              class="parallax" data-parallax="0.1"
+            />
+          </figure>
+
+          <span class="collage__sello">
+            <Icon name="certificado" size={16} />
+            <span>{T.selloBpa}</span>
+          </span>
+        </div>
+
+        <div class="compromiso__texto" data-anim-grupo="80">
+          <p class="ante ante-brand" data-anim="sube">{T.compromisoAnte}</p>
+          <h2 class="display-lg mt-5" data-anim="sube">{T.compromisoTitulo}</h2>
+          <div class="cuerpo-lg mt-7" data-anim="sube">
+            {T.compromiso.map((parrafo) => <p>{parrafo}</p>)}
+          </div>
+
+          <dl class="compromiso__datos" data-anim="sube">
+            <div>
+              <dt class="ante">{T.anios}</dt>
+              <dd class="compromiso__dato cuenta" data-conteo={site.anios} data-duracion="1400">0</dd>
+            </div>
+            <div>
+              <dt class="ante">{T.marcasDato}</dt>
+              <dd class="compromiso__dato cuenta" data-conteo={marcas.length} data-duracion="1500">0</dd>
+            </div>
+            <div>
+              <dt class="ante">{T.productosDato}</dt>
+              <dd class="compromiso__dato cuenta" data-conteo={productos.length} data-duracion="1700">0</dd>
+            </div>
+          </dl>
+
+          <a href={via(lang, 'nosotros')} class="enlace mt-9" data-anim="sube">
+            {T.conocer}<Icon name="flecha" size={15} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 03 · Catálogo destacado -->
+  <section class="aire bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="cabecera-seccion" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.catalogoAnte}</p>
+          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">{T.catalogoTitulo}</h2>
+        </div>
+        <a href={via(lang, 'catalogo')} class="enlace shrink-0" data-anim="sube">
+          {T.losProductos(productos.length)}<Icon name="flecha" size={15} />
+        </a>
+      </div>
+
+      <div class="mt-14" data-anim="sube">
+        <ProductoCard lang={lang} producto={destacados[0]} formato="ancha" eager />
+      </div>
+
+      <hr class="filete my-14" />
+
+      <div class="rejilla-catalogo" data-anim-grupo="70">
+        {destacados.slice(1).map((p) => (
+          <div data-anim="sube"><ProductoCard lang={lang} producto={p} /></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 04 · Certificaciones -->
+  <section class="certif">
+    <div class="caja">
+      <div class="cabecera-seccion" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-claro" data-anim="sube">{T.respaldo}</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.respaldoTitulo}</h2>
+        </div>
+        <p class="certif__nota" data-anim="sube">{T.respaldoNota}</p>
+      </div>
+
+      <ol class="certif__lista" data-anim-grupo="100">
+        {avales.map((c, i) => (
+          <li class="certif__item" data-anim="sube">
+            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
+            <p class="certif__sigla">{c.sigla}</p>
+            <p class="certif__nombre">{c.nombre}</p>
+            <p class="certif__detalle">{c.detalle}</p>
+            <p class="certif__emisor">{c.emisor}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 05 · Marcas (anillo, intacto) -->
+  <MarcasConstelacion lang={lang} />
+</Base>
+
+<style>
+  /* ── Matriz de especialidades ─────────────────────────────────────── */
+  .matriz__intro { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .matriz__intro { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  }
+  .matriz__intro-texto { max-width: 34rem; }
+
+  /* La retícula se dibuja con el propio hueco: el fondo del contenedor
+     asoma entre celdas y forma los filetes, sin bordes dobles. */
+  .matriz {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 4rem;
+    background: var(--color-linea);
+    border: 1px solid var(--color-linea);
+  }
+  @media (min-width: 768px) { .matriz { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+  .celda {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 15rem;
+    padding: 1.35rem;
+    background: var(--color-papel);
+    color: var(--color-tinta);
+    overflow: hidden;
+    transition: background-color 0.5s var(--ease-editorial),
+      color 0.5s var(--ease-editorial);
+  }
+  @media (min-width: 768px) { .celda { min-height: 16.5rem; padding: 1.6rem; } }
+  .celda:hover { background: var(--color-brand-700); color: #fff; }
+
+  .celda__alto { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+  .celda__folio { transition: color 0.5s var(--ease-editorial); }
+  .celda:hover .celda__folio { color: rgba(255, 255, 255, 0.5); }
+  .celda__cuenta {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+    transition: color 0.5s var(--ease-editorial);
+  }
+  .celda:hover .celda__cuenta { color: rgba(255, 255, 255, 0.6); }
+
+  .celda__ic {
+    display: flex;
+    align-items: center;
+    height: 3.75rem;
+    margin-top: 1.9rem;
+    color: var(--color-brand-700);
+    transition: color 0.5s var(--ease-editorial), transform 0.6s var(--ease-salida);
+  }
+  .celda:hover .celda__ic { color: #fff; transform: translateY(-3px); }
+
+  .celda__pie { margin-top: 1.9rem; }
+  .celda__nombre {
+    display: block;
+    font-family: var(--font-display-texto);
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+  .celda__sintesis {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--color-tinta-70);
+    transition: color 0.5s var(--ease-editorial);
+  }
+  .celda:hover .celda__sintesis { color: rgba(255, 255, 255, 0.72); }
+
+  .celda__flecha {
+    position: absolute;
+    right: 1.35rem;
+    bottom: 1.35rem;
+    display: inline-flex;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.45s var(--ease-editorial), transform 0.45s var(--ease-salida);
+  }
+  .celda:hover .celda__flecha { opacity: 1; transform: none; }
+  @media (min-width: 768px) { .celda__flecha { right: 1.6rem; bottom: 1.6rem; } }
+
+  /* ── Compromiso y collage ─────────────────────────────────────────── */
+  .compromiso { display: grid; gap: 3.5rem; }
+  @media (min-width: 1024px) {
+    .compromiso { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: center; }
+  }
+
+  .collage {
+    position: relative;
+    aspect-ratio: 1;
+    isolation: isolate;
+  }
+  @media (min-width: 1024px) { .collage { aspect-ratio: 5 / 6; } }
+
+  .recorte {
+    position: absolute;
+    overflow: hidden;
+    /* Reborde de papel: el recorte se lee como una copia sobre la mesa */
+    border: 7px solid var(--color-papel);
+    border-radius: 3px;
+    box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.3);
+  }
+  .recorte img { display: block; width: 100%; height: 110%; object-fit: cover; }
+  /* La figura humana se encuadra algo más arriba: el parallax le comía la
+     cabeza en la parte alta del recorrido. */
+  .recorte--b img { object-position: 50% 32%; }
+
+  .recorte--a { left: 0; top: 6%; width: 62%; aspect-ratio: 4 / 5; z-index: 2; transform: rotate(-1.6deg); }
+  .recorte--b { right: 0; top: 0; width: 46%; aspect-ratio: 4 / 3; z-index: 3; transform: rotate(2.2deg); }
+  .recorte--c { right: 4%; bottom: 4%; width: 52%; aspect-ratio: 4 / 3; z-index: 4; transform: rotate(-1.1deg); }
+  .recorte--d { left: 8%; bottom: 0; width: 34%; aspect-ratio: 3 / 4; z-index: 1; transform: rotate(3deg); }
+
+  .collage__sello {
+    position: absolute;
+    left: 0;
+    bottom: 16%;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-brand-700);
+    color: #fff;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) {
+    .collage__sello { font-size: 0.62rem; padding: 0.45rem 0.7rem; gap: 0.35rem; }
+  }
+
+  .compromiso__datos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-linea);
+  }
+  .compromiso__dato {
+    margin-top: 0.4rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
+    line-height: 1;
+    color: var(--color-brand-700);
+  }
+
+  /* ── Cabeceras y rejilla ──────────────────────────────────────────── */
+  .cabecera-seccion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .rejilla-catalogo {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  /* ── Certificaciones ──────────────────────────────────────────────── */
+  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
+  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
+  .certif__nota {
+    max-width: 22rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) {
+    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
+    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
+  }
+  .certif__folio { color: rgba(255, 255, 255, 0.4); }
+  .certif__sigla {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.4vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
+  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
+  .certif__emisor {
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+</style>

@@ -1,6 +1,8 @@
 ---
 import Icon from './Icon.astro';
 import { site } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
 
 /**
  * Portada con video en bucle.
@@ -10,7 +12,40 @@ import { site } from '../data/site';
  * la portada nunca queda en negro ni rota. El video se silencia, se reproduce
  * en línea y no se descarga con `prefers-reduced-motion`.
  */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+const t = textos(lang);
+
 const poster = '/img/fotos/almacen-p1360310-1600.webp';
+
+// El titular entra renglon a renglon, asi que se guarda partido: cada idioma
+// decide donde corta su propia frase.
+const T = {
+  es: {
+    ante: `Droguería peruana · desde ${site.fundacion}`,
+    titulo: ['Dispositivos médicos', 'y bioseguridad para las'],
+    enfasis: 'instituciones del país',
+    bajada:
+      `${site.anios} años abasteciendo a hospitales, clínicas y laboratorios ` +
+      'con productos de alta calidad, respaldo documental y entregas confiables.',
+    avales: ['BPA — DIGEMID', 'ISO 37001 · ISO 14001', 'Cobertura nacional'],
+    explorar: 'Explorar',
+    irA: 'Ir a las especialidades clínicas',
+  },
+  en: {
+    ante: `Peruvian drugstore · since ${site.fundacion}`,
+    titulo: ['Medical devices', 'and biosafety for the'],
+    enfasis: 'institutions of Peru',
+    bajada:
+      `${site.anios} years supplying hospitals, clinics and laboratories with ` +
+      'high-quality products, full documentation and dependable deliveries.',
+    avales: ['BPA — DIGEMID', 'ISO 37001 · ISO 14001', 'Nationwide coverage'],
+    explorar: 'Explore',
+    irA: 'Go to the clinical specialties',
+  },
+}[lang];
 ---
 
 <section class="hero">
@@ -35,22 +70,20 @@ const poster = '/img/fotos/almacen-p1360310-1600.webp';
   </div>
 
   <div class="caja hero__cuerpo">
-    <p class="ante ante-claro hero__ante">Droguería peruana · desde {site.fundacion}</p>
+    <p class="ante ante-claro hero__ante">{T.ante}</p>
 
     <h1 class="display-xl hero__titulo">
-      <span class="hero__linea"><span>Dispositivos médicos</span></span>
-      <span class="hero__linea"><span>y bioseguridad para las</span></span>
-      <span class="hero__linea"><span class="hero__enfasis">instituciones del país</span></span>
+      {T.titulo.map((l) => (
+        <span class="hero__linea"><span>{l}</span></span>
+      ))}
+      <span class="hero__linea"><span class="hero__enfasis">{T.enfasis}</span></span>
     </h1>
 
-    <p class="hero__bajada">
-      {site.anios} años abasteciendo a hospitales, clínicas y laboratorios con
-      productos de alta calidad, respaldo documental y entregas confiables.
-    </p>
+    <p class="hero__bajada">{T.bajada}</p>
 
     <div class="hero__acciones">
-      <a href="/catalogo" class="pill pill-papel">Ver catálogo<Icon name="flecha" size={16} /></a>
-      <a href="/contacto#cotizar" class="pill pill-claro">Solicitar cotización</a>
+      <a href={via(lang, 'catalogo')} class="pill pill-papel">{t.verCatalogo}<Icon name="flecha" size={16} /></a>
+      <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-claro">{t.cotizar}</a>
     </div>
   </div>
 
@@ -58,12 +91,12 @@ const poster = '/img/fotos/almacen-p1360310-1600.webp';
   <div class="hero__pie">
     <div class="caja flex flex-wrap items-center justify-between gap-x-10 gap-y-4">
       <ul class="flex flex-wrap gap-x-8 gap-y-2 text-[0.8rem] text-white/60">
-        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />BPA — DIGEMID</li>
-        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />ISO 37001 · ISO 14001</li>
-        <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />Cobertura nacional</li>
+        {T.avales.map((a) => (
+          <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />{a}</li>
+        ))}
       </ul>
-      <a href="#especialidades" class="hero__baja" aria-label="Ir a las líneas de producto">
-        <span class="ante ante-claro">Explorar</span>
+      <a href="#especialidades" class="hero__baja" aria-label={T.irA}>
+        <span class="ante ante-claro">{T.explorar}</span>
         <span class="hero__baja-disco"><Icon name="chevron" size={15} class="rotate-90" /></span>
       </a>
     </div>

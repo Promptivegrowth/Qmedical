@@ -1,0 +1,198 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import {
+  categorias,
+  productosDeCategoria,
+  imagenPrincipal,
+  type Categoria,
+} from '../data/catalogo';
+import { marcaPorSlug } from '../data/marcas';
+import { site, waMensajes } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, waMensajesEn } from '../i18n/contenido';
+
+/**
+ * Una línea del catálogo. La lista de direcciones a generar la declara cada
+ * página de entrada —getStaticPaths solo vale ahí—; aquí llega ya resuelta la
+ * línea en castellano, y esta plantilla la traduce si hace falta.
+ */
+interface Props {
+  lang?: Idioma;
+  categoria: Categoria;
+}
+const { lang = 'es', categoria: base } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+const categoria = categoriaEn(base, lang);
+
+const items = productosDeCategoria(base.slug);
+const otras = categorias.filter((c) => c.slug !== base.slug).map((c) => ({
+  ...categoriaEn(c, lang),
+  href: via(lang, 'categoria', c.slug),
+  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+}));
+const firmas = [...new Set(items.map((p) => marcaPorSlug.get(p.marca)?.nombre))].filter(Boolean) as string[];
+const nFichas = new Set(items.flatMap((p) => p.fichas)).size;
+
+const T = {
+  es: {
+    ante: 'Línea de producto',
+    catalogo: 'Catálogo',
+    unidad: (n: number) => (n === 1 ? 'producto' : 'productos'),
+    marcas: 'Marcas',
+    fichas: 'Fichas técnicas',
+    documentos: (n: number) => `${n} documento${n === 1 ? '' : 's'} en PDF`,
+    cobertura: 'Cobertura',
+    coberturaDato: 'Todas las regiones del Perú',
+    enLinea: (c: string) => `${c} en esta línea`,
+    otrasLineas: 'Otras líneas del catálogo',
+    cta: (l: string) => `¿Necesita cotizar ${l.toLowerCase()}?`,
+  },
+  en: {
+    ante: 'Product line',
+    catalogo: 'Catalogue',
+    unidad: (n: number) => (n === 1 ? 'product' : 'products'),
+    marcas: 'Brands',
+    fichas: 'Datasheets',
+    documentos: (n: number) => `${n} PDF document${n === 1 ? '' : 's'}`,
+    cobertura: 'Coverage',
+    coberturaDato: 'Every region of Peru',
+    enLinea: (c: string) => `${c} in this line`,
+    otrasLineas: 'Other lines in the catalogue',
+    cta: (l: string) => `Do you need a quotation for ${l.toLowerCase()}?`,
+  },
+}[lang];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t.irInicio, item: site.url + via(lang, 'inicio') },
+    { '@type': 'ListItem', position: 2, name: T.catalogo, item: site.url + via(lang, 'catalogo') },
+    { '@type': 'ListItem', position: 3, name: categoria.nombre },
+  ],
+};
+---
+
+<Base
+  lang={lang}
+  clave="categoria"
+  slug={base.slug}
+  title={categoria.nombre}
+  description={categoria.descripcion}
+  schema={schema}
+>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={categoria.nombre}
+    texto={categoria.descripcion}
+    migas={[{ nombre: T.catalogo, href: via(lang, 'catalogo') }, { nombre: categoria.corto }]}
+    foto={imagenPrincipal(items[0]?.slug ?? '', 900)}
+    dato={{ valor: String(items.length), etiqueta: T.unidad(items.length) }}
+  />
+
+  <!-- Cintillo de datos de la línea -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+    <div class="caja">
+      <dl class="datos-linea">
+        <div>
+          <dt class="ante">{T.marcas}</dt>
+          <dd>{firmas.join(' · ')}</dd>
+        </div>
+        <div>
+          <dt class="ante">{T.fichas}</dt>
+          <dd>{T.documentos(nFichas)}</dd>
+        </div>
+        <div>
+          <dt class="ante">{T.cobertura}</dt>
+          <dd>{T.coberturaDato}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <p class="ante ante-brand">{T.enLinea(t.productosCuenta(items.length))}</p>
+
+      <div class="rejilla-linea mt-9" data-anim-grupo="60">
+        {items.map((p, i) => (
+          <div data-anim="sube"><ProductoCard lang={lang} producto={p} eager={i < 4} mostrarCategoria={false} /></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Navegación entre líneas -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <h2 class="display-md">{T.otrasLineas}</h2>
+      <ul class="otras" data-anim-grupo="40">
+        {otras.map((c) => (
+          <li data-anim="sube">
+            <a href={c.href} class="otra">
+              <Icon name={c.icono} size={18} class="shrink-0 text-[var(--color-brand-700)]" />
+              <span class="min-w-0">
+                <span class="block truncate">{c.corto}</span>
+                <span class="block text-[0.74rem] text-[var(--color-tinta-45)]">{c.cuenta}</span>
+              </span>
+              <Icon name="flecha" size={15} class="ml-auto shrink-0 opacity-30" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaContacto lang={lang} titulo={T.cta(categoria.corto)} waMensaje={wa.linea(categoria.corto)} />
+</Base>
+
+<style>
+  .datos-linea {
+    display: grid;
+    gap: 1.75rem;
+    padding-block: 2.25rem;
+  }
+  @media (min-width: 768px) {
+    .datos-linea { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3rem; }
+  }
+  .datos-linea dd { margin-top: 0.5rem; font-size: 0.95rem; color: var(--color-tinta); }
+
+  .rejilla-linea {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  @media (min-width: 640px) { .rejilla-linea { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-linea { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1400px) { .rejilla-linea { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  .otras {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 640px) { .otras { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .otras { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .otra {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.95rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-sm);
+    font-size: 0.92rem;
+    transition: border-color 0.3s, transform 0.4s var(--ease-salida);
+  }
+  .otra:hover { border-color: var(--color-brand-300); transform: translateX(3px); }
+</style>

@@ -1,0 +1,385 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import { site, valores, certificaciones } from '../data/site';
+import { marcas } from '../data/marcas';
+import { categorias, productos } from '../data/catalogo';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { certificacionesEn, valoresEn } from '../i18n/contenido';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const FOTOS = [
+  { src: 'almacen-p1360322', ancho: true },
+  { src: 'almacen-p1360352' },
+  { src: 'almacen-p1360349' },
+  { src: 'almacen-p1360288' },
+  { src: 'almacen-p1360328' },
+];
+
+const T = {
+  es: {
+    meta: `Nosotros — ${site.anios} años abasteciendo al sector salud del Perú`,
+    metaDesc:
+      'Q-MEDICAL S.A.C. es una droguería peruana fundada en 2003, certificada en ' +
+      'Buenas Prácticas de Almacenamiento por DIGEMID, ISO 37001 e ISO 14001. ' +
+      'Conozca nuestra misión, infraestructura y certificaciones.',
+    ante: `Desde ${site.fundacion} · ${site.anios} años`,
+    titulo: 'Una empresa peruana comprometida con la salud del país',
+    bajada:
+      'Trabajamos para que las instituciones de salud estatales y privadas ' +
+      'dispongan de productos médicos, de bioseguridad y de protección personal ' +
+      'de alta calidad, junto a nuestros proveedores alrededor del mundo.',
+    miga: 'Nosotros',
+    dato: 'años de operación',
+    cifras: [
+      { v: String(site.fundacion), e: 'Año de fundación', n: 'Más de dos décadas en el sector' },
+      { v: String(marcas.length), e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
+      { v: String(productos.length), e: 'Productos en catálogo', n: `En ${categorias.length} líneas` },
+      { v: '49', e: 'Fichas técnicas', n: 'Documentación pública en PDF' },
+    ],
+    quienesAnte: 'Quiénes somos',
+    quienesTitulo: 'Una droguería, no un intermediario',
+    quienes: [
+      `Q-MEDICAL S.A.C. inició actividades en enero de ${site.fundacion} y hoy es ` +
+        'una droguería especializada en la comercialización de dispositivos médicos ' +
+        'de alta calidad. Contamos con la certificación de Buenas Prácticas de ' +
+        'Almacenamiento otorgada por DIGEMID y representamos y distribuimos productos ' +
+        'de compañías reconocidas a nivel mundial.',
+      'Esa condición cambia lo que podemos ofrecer: no solo colocamos un producto, ' +
+        'respondemos por su conservación, su trazabilidad documental y su ficha ' +
+        'técnica frente al área usuaria, al comité de compras y a la autoridad ' +
+        'sanitaria.',
+      'Atendemos a instituciones médicas de todas las regiones del país —hospitales, ' +
+        'clínicas, laboratorios y centros geriátricos— tanto en compra directa como ' +
+        'en procesos de licitación pública.',
+    ],
+    infraAnte: 'Infraestructura',
+    infraTitulo: 'Un almacén que responde por el producto',
+    infraTexto:
+      'La certificación BPA no es un sello en la pared: es un régimen de control ' +
+      'sobre la recepción, el almacenamiento, la conservación y el despacho de cada lote.',
+    controles: [
+      { t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
+      { t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
+      { t: 'Rotación', d: 'Bajo criterio de primero en vencer, primero en salir, sin excepciones.' },
+      { t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
+    ],
+    fotos: [
+      'Pasillo principal de racks del almacén central de Q-MEDICAL',
+      'Racks selectivos con productos identificados y rotulados',
+      'Zona de acopio con productos paletizados y señalización de piso',
+      'Estanterías con cajas de producto terminado ordenadas por lote',
+      'Vista del almacén hacia la zona de despacho',
+    ],
+    certifAnte: 'Certificaciones y acreditaciones',
+    certifTitulo: 'Estándares que se auditan, no que se declaran',
+    verDocs: 'Ver la documentación técnica',
+  },
+  en: {
+    meta: `About us — ${site.anios} years supplying Peru’s health sector`,
+    metaDesc:
+      'Q-MEDICAL S.A.C. is a Peruvian drugstore founded in 2003, certified in Good ' +
+      'Storage Practices (BPA) by DIGEMID, ISO 37001 and ISO 14001. Learn about our ' +
+      'mission, facilities and certifications.',
+    ante: `Since ${site.fundacion} · ${site.anios} years`,
+    titulo: 'A Peruvian company committed to the health of the country',
+    bajada:
+      'We work so that public and private healthcare institutions have ' +
+      'high-quality medical, biosafety and personal protection products, ' +
+      'alongside our suppliers around the world.',
+    miga: 'About us',
+    dato: 'years in operation',
+    cifras: [
+      { v: String(site.fundacion), e: 'Year founded', n: 'More than two decades in the sector' },
+      { v: String(marcas.length), e: 'Brands represented', n: 'Manufacturers worldwide' },
+      { v: String(productos.length), e: 'Products in the catalogue', n: `Across ${categorias.length} lines` },
+      { v: '49', e: 'Datasheets', n: 'Public documentation in PDF' },
+    ],
+    quienesAnte: 'Who we are',
+    quienesTitulo: 'A drugstore, not a middleman',
+    quienes: [
+      `Q-MEDICAL S.A.C. began trading in January ${site.fundacion} and is today a ` +
+        'drugstore specialising in the supply of high-quality medical devices. We ' +
+        'hold the Good Storage Practices certification granted by DIGEMID, and we ' +
+        'represent and distribute products from companies recognised worldwide.',
+      'That status changes what we can offer: we do not merely place a product, we ' +
+        'answer for its storage, its documentary traceability and its datasheet ' +
+        'before the end user, the purchasing committee and the health authority.',
+      'We serve medical institutions in every region of the country —hospitals, ' +
+        'clinics, laboratories and geriatric centres— both through direct purchase ' +
+        'and through public tenders.',
+    ],
+    infraAnte: 'Facilities',
+    infraTitulo: 'A warehouse that answers for the product',
+    infraTexto:
+      'The BPA certification is not a plaque on the wall: it is a regime of control ' +
+      'over the receipt, storage, preservation and dispatch of every batch.',
+    controles: [
+      { t: 'Receipt', d: 'Documentary and packaging-integrity checks before any batch is admitted.' },
+      { t: 'Storage', d: 'Segregated and labelled by batch and expiry date, on identified racking.' },
+      { t: 'Rotation', d: 'First to expire, first out — without exception.' },
+      { t: 'Traceability', d: 'Records that trace any unit from receipt through to dispatch.' },
+    ],
+    fotos: [
+      'Main racking aisle of the Q-MEDICAL central warehouse',
+      'Selective racking with identified and labelled products',
+      'Collection area with palletised products and floor markings',
+      'Shelving with boxes of finished product arranged by batch',
+      'View of the warehouse towards the dispatch area',
+    ],
+    certifAnte: 'Certifications and accreditations',
+    certifTitulo: 'Standards that are audited, not merely declared',
+    verDocs: 'See the technical documentation',
+  },
+}[lang];
+
+const galeria = FOTOS.map((f, i) => ({ ...f, alt: T.fotos[i] }));
+
+// Misión, visión y filosofía comparten el orden en los dos idiomas.
+const principios = valores.map((v, i) =>
+  lang === 'en' ? (valoresEn[i] ?? v) : v
+);
+
+const avales = certificaciones.map((c, i) =>
+  lang === 'en' ? { ...c, ...(certificacionesEn[i] ?? {}) } : c
+);
+---
+
+<Base
+  lang={lang}
+  clave="nosotros"
+  title={T.meta}
+  description={T.metaDesc}
+  image="/img/fotos/equipo-almacen-1600.webp"
+>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    migas={[{ nombre: T.miga }]}
+    foto="/img/fotos/almacen-p1360352-1600.webp"
+    dato={{ valor: String(site.anios), etiqueta: T.dato }}
+  />
+
+  <!-- ── Cifras ──────────────────────────────────────────────────────── -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+    <div class="caja">
+      <dl class="cifras" data-anim-grupo="80">
+        {T.cifras.map((c) => (
+          <div data-anim="sube">
+            <dd class="cifras__valor">{c.v}</dd>
+            <dt class="cifras__etiqueta">{c.e}</dt>
+            <p class="cifras__nota">{c.n}</p>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- ── Quiénes somos ───────────────────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel)]">
+    <div class="caja quienes" data-anim-grupo="90">
+      <div>
+        <p class="ante ante-brand" data-anim="sube">{T.quienesAnte}</p>
+        <h2 class="display-lg mt-5 max-w-[13ch]" data-anim="sube">{T.quienesTitulo}</h2>
+      </div>
+      <div class="cuerpo-lg" data-anim="sube">
+        {T.quienes.map((parrafo) => <p>{parrafo}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Misión, visión, filosofía ───────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <ol class="valores" data-anim-grupo="100">
+        {principios.map((v, i) => (
+          <li class="valor" data-anim="sube">
+            <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="valor__titulo">{v.titulo}</h2>
+            <p class="valor__texto">{v.texto}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── Infraestructura ─────────────────────────────────────────────── -->
+  <section id="infraestructura" class="aire scroll-mt-20 bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="infra__intro" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.infraAnte}</p>
+          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">{T.infraTitulo}</h2>
+        </div>
+        <p class="cuerpo-lg max-w-xl" data-anim="sube">{T.infraTexto}</p>
+      </div>
+
+      <ol class="controles" data-anim-grupo="70">
+        {T.controles.map((c, i) => (
+          <li class="control" data-anim="sube">
+            <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="control__titulo">{c.t}</h3>
+            <p class="control__texto">{c.d}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="galeria" data-anim-grupo="60">
+        {galeria.map((g) => (
+          <figure class:list={['lamina galeria__pieza', g.ancho && 'galeria__pieza--ancha']} data-anim="cortina">
+            <img
+              src={`/img/fotos/${g.src}-1000.webp`}
+              srcset={`/img/fotos/${g.src}-640.webp 640w, /img/fotos/${g.src}-1000.webp 1000w, /img/fotos/${g.src}-1600.webp 1600w`}
+              sizes={g.ancho ? '(min-width: 768px) 62vw, 92vw' : '(min-width: 768px) 30vw, 92vw'}
+              width="1000" height="750" alt={g.alt} loading="lazy" decoding="async"
+            />
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Certificaciones ─────────────────────────────────────────────── -->
+  <section id="certificaciones" class="certif scroll-mt-20">
+    <div class="caja">
+      <div class="flex flex-wrap items-end justify-between gap-8" data-anim-grupo="80">
+        <div>
+          <p class="ante ante-claro" data-anim="sube">{T.certifAnte}</p>
+          <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.certifTitulo}</h2>
+        </div>
+      </div>
+
+      <ol class="certif__lista" data-anim-grupo="100">
+        {avales.map((c, i) => (
+          <li class="certif__item" data-anim="sube">
+            <span class="folio certif__folio">{String(i + 1).padStart(2, '0')}</span>
+            <p class="certif__sigla">{c.sigla}</p>
+            <p class="certif__nombre">{c.nombre}</p>
+            <p class="certif__detalle">{c.detalle}</p>
+            <p class="certif__emisor">{c.emisor}</p>
+          </li>
+        ))}
+      </ol>
+
+      <a href={via(lang, 'fichas')} class="pill pill-papel mt-12" data-anim="sube">
+        <Icon name="documento" size={16} />{T.verDocs}
+      </a>
+    </div>
+  </section>
+
+  <CtaContacto lang={lang} />
+</Base>
+
+<style>
+  /* ── Cifras ───────────────────────────────────────────────────────── */
+  .cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 900px) { .cifras { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .cifras > div { padding: 2.5rem 1.5rem 2.5rem 0; border-top: 1px solid var(--color-linea); }
+  @media (min-width: 900px) {
+    .cifras > div { border-top: 0; }
+    .cifras > div + div { border-left: 1px solid var(--color-linea); padding-left: 2.5rem; }
+  }
+  .cifras__valor {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    line-height: 1;
+    color: var(--color-brand-700);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .cifras__etiqueta { margin-top: 0.85rem; font-size: 0.9rem; font-weight: 500; }
+  .cifras__nota { margin-top: 0.3rem; font-size: 0.8rem; color: var(--color-tinta-45); }
+
+  /* ── Quiénes somos ────────────────────────────────────────────────── */
+  .quienes { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .quienes { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: 5rem; }
+  }
+
+  /* ── Valores ──────────────────────────────────────────────────────── */
+  .valores { display: grid; border-top: 1px solid var(--color-linea-2); }
+  @media (min-width: 900px) { .valores { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .valor { padding: 2.5rem 0; border-bottom: 1px solid var(--color-linea-2); }
+  @media (min-width: 900px) {
+    .valor { padding: 3rem 2.5rem 3rem 0; border-bottom: 0; }
+    .valor + .valor { border-left: 1px solid var(--color-linea-2); padding-left: 2.5rem; }
+  }
+  .valor__titulo {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    letter-spacing: -0.015em;
+  }
+  .valor__texto { margin-top: 1rem; font-size: 0.95rem; line-height: 1.65; color: var(--color-tinta-70); }
+
+  /* ── Infraestructura ──────────────────────────────────────────────── */
+  .infra__intro { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .infra__intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  }
+  .controles {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--color-linea);
+  }
+  @media (min-width: 640px) { .controles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .controles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .control { padding: 1.75rem 1.5rem 1.75rem 0; border-bottom: 1px solid var(--color-linea); }
+  @media (min-width: 1100px) {
+    .control { border-bottom: 0; }
+    .control + .control { border-left: 1px solid var(--color-linea); padding-left: 1.75rem; }
+  }
+  .control__titulo { margin-top: 0.85rem; font-size: 1rem; font-weight: 500; }
+  .control__texto { margin-top: 0.5rem; font-size: 0.865rem; line-height: 1.55; color: var(--color-tinta-70); }
+
+  .galeria {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin-top: 3.5rem;
+  }
+  @media (min-width: 768px) { .galeria { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; } }
+  .galeria__pieza { aspect-ratio: 4 / 3; }
+  .galeria__pieza::after { display: none; }
+  .galeria__pieza--ancha { grid-column: span 2; aspect-ratio: 16 / 9; }
+
+  /* ── Certificaciones ──────────────────────────────────────────────── */
+  .certif { padding-block: 5rem; background: var(--color-brand-700); color: #fff; }
+  @media (min-width: 1024px) { .certif { padding-block: 8rem; } }
+  .certif__lista { display: grid; margin-top: 4rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) { .certif__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .certif__item { padding: 2.25rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
+  @media (min-width: 900px) {
+    .certif__item { padding: 2.5rem 2.5rem 2.5rem 0; border-bottom: 0; }
+    .certif__item + .certif__item { border-left: 1px solid rgba(255, 255, 255, 0.16); padding-left: 2.5rem; }
+  }
+  .certif__folio { color: rgba(255, 255, 255, 0.4); }
+  .certif__sigla {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 3.4vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .certif__nombre { margin-top: 0.75rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); }
+  .certif__detalle { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; color: rgba(255, 255, 255, 0.55); }
+  .certif__emisor {
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+  }
+</style>

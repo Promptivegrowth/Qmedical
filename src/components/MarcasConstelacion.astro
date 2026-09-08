@@ -1,6 +1,12 @@
 ---
 import Icon from './Icon.astro';
 import { marcas } from '../data/marcas';
+import { ruta, type Idioma } from '../i18n/rutas';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
 
 /**
  * Constelación de marcas asociadas.
@@ -19,6 +25,22 @@ import { marcas } from '../data/marcas';
  * plano. Cada disco arranca con un desfase negativo, de modo que no hay ni un
  * cálculo en JavaScript por fotograma.
  */
+
+// El anillo no cambia de forma con el idioma; solo lo que se lee dentro.
+const T = {
+  es: {
+    eyebrow: 'Marcas asociadas',
+    titulo: 'Las marcas que elegimos para las instituciones que no pueden fallar',
+    cta: (n: number) => `Conocer las ${n} marcas`,
+    lista: 'Marcas asociadas a Q-MEDICAL',
+  },
+  en: {
+    eyebrow: 'Partner brands',
+    titulo: 'The brands we choose for the institutions that cannot fail',
+    cta: (n: number) => `Meet the ${n} brands`,
+    lista: 'Brands partnered with Q-MEDICAL',
+  },
+}[lang];
 
 const N = marcas.length;
 const RX = 42; // vw — semieje horizontal del anillo
@@ -78,21 +100,19 @@ const orbes = marcas.map((m, i) => {
     </div>
 
     <div class="constelacion__contenido">
-      <p class="constelacion__eyebrow">Marcas asociadas</p>
-      <h2 class="constelacion__titulo">
-        Las marcas que elegimos para las instituciones que no pueden fallar
-      </h2>
+      <p class="constelacion__eyebrow">{T.eyebrow}</p>
+      <h2 class="constelacion__titulo">{T.titulo}</h2>
     </div>
 
     <!-- Por encima de todo el anillo: nunca queda tapado ni deja de ser pulsable -->
-    <a href="/marcas" class="constelacion__cta">
-      Conocer las {marcas.length} marcas
+    <a href={ruta(lang, 'marcas')} class="constelacion__cta">
+      {T.cta(marcas.length)}
       <Icon name="flecha" size={15} />
     </a>
   </div>
 
   <!-- Equivalente accesible de la capa decorativa -->
-  <h3 class="sr-only">Marcas asociadas a Q-MEDICAL</h3>
+  <h3 class="sr-only">{T.lista}</h3>
   <ul class="sr-only">
     {marcas.map((m) => <li><a href={`/marcas#${m.slug}`}>{m.nombre}</a></li>)}
   </ul>

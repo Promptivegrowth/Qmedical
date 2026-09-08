@@ -2,31 +2,70 @@
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { categorias } from '../data/catalogo';
+import { ruta as via } from '../i18n/rutas';
+import { categoriaEn } from '../i18n/contenido';
+
+/**
+ * Página no encontrada.
+ *
+ * Es la única del sitio que no puede generarse por idioma: el servidor —tanto
+ * Vercel como el Apache de cPanel— sirve un único 404.html para cualquier
+ * dirección desconocida, incluidas las que empiezan por /en/. Así que la
+ * página se compila en castellano y lleva su propia traducción a cuestas: un
+ * guion mínimo, antes del primer pintado, cambia los textos y los enlaces si
+ * la dirección fallida era del sitio en inglés.
+ *
+ * Sin JavaScript queda en castellano, que es el idioma por defecto del sitio.
+ */
+const atajos = categorias.map((c) => ({
+  es: c,
+  en: categoriaEn(c, 'en'),
+  href: via('es', 'categoria', c.slug),
+  hrefEn: via('en', 'categoria', c.slug),
+}));
 ---
 
 <Base
+  clave="inicio"
   title="Página no encontrada"
   description="La página que busca no existe o cambió de dirección. Vuelva al inicio o explore el catálogo de Q-MEDICAL S.A.C."
 >
   <section class="grid min-h-[72svh] place-items-center bg-[var(--color-papel)] py-24">
     <div class="caja text-center">
       <p class="cifra text-[var(--color-linea-2)]">404</p>
-      <h1 class="display-lg mt-6 mx-auto max-w-[18ch]">No encontramos esta página</h1>
-      <p class="cuerpo-lg mx-auto mt-6 max-w-xl">
+
+      <h1 class="display-lg mt-6 mx-auto max-w-[18ch]" data-en="We could not find this page">
+        No encontramos esta página
+      </h1>
+
+      <p
+        class="cuerpo-lg mx-auto mt-6 max-w-xl"
+        data-en="The address may have changed when the site was redesigned. Here are the sections people look for most."
+      >
         Puede que la dirección haya cambiado con el rediseño del sitio. Le dejamos los
         accesos a las secciones más consultadas.
       </p>
 
       <div class="mt-10 flex flex-wrap justify-center gap-3">
-        <a href="/catalogo" class="pill pill-tinta">Ir al catálogo<Icon name="flecha" size={16} /></a>
-        <a href="/contacto" class="pill pill-linea">Contactar</a>
+        <a
+          href="/catalogo"
+          data-en-href="/en/catalog"
+          class="pill pill-tinta"
+        ><span data-en="Go to the catalogue">Ir al catálogo</span><Icon name="flecha" size={16} /></a>
+        <a
+          href="/contacto"
+          data-en-href="/en/contact"
+          class="pill pill-linea"
+          data-en="Contact us"
+        >Contactar</a>
       </div>
 
       <ul class="mt-14 flex flex-wrap justify-center gap-2">
-        {categorias.map((c) => (
+        {atajos.map((a) => (
           <li>
-            <a href={`/catalogo/${c.slug}`} class="atajo">
-              <Icon name={c.icono} size={15} class="text-[var(--color-brand-700)]" />{c.corto}
+            <a href={a.href} data-en-href={a.hrefEn} class="atajo">
+              <Icon name={a.es.icono} size={15} class="text-[var(--color-brand-700)]" />
+              <span data-en={a.en.corto}>{a.es.corto}</span>
             </a>
           </li>
         ))}
@@ -50,3 +89,20 @@ import { categorias } from '../data/catalogo';
   }
   .atajo:hover { border-color: var(--color-brand-300); color: var(--color-tinta); }
 </style>
+
+<script is:inline>
+  // Si la dirección fallida pertenecía al sitio en inglés, se traduce en
+  // sitio. Se ejecuta antes de pintar, de modo que no se ve el cambio.
+  (function () {
+    if (!/^\/en(\/|$)/.test(location.pathname)) return;
+    document.documentElement.lang = 'en';
+    document.querySelectorAll('[data-en]').forEach(function (el) {
+      el.textContent = el.getAttribute('data-en');
+    });
+    document.querySelectorAll('[data-en-href]').forEach(function (el) {
+      el.setAttribute('href', el.getAttribute('data-en-href'));
+    });
+    var salto = document.querySelector('.salto');
+    if (salto) salto.textContent = 'Skip to content';
+  })();
+</script>

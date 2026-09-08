@@ -1,0 +1,14 @@
+---
+// One catalogue line, in English. Entity slugs are shared across languages,
+// so /en/catalog/via-aerea is the exact twin of /catalogo/via-aerea.
+import LineaCatalogo from '../../../plantillas/LineaCatalogo.astro';
+import { categorias } from '../../../data/catalogo';
+
+export function getStaticPaths() {
+  return categorias.map((c) => ({ params: { categoria: c.slug }, props: { categoria: c } }));
+}
+
+const { categoria } = Astro.props;
+---
+
+<LineaCatalogo lang="en" categoria={categoria} />

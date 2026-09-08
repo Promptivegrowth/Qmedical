@@ -1,0 +1,381 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import FormularioBase from '../components/FormularioBase.astro';
+import { site, contactos, redes, whatsapp, waMensajes } from '../data/site';
+import { categorias, productos } from '../data/catalogo';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { areasEn, categoriaEn, empresaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+
+const mapa =
+  'https://www.google.com/maps?q=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA&output=embed';
+
+const T = {
+  es: {
+    meta: 'Contacto y cotizaciones',
+    metaDesc:
+      'Solicite una cotización de dispositivos médicos y bioseguridad. Oficinas ' +
+      'en Av. Arica 1442, Breña, Lima. Teléfonos (01) 424-7290 / (01) 433-4197 y ' +
+      'WhatsApp +51 977 814 006.',
+    ante: 'Contacto',
+    titulo: 'Cuéntenos qué necesita su institución',
+    bajada:
+      'Atendemos requerimientos de hospitales, clínicas, laboratorios y centros ' +
+      'geriátricos en todo el país, tanto en compra directa como en procesos de ' +
+      'licitación pública.',
+    telefonos: 'Teléfonos',
+    cotizaciones: 'Cotizaciones',
+    horario: 'Horario',
+    formAnte: 'Solicitud de cotización',
+    formTitulo: 'Envíenos su requerimiento',
+    formTexto:
+      'Complete el formulario y nuestro equipo comercial le responderá con precios, ' +
+      'disponibilidad, tiempo de entrega y la documentación técnica que necesite.',
+    asunto: 'Solicitud de cotización desde la web',
+    lNombre: 'Nombre y apellidos *',
+    pNombre: 'Nombre completo',
+    lInstitucion: 'Institución o empresa',
+    pInstitucion: 'Hospital, clínica, laboratorio…',
+    lCorreo: 'Correo electrónico *',
+    pCorreo: 'nombre@institucion.pe',
+    lTelefono: 'Teléfono *',
+    lLinea: 'Línea de producto de interés',
+    pLinea: 'Seleccione una línea (opcional)',
+    otraLinea: 'Otra o varias líneas',
+    lMensaje: 'Detalle de su requerimiento *',
+    pMensaje: 'Indique productos, códigos, cantidades y fecha requerida de entrega.',
+    consentimiento:
+      `Autorizo a ${site.nombre} a utilizar mis datos para atender esta solicitud, ` +
+      'conforme a la Ley N.° 29733 de Protección de Datos Personales. *',
+    enviar: 'Enviar solicitud',
+    obligatorios:
+      'Los campos con * son obligatorios. Le responderemos dentro del siguiente día hábil.',
+    oficinas: 'Nuestras oficinas',
+    verMapa: 'Ver mapa interactivo',
+    abrirMaps: 'Abrir en Google Maps',
+    tituloMapa: 'Ubicación de Q-MEDICAL S.A.C. en Av. Arica 1442, Breña, Lima',
+    lugarCorto: 'Breña, Lima — Perú',
+    correosArea: 'Correos por área',
+    siganos: 'Síganos',
+    reclamoPregunta: '¿Tiene un reclamo o una queja sobre nuestros productos o servicios?',
+    reclamoEnlace: 'Libro de Reclamaciones',
+    precarga: (n: string) =>
+      'Solicito cotización del producto: ' + n +
+      '\n\nCantidad requerida: \nFecha requerida: ',
+  },
+  en: {
+    meta: 'Contact and quotations',
+    metaDesc:
+      'Request a quotation for medical devices and biosafety products. Offices at ' +
+      'Av. Arica 1442, Breña, Lima. Phone (01) 424-7290 / (01) 433-4197 and ' +
+      'WhatsApp +51 977 814 006.',
+    ante: 'Contact',
+    titulo: 'Tell us what your institution needs',
+    bajada:
+      'We serve requirements from hospitals, clinics, laboratories and geriatric ' +
+      'centres across the country, both through direct purchase and through ' +
+      'public tenders.',
+    telefonos: 'Phone',
+    cotizaciones: 'Quotations',
+    horario: 'Opening hours',
+    formAnte: 'Quotation request',
+    formTitulo: 'Send us your requirement',
+    formTexto:
+      'Fill in the form and our sales team will reply with prices, availability, ' +
+      'lead time and whatever technical documentation you need.',
+    asunto: 'Quotation request from the website',
+    lNombre: 'Full name *',
+    pNombre: 'Your full name',
+    lInstitucion: 'Institution or company',
+    pInstitucion: 'Hospital, clinic, laboratory…',
+    lCorreo: 'Email address *',
+    pCorreo: 'name@institution.com',
+    lTelefono: 'Phone *',
+    lLinea: 'Product line of interest',
+    pLinea: 'Select a line (optional)',
+    otraLinea: 'Another line, or several',
+    lMensaje: 'Details of your requirement *',
+    pMensaje: 'List products, codes, quantities and the delivery date you need.',
+    consentimiento:
+      `I authorise ${site.nombre} to use my details to answer this enquiry, in ` +
+      'accordance with Peruvian Personal Data Protection Law No. 29733. *',
+    enviar: 'Send request',
+    obligatorios:
+      'Fields marked * are required. We will reply by the next working day.',
+    oficinas: 'Our offices',
+    verMapa: 'Load interactive map',
+    abrirMaps: 'Open in Google Maps',
+    tituloMapa: 'Location of Q-MEDICAL S.A.C. at Av. Arica 1442, Breña, Lima',
+    lugarCorto: 'Breña, Lima — Peru',
+    correosArea: 'Email by department',
+    siganos: 'Follow us',
+    reclamoPregunta: 'Do you have a complaint about our products or service?',
+    reclamoEnlace: 'Complaints Book',
+    precarga: (n: string) =>
+      'I would like a quotation for the product: ' + n +
+      '\n\nQuantity required: \nDate required: ',
+  },
+}[lang];
+
+const vias = [
+  { ic: 'telefono', t: T.telefonos, l: site.telefonos.map((x) => x.etiqueta), href: site.telefonos[0].href },
+  { ic: 'whatsapp', t: 'WhatsApp', l: [site.whatsapp.numero], href: whatsapp(wa.cotizacion), externo: true },
+  { ic: 'correo', t: T.cotizaciones, l: [site.correoPrincipal], href: `mailto:${site.correoPrincipal}` },
+  { ic: 'reloj', t: T.horario, l: [lang === 'en' ? empresaEn.horario : site.horario] },
+];
+
+const lineas = categorias.map((c) => categoriaEn(c, lang));
+const directorio = contactos.map((c, i) => ({
+  correo: c.correo,
+  area: lang === 'en' ? (areasEn[i] ?? c.area) : c.area,
+}));
+const pais = lang === 'en' ? empresaEn.pais : site.direccion.pais;
+
+// El nombre del producto que se precarga en el mensaje va en el idioma en que
+// se está navegando.
+const catalogoJs = productos.map((p) => ({
+  slug: p.slug,
+  nombre: productoEn(p, lang).nombre,
+}));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contacto — Q-MEDICAL S.A.C.',
+  url: site.url + via(lang, 'contacto'),
+};
+---
+
+<Base lang={lang} clave="contacto" title={T.meta} description={T.metaDesc} schema={schema}>
+  <Portada lang={lang} ante={T.ante} titulo={T.titulo} texto={T.bajada} migas={[{ nombre: T.ante }]} />
+
+  <!-- Vías de contacto -->
+  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+    <div class="caja">
+      <ul class="vias" data-anim-grupo="70">
+        {vias.map((v) => (
+          <li data-anim="sube">
+            <p class="via__ic"><Icon name={v.ic} size={20} /></p>
+            <p class="ante mt-4">{v.t}</p>
+            <div class="via__valor">
+              {v.l.map((x) =>
+                v.href ? (
+                  <a href={v.href} target={v.externo ? '_blank' : undefined} rel={v.externo ? 'noopener' : undefined}
+                    class="block break-words hover:text-[var(--color-brand-700)] transition">{x}</a>
+                ) : (<span class="block">{x}</span>)
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Formulario + oficinas -->
+  <section id="cotizar" class="aire scroll-mt-20 bg-[var(--color-papel-2)]">
+    <div class="caja contacto">
+      <div class="min-w-0">
+        <p class="ante ante-brand">{T.formAnte}</p>
+        <h2 class="display-lg mt-5 max-w-[14ch]">{T.formTitulo}</h2>
+        <p class="cuerpo-lg mt-6 max-w-xl">{T.formTexto}</p>
+
+        <!-- Los rótulos se traducen; el atributo name se mantiene en castellano
+             a propósito, para que el equipo comercial reciba siempre los correos
+             con los mismos campos, venga la consulta en el idioma que venga. -->
+        <FormularioBase lang={lang} id="form-cotizacion" asunto={T.asunto} class="formulario">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label>
+              <span class="rotulo">{T.lNombre}</span>
+              <input id="c-nombre" type="text" name="Nombre" class="campo" required
+                autocomplete="name" placeholder={T.pNombre} />
+            </label>
+            <label>
+              <span class="rotulo">{T.lInstitucion}</span>
+              <input id="c-institucion" type="text" name="Institución" class="campo"
+                autocomplete="organization" placeholder={T.pInstitucion} />
+            </label>
+            <label>
+              <span class="rotulo">{T.lCorreo}</span>
+              <input id="c-correo" type="email" name="Correo" class="campo" required
+                autocomplete="email" placeholder={T.pCorreo} />
+            </label>
+            <label>
+              <span class="rotulo">{T.lTelefono}</span>
+              <input id="c-telefono" type="tel" name="Teléfono" class="campo" required
+                autocomplete="tel" placeholder="+51 9XX XXX XXX" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lLinea}</span>
+              <select id="c-linea" name="Línea de interés" class="campo">
+                <option value="">{T.pLinea}</option>
+                {lineas.map((c) => <option value={c.nombre}>{c.nombre}</option>)}
+                <option value="Otra / varias líneas">{T.otraLinea}</option>
+              </select>
+            </label>
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lMensaje}</span>
+              <textarea id="c-mensaje" name="Mensaje" rows="6" class="campo resize-y" required
+                placeholder={T.pMensaje}></textarea>
+            </label>
+            <label class="sm:col-span-2 flex items-start gap-3">
+              <input type="checkbox" name="Autoriza el tratamiento de datos" value="Sí" required
+                class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]" />
+              <span class="text-[0.83rem] leading-relaxed text-[var(--color-tinta-70)]">{T.consentimiento}</span>
+            </label>
+          </div>
+
+          <button type="submit" class="pill pill-tinta mt-8 w-full sm:w-auto">
+            {T.enviar}<Icon name="flecha" size={16} />
+          </button>
+          <p class="mt-4 text-[0.79rem] text-[var(--color-tinta-45)]">{T.obligatorios}</p>
+        </FormularioBase>
+      </div>
+
+      <aside class="min-w-0 space-y-4">
+        <div class="tarjeta">
+          <h2 class="display-sm">{T.oficinas}</h2>
+          <p class="mt-4 flex gap-3 text-[0.93rem] leading-relaxed">
+            <Icon name="lugar" size={17} class="mt-0.5 shrink-0 text-[var(--color-brand-700)]" />
+            <span>{site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {pais}</span>
+          </p>
+
+          <!-- El mapa se carga a petición: evita la llamada a Google en cada
+               visita y que quede un recuadro en blanco si lo bloquean. -->
+          <div id="mapa" class="mapa" data-mapa={mapa} data-titulo={T.tituloMapa}>
+            <div class="trama absolute inset-0 opacity-60" aria-hidden="true"></div>
+            <div class="relative text-center">
+              <Icon name="lugar" size={24} class="mx-auto text-white/50" />
+              <p class="mt-3 text-[0.86rem] text-white/85">{T.lugarCorto}</p>
+              <button type="button" id="cargar-mapa" class="pill pill-papel mt-4 !min-h-0 !px-4 !py-2 !text-[0.8rem]">
+                {T.verMapa}
+              </button>
+            </div>
+          </div>
+
+          <a href="https://www.google.com/maps/search/?api=1&query=Av.+Arica+1442,+Bre%C3%B1a,+Lima,+Per%C3%BA"
+            target="_blank" rel="noopener" class="pill pill-linea mt-4 w-full">
+            <Icon name="lugar" size={15} />{T.abrirMaps}
+          </a>
+        </div>
+
+        <div class="tarjeta">
+          <h2 class="display-sm">{T.correosArea}</h2>
+          <ul class="mt-5 divide-y divide-[var(--color-linea)]">
+            {directorio.map((c) => (
+              <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                <span class="text-[0.82rem] text-[var(--color-tinta-45)]">{c.area}</span>
+                <a href={`mailto:${c.correo}`} class="break-all text-[0.84rem] text-[var(--color-brand-700)] hover:underline">
+                  {c.correo}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="tarjeta">
+          <h2 class="display-sm">{T.siganos}</h2>
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {redes.map((r) => (
+              <li>
+                <a href={r.href} target="_blank" rel="noopener" class="pill pill-linea !min-h-0 !px-4 !py-2 !text-[0.83rem]">
+                  <Icon name={r.icono} size={15} />{r.nombre}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-6 border-t border-[var(--color-linea)] pt-5">
+            <p class="text-[0.85rem] text-[var(--color-tinta-70)]">{T.reclamoPregunta}</p>
+            <a href={via(lang, 'reclamos')} class="enlace mt-3">
+              <Icon name="libro" size={16} />{T.reclamoEnlace}
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .vias { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  @media (min-width: 640px) { .vias { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .vias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .vias > li { padding: 2.25rem 1.5rem 2.25rem 0; border-top: 1px solid var(--color-linea); }
+  @media (min-width: 1024px) {
+    .vias > li { border-top: 0; }
+    .vias > li + li { border-left: 1px solid var(--color-linea); padding-left: 2.25rem; }
+  }
+  .via__ic { color: var(--color-brand-700); }
+  .via__valor { margin-top: 0.5rem; font-size: 0.93rem; }
+
+  .contacto { display: grid; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .contacto { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 4rem; align-items: start; }
+  }
+
+  .formulario {
+    margin-top: 2.5rem;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 640px) { .formulario { padding: 2.25rem; } }
+
+  .tarjeta {
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 640px) { .tarjeta { padding: 2rem; } }
+
+  .mapa {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 15rem;
+    margin-top: 1.5rem;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    background: var(--color-brand-950);
+  }
+</style>
+
+<script is:inline define:vars={{ catalogoJs, plantilla: T.precarga('@') }}>
+  // Precarga el producto al llegar desde una ficha: ?producto=slug
+  (function () {
+    var slug = new URLSearchParams(location.search).get('producto');
+    if (!slug) return;
+    var prod = catalogoJs.find(function (p) { return p.slug === slug; });
+    if (!prod) return;
+    var ta = document.getElementById('c-mensaje');
+    if (ta && !ta.value) ta.value = plantilla.replace('@', prod.nombre);
+  })();
+</script>
+
+<script>
+  const contenedor = document.getElementById('mapa');
+  document.getElementById('cargar-mapa')?.addEventListener('click', () => {
+    if (!contenedor) return;
+    const marco = document.createElement('iframe');
+    marco.src = contenedor.dataset.mapa ?? '';
+    marco.title = contenedor.dataset.titulo ?? '';
+    marco.width = '100%';
+    marco.height = '240';
+    marco.style.border = '0';
+    marco.loading = 'lazy';
+    marco.referrerPolicy = 'no-referrer-when-downgrade';
+    contenedor.replaceChildren(marco);
+    contenedor.classList.remove('grid', 'place-items-center');
+  });
+</script>

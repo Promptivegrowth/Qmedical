@@ -2,24 +2,54 @@
 import Icon from './Icon.astro';
 import { site, redes, contactos, whatsapp, waMensajes } from '../data/site';
 import { categorias } from '../data/catalogo';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, areasEn, empresaEn, waMensajesEn } from '../i18n/contenido';
 
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
 const anio = new Date().getFullYear();
+
+const lineas = categorias.map((c) => ({
+  ...categoriaEn(c, lang),
+  href: via(lang, 'categoria', c.slug),
+}));
+
+// El nombre del área se traduce; el correo, evidentemente, no.
+const directorio = contactos.map((c, i) => ({
+  correo: c.correo,
+  area: lang === 'en' ? (areasEn[i] ?? c.area) : c.area,
+}));
+
+const horario = lang === 'en' ? empresaEn.horario : site.horario;
+const pais = lang === 'en' ? empresaEn.pais : site.direccion.pais;
+
+const enlacesEmpresa = [
+  { nombre: t.pie.nosotros, href: via(lang, 'nosotros') },
+  { nombre: t.pie.marcas, href: via(lang, 'marcas') },
+  { nombre: t.pie.catalogo, href: via(lang, 'catalogo') },
+  { nombre: t.pie.fichas, href: via(lang, 'fichas') },
+  { nombre: t.pie.contacto, href: via(lang, 'contacto') },
+  { nombre: t.pie.reclamos, href: via(lang, 'reclamos') },
+];
 ---
 
 <footer class="pie">
   <div class="caja">
     <!-- Cierre editorial: la última llamada, en grande -->
     <div class="pie__cierre" data-anim="sube">
-      <p class="ante ante-claro">Hablemos</p>
-      <h2 class="display-lg mt-5 max-w-4xl">
-        Cuéntenos qué necesita su institución y le respondemos con precio,
-        disponibilidad y ficha técnica.
-      </h2>
+      <p class="ante ante-claro">{t.pie.ante}</p>
+      <h2 class="display-lg mt-5 max-w-4xl">{t.pie.titulo}</h2>
       <div class="mt-9 flex flex-wrap gap-3">
-        <a href="/contacto#cotizar" class="pill pill-papel">
-          Solicitar cotización<Icon name="flecha" size={16} />
+        <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-papel">
+          {t.cotizar}<Icon name="flecha" size={16} />
         </a>
-        <a href={whatsapp(waMensajes.cotizacion)} target="_blank" rel="noopener" class="pill pill-claro">
+        <a href={whatsapp(wa.cotizacion)} target="_blank" rel="noopener" class="pill pill-claro">
           <Icon name="whatsapp" size={17} />WhatsApp {site.whatsapp.numero}
         </a>
       </div>
@@ -34,11 +64,7 @@ const anio = new Date().getFullYear();
           srcset="/img/logo/qmedical-blanco-1x.webp 1x, /img/logo/qmedical-blanco.webp 2x"
           width="150" height="85" alt="Q-MEDICAL S.A.C." class="h-10 w-auto" loading="lazy"
         />
-        <p class="mt-6 max-w-sm text-[0.92rem] leading-relaxed text-white/55">
-          Droguería peruana comprometida con la salud del país. Abastecemos a
-          instituciones de salud estatales y privadas con dispositivos médicos,
-          bioseguridad y protección personal de alta calidad.
-        </p>
+        <p class="mt-6 max-w-sm text-[0.92rem] leading-relaxed text-white/55">{t.pie.sobre}</p>
         <ul class="mt-8 flex gap-2.5">
           {redes.map((r) => (
             <li>
@@ -51,33 +77,30 @@ const anio = new Date().getFullYear();
       </div>
 
       <div class="sm:col-span-1 lg:col-span-3">
-        <h3 class="ante ante-claro">Líneas de producto</h3>
+        <h3 class="ante ante-claro">{t.pie.lineas}</h3>
         <ul class="mt-5 space-y-2.5 text-[0.88rem]">
-          {categorias.map((c) => (
-            <li><a href={`/catalogo/${c.slug}`} class="pie__enlace">{c.corto}</a></li>
+          {lineas.map((c) => (
+            <li><a href={c.href} class="pie__enlace">{c.corto}</a></li>
           ))}
         </ul>
       </div>
 
       <div class="lg:col-span-2">
-        <h3 class="ante ante-claro">Empresa</h3>
+        <h3 class="ante ante-claro">{t.pie.empresa}</h3>
         <ul class="mt-5 space-y-2.5 text-[0.88rem]">
-          <li><a href="/nosotros" class="pie__enlace">Nosotros</a></li>
-          <li><a href="/marcas" class="pie__enlace">Marcas asociadas</a></li>
-          <li><a href="/catalogo" class="pie__enlace">Catálogo</a></li>
-          <li><a href="/fichas-tecnicas" class="pie__enlace">Fichas técnicas</a></li>
-          <li><a href="/contacto" class="pie__enlace">Contacto</a></li>
-          <li><a href="/libro-de-reclamaciones" class="pie__enlace">Libro de reclamaciones</a></li>
+          {enlacesEmpresa.map((e) => (
+            <li><a href={e.href} class="pie__enlace">{e.nombre}</a></li>
+          ))}
         </ul>
       </div>
 
       <div class="lg:col-span-3">
-        <h3 class="ante ante-claro">Contacto</h3>
+        <h3 class="ante ante-claro">{t.pie.contacto}</h3>
         <ul class="mt-5 space-y-4 text-[0.88rem]">
           <li class="flex gap-3">
             <Icon name="lugar" size={16} class="mt-0.5 shrink-0 text-white/30" />
             <span class="text-white/70">
-              {site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {site.direccion.pais}
+              {site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {pais}
             </span>
           </li>
           <li class="flex gap-3">
@@ -94,7 +117,7 @@ const anio = new Date().getFullYear();
           </li>
           <li class="flex gap-3">
             <Icon name="reloj" size={16} class="mt-0.5 shrink-0 text-white/30" />
-            <span class="text-white/70">{site.horario}</span>
+            <span class="text-white/70">{horario}</span>
           </li>
         </ul>
       </div>
@@ -103,12 +126,12 @@ const anio = new Date().getFullYear();
     <details class="pie__directorio">
       <summary>
         <span class="inline-flex items-center gap-2">
-          <Icon name="correo" size={15} class="text-white/35" />Directorio de correos por área
+          <Icon name="correo" size={15} class="text-white/35" />{t.pie.correos}
         </span>
         <span class="pie__mas"><Icon name="mas" size={15} /></span>
       </summary>
       <ul class="grid gap-x-8 gap-y-3.5 px-5 pb-6 text-[0.82rem] sm:grid-cols-2 lg:grid-cols-3">
-        {contactos.map((c) => (
+        {directorio.map((c) => (
           <li>
             <span class="block text-white/35">{c.area}</span>
             <a href={`mailto:${c.correo}`} class="pie__enlace break-all">{c.correo}</a>
@@ -120,11 +143,11 @@ const anio = new Date().getFullYear();
 
   <div class="border-t border-white/10">
     <div class="caja flex flex-col gap-3 py-6 text-[0.78rem] text-white/40 sm:flex-row sm:items-center sm:justify-between">
-      <p>© {anio} {site.nombre} — RUC {site.ruc}</p>
+      <p>{t.pie.derechos(anio, site.nombre)} — {t.pie.ruc} {site.ruc}</p>
       <p class="flex flex-wrap items-center gap-x-5 gap-y-2">
-        <a href="/libro-de-reclamaciones" class="pie__enlace">Libro de reclamaciones</a>
+        <a href={via(lang, 'reclamos')} class="pie__enlace">{t.pie.reclamos}</a>
         <span class="hidden sm:inline text-white/15">·</span>
-        <span>Certificación BPA — DIGEMID</span>
+        <span>{t.cintilloCorto} — DIGEMID</span>
       </p>
     </div>
   </div>
@@ -132,11 +155,11 @@ const anio = new Date().getFullYear();
 
 <!-- Acceso directo a WhatsApp -->
 <a
-  href={whatsapp(waMensajes.general)}
+  href={whatsapp(wa.general)}
   target="_blank"
   rel="noopener"
   class="wa"
-  aria-label={`Escribir por WhatsApp al ${site.whatsapp.numero}`}
+  aria-label={t.escribirWa + ' — ' + site.whatsapp.numero}
 >
   <Icon name="whatsapp" size={24} />
 </a>

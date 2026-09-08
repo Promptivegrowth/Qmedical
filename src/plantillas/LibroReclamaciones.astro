@@ -1,0 +1,395 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import FormularioBase from '../components/FormularioBase.astro';
+import { site } from '../data/site';
+import type { Idioma } from '../i18n/rutas';
+import { empresaEn } from '../i18n/contenido';
+
+/**
+ * Hoja de reclamación conforme al Código de Protección y Defensa del
+ * Consumidor (Ley N.° 29571) y a su Reglamento del Libro de Reclamaciones
+ * (D.S. 011-2011-PCM, modificado por el D.S. 006-2014-PCM).
+ *
+ * La versión en inglés existe para que un visitante extranjero entienda qué
+ * es este registro y pueda presentarlo, pero conserva el nombre legal en
+ * castellano —«Libro de Reclamaciones» es la figura que exige la norma— y cita
+ * las leyes con su denominación oficial. Traducir el nombre de la institución
+ * llevaría a confusión ante INDECOPI.
+ *
+ * Los atributos name de los campos se mantienen en castellano en los dos
+ * idiomas: la hoja que se archiva debe ser siempre la misma.
+ */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const anio = new Date().getFullYear();
+
+const T = {
+  es: {
+    meta: 'Libro de Reclamaciones',
+    metaDesc:
+      'Libro de Reclamaciones virtual de Q-MEDICAL S.A.C. conforme a la Ley ' +
+      'N.° 29571, Código de Protección y Defensa del Consumidor. Registre aquí ' +
+      'su reclamo o queja.',
+    ante: 'Atención al consumidor',
+    titulo: 'Libro de Reclamaciones',
+    bajada:
+      'Conforme a lo establecido en el Código de Protección y Defensa del ' +
+      'Consumidor, Q-MEDICAL S.A.C. pone a su disposición este Libro de ' +
+      'Reclamaciones virtual.',
+    hoja: 'Hoja de reclamación',
+    proveedor: 'Identificación del proveedor',
+    razonSocial: 'Razón social',
+    ruc: 'RUC',
+    domicilio: 'Domicilio',
+    telefonos: 'Teléfonos',
+    fecha: 'Fecha',
+    reclamo: 'Reclamo',
+    reclamoDef:
+      'Disconformidad relacionada con los productos o servicios que le hemos brindado.',
+    queja: 'Queja',
+    quejaDef:
+      'Malestar o descontento respecto a la atención al público, no relacionado ' +
+      'con los productos o servicios.',
+    asunto: 'Libro de Reclamaciones — nueva hoja de reclamación',
+    paso1: '1. Identificación del consumidor reclamante',
+    lNombres: 'Nombres y apellidos *',
+    lTipoDoc: 'Tipo de documento *',
+    lNumDoc: 'Número de documento *',
+    lDomicilio: 'Domicilio *',
+    lCorreo: 'Correo electrónico *',
+    lTelefono: 'Teléfono *',
+    lApoderado: 'Si es menor de edad, nombre del padre, madre o apoderado',
+    paso2: '2. Identificación del bien contratado',
+    lTipo: 'Tipo *',
+    oProducto: 'Producto',
+    oServicio: 'Servicio',
+    lMonto: 'Monto reclamado (S/)',
+    pOpcional: 'Opcional',
+    lDescripcion: 'Descripción del producto o servicio *',
+    pDescripcion:
+      'Indique el producto, código, número de guía o factura, y la fecha de la operación.',
+    paso3: '3. Detalle de la reclamación y pedido',
+    lTipoRegistro: 'Tipo de registro *',
+    lDetalle: 'Detalle *',
+    pDetalle: 'Describa los hechos con el mayor detalle posible.',
+    lPedido: 'Pedido del consumidor *',
+    pPedido: 'Indique qué solución solicita.',
+    declaracion:
+      `Declaro que la información consignada es veraz y autorizo a ${site.razonSocial} ` +
+      'a tratar mis datos personales con la finalidad de atender esta reclamación, ' +
+      'conforme a la Ley N.° 29733. *',
+    registrar: 'Registrar reclamación',
+    locale: 'es-PE',
+    avisos: [
+      { ic: 'reloj', t: 'El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a <strong>quince (15) días hábiles</strong>, prorrogable por un plazo igual previa comunicación al consumidor.' },
+      { ic: 'certificado', t: 'La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el <strong>INDECOPI</strong>.' },
+      { ic: 'libro', t: 'Conforme al Código de Protección y Defensa del Consumidor, Ley N.° 29571, y al Reglamento del Libro de Reclamaciones aprobado por D.S. N.° 011-2011-PCM y su modificatoria D.S. N.° 006-2014-PCM.' },
+      { ic: 'correo', t: 'Conservaremos una copia de su reclamación por dos (2) años. Recibirá el cargo de recepción en el correo electrónico que registre.' },
+    ],
+  },
+  en: {
+    meta: 'Complaints Book (Libro de Reclamaciones)',
+    metaDesc:
+      'The online Complaints Book of Q-MEDICAL S.A.C., as required by Peruvian ' +
+      'Law No. 29571, the Consumer Protection and Defence Code. File your ' +
+      'complaint or grievance here.',
+    ante: 'Consumer service',
+    titulo: 'Complaints Book',
+    bajada:
+      'As required by the Peruvian Consumer Protection and Defence Code, ' +
+      'Q-MEDICAL S.A.C. makes this online Complaints Book —Libro de ' +
+      'Reclamaciones— available to you.',
+    hoja: 'Complaint form',
+    proveedor: 'Supplier details',
+    razonSocial: 'Registered name',
+    ruc: 'Tax ID (RUC)',
+    domicilio: 'Registered address',
+    telefonos: 'Phone',
+    fecha: 'Date',
+    reclamo: 'Complaint (reclamo)',
+    reclamoDef:
+      'A disagreement relating to the products or services we have provided you.',
+    queja: 'Grievance (queja)',
+    quejaDef:
+      'Dissatisfaction with how you were attended to, not relating to the ' +
+      'products or services themselves.',
+    asunto: 'Libro de Reclamaciones — nueva hoja de reclamación',
+    paso1: '1. Details of the complainant',
+    lNombres: 'Full name *',
+    lTipoDoc: 'Type of identity document *',
+    lNumDoc: 'Document number *',
+    lDomicilio: 'Address *',
+    lCorreo: 'Email address *',
+    lTelefono: 'Phone *',
+    lApoderado: 'If a minor, the name of the parent or legal guardian',
+    paso2: '2. Details of the goods or service',
+    lTipo: 'Type *',
+    oProducto: 'Product',
+    oServicio: 'Service',
+    lMonto: 'Amount claimed (S/)',
+    pOpcional: 'Optional',
+    lDescripcion: 'Description of the product or service *',
+    pDescripcion:
+      'State the product, code, delivery note or invoice number, and the date of ' +
+      'the transaction.',
+    paso3: '3. Details of the complaint and what you are asking for',
+    lTipoRegistro: 'Type of entry *',
+    lDetalle: 'Details *',
+    pDetalle: 'Describe what happened in as much detail as you can.',
+    lPedido: 'What you are asking for *',
+    pPedido: 'State the remedy you are requesting.',
+    declaracion:
+      `I declare that the information given is truthful and I authorise ${site.razonSocial} ` +
+      'to process my personal data in order to handle this complaint, in ' +
+      'accordance with Peruvian Law No. 29733. *',
+    registrar: 'File the complaint',
+    locale: 'en-GB',
+    avisos: [
+      { ic: 'reloj', t: 'The supplier must respond to the complaint or grievance within <strong>fifteen (15) working days</strong>, extendable by the same period after notifying the consumer.' },
+      { ic: 'certificado', t: 'Filing a complaint here does not prevent you from using other means of dispute resolution, and it is not a precondition for bringing a claim before <strong>INDECOPI</strong>.' },
+      { ic: 'libro', t: 'In accordance with the Consumer Protection and Defence Code, Law No. 29571, and the Complaints Book Regulation approved by Supreme Decree No. 011-2011-PCM, as amended by Supreme Decree No. 006-2014-PCM.' },
+      { ic: 'correo', t: 'We will keep a copy of your complaint for two (2) years. You will receive the acknowledgement of receipt at the email address you provide.' },
+    ],
+  },
+}[lang];
+
+const domicilio = lang === 'en'
+  ? `${empresaEn.direccionCalle}, ${site.direccion.distrito}, ${site.direccion.ciudad} — ${empresaEn.pais}`
+  : site.direccion.completa;
+---
+
+<Base lang={lang} clave="reclamos" title={T.meta} description={T.metaDesc}>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    migas={[{ nombre: T.titulo }]}
+  />
+
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja max-w-4xl">
+      <!-- Identificación del proveedor -->
+      <div class="hoja">
+        <div class="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <p class="ante ante-brand">{T.hoja}</p>
+            <h2 class="display-sm mt-2">{T.proveedor}</h2>
+          </div>
+          <img src="/img/logo/qmedical-azul.webp" width="120" height="68"
+            alt="Q-MEDICAL S.A.C." class="h-9 w-auto" loading="lazy" />
+        </div>
+
+        <dl class="mt-7 grid gap-x-8 gap-y-5 text-[0.9rem] sm:grid-cols-2">
+          <div><dt class="ante">{T.razonSocial}</dt><dd class="mt-1">{site.razonSocial}</dd></div>
+          <div><dt class="ante">{T.ruc}</dt><dd class="mt-1">{site.ruc}</dd></div>
+          <div class="sm:col-span-2"><dt class="ante">{T.domicilio}</dt><dd class="mt-1">{domicilio}</dd></div>
+          <div><dt class="ante">{T.telefonos}</dt><dd class="mt-1">{site.telefonos.map((x) => x.etiqueta).join(' / ')}</dd></div>
+          <div><dt class="ante">{T.fecha}</dt><dd class="mt-1"><span id="fecha-hoy" data-locale={T.locale}>—</span></dd></div>
+        </dl>
+      </div>
+
+      <!-- Definiciones -->
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div class="definicion">
+          <p class="ante ante-brand">{T.reclamo}</p>
+          <p class="mt-2 text-[0.88rem] leading-relaxed text-[var(--color-tinta-70)]">{T.reclamoDef}</p>
+        </div>
+        <div class="definicion">
+          <p class="ante ante-brand">{T.queja}</p>
+          <p class="mt-2 text-[0.88rem] leading-relaxed text-[var(--color-tinta-70)]">{T.quejaDef}</p>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <FormularioBase
+        lang={lang}
+        id="form-reclamo"
+        asunto={T.asunto}
+        destino="direccion_tecnica@qmedicalsac.com"
+        class="hoja mt-4"
+      >
+        <input type="hidden" name="Tipo de registro" value="Libro de Reclamaciones" />
+
+        <fieldset>
+          <legend class="display-sm">{T.paso1}</legend>
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lNombres}</span>
+              <input type="text" name="Nombres y apellidos" class="campo" required autocomplete="name" />
+            </label>
+            <label>
+              <span class="rotulo">{T.lTipoDoc}</span>
+              <select name="Tipo de documento" class="campo" required>
+                <option value="DNI">DNI</option>
+                <option value="Carné de extranjería">Carné de extranjería</option>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="RUC">RUC</option>
+              </select>
+            </label>
+            <label>
+              <span class="rotulo">{T.lNumDoc}</span>
+              <input type="text" name="Número de documento" class="campo" required inputmode="numeric" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lDomicilio}</span>
+              <input type="text" name="Domicilio" class="campo" required autocomplete="street-address" />
+            </label>
+            <label>
+              <span class="rotulo">{T.lCorreo}</span>
+              <input type="email" name="Correo electrónico" class="campo" required autocomplete="email" />
+            </label>
+            <label>
+              <span class="rotulo">{T.lTelefono}</span>
+              <input type="tel" name="Teléfono" class="campo" required autocomplete="tel" />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lApoderado}</span>
+              <input type="text" name="Padre, madre o apoderado" class="campo" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="mt-11 border-t border-[var(--color-linea)] pt-9">
+          <legend class="display-sm">{T.paso2}</legend>
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+            <label>
+              <span class="rotulo">{T.lTipo}</span>
+              <select name="Tipo de bien" class="campo" required>
+                <option value="Producto">{T.oProducto}</option>
+                <option value="Servicio">{T.oServicio}</option>
+              </select>
+            </label>
+            <label>
+              <span class="rotulo">{T.lMonto}</span>
+              <input type="text" name="Monto reclamado" class="campo" inputmode="decimal" placeholder={T.pOpcional} />
+            </label>
+            <label class="sm:col-span-2">
+              <span class="rotulo">{T.lDescripcion}</span>
+              <textarea name="Descripción del bien" rows="3" class="campo resize-y" required
+                placeholder={T.pDescripcion}></textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="mt-11 border-t border-[var(--color-linea)] pt-9">
+          <legend class="display-sm">{T.paso3}</legend>
+          <div class="mt-6 space-y-5">
+            <div>
+              <span class="rotulo">{T.lTipoRegistro}</span>
+              <div class="mt-2 flex flex-wrap gap-3">
+                <label class="opcion">
+                  <input type="radio" name="Tipo de reclamación" value="Reclamo" required class="h-4 w-4 accent-[#152e7f]" />
+                  {T.reclamo}
+                </label>
+                <label class="opcion">
+                  <input type="radio" name="Tipo de reclamación" value="Queja" class="h-4 w-4 accent-[#152e7f]" />
+                  {T.queja}
+                </label>
+              </div>
+            </div>
+
+            <label class="block">
+              <span class="rotulo">{T.lDetalle}</span>
+              <textarea name="Detalle de la reclamación" rows="6" class="campo resize-y" required
+                placeholder={T.pDetalle}></textarea>
+            </label>
+
+            <label class="block">
+              <span class="rotulo">{T.lPedido}</span>
+              <textarea name="Pedido del consumidor" rows="4" class="campo resize-y" required
+                placeholder={T.pPedido}></textarea>
+            </label>
+
+            <label class="flex items-start gap-3">
+              <input type="checkbox" name="Declaración de veracidad" value="Sí, declaro que la información es veraz"
+                required class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]" />
+              <span class="text-[0.83rem] leading-relaxed text-[var(--color-tinta-70)]">{T.declaracion}</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="pill pill-tinta mt-9 w-full sm:w-auto">
+          <Icon name="libro" size={16} />{T.registrar}
+        </button>
+      </FormularioBase>
+
+      <!-- Avisos legales -->
+      <ul class="avisos">
+        {T.avisos.map((a) => (
+          <li>
+            <Icon name={a.ic} size={17} class="mt-0.5 shrink-0 text-[var(--color-brand-700)]" />
+            <span set:html={a.t} />
+          </li>
+        ))}
+      </ul>
+
+      <p class="mt-6 text-center text-[0.78rem] text-[var(--color-tinta-45)]">
+        © {anio} {site.razonSocial} — RUC {site.ruc}
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hoja {
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 640px) { .hoja { padding: 2.5rem; } }
+
+  .definicion {
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+  }
+
+  .opcion {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-sm);
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: border-color 0.25s, background-color 0.25s;
+  }
+  .opcion:has(:checked) { border-color: var(--color-brand-700); background: var(--color-brand-50); }
+
+  .avisos {
+    display: grid;
+    gap: 1.1rem;
+    margin-top: 1rem;
+    padding: 1.75rem;
+    background: var(--color-papel);
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+    font-size: 0.87rem;
+    line-height: 1.6;
+    color: var(--color-tinta-70);
+  }
+  @media (min-width: 640px) { .avisos { padding: 2.25rem; } }
+  .avisos li { display: flex; gap: 0.85rem; }
+  .avisos strong { color: var(--color-tinta); font-weight: 600; }
+</style>
+
+<script>
+  // La fecha es la de Lima, sea cual sea la zona horaria del visitante: es la
+  // que corresponde al registro.
+  const el = document.getElementById('fecha-hoy');
+  if (el) {
+    el.textContent = new Intl.DateTimeFormat(el.dataset.locale ?? 'es-PE', {
+      dateStyle: 'long',
+      timeZone: 'America/Lima',
+    }).format(new Date());
+  }
+</script>
