@@ -5,54 +5,72 @@ import { marcas } from '../data/marcas';
 /**
  * Constelación de marcas asociadas.
  *
- * La sección se fija en pantalla mientras se recorre y las burbujas se
- * desplazan a distinta velocidad según su profundidad, de modo que el
- * conjunto se lee como un espacio con volumen y no como una lista.
+ * Las quince marcas se reparten sobre una órbita elíptica alrededor del
+ * titular, que ocupa la pantalla y pasa por delante. Al recorrer la sección
+ * toda la constelación gira: cada disco avanza por la órbita y, según su
+ * radio, se acerca o se aleja del centro.
  *
- * El desplazamiento se resuelve con una sola variable CSS (`--p`, de 0 a 1)
- * que actualiza un único requestAnimationFrame; todo el movimiento lo calcula
- * el compositor a partir de ella, sin tocar el layout en ningún momento.
+ * La posición se calcula en `transform` con las funciones trigonométricas de
+ * CSS a partir de una única variable `--p` (0 a 1) que actualiza un solo
+ * requestAnimationFrame. No hay ni un cálculo de layout por fotograma.
  */
 
-// x / y en % del lienzo · s = diámetro en rem · d = profundidad (0 lejos, 1 cerca)
-const posiciones: Record<string, { x: number; y: number; s: number; d: number }> = {
-  'q-medical':             { x: 9,  y: 40, s: 8.0, d: 0.92 },
-  medcaptain:              { x: 24, y: 14, s: 6.6, d: 0.55 },
-  maxcon:                  { x: 39, y: 18, s: 5.4, d: 0.28 },
-  'nex-medical':           { x: 63, y: 20, s: 7.0, d: 0.70 },
-  'alleva-medical':        { x: 79, y: 15, s: 5.8, d: 0.38 },
-  geyi:                    { x: 91, y: 34, s: 7.4, d: 0.86 },
-  'bano-facil':            { x: 11, y: 62, s: 8.6, d: 0.98 },
-  'comfort-rubber-gloves': { x: 87, y: 56, s: 6.4, d: 0.48 },
-  silpak:                  { x: 6,  y: 78, s: 6.0, d: 0.34 },
-  xodus:                   { x: 25, y: 92, s: 7.2, d: 0.78 },
-  jiehong:                 { x: 45, y: 99, s: 5.6, d: 0.44 },
-  longood:                 { x: 63, y: 96, s: 6.6, d: 0.62 },
-  telijie:                 { x: 81, y: 84, s: 7.6, d: 0.90 },
-  medispo:                 { x: 95, y: 70, s: 5.0, d: 0.22 },
-  kangbao:                 { x: 51, y: 6,  s: 5.2, d: 0.18 },
+interface Orbe {
+  a: number; // ángulo de partida en grados (-90 = arriba)
+  r: number; // factor de radio sobre la órbita base
+  s: number; // diámetro en rem
+  t: 'fondo' | 'medio' | 'frente'; // tono del disco
+}
+
+// Dos anillos. En el exterior van los discos claros, que nunca llegan a cruzar
+// el titular, más dos oscuros justo arriba y abajo para cerrar el encuadre; en
+// el interior, los oscuros que sí lo cruzan sin comprometer la lectura. Los
+// radios llevan variación para que no se lea como dos aros concéntricos.
+const orbita: Record<string, Orbe> = {
+  // Anillo exterior
+  kangbao:                 { a: -90, r: 1.34, s: 6.0, t: 'fondo' },
+  medcaptain:              { a: -70, r: 1.14, s: 7.8, t: 'medio' },
+  geyi:                    { a: -25, r: 1.24, s: 8.6, t: 'frente' },
+  'comfort-rubber-gloves': { a: 20,  r: 1.12, s: 7.6, t: 'medio' },
+  xodus:                   { a: 65,  r: 1.21, s: 8.8, t: 'frente' },
+  medispo:                 { a: 90,  r: 1.36, s: 5.8, t: 'fondo' },
+  telijie:                 { a: 112, r: 1.11, s: 8.0, t: 'medio' },
+  'nex-medical':           { a: 155, r: 1.26, s: 8.2, t: 'frente' },
+  'bano-facil':            { a: 200, r: 1.17, s: 9.8, t: 'frente' },
+  'q-medical':             { a: 245, r: 1.28, s: 9.4, t: 'frente' },
+
+  // Anillo interior, por detrás del titular
+  maxcon:                  { a: -46, r: 0.82, s: 6.6, t: 'fondo' },
+  'alleva-medical':        { a: 18,  r: 0.62, s: 6.0, t: 'fondo' },
+  longood:                 { a: 124, r: 0.88, s: 7.0, t: 'fondo' },
+  silpak:                  { a: 172, r: 0.66, s: 6.4, t: 'fondo' },
+  jiehong:                 { a: 226, r: 0.79, s: 6.6, t: 'fondo' },
 };
 
-const nivel = (d: number) => (d >= 0.7 ? 'cerca' : d >= 0.4 ? 'medio' : 'lejos');
+const RX = 40; // debe coincidir con --rx del bloque de estilos
+const RY = 39; // idem con --ry
 
-const burbujas = marcas.map((m) => {
-  const p = posiciones[m.slug] ?? { x: 50, y: 50, s: 6, d: 0.5 };
-  return { ...m, ...p, nivel: nivel(p.d) };
+const orbes = marcas.map((m) => {
+  const o = orbita[m.slug] ?? { a: 0, r: 1, s: 7, t: 'fondo' as const };
+  const rad = (o.a * Math.PI) / 180;
+  return {
+    ...m,
+    ...o,
+    // Coordenadas de partida, en % del lienzo, para el respaldo sin trigonometría.
+    fx: +(50 + Math.cos(rad) * o.r * RX).toFixed(2),
+    fy: +(50 + Math.sin(rad) * o.r * RY).toFixed(2),
+  };
 });
 ---
 
 <section class="constelacion" data-constelacion>
   <div class="constelacion__pin">
-    <!-- Capa de burbujas: decorativa, el listado accesible va más abajo -->
-    <div class="constelacion__lienzo" aria-hidden="true">
+    <!-- Capa decorativa: el listado accesible va al final de la sección -->
+    <div class="constelacion__orbita" aria-hidden="true">
       {
-        burbujas.map((m) => (
-          <span
-            class="burbuja"
-            data-nivel={m.nivel}
-            style={`--x:${m.x};--y:${m.y};--s:${m.s};--d:${m.d}`}
-          >
-            <span class="burbuja__disco">
+        orbes.map((m) => (
+          <span class="orbe" data-tono={m.t} style={`--a:${m.a}deg;--r:${m.r};--s:${m.s};--fx:${m.fx};--fy:${m.fy}`}>
+            <span class="orbe__disco">
               <img
                 src={`/img/marcas/${m.slug}.webp`}
                 srcset={`/img/marcas/${m.slug}-1x.webp 1x, /img/marcas/${m.slug}.webp 2x`}
@@ -61,7 +79,7 @@ const burbujas = marcas.map((m) => {
                 alt=""
                 loading="lazy"
                 decoding="async"
-                class="burbuja__logo"
+                class="orbe__logo"
               />
             </span>
           </span>
@@ -70,22 +88,15 @@ const burbujas = marcas.map((m) => {
     </div>
 
     <div class="constelacion__contenido">
-      <p class="eyebrow eyebrow--light justify-center">Marcas asociadas</p>
+      <p class="constelacion__eyebrow">Marcas asociadas</p>
 
       <h2 class="constelacion__titulo">
-        Las marcas que elegimos para instituciones que no pueden fallar
+        Las marcas que elegimos para las instituciones que no pueden fallar
       </h2>
 
-      <p class="constelacion__bajada">
-        Representamos y distribuimos a {marcas.length} fabricantes. Los
-        seleccionamos por la consistencia de su documentación técnica y la
-        estabilidad de su suministro, las dos condiciones sin las cuales una
-        institución de salud no puede planificar.
-      </p>
-
-      <a href="/marcas" class="btn btn-light constelacion__cta">
-        Conocer cada marca
-        <Icon name="arrow" size={16} />
+      <a href="/marcas" class="constelacion__cta">
+        Conocer las {marcas.length} marcas
+        <Icon name="arrow" size={15} />
       </a>
     </div>
   </div>
@@ -111,11 +122,15 @@ const burbujas = marcas.map((m) => {
   }
 
   .constelacion {
-    --p: 0.5; /* progreso de recorrido, lo actualiza el script */
-    --k: 1; /* factor de escala de las burbujas */
+    --p: 0; /* avance del recorrido, lo actualiza el script */
+    --giro: 62deg; /* cuánto gira la constelación de principio a fin */
+    --rx: 40vw; /* semieje horizontal de la órbita */
+    --ry: 39vh; /* semieje vertical */
+    --k: 1; /* factor de escala de los discos */
+
     position: relative;
-    height: 250vh; /* recorrido disponible para la animación */
-    background: var(--color-brand-950);
+    height: 280vh; /* recorrido disponible para el giro */
+    background: #000; /* negro corporativo del manual */
     color: #fff;
   }
 
@@ -128,170 +143,164 @@ const burbujas = marcas.map((m) => {
     overflow: hidden;
   }
 
-  /* Halo que da profundidad al fondo */
-  .constelacion__pin::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      58% 48% at 50% 50%,
-      rgba(7, 15, 43, 0.86) 0%,
-      rgba(7, 15, 43, 0.35) 55%,
-      transparent 100%
-    );
-    pointer-events: none;
-  }
-
-  /* ── Burbujas ───────────────────────────────────────────────────────── */
-  .constelacion__lienzo {
+  /* ── Órbita ─────────────────────────────────────────────────────────── */
+  .constelacion__orbita {
     position: absolute;
     inset: 0;
   }
 
-  .burbuja {
+  .orbe {
+    /* Ángulo propio + el giro común de toda la constelación */
+    --ang: calc(var(--a) + var(--p) * var(--giro));
+    /* La órbita se abre ligeramente conforme avanza: da sensación de acercarse */
+    --radio: calc(var(--r) * (0.94 + var(--p) * 0.1));
+
     position: absolute;
-    left: calc(var(--x) * 1%);
-    top: calc(var(--y) * 1%);
+    left: 50%;
+    top: 50%;
     width: calc(var(--s) * var(--k) * 1rem);
     aspect-ratio: 1;
-    /* Las más cercanas recorren más distancia: eso construye la profundidad. */
+    /* Todo el movimiento vive en transform: lo resuelve el compositor. */
     transform: translate(-50%, -50%)
-      translate3d(0, calc((var(--p) - 0.5) * var(--d) * -30vh), 0)
-      scale(calc(0.88 + var(--d) * var(--p) * 0.26));
+      translate(
+        calc(cos(var(--ang)) * var(--rx) * var(--radio)),
+        calc(sin(var(--ang)) * var(--ry) * var(--radio))
+      )
+      scale(calc(0.92 + var(--p) * 0.12));
     will-change: transform;
   }
 
-  .burbuja__disco {
+  .orbe__disco {
     display: grid;
     place-items: center;
     width: 100%;
     height: 100%;
-    padding: 14%;
+    padding: 15%;
     border-radius: 50%;
-    /* Animación de flotación, independiente del parallax del contenedor */
-    animation: flotar var(--dur, 9s) ease-in-out infinite alternate;
-    animation-delay: calc(var(--d) * -6s);
+    /* Respiración propia, para que la órbita no se lea mecánica */
+    animation: flotar 12s ease-in-out infinite alternate;
+    animation-delay: calc(var(--s) * -0.9s);
   }
-  .burbuja__logo {
+  .orbe__logo {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  /* Tres planos de profundidad, como en una fotografía con poca profundidad
-     de campo: al fondo apenas se insinúan, al frente se leen por completo. */
-  .burbuja[data-nivel='lejos'] .burbuja__disco {
-    background: rgba(255, 255, 255, 0.055);
-  }
-  .burbuja[data-nivel='lejos'] .burbuja__logo {
+  /* Tres tonos, como los planos de profundidad de la referencia: la mayoría
+     casi se funde con el negro y unos pocos se leen por completo. */
+  .orbe[data-tono='fondo'] .orbe__disco { background: #15171d; }
+  .orbe[data-tono='fondo'] .orbe__logo {
     filter: brightness(0) invert(1);
-    opacity: 0.26;
+    opacity: 0.3;
   }
 
-  .burbuja[data-nivel='medio'] .burbuja__disco {
-    background: rgba(255, 255, 255, 0.58);
-  }
-  .burbuja[data-nivel='medio'] .burbuja__logo { opacity: 0.9; }
+  .orbe[data-tono='medio'] .orbe__disco { background: #6f7481; }
+  .orbe[data-tono='medio'] .orbe__logo { opacity: 0.92; }
 
-  .burbuja[data-nivel='cerca'] .burbuja__disco {
-    background: #fff;
-    box-shadow: 0 24px 50px -22px rgba(0, 0, 0, 0.55);
-  }
+  .orbe[data-tono='frente'] .orbe__disco { background: #fff; }
 
   @keyframes flotar {
-    from { transform: translateY(-3%); }
-    to { transform: translateY(3%); }
+    from { transform: translateY(-2.5%); }
+    to { transform: translateY(2.5%); }
   }
 
-  /* ── Contenido ──────────────────────────────────────────────────────── */
+  /* Navegadores sin funciones trigonométricas en CSS: la constelación se
+     muestra quieta en su posición de partida en lugar de apilarse al centro. */
+  @supports not (width: calc(cos(45deg) * 1px)) {
+    .orbe {
+      left: calc(var(--fx) * 1%);
+      top: calc(var(--fy) * 1%);
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  /* ── Titular ────────────────────────────────────────────────────────── */
   .constelacion__contenido {
     position: relative;
-    z-index: 2;
-    max-width: 62rem;
-    padding-inline: 1.25rem;
+    z-index: 2; /* el texto pasa por delante de la constelación */
+    width: 100%;
+    padding-inline: 1.5rem;
     text-align: center;
     pointer-events: none;
   }
+  .constelacion__contenido a { pointer-events: auto; }
 
-  /* Velo bajo el texto: en pantallas estrechas las burbujas quedan tan cerca
-     del bloque de texto que comprometen su lectura. */
-  .constelacion__contenido::before {
-    content: '';
-    position: absolute;
-    /* El recuadro es holgado y el degradado se apaga antes de alcanzarlo:
-       de lo contrario se ve el corte recto del velo sobre una burbuja. */
-    inset: -18% -16%;
-    z-index: -1;
-    background: radial-gradient(
-      44% 42% at 50% 50%,
-      rgba(7, 15, 43, 0.93) 0%,
-      rgba(7, 15, 43, 0.62) 55%,
-      transparent 100%
-    );
-    pointer-events: none;
+  .constelacion__eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
   }
-  .constelacion__contenido :global(a) { pointer-events: auto; }
+  .constelacion__eyebrow::before,
+  .constelacion__eyebrow::after {
+    content: '';
+    width: 1.6rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
 
+  /* Domina la pantalla: la constelación gira a su alrededor. */
   .constelacion__titulo {
-    margin-top: 1.4rem;
+    max-width: 14ch;
+    margin: 0.9rem auto 0;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(2.15rem, 7.4vw, 5.6rem);
-    line-height: 0.98;
-    letter-spacing: -0.022em;
+    font-size: clamp(2.5rem, 9.1vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
     text-wrap: balance;
-    /* Acompaña el recorrido con un acercamiento muy leve */
-    transform: scale(calc(0.965 + var(--p) * 0.05));
-    text-shadow: 0 6px 40px rgba(7, 15, 43, 0.75);
-  }
-
-  .constelacion__bajada {
-    max-width: 40rem;
-    margin: 1.6rem auto 0;
-    font-size: 0.98rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.7);
-    text-shadow: 0 2px 18px rgba(7, 15, 43, 0.85);
-    /* Aparece cuando el bloque ya está centrado en pantalla */
-    opacity: clamp(0, calc((var(--p) - 0.12) * 5), 1);
-    transition: opacity 0.2s linear;
+    /* Muy leve: solo despega el texto de los discos claros que llega a cruzar */
+    text-shadow: 0 2px 26px rgba(0, 0, 0, 0.55);
   }
 
   .constelacion__cta {
-    margin-top: 2rem;
-    opacity: clamp(0, calc((var(--p) - 0.2) * 5), 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2.8rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.8);
+    transition: border-color 0.25s, gap 0.25s;
   }
+  .constelacion__cta:hover { border-color: #fff; gap: 0.8rem; }
 
   /* ── Adaptaciones ───────────────────────────────────────────────────── */
   @media (max-width: 1023px) {
-    .constelacion { height: 220vh; }
-    .constelacion__lienzo { --k: 0.72; }
+    .constelacion { height: 250vh; --rx: 40vw; --ry: 35vh; --k: 0.76; }
+    .constelacion__titulo { max-width: 13ch; }
   }
   @media (max-width: 767px) {
-    .constelacion { height: 200vh; }
-    .constelacion__lienzo { --k: 0.54; }
-    .constelacion__bajada { font-size: 0.9rem; }
+    .constelacion { height: 220vh; --rx: 47vw; --ry: 34vh; --k: 0.54; --giro: 52deg; }
+    .constelacion__titulo {
+      max-width: 10ch;
+      font-size: clamp(2.2rem, 11.2vw, 4.2rem);
+    }
   }
   @media (max-width: 419px) {
-    .constelacion__lienzo { --k: 0.46; }
+    .constelacion { --k: 0.48; }
   }
 
-  /* Sin animación: la sección se convierte en un panel estático legible. */
+  /* Sin animación: la constelación queda quieta en su posición inicial. */
   @media (prefers-reduced-motion: reduce) {
     .constelacion { height: auto; }
     .constelacion__pin {
       position: static;
       height: auto;
-      min-height: 34rem;
+      min-height: 40rem;
       padding-block: 6rem;
     }
-    .burbuja {
-      transform: translate(-50%, -50%);
-    }
-    .burbuja__disco { animation: none; }
-    .constelacion__titulo { transform: none; }
-    .constelacion__bajada,
-    .constelacion__cta { opacity: 1; }
+    .orbe__disco { animation: none; }
   }
 </style>
 
@@ -305,8 +314,8 @@ const burbujas = marcas.map((m) => {
     const actualizar = () => {
       const caja = seccion.getBoundingClientRect();
       const recorrido = caja.height - window.innerHeight;
-      // 0 cuando la sección acaba de fijarse, 1 cuando está por soltarse.
-      const p = recorrido > 0 ? Math.min(1, Math.max(0, -caja.top / recorrido)) : 0.5;
+      // 0 al fijarse la sección, 1 justo antes de soltarse.
+      const p = recorrido > 0 ? Math.min(1, Math.max(0, -caja.top / recorrido)) : 0;
       seccion.style.setProperty('--p', p.toFixed(4));
       pendiente = false;
     };
@@ -323,7 +332,7 @@ const burbujas = marcas.map((m) => {
         visible = entrada.isIntersecting;
         if (visible) actualizar();
       },
-      { rootMargin: '120px 0px' }
+      { rootMargin: '150px 0px' }
     );
     io.observe(seccion);
 
