@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Sitio web corporativo de Q-MEDICAL S.A.C.",
+  "engines": {
+    "node": ">=20.3.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
