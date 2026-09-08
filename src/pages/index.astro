@@ -4,6 +4,7 @@ import Icon from '../components/Icon.astro';
 import Hero from '../components/Hero.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
+import Especialidades from '../components/Especialidades.astro';
 import { site, certificaciones } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos, productosDestacados, conteoProductos } from '../data/catalogo';
@@ -43,21 +44,24 @@ const matriz = categorias.map((c, i) => ({
 >
   <Hero />
 
-  <!-- ══════════════════════════════ 01 · Matriz de especialidades -->
+  <!-- ══════════════════════════════ 01 · Especialidades clínicas -->
+  <Especialidades />
+
+  <!-- ══════════════════════════════ 02 · Índice de líneas -->
   <section id="lineas" class="aire bg-[var(--color-papel)]">
     <div class="caja">
       <div class="matriz__intro" data-anim-grupo="80">
         <div>
-          <p class="ante ante-brand" data-anim="sube">Especialidades</p>
+          <p class="ante ante-brand" data-anim="sube">Líneas de producto</p>
           <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">
-            Diez líneas, ordenadas por la realidad del servicio
+            El catálogo, ordenado en diez líneas
           </h2>
         </div>
         <div class="matriz__intro-texto" data-anim="sube">
           <p class="cuerpo-lg">
-            Lo que necesita sala de operaciones no es lo que necesita el punto de
-            acopio de residuos ni la unidad de nutrición. Por eso el catálogo no
-            está ordenado por proveedor, sino por el servicio que lo usa.
+            Cada línea agrupa los productos por la función que cumplen, no por el
+            proveedor que los fabrica. Así el área usuaria encuentra lo que busca
+            por donde lo busca.
           </p>
           <a href="/catalogo" class="enlace mt-7">
             Ver el catálogo completo<Icon name="flecha" size={15} />

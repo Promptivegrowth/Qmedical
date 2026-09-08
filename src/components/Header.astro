@@ -69,13 +69,13 @@ const empresa = [
         </a>
 
         <nav class="nav" aria-label="Navegación principal">
+          <a href="/nosotros" class:list={['nav__enlace', activo('/nosotros') && 'es-activo']}>Nosotros</a>
           <div class="nav__item" data-menu="catalogo">
             <button type="button" class:list={['nav__enlace', activo('/catalogo') && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-catalogo">
               Catálogo<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
-          <a href="/nosotros" class:list={['nav__enlace', activo('/nosotros') && 'es-activo']}>Nosotros</a>
           <div class="nav__item" data-menu="empresa">
             <button type="button" class:list={['nav__enlace', activo('/marcas') && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-empresa">
@@ -191,8 +191,8 @@ const empresa = [
 
       <ul class="mt-8 divide-y divide-[var(--color-linea)] border-y border-[var(--color-linea)]">
         {[
-          { n: 'Catálogo', h: '/catalogo' },
           { n: 'Nosotros', h: '/nosotros' },
+          { n: 'Catálogo', h: '/catalogo' },
           { n: 'Marcas asociadas', h: '/marcas' },
           { n: 'Contacto', h: '/contacto' },
         ].map((i) => (

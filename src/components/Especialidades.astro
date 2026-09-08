@@ -1,0 +1,358 @@
+---
+import Icon from './Icon.astro';
+import { especialidades } from '../data/especialidades';
+import { categoriaPorSlug, productosDeCategoria } from '../data/catalogo';
+
+/**
+ * Especialidades clínicas, en panel interactivo.
+ *
+ * Es una lista de pestañas real: navegable con teclado (flechas, Inicio/Fin),
+ * con `role="tablist"` y un único panel visible. Al cambiar de especialidad el
+ * icono vuelve a dibujarse, así que el cambio se percibe sin necesidad de
+ * mover nada más.
+ *
+ * Sin JavaScript se ven las seis fichas una tras otra: la mejora es
+ * progresiva, nunca un requisito.
+ */
+const fichas = especialidades.map((e, i) => {
+  const lineas = e.lineas
+    .map((slug) => categoriaPorSlug.get(slug))
+    .filter(Boolean)
+    .map((c) => ({ ...c!, total: productosDeCategoria(c!.slug).length }));
+  return {
+    ...e,
+    n: String(i + 1).padStart(2, '0'),
+    lineas,
+    productos: lineas.reduce((s, l) => s + l.total, 0),
+  };
+});
+---
+
+<section id="especialidades" class="esp" data-especialidades>
+  <div class="trama absolute inset-0 opacity-50" aria-hidden="true"></div>
+
+  <div class="caja relative">
+    <div class="esp__intro" data-anim-grupo="80">
+      <div>
+        <p class="ante ante-claro" data-anim="sube">Especialidades clínicas</p>
+        <h2 class="display-lg mt-5 max-w-[17ch]" data-anim="sube">
+          Los servicios a los que abastecemos
+        </h2>
+      </div>
+      <p class="esp__bajada" data-anim="sube">
+        No vendemos un catálogo: abastecemos servicios. Cada especialidad tiene su
+        propia lógica de consumo, y de ahí sale el orden de nuestras líneas.
+      </p>
+    </div>
+
+    <div class="esp__cuerpo" data-anim="sube">
+      <!-- Selector -->
+      <div class="esp__lista" role="tablist" aria-label="Especialidades clínicas" aria-orientation="vertical">
+        {fichas.map((f, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${f.slug}`}
+            aria-controls={`panel-${f.slug}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class:list={['esp__tab', i === 0 && 'es-activo']}
+            data-tab={f.slug}
+          >
+            <span class="esp__tab-n">{f.n}</span>
+            <span class="esp__tab-ic"><Icon name={f.icono} size={22} stroke={1.1} /></span>
+            <span class="esp__tab-txt">{f.corto}</span>
+            <span class="esp__tab-flecha"><Icon name="flecha" size={15} /></span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Paneles -->
+      <div class="esp__paneles">
+        {fichas.map((f, i) => (
+          <div
+            role="tabpanel"
+            id={`panel-${f.slug}`}
+            aria-labelledby={`tab-${f.slug}`}
+            class:list={['esp__panel', i === 0 && 'es-activo']}
+            data-panel={f.slug}
+            hidden={i !== 0}
+          >
+            <div class="esp__panel-alto">
+              <span class="esp__emblema"><Icon name={f.icono} size={64} stroke={0.85} anim /></span>
+              <span class="esp__panel-n">{f.n} / {String(fichas.length).padStart(2, '0')}</span>
+            </div>
+
+            <h3 class="esp__panel-titulo">{f.nombre}</h3>
+            <p class="esp__definicion">{f.definicion}</p>
+
+            <div class="esp__aporte">
+              <p class="ante ante-claro">Qué abastecemos</p>
+              <p class="mt-3">{f.aporte}</p>
+            </div>
+
+            <div class="esp__lineas">
+              <p class="ante ante-claro">
+                Líneas que la abastecen · {f.productos} producto{f.productos === 1 ? '' : 's'}
+              </p>
+              <ul class="mt-4">
+                {f.lineas.map((l) => (
+                  <li>
+                    <a href={`/catalogo/${l.slug}`} class="esp__chip">
+                      <Icon name={l.icono} size={16} />
+                      <span>{l.corto}</span>
+                      <span class="esp__chip-n">{l.total}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .esp {
+    position: relative;
+    overflow: hidden;
+    padding-block: 5rem;
+    background: var(--color-brand-700);
+    color: #fff;
+  }
+  @media (min-width: 1024px) { .esp { padding-block: 8rem; } }
+
+  .esp__intro { display: grid; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .esp__intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  }
+  .esp__bajada {
+    max-width: 30rem;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.66);
+  }
+
+  .esp__cuerpo {
+    display: grid;
+    gap: 0;
+    margin-top: 4rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  @media (min-width: 900px) {
+    .esp__cuerpo { grid-template-columns: minmax(0, 21rem) minmax(0, 1fr); }
+  }
+
+  /* ── Selector ─────────────────────────────────────────────────────── */
+  .esp__lista { display: flex; flex-direction: column; }
+  @media (min-width: 900px) { .esp__lista { border-right: 1px solid rgba(255, 255, 255, 0.18); } }
+
+  .esp__tab {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    padding: 1.15rem 1.35rem;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.62);
+    font-family: inherit;
+    font-size: 0.94rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.45s var(--ease-editorial),
+      color 0.45s var(--ease-editorial), padding-left 0.45s var(--ease-salida);
+  }
+  .esp__lista > :last-child { border-bottom: 0; }
+  .esp__tab:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+  .esp__tab.es-activo {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding-left: 1.7rem;
+  }
+
+  .esp__tab-n {
+    font-family: var(--font-display-texto);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    opacity: 0.5;
+  }
+  .esp__tab-ic { display: inline-flex; opacity: 0.55; transition: opacity 0.4s; }
+  .esp__tab.es-activo .esp__tab-ic { opacity: 1; }
+  .esp__tab-txt { min-width: 0; }
+  .esp__tab-flecha {
+    display: inline-flex;
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: opacity 0.4s var(--ease-editorial), transform 0.4s var(--ease-salida);
+  }
+  .esp__tab.es-activo .esp__tab-flecha { opacity: 0.8; transform: none; }
+
+  /* ── Panel ────────────────────────────────────────────────────────── */
+  .esp__paneles { position: relative; }
+  .esp__panel { padding: 2rem 1.5rem 2.25rem; }
+  @media (min-width: 640px) { .esp__panel { padding: 2.75rem; } }
+  @media (min-width: 1280px) { .esp__panel { padding: 3.5rem; } }
+
+  /* Sin JS todos los paneles quedan visibles, uno tras otro */
+  .esp__panel + .esp__panel { border-top: 1px solid rgba(255, 255, 255, 0.14); }
+  :global(html.js) .esp__panel + .esp__panel { border-top: 0; }
+  :global(html.js) .esp__panel.es-activo { animation: entra-panel 0.6s var(--ease-salida); }
+  @keyframes entra-panel {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .esp__panel-alto {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .esp__emblema { display: inline-flex; color: #fff; }
+  .esp__panel-n {
+    font-family: var(--font-display-texto);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .esp__panel-titulo {
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3vw, 2.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+  }
+  .esp__definicion {
+    max-width: 46ch;
+    margin-top: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .esp__aporte {
+    max-width: 46ch;
+    margin-top: 2.25rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 0.93rem;
+    line-height: 1.68;
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .esp__lineas { margin-top: 2.25rem; }
+  .esp__lineas ul { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .esp__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    font-size: 0.86rem;
+    color: #fff;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  .esp__chip:hover { background: #fff; border-color: #fff; color: var(--color-brand-700); }
+  .esp__chip-n {
+    padding-left: 0.5rem;
+    margin-left: 0.15rem;
+    border-left: 1px solid currentColor;
+    opacity: 0.6;
+    font-size: 0.78rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.js) .esp__panel.es-activo { animation: none; }
+  }
+</style>
+
+<script>
+  const seccion = document.querySelector<HTMLElement>('[data-especialidades]');
+
+  if (seccion) {
+    const tabs = Array.from(seccion.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const paneles = Array.from(seccion.querySelectorAll<HTMLElement>('[data-panel]'));
+    const formas = 'path, circle, rect, line, polyline, polygon';
+
+    // Redibuja el emblema del panel: el cambio de especialidad se percibe
+    // aunque el usuario no mueva el ratón.
+    const redibujar = (panel: HTMLElement) => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const svg = panel.querySelector('.esp__emblema .ico-trazo');
+      if (!svg) return;
+      svg.querySelectorAll<SVGGeometryElement>(formas).forEach((el, i) => {
+        if (typeof el.getTotalLength !== 'function') return;
+        let largo = 0;
+        try { largo = el.getTotalLength(); } catch { return; }
+        if (!largo) return;
+        el.style.transition = 'none';
+        el.style.strokeDasharray = `${largo}`;
+        el.style.strokeDashoffset = `${largo}`;
+        requestAnimationFrame(() => {
+          el.style.transition = `stroke-dashoffset 0.75s var(--ease-editorial) ${i * 70}ms`;
+          el.style.strokeDashoffset = '0';
+        });
+        window.setTimeout(() => {
+          el.style.transition = '';
+          el.style.strokeDasharray = '';
+          el.style.strokeDashoffset = '';
+        }, 850 + i * 70);
+      });
+    };
+
+    const activar = (clave: string, mover = true) => {
+      tabs.forEach((t) => {
+        const suyo = t.dataset.tab === clave;
+        t.classList.toggle('es-activo', suyo);
+        t.setAttribute('aria-selected', String(suyo));
+        t.tabIndex = suyo ? 0 : -1;
+        if (suyo && mover) t.focus();
+      });
+      paneles.forEach((p) => {
+        const suyo = p.dataset.panel === clave;
+        p.hidden = !suyo;
+        p.classList.toggle('es-activo', suyo);
+        if (suyo) redibujar(p);
+      });
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activar(tab.dataset.tab!, false));
+      tab.addEventListener('keydown', (e) => {
+        const saltos: Record<string, number> = {
+          ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1,
+        };
+        if (e.key in saltos) {
+          e.preventDefault();
+          const n = (i + saltos[e.key] + tabs.length) % tabs.length;
+          activar(tabs[n].dataset.tab!);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          activar(tabs[0].dataset.tab!);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          activar(tabs[tabs.length - 1].dataset.tab!);
+        }
+      });
+    });
+
+    // El primer emblema se dibuja cuando la sección entra en pantalla.
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        const activo = paneles.find((p) => !p.hidden);
+        if (activo) redibujar(activo);
+      },
+      { threshold: 0.2 }
+    );
+    io.observe(seccion);
+  }
+</script>
