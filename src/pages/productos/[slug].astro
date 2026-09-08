@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import ProductoCard from '../../components/ProductoCard.astro';
 import CtaContacto from '../../components/CtaContacto.astro';
-import { site } from '../../data/site';
+import { site, waMensajes } from '../../data/site';
 import { marcaPorSlug } from '../../data/marcas';
 import {
   productos,
@@ -93,7 +93,7 @@ const schema = [
   <section class="bg-white pb-16 pt-10 lg:pb-20 lg:pt-14">
     <div class="container-q grid gap-12 lg:grid-cols-2 lg:gap-16">
       <!-- Galería -->
-      <div>
+      <div class="min-w-0">
         <div class="overflow-hidden rounded-2xl border border-line bg-white">
           <img
             id="img-principal"
@@ -143,7 +143,7 @@ const schema = [
       </div>
 
       <!-- Datos -->
-      <div>
+      <div class="min-w-0">
         <div class="flex flex-wrap items-center gap-2.5">
           {
             marca && (
@@ -214,7 +214,7 @@ const schema = [
   <!-- Características, variantes y usos -->
   <section class="border-t border-line bg-surface py-16 lg:py-20">
     <div class="container-q grid gap-12 lg:grid-cols-12 lg:gap-14">
-      <div class="lg:col-span-7">
+      <div class="min-w-0 lg:col-span-7">
         <h2 class="title-md">Características técnicas</h2>
         <ul class="mt-7 grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
           {
@@ -245,10 +245,10 @@ const schema = [
 
       {
         p.variantes && (
-          <div class="lg:col-span-5">
+          <div class="min-w-0 lg:col-span-5">
             <h2 class="title-md">Presentaciones y códigos</h2>
-            <div class="mt-7 overflow-hidden rounded-xl border border-line bg-white">
-              <table class="w-full text-left text-[0.86rem]">
+            <div class="mt-7 overflow-x-auto rounded-xl border border-line bg-white">
+              <table class="w-full min-w-[19rem] text-left text-[0.86rem]">
                 <thead>
                   <tr class="border-b border-line bg-surface/70 text-[0.68rem] uppercase tracking-[0.12em] text-muted">
                     <th scope="col" class="px-5 py-3 font-semibold">Código</th>
@@ -373,6 +373,7 @@ const schema = [
   <CtaContacto
     titulo={`¿Necesita cotizar ${p.nombre}?`}
     texto="Indíquenos la cantidad y la institución de destino. Le respondemos con precio, disponibilidad, tiempo de entrega y la documentación técnica que requiera su expediente."
+    waMensaje={waMensajes.producto(p.nombre, p.variantes?.[0]?.codigo)}
   />
 </Base>
 

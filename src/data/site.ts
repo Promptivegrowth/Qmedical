@@ -45,6 +45,46 @@ export const site = {
   formEndpoint: 'https://api.web3forms.com/submit',
 } as const;
 
+/* --------------------------------------------------------------- WhatsApp */
+
+/** Construye un enlace de WhatsApp con el mensaje ya redactado. */
+export function whatsapp(mensaje?: string): string {
+  const base = 'https://wa.me/51977814006';
+  return mensaje ? `${base}?text=${encodeURIComponent(mensaje)}` : base;
+}
+
+/**
+ * Mensajes previos según desde dónde escriba el visitante. Llegan ya escritos
+ * en el chat: el cliente solo pulsa enviar y el equipo comercial recibe el
+ * contexto sin tener que preguntarlo.
+ */
+export const waMensajes = {
+  general:
+    'Hola, Q-MEDICAL. Escribo desde su página web y quisiera información ' +
+    'sobre sus dispositivos médicos y productos de bioseguridad.',
+
+  cotizacion:
+    'Hola, Q-MEDICAL. Quisiera solicitar una cotización para mi institución.\n\n' +
+    '• Institución:\n• Productos:\n• Cantidades:\n• Fecha requerida:',
+
+  catalogo:
+    'Hola, Q-MEDICAL. Estuve viendo su catálogo web y quisiera consultar ' +
+    'disponibilidad y precios.\n\n• Institución:\n• Productos de interés:',
+
+  linea: (linea: string) =>
+    `Hola, Q-MEDICAL. Me interesa su línea de ${linea.toLowerCase()} y ` +
+    'quisiera recibir información y precios.\n\n• Institución:\n• Cantidades estimadas:',
+
+  producto: (nombre: string, codigo?: string) =>
+    `Hola, Q-MEDICAL. Vi «${nombre}»${codigo ? ` (${codigo})` : ''} en su ` +
+    'catálogo web y quisiera cotizarlo.\n\n' +
+    '• Institución:\n• Cantidad requerida:\n• Fecha requerida:',
+
+  reclamo:
+    'Hola, Q-MEDICAL. Necesito orientación sobre el Libro de Reclamaciones ' +
+    'y el estado de una atención.',
+} as const;
+
 export const contactos = [
   { area: 'Cotizaciones y licitaciones', correo: 'cotizaciones_licitaciones@qmedicalsac.com' },
   { area: 'Gerencia comercial', correo: 'gerenciacomercial@qmedicalsac.com' },

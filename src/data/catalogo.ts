@@ -1194,6 +1194,12 @@ export function productosDeCategoria(cat: string): Producto[] {
   return productos.filter((p) => p.categoria === cat);
 }
 
+/** "1 producto" / "5 productos", como una sola cadena sin espacios sueltos. */
+export function conteoProductos(cat: string): string {
+  const n = productosDeCategoria(cat).length;
+  return `${n} producto${n === 1 ? '' : 's'}`;
+}
+
 export function productosDestacados(): Producto[] {
   return productos.filter((p) => p.destacado);
 }

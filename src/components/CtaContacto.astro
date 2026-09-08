@@ -1,16 +1,19 @@
 ---
 import Icon from './Icon.astro';
-import { site } from '../data/site';
+import { site, whatsapp, waMensajes } from '../data/site';
 
 interface Props {
   titulo?: string;
   texto?: string;
+  /** Mensaje que llega ya escrito al chat de WhatsApp. */
+  waMensaje?: string;
 }
 const {
   titulo = '¿Necesita una cotización para su institución?',
   texto = 'Atendemos requerimientos de hospitales, clínicas, laboratorios y ' +
     'procesos de licitación pública en todo el país. Cuéntenos qué necesita y ' +
     'nuestro equipo comercial le responderá con precios, disponibilidad y fichas técnicas.',
+  waMensaje = waMensajes.cotizacion,
 } = Astro.props;
 ---
 
@@ -36,7 +39,7 @@ const {
             Solicitar cotización
             <Icon name="arrow" size={16} />
           </a>
-          <a href={site.whatsapp.href} target="_blank" rel="noopener" class="btn btn-ghost-light flex-1">
+          <a href={whatsapp(waMensaje)} target="_blank" rel="noopener" class="btn btn-ghost-light flex-1">
             <Icon name="whatsapp" size={17} />
             WhatsApp {site.whatsapp.numero}
           </a>

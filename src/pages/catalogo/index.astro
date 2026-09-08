@@ -4,8 +4,9 @@ import PageHeader from '../../components/PageHeader.astro';
 import Icon from '../../components/Icon.astro';
 import ProductoCard from '../../components/ProductoCard.astro';
 import CtaContacto from '../../components/CtaContacto.astro';
-import { categorias, productos, productosDeCategoria } from '../../data/catalogo';
+import { categorias, productos, conteoProductos } from '../../data/catalogo';
 import { marcaPorSlug } from '../../data/marcas';
+import { waMensajes } from '../../data/site';
 
 // Índice de búsqueda embebido: el filtrado ocurre en el navegador, sin peticiones.
 const indice = productos.map((p) => ({
@@ -59,10 +60,7 @@ const schema = {
                 </span>
                 <span>
                   <span class="block text-[0.92rem] font-semibold leading-snug">{c.corto}</span>
-                  <span class="mt-1 block text-[0.76rem] text-muted">
-                    {productosDeCategoria(c.slug).length} producto
-                    {productosDeCategoria(c.slug).length === 1 ? '' : 's'}
-                  </span>
+                  <span class="mt-1 block text-[0.76rem] text-muted">{conteoProductos(c.slug)}</span>
                 </span>
               </a>
             </li>
@@ -149,7 +147,7 @@ const schema = {
     </div>
   </section>
 
-  <CtaContacto />
+  <CtaContacto waMensaje={waMensajes.catalogo} />
 </Base>
 
 <script is:inline define:vars={{ indice }}>

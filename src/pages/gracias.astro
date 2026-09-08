@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { site } from '../data/site';
+import { site, whatsapp, waMensajes } from '../data/site';
 ---
 
 <Base
@@ -26,7 +26,7 @@ import { site } from '../data/site';
         <p class="mt-6 text-[0.88rem] text-muted">
           Si su requerimiento es urgente, escríbanos por WhatsApp al
           <a
-            href={site.whatsapp.href}
+            href={whatsapp(waMensajes.general)}
             target="_blank"
             rel="noopener"
             class="font-medium text-brand-700 underline underline-offset-4"

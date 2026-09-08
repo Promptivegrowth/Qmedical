@@ -51,7 +51,17 @@
     }
   }
 
+  /* Nota: no se usa `overflow-x: hidden` aquí a propósito. Taparía cualquier
+     desborde en lugar de corregirlo y compromete `position: sticky`. */
   html { -webkit-text-size-adjust: 100%; }
+
+  /* Un medio nunca desborda su contenedor, aunque su tamaño intrínseco sea mayor. */
+  img,
+  svg,
+  video,
+  iframe {
+    max-width: 100%;
+  }
 
   body {
     background: #fff;

@@ -4,14 +4,12 @@ import Icon from '../components/Icon.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasCarrusel from '../components/MarcasCarrusel.astro';
 import CtaContacto from '../components/CtaContacto.astro';
+import Especialidades from '../components/Especialidades.astro';
 import { site, cifras, certificaciones } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos, productosDestacados } from '../data/catalogo';
 
 const destacados = productosDestacados().slice(0, 8);
-const pilares = categorias.filter((c) =>
-  ['laparoscopia', 'bioseguridad', 'antisepsia', 'nutricion-enteral'].includes(c.slug)
-);
 ---
 
 <Base
@@ -118,53 +116,7 @@ const pilares = categorias.filter((c) =>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════ Pilares -->
-  <section class="bg-white py-20 lg:py-28">
-    <div class="container-q">
-      <div class="max-w-2xl reveal">
-        <p class="eyebrow">Especialidades</p>
-        <h2 class="title-lg mt-4">Cuatro frentes donde el insumo correcto cambia el resultado</h2>
-        <p class="prose-q mt-5">
-          Nuestro catálogo está organizado por la realidad del servicio: lo que
-          necesita sala de operaciones no es lo que necesita el punto de acopio de
-          residuos ni la unidad de nutrición.
-        </p>
-      </div>
-
-      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          pilares.map((c, i) => (
-            <a
-              href={`/catalogo/${c.slug}`}
-              class="card group flex flex-col p-7 reveal"
-              data-delay={i * 90}
-            >
-              <span class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-700 transition group-hover:bg-brand-700 group-hover:text-white">
-                <Icon name={c.icono} size={23} />
-              </span>
-              <h3 class="title-md mt-6">{c.corto}</h3>
-              <p class="mt-3 flex-1 text-[0.88rem] leading-relaxed text-muted">{c.descripcion}</p>
-              <span class="mt-6 inline-flex items-center gap-2 text-[0.8rem] font-semibold text-brand-700">
-                Ver línea
-                <Icon
-                  name="arrow"
-                  size={15}
-                  class="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </span>
-            </a>
-          ))
-        }
-      </div>
-
-      <div class="mt-8 text-center">
-        <a href="/catalogo" class="btn btn-outline">
-          Ver las {categorias.length} líneas de producto
-          <Icon name="arrow" size={15} />
-        </a>
-      </div>
-    </div>
-  </section>
+  <Especialidades />
 
   <!-- ══════════════════════════════════════════════ Compromiso -->
   <section class="bg-surface py-20 lg:py-28">

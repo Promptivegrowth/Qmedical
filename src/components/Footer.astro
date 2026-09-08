@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { site, redes, contactos } from '../data/site';
+import { site, redes, contactos, whatsapp, waMensajes } from '../data/site';
 import { categorias } from '../data/catalogo';
 
 const anio = new Date().getFullYear();
@@ -157,7 +157,7 @@ const anio = new Date().getFullYear();
 
 <!-- Acceso directo a WhatsApp -->
 <a
-  href={site.whatsapp.href}
+  href={whatsapp(waMensajes.general)}
   target="_blank"
   rel="noopener"
   class="wa-fab"

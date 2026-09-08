@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
 import FormularioBase from '../components/FormularioBase.astro';
-import { site, contactos, redes } from '../data/site';
+import { site, contactos, redes, whatsapp, waMensajes } from '../data/site';
 import { categorias, productos } from '../data/catalogo';
 
 const mapa =
@@ -55,7 +55,7 @@ const schema = {
             WhatsApp
           </p>
           <a
-            href={site.whatsapp.href}
+            href={whatsapp(waMensajes.cotizacion)}
             target="_blank"
             rel="noopener"
             class="mt-2 text-[0.95rem] font-medium transition hover:text-brand-700"
