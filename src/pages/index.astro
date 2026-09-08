@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProductoCard from '../components/ProductoCard.astro';
-import MarcasCarrusel from '../components/MarcasCarrusel.astro';
+import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import Especialidades from '../components/Especialidades.astro';
 import { site, cifras, certificaciones } from '../data/site';
@@ -104,18 +104,6 @@ const destacados = productosDestacados().slice(0, 8);
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════ Marcas asociadas -->
-  <section class="border-b border-line bg-white py-9">
-    <div class="container-q">
-      <p class="text-center text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-muted/70">
-        Representamos y distribuimos {marcas.length} marcas de fabricantes de todo el mundo
-      </p>
-    </div>
-    <div class="mt-7">
-      <MarcasCarrusel titulo="Marcas asociadas a Q-MEDICAL" />
-    </div>
-  </section>
-
   <Especialidades />
 
   <!-- ══════════════════════════════════════════════ Compromiso -->
@@ -214,6 +202,9 @@ const destacados = productosDestacados().slice(0, 8);
       </div>
     </div>
   </section>
+
+  <!-- ══════════════════════════════════════════════ Marcas asociadas -->
+  <MarcasConstelacion />
 
   <!-- ══════════════════════════════════════════════ Productos destacados -->
   <section class="bg-white py-20 lg:py-28">

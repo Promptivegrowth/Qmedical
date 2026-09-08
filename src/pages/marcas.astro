@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
-import MarcasCarrusel from '../components/MarcasCarrusel.astro';
+import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import { marcas } from '../data/marcas';
 import { productoPorSlug, type Producto } from '../data/catalogo';
@@ -27,9 +27,7 @@ const fichasMarcas = marcas.map((m) => ({
     migas={[{ nombre: 'Marcas' }]}
   />
 
-  <section class="border-b border-line bg-white py-10">
-    <MarcasCarrusel titulo="Marcas asociadas a Q-MEDICAL" />
-  </section>
+  <MarcasConstelacion />
 
   <section class="bg-surface py-16 lg:py-24">
     <div class="container-q">
