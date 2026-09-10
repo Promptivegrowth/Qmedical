@@ -34,9 +34,10 @@ const T = {
     ante: 'Catálogo',
     titulo: 'Todo el catálogo, con su documentación técnica',
     bajada:
-      `${productos.length} productos organizados en ${categorias.length} líneas. ` +
-      'Cada ficha publica características, presentaciones, códigos de referencia ' +
-      'y el PDF oficial del fabricante.',
+      `${productos.length} productos ordenados en ${categorias.length} líneas, ` +
+      'agrupadas por la función que cumplen y no por el fabricante. Cada ficha ' +
+      'publica sus características, las presentaciones disponibles y el PDF ' +
+      'oficial del fabricante.',
     dato: 'productos publicados',
     indice: 'Índice de líneas',
     buscarRotulo: 'Buscar en el catálogo',
@@ -68,8 +69,9 @@ const T = {
     ante: 'Catalogue',
     titulo: 'The whole catalogue, with its technical documentation',
     bajada:
-      `${productos.length} products organised into ${categorias.length} lines. ` +
-      'Every page publishes features, presentations, reference codes and the ' +
+      `${productos.length} products sorted into ${categorias.length} lines, ` +
+      'grouped by the job they do rather than by manufacturer. Every page ' +
+      'publishes its features, the available presentations and the ' +
       'manufacturer’s official PDF.',
     dato: 'products published',
     indice: 'Index of lines',
@@ -163,6 +165,9 @@ const schema = {
               />
               <span class="tesela__pie">
                 <span class="tesela__nombre">{c.corto}</span>
+                <!-- Para qué sirve la línea: sin esto el índice es una lista
+                     de nombres que solo entiende quien ya conoce el sector. -->
+                <span class="tesela__sintesis">{c.sintesis}</span>
                 <span class="tesela__cuenta">{c.cuenta}</span>
               </span>
             </a>
@@ -269,6 +274,12 @@ const schema = {
   .tesela:hover .tesela__img { transform: scale(1.07); }
 
   .tesela__pie { margin-top: auto; }
+  .tesela__sintesis {
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-tinta-70);
+  }
   .tesela__nombre {
     display: block;
     font-family: var(--font-display);

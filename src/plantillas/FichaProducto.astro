@@ -6,6 +6,7 @@ import CtaContacto from '../components/CtaContacto.astro';
 import { site, waMensajes } from '../data/site';
 import { marcaPorSlug } from '../data/marcas';
 import {
+  presentacionDe,
   productos,
   categoriaPorSlug,
   imagenesDe,
@@ -55,9 +56,10 @@ const T = {
     correoEnlace: 'Escríbanos con este producto precargado',
     caracteristicas: 'Características técnicas',
     aplicaciones: 'Aplicaciones',
-    presentaciones: 'Presentaciones y códigos',
+    presentaciones: 'Presentaciones disponibles',
+    presentacionesPie: 'Indíquenos cuál necesita al pedir su cotización.',
     ficha: 'Ficha',
-    descargarFicha: (c: string) => `Descargar ficha técnica ${c}`,
+    descargarFicha: (c: string) => `Descargar la ficha técnica de ${c}`,
     documentacion: 'Documentación',
     fichasTitulo: 'Fichas técnicas descargables',
     fichasTexto:
@@ -85,9 +87,10 @@ const T = {
     correoEnlace: 'Write to us with this product already filled in',
     caracteristicas: 'Technical features',
     aplicaciones: 'Applications',
-    presentaciones: 'Presentations and codes',
+    presentaciones: 'Available presentations',
+    presentacionesPie: 'Tell us which one you need when you request your quotation.',
     ficha: 'Sheet',
-    descargarFicha: (c: string) => `Download datasheet ${c}`,
+    descargarFicha: (c: string) => `Download the datasheet for ${c}`,
     documentacion: 'Documentation',
     fichasTitulo: 'Downloadable datasheets',
     fichasTexto:
@@ -124,7 +127,10 @@ const schema = [
     brand: { '@type': 'Brand', name: marca?.nombre ?? 'Q-MEDICAL' },
     category: cat.nombre,
     url: enlaceFicha,
-    ...(p.variantes?.length ? { model: p.variantes.map((v) => v.codigo) } : {}),
+    // Se publica la presentación, no la referencia del fabricante.
+    ...(p.variantes?.length
+      ? { model: p.variantes.map((v) => presentacionDe(v).titulo) }
+      : {}),
   },
   {
     '@context': 'https://schema.org',
@@ -232,7 +238,7 @@ const schema = [
         </div>
 
         {p.presentacion && (
-          <div class="presentacion">
+          <div class="presentaciones__fila">
             <p class="ante">{t.producto.presentacion}</p>
             <p class="mt-2 text-[0.92rem] leading-relaxed">{p.presentacion}</p>
           </div>
@@ -265,35 +271,31 @@ const schema = [
       {p.variantes && (
         <div class="min-w-0">
           <h2 class="display-md">{T.presentaciones}</h2>
-          <div class="tabla-marco mt-6">
-            <table class="tabla">
-              <thead>
-                <tr>
-                  <th scope="col">{t.producto.codigo}</th>
-                  <th scope="col">{t.producto.detalle}</th>
-                  {fichas.length > 1 && <th scope="col">{T.ficha}</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {p.variantes.map((v) => (
-                  <tr>
-                    <th scope="row">{v.codigo}</th>
-                    <td>{v.detalle}</td>
-                    {fichas.length > 1 && (
-                      <td>
-                        {v.ficha && fichasIndex[v.ficha] ? (
-                          <a href={fichasIndex[v.ficha].archivo} download class="tabla__pdf"
-                            aria-label={T.descargarFicha(v.codigo)}>
-                            <Icon name="documento" size={14} />PDF
-                          </a>
-                        ) : (<span class="opacity-35">—</span>)}
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <p class="cuerpo mt-4 max-w-md">{T.presentacionesPie}</p>
+
+          <!-- Encabeza la medida, que es por lo que se elige; la referencia
+               del fabricante no se publica: es interna de la empresa. -->
+          <ul class="presentaciones mt-7">
+            {p.variantes.map((v) => {
+              const pres = presentacionDe(v);
+              const doc = v.ficha ? fichasIndex[v.ficha] : undefined;
+              return (
+                <li class="presentaciones__fila">
+                  <span class="presentaciones__texto">
+                    <span class="presentaciones__titulo">{pres.titulo}</span>
+                    {pres.nota && <span class="presentaciones__nota">{pres.nota}</span>}
+                  </span>
+                  {doc && (
+                    <a href={doc.archivo} download class="presentaciones__ficha"
+                      aria-label={T.descargarFicha(pres.titulo)}>
+                      <Icon name="descarga" size={15} />
+                      <span>{t.fichaTecnica}</span>
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       )}
     </div>
@@ -346,7 +348,7 @@ const schema = [
     lang={lang}
     titulo={T.cta(p.nombre)}
     texto={T.ctaTexto}
-    waMensaje={wa.producto(p.nombre, p.variantes?.[0]?.codigo)}
+    waMensaje={wa.producto(p.nombre)}
   />
 </Base>
 
@@ -425,7 +427,7 @@ const schema = [
   }
   .credito__cat:hover { border-color: var(--color-brand-300); color: var(--color-brand-700); }
 
-  .presentacion {
+  .presentaciones__fila {
     margin-top: 2rem;
     padding: 1.35rem 1.5rem;
     background: var(--color-papel-2);
@@ -457,33 +459,52 @@ const schema = [
     color: var(--color-tinta-70);
   }
 
-  .tabla-marco {
-    overflow-x: auto;
-    background: #fff;
-    border: 1px solid var(--color-linea);
-    border-radius: var(--r-md);
+  /* ── Presentaciones ───────────────────────────────────────────────
+     Antes era una tabla encabezada por la referencia del fabricante: quien
+     compra no elige por «MA1331», elige por «11.4 litros». Ahora manda la
+     medida y la referencia no aparece.                                   */
+  .presentaciones {
+    display: grid;
+    border-top: 1px solid var(--color-linea);
   }
-  .tabla { width: 100%; min-width: 19rem; text-align: left; font-size: 0.875rem; }
-  .tabla thead tr { border-bottom: 1px solid var(--color-linea); }
-  .tabla th[scope='col'] {
-    padding: 0.85rem 1.15rem;
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-tinta-45);
+  .presentaciones__fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.25rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--color-linea);
   }
-  .tabla tbody tr + tr { border-top: 1px solid var(--color-linea); }
-  .tabla th[scope='row'] {
-    padding: 0.95rem 1.15rem;
-    white-space: nowrap;
+  .presentaciones__texto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.85rem;
+    min-width: 0;
+  }
+  .presentaciones__titulo {
+    font-family: var(--font-display-texto);
+    font-size: 1.15rem;
     font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-tinta);
+  }
+  .presentaciones__nota {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--color-tinta-70);
+  }
+  .presentaciones__ficha {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: none;
+    font-size: 0.82rem;
     color: var(--color-brand-700);
-    vertical-align: top;
+    transition: gap 0.3s var(--ease-salida);
   }
-  .tabla td { padding: 0.95rem 1.15rem; color: var(--color-tinta-70); vertical-align: top; line-height: 1.5; }
-  .tabla__pdf { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--color-brand-700); }
-  .tabla__pdf:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .presentaciones__ficha:hover { gap: 0.65rem; text-decoration: underline; text-underline-offset: 3px; }
 
   /* ── Fichas ───────────────────────────────────────────────────────── */
   .fichas { display: grid; gap: 0.7rem; margin-top: 2.5rem; }

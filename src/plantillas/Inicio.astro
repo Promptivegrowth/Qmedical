@@ -21,38 +21,6 @@ const t = textos(lang);
 
 const destacados = productosDestacados().slice(0, 5);
 
-/**
- * Índice de líneas. La síntesis describe la función clínica de cada línea, no
- * sus productos: la matriz es el índice general del catálogo, y el detalle
- * vive dentro de cada línea.
- */
-const SINTESIS: Record<Idioma, Record<string, string>> = {
-  es: {
-    bioseguridad: 'Contención y descarte seguro de residuos',
-    antisepsia: 'Preparación de piel y lavado quirúrgico',
-    laparoscopia: 'Acceso mínimamente invasivo a la cavidad',
-    aspiracion: 'Manejo cerrado de secreciones y fluidos',
-    'nutricion-enteral': 'Soporte nutricional del paciente',
-    'via-aerea': 'Intubación y control de la vía aérea',
-    'higiene-paciente': 'Higiene y confort del paciente encamado',
-    absorbentes: 'Superficies limpias, secas y sin resbalones',
-    instrumental: 'Insumos de sala y central de esterilización',
-    'proteccion-personal': 'Barrera para el equipo asistencial',
-  },
-  en: {
-    bioseguridad: 'Safe containment and disposal of waste',
-    antisepsia: 'Skin preparation and surgical scrub',
-    laparoscopia: 'Minimally invasive access to the cavity',
-    aspiracion: 'Closed handling of secretions and fluids',
-    'nutricion-enteral': 'Nutritional support for the patient',
-    'via-aerea': 'Intubation and airway control',
-    'higiene-paciente': 'Hygiene and comfort of the bedridden patient',
-    absorbentes: 'Surfaces kept clean, dry and slip-free',
-    instrumental: 'Supplies for theatre and sterile processing',
-    'proteccion-personal': 'A barrier for the clinical team',
-  },
-};
-
 const T = {
   es: {
     meta: 'Q-MEDICAL S.A.C. — Dispositivos médicos y bioseguridad en el Perú',
@@ -146,7 +114,6 @@ const matriz = categorias.map((c, i) => ({
   n: String(i + 1).padStart(2, '0'),
   href: via(lang, 'categoria', c.slug),
   cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
-  sintesis: SINTESIS[lang][c.slug] ?? categoriaEn(c, lang).corto,
 }));
 
 ---

@@ -91,6 +91,12 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   están puestos a ojo. Se midió la relación de contraste del texto blanco contra el
   fondo real —con el texto oculto, en varios momentos del video y de 320 a 1920 px—
   y los valores se ajustaron hasta superar el mínimo AA en todos los casos.
+- **Catálogo sin referencias internas**: las referencias del fabricante (MA1112,
+  RIP-003…) no se publican. Se conservan en `src/data/catalogo.ts` porque emparejan
+  cada variante con su ficha técnica, pero lo que se lee es la presentación —la
+  capacidad, la talla, la formulación—, que es por lo que se elige. Cada línea del
+  catálogo lleva además una frase en lenguaje llano que dice para qué sirve, de modo
+  que el índice se entienda sin conocer el sector.
 - **Respaldo**: las tres acreditaciones son placas con superficie propia y son
   enlaces de verdad —se pulsan, se tabulan y responden al foco—, con el sello
   dibujándose trazo a trazo al entrar en pantalla. El brillo que sigue al puntero
@@ -129,9 +135,21 @@ El diseño sigue el *Manual de Identidad Corporativa* de la empresa:
 
 - **Azul corporativo** `#152E7F` (Pantone Blue del manual, pág. 05), blanco y negro.
   La escala `brand-50…950` de `src/styles/global.css` se deriva de ese azul.
-- **Tipografía**: el manual indica Athelas Bold y Adobe Caslon Pro Bold. Para web se
-  usa **Source Serif 4** en los titulares (equivalente libre de esa familia serif) e
-  **Inter** en el texto corrido.
+- **Tipografía**: el manual (pág. 07) indica **Athelas Bold** —de donde nace la Q del
+  logotipo— y **Adobe Caslon Pro Bold** —de donde nace la palabra MEDICAL—. Las dos son
+  comerciales y no se pueden servir en web.
+
+  Los titulares usan **Literata**, y no por parecido casual: la dibujó TypeTogether, el
+  mismo estudio de Veronika Burian y José Scaglione que dibujó Athelas. Comparten
+  planteamiento —serifa contemporánea de libro, contraste bajo, serifas robustas— y
+  Literata se diseñó expresamente para pantalla, con un eje óptico que ajusta el trazo
+  al tamaño. El texto corrido va en **Inter**.
+
+  Se descartó Libre Caslon Display, que se usó al principio: es una revival de Caslon de
+  contraste altísimo y a cuerpo de titular sus finos se vuelven filamentos, con un aire
+  de esquela que el cliente señaló. También se descartó encabezar la pila con Athelas
+  —viene instalada en macOS e iOS— porque el sitio se vería distinto según el sistema
+  del visitante.
 - **Logotipo**: se muestra siempre íntegro y sin alterar, conforme al punto 08 del
   manual. La única excepción es el favicon, donde por restricción técnica se usa el
   isotipo (la Q) en blanco sobre el azul corporativo, el mismo criterio que la empresa

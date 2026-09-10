@@ -15,8 +15,20 @@ export interface Ficha {
 }
 
 export interface Variante {
+  /**
+   * Referencia del fabricante. NO se publica en la web: es un dato interno
+   * de la empresa. Se conserva porque es la que empareja la variante con su
+   * ficha técnica y la que viaja en la orden de compra.
+   */
   codigo: string;
+  /** Lo que distingue a esta presentación, en el lenguaje de quien compra. */
   detalle: string;
+  /**
+   * Marca las variantes cuyo rótulo no es una referencia sino la
+   * presentación misma —una talla, un volumen, una formulación—. En esas,
+   * el rótulo sí se publica y el detalle pasa a segundo término.
+   */
+  codigoEsPresentacion?: boolean;
   ficha?: string;
 }
 
@@ -39,6 +51,11 @@ export interface Categoria {
   slug: string;
   nombre: string;
   corto: string;
+  /**
+   * Para qué sirve la línea, en una frase y sin jerga. Es lo que permite que
+   * alguien ajeno al sector entienda el índice del catálogo sin abrir nada.
+   */
+  sintesis: string;
   descripcion: string;
   icono: string;
 }
@@ -48,6 +65,7 @@ export const categorias: Categoria[] = [
     slug: 'bioseguridad',
     nombre: 'Bioseguridad y manejo de residuos',
     corto: 'Bioseguridad',
+    sintesis: 'Contención y descarte seguro de residuos',
     descripcion:
       'Conjunto de principios, normas y tecnologías para evitar el riesgo que ' +
       'proviene de la exposición a agentes biológicos. Contenedores rígidos ' +
@@ -58,6 +76,7 @@ export const categorias: Categoria[] = [
     slug: 'antisepsia',
     nombre: 'Antisepsia y preparación de piel',
     corto: 'Antisepsia',
+    sintesis: 'Preparación de piel y lavado quirúrgico',
     descripcion:
       'Empleo de sustancias químicas para inhibir el crecimiento o disminuir ' +
       'el número de microorganismos de la piel y mucosas. Formulaciones de ' +
@@ -68,6 +87,7 @@ export const categorias: Categoria[] = [
     slug: 'laparoscopia',
     nombre: 'Cirugía laparoscópica',
     corto: 'Laparoscopía',
+    sintesis: 'Acceso mínimamente invasivo a la cavidad',
     descripcion:
       'Técnica quirúrgica que permite la visión de la cavidad pélvico-abdominal ' +
       'con ayuda de una lente óptica. Trócares con punta de seguridad y hoja ' +
@@ -78,6 +98,7 @@ export const categorias: Categoria[] = [
     slug: 'aspiracion',
     nombre: 'Aspiración y succión',
     corto: 'Aspiración',
+    sintesis: 'Manejo cerrado de secreciones y fluidos',
     descripcion:
       'Sistemas cerrados para el almacenamiento temporal de secreciones y ' +
       'fluidos extraídos del cuerpo: bolsas descartables, cánister reusables, ' +
@@ -88,6 +109,7 @@ export const categorias: Categoria[] = [
     slug: 'nutricion-enteral',
     nombre: 'Nutrición enteral',
     corto: 'Nutrición enteral',
+    sintesis: 'Soporte nutricional del paciente',
     descripcion:
       'Técnica de alimentación artificial que administra la solución nutritiva ' +
       'directamente al estómago o el intestino. Bombas, bolsas y sets ' +
@@ -98,6 +120,7 @@ export const categorias: Categoria[] = [
     slug: 'via-aerea',
     nombre: 'Vía aérea y anestesia',
     corto: 'Vía aérea',
+    sintesis: 'Intubación y control de la vía aérea',
     descripcion:
       'Videolaringoscopía para intubación endotraqueal precisa, con hojas ' +
       'desechables en todas las tallas, desde recién nacido hasta la vía aérea ' +
@@ -108,6 +131,7 @@ export const categorias: Categoria[] = [
     slug: 'higiene-paciente',
     nombre: 'Higiene y confort del paciente',
     corto: 'Higiene del paciente',
+    sintesis: 'Higiene y confort del paciente encamado',
     descripcion:
       'Baño en cama sin enjuague, secado corporal y paños clínicos de un solo ' +
       'uso, para reducir la contaminación cruzada y el tiempo de atención de ' +
@@ -118,6 +142,7 @@ export const categorias: Categoria[] = [
     slug: 'absorbentes',
     nombre: 'Absorbentes y protección de superficies',
     corto: 'Absorbentes',
+    sintesis: 'Superficies limpias, secas y sin resbalones',
     descripcion:
       'Mantas absorbentes antideslizantes y protectores impermeables que ' +
       'mantienen el quirófano limpio, seco y libre de riesgo de resbalones.',
@@ -127,6 +152,7 @@ export const categorias: Categoria[] = [
     slug: 'instrumental',
     nombre: 'Instrumental y accesorios quirúrgicos',
     corto: 'Instrumental',
+    sintesis: 'Insumos de sala y central de esterilización',
     descripcion:
       'Insumos de sala de operaciones y de central de esterilización: ' +
       'marcadores de piel, control de gasas, limpieza de puntas de ' +
@@ -137,6 +163,7 @@ export const categorias: Categoria[] = [
     slug: 'proteccion-personal',
     nombre: 'Protección personal',
     corto: 'Protección personal',
+    sintesis: 'Barrera para el equipo asistencial',
     descripcion:
       'Barrera para el equipo de salud frente a riesgos químicos, ' +
       'microbiológicos y citostáticos.',
@@ -177,13 +204,13 @@ export const productos: Producto[] = [
       'Caja de cartón corrugado. El número de unidades por caja varía según la ' +
       'capacidad del contenedor.',
     variantes: [
-      { codigo: 'MA1112', detalle: '0.95 L — flebotomía', ficha: 'contenedor-punzocortantes-ma1112-0-95l' },
-      { codigo: 'MA1122', detalle: '1.89 L — flebotomía', ficha: 'contenedor-punzocortantes-ma1122-1-89l' },
+      { codigo: 'MA1112', detalle: '0.95 L — Para carro de flebotomía', ficha: 'contenedor-punzocortantes-ma1112-0-95l' },
+      { codigo: 'MA1122', detalle: '1.89 L — Para carro de flebotomía', ficha: 'contenedor-punzocortantes-ma1122-1-89l' },
       { codigo: '1024', detalle: '3.0 L', ficha: 'contenedor-punzocortantes-1024-3l' },
       { codigo: 'MA1212', detalle: '4.7 L', ficha: 'contenedor-punzocortantes-ma1212-4-7l' },
       { codigo: '1033', detalle: '7.0 L', ficha: 'contenedor-punzocortantes-1033-7l' },
       { codigo: 'ME1282', detalle: '7.6 L', ficha: 'contenedor-punzocortantes-me1282-7-6l' },
-      { codigo: 'MA1331', detalle: '11.4 L (3 G)', ficha: 'contenedor-punzocortantes-ma1331-11-4l' },
+      { codigo: 'MA1331', detalle: '11.4 L', ficha: 'contenedor-punzocortantes-ma1331-11-4l' },
       { codigo: 'MA1341', detalle: '22.7 L', ficha: 'contenedor-punzocortantes-ma1341-22-7l' },
       { codigo: 'MA1352', detalle: '30.3 L', ficha: 'contenedor-punzocortantes-ma1352-30-3l' },
     ],
@@ -226,11 +253,11 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Caja de cartón corrugado según capacidad.',
     variantes: [
-      { codigo: 'MC1311', detalle: '3.8 L — citotóxicos', ficha: 'contenedor-citotoxicos-mc1311-3-8l' },
-      { codigo: 'MC1321', detalle: '7.6 L — citotóxicos', ficha: 'contenedor-citotoxicos-mc1321-7-6l' },
-      { codigo: 'MC1321-R', detalle: '7.6 L — residuos especiales', ficha: 'contenedor-residuos-especiales-mc1321-7-6l' },
-      { codigo: 'MC1351', detalle: '30.3 L — citotóxicos', ficha: 'contenedor-citotoxicos-mc1351-30-3l' },
-      { codigo: 'MV1311', detalle: '3.8 L — vidrios', ficha: 'contenedor-vidrio-mv1311-3-8l' },
+      { codigo: 'MC1311', detalle: '3.8 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1311-3-8l' },
+      { codigo: 'MC1321', detalle: '7.6 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1321-7-6l' },
+      { codigo: 'MC1321-R', detalle: '7.6 L — Residuos especiales', ficha: 'contenedor-residuos-especiales-mc1321-7-6l' },
+      { codigo: 'MC1351', detalle: '30.3 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1351-30-3l' },
+      { codigo: 'MV1311', detalle: '3.8 L — Descarte de vidrios', ficha: 'contenedor-vidrio-mv1311-3-8l' },
     ],
     fichas: [
       'contenedor-citotoxicos-mc1311-3-8l',
@@ -260,7 +287,7 @@ export const productos: Producto[] = [
       'Adhesivo de base acuosa con biocida de amplio espectro',
       '30 hojas numeradas por unidad',
       'Termorresistente y resistente a sustancias oleosas, rayos UV y envejecimiento',
-      'Formato 36" × 45" (SM3645B4)',
+      'Formato de 36 × 45 pulgadas',
     ],
     presentacion: 'Caja de cartón conteniendo cuatro tapetes de 30 hojas cada uno.',
     usos: [
@@ -302,9 +329,9 @@ export const productos: Producto[] = [
       'Caja dispensadora de cartón grado médico con 10 u 11 blísteres según el ' +
       'código; cada blíster contiene un aplicador.',
     variantes: [
-      { codigo: '3 mL', detalle: 'Accesos vasculares y procedimientos menores' },
-      { codigo: '10.5 mL', detalle: 'Campos quirúrgicos medianos' },
-      { codigo: '26 mL', detalle: 'Campos quirúrgicos amplios' },
+      { codigo: '3 mL', codigoEsPresentacion: true, detalle: 'Accesos vasculares y procedimientos menores' },
+      { codigo: '10.5 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos medianos' },
+      { codigo: '26 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos amplios' },
     ],
     fichas: ['aplicador-clorhexidina-2-nex-clorex'],
   },
@@ -352,7 +379,6 @@ export const productos: Producto[] = [
       'Gluconato de clorhexidina al 2 %, ~20 mL por unidad',
       'Esponja de poliuretano de alta retención de solución',
       'Blíster de polietileno de alta densidad con apertura peel open',
-      'Código de modelo SPNEXC2SP022',
       'Un solo uso',
     ],
     presentacion:
@@ -375,7 +401,6 @@ export const productos: Producto[] = [
     caracteristicas: [
       '1.5 mL de solución antiséptica por sobre',
       'Sobre aluminizado hermético de fácil apertura',
-      'Referencia K-YX/5*5',
       'Uso externo, un solo uso',
     ],
     presentacion: 'Caja por 200 sobres individuales.',
@@ -396,12 +421,12 @@ export const productos: Producto[] = [
       'Dispositivo médico diseñado para crear un canal de trabajo hacia el medio ' +
         'interno, permitiendo el ingreso de instrumentos quirúrgicos de 5 mm a ' +
         '15 mm de diámetro durante procedimientos laparoscópicos.',
-      'El modelo GYTR-III incorpora punta de seguridad con hoja blindada, que ' +
+      'Incorpora una punta de seguridad con hoja blindada, que ' +
         'se retrae al atravesar la pared abdominal para reducir el riesgo de ' +
         'lesión de estructuras internas.',
     ],
     caracteristicas: [
-      'Modelo Tipo III (GYTR-III) con punta de seguridad y hoja blindada',
+      'Punta de seguridad con hoja blindada, que se retrae al atravesar la pared',
       'Canal de trabajo para instrumentos de 5 mm a 15 mm',
       'Doble seguro a prueba de aire',
       'Cánula roscada que minimiza el trauma en la piel',
@@ -416,9 +441,10 @@ export const productos: Producto[] = [
       'Caja de cartón grado médico con un blíster. Embalaje de cartón corrugado ' +
       'conteniendo 20 cajas.',
     variantes: [
-      { codigo: 'GYTR-III', detalle: 'Trócar individual con punta de seguridad', ficha: 'trocares-geyi' },
+      { codigo: 'GYTR-III', detalle: 'Unidad individual — Trócar con punta de seguridad', ficha: 'trocares-geyi' },
       {
         codigo: 'Kit A',
+        codigoEsPresentacion: true,
         detalle:
           '2 cánulas de 5 mm y 2 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
@@ -426,6 +452,7 @@ export const productos: Producto[] = [
       },
       {
         codigo: 'Kit B',
+        codigoEsPresentacion: true,
         detalle:
           '2 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
@@ -433,6 +460,7 @@ export const productos: Producto[] = [
       },
       {
         codigo: 'Kit C',
+        codigoEsPresentacion: true,
         detalle:
           '3 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
@@ -477,10 +505,10 @@ export const productos: Producto[] = [
       'Bolsa de succión en empaque individual. Caja de cartón conteniendo 50 ' +
       'bolsas individuales.',
     variantes: [
-      { codigo: 'MI285-0008', detalle: '1000 mL — codo amarillo' },
-      { codigo: 'MI286-0008', detalle: '1500 mL — codo morado' },
-      { codigo: 'MI287-0008', detalle: '2000 mL — codo celeste' },
-      { codigo: 'MI288-0008', detalle: '3000 mL — codo verde' },
+      { codigo: 'MI285-0008', detalle: '1000 mL — Codo amarillo' },
+      { codigo: 'MI286-0008', detalle: '1500 mL — Codo morado' },
+      { codigo: 'MI287-0008', detalle: '2000 mL — Codo celeste' },
+      { codigo: 'MI288-0008', detalle: '3000 mL — Codo verde' },
     ],
     fichas: ['bolsa-aspiracion-vide'],
   },
@@ -512,10 +540,10 @@ export const productos: Producto[] = [
       'Caja de cartón multiempaque con los cánister individualizados en bolsas ' +
       'plásticas con burbujas.',
     variantes: [
-      { codigo: 'MI129-0013', detalle: 'Para bolsa de 1000 mL — marcado amarillo' },
-      { codigo: 'MI358-0013', detalle: 'Para bolsa de 1500 mL — marcado morado' },
-      { codigo: 'MI301-0013', detalle: 'Para bolsa de 2000 mL — marcado celeste' },
-      { codigo: 'MI302-0013', detalle: 'Para bolsa de 3000 mL — marcado verde' },
+      { codigo: 'MI129-0013', detalle: 'Para bolsa de 1000 mL — Marcado amarillo' },
+      { codigo: 'MI358-0013', detalle: 'Para bolsa de 1500 mL — Marcado morado' },
+      { codigo: 'MI301-0013', detalle: 'Para bolsa de 2000 mL — Marcado celeste' },
+      { codigo: 'MI302-0013', detalle: 'Para bolsa de 3000 mL — Marcado verde' },
     ],
     fichas: ['canister-reusable-vide'],
   },
@@ -593,7 +621,6 @@ export const productos: Producto[] = [
       'Conserva sus propiedades de −50 °C a +250 °C',
       'Esterilizable por cualquier método',
       'Elaborado en ambiente aséptico',
-      'Referencia SILNIONE MM 71160U',
     ],
     presentacion:
       'Caja de cartón conteniendo 20 o 16 rollos según diámetro; cada rollo en ' +
@@ -680,7 +707,7 @@ export const productos: Producto[] = [
     marca: 'q-medical',
     resumen:
       'Set estéril que conecta el frasco de fórmula al tubo estomacal del ' +
-      'paciente. Código B-SG002B.',
+      'paciente.',
     descripcion: [
       'El Enteral Feeding Bottle Set se utiliza junto con una bolsa de ' +
         'alimentación enteral y un tubo estomacal. Durante su uso permanece ' +
@@ -694,7 +721,6 @@ export const productos: Producto[] = [
       'Rosca compatible con frascos de fórmula enteral',
       'Sobre de polietileno y papel grado médico',
       'Apertura peel open',
-      'Código de referencia B-SG002B',
       'Estéril, un solo uso',
     ],
     presentacion:
@@ -795,9 +821,9 @@ export const productos: Producto[] = [
       'Caja conteniendo 100 bolsas de polipropileno biorientado (BOPP); cada ' +
       'bolsa con 10 paños.',
     variantes: [
-      { codigo: 'Aloe vera', detalle: 'Color celeste', ficha: 'bano-facil-aloe-vera' },
-      { codigo: 'Clorhexidina', detalle: 'Color verde', ficha: 'bano-facil-clorhexidina' },
-      { codigo: 'Manzanilla', detalle: 'Color rosado', ficha: 'bano-facil-manzanilla' },
+      { codigo: 'Aloe vera', codigoEsPresentacion: true, detalle: 'Color celeste', ficha: 'bano-facil-aloe-vera' },
+      { codigo: 'Clorhexidina', codigoEsPresentacion: true, detalle: 'Color verde', ficha: 'bano-facil-clorhexidina' },
+      { codigo: 'Manzanilla', codigoEsPresentacion: true, detalle: 'Color rosado', ficha: 'bano-facil-manzanilla' },
     ],
     fichas: ['bano-facil-aloe-vera', 'bano-facil-clorhexidina', 'bano-facil-manzanilla'],
   },
@@ -851,7 +877,6 @@ export const productos: Producto[] = [
       'Composición: 80 % celulosa y 20 % emulsión',
       'Resistente al rasgado y sin desprendimiento de partículas',
       'No irrita la piel',
-      'Código PCA-8020SA',
       'Un solo uso',
     ],
     presentacion:
@@ -875,7 +900,6 @@ export const productos: Producto[] = [
     caracteristicas: [
       'Cuatro capas reforzadas con malla de hilo de algodón en el interior',
       'Bolsa dispensadora de LDPE recerrable',
-      'Código PCA-001SP',
       'Un solo uso',
     ],
     presentacion:
@@ -905,7 +929,6 @@ export const productos: Producto[] = [
       'Elimina la exposición a la emesis del paciente y del personal asistencial',
       '100 % reciclable',
       'Libre de látex, metales pesados y ftalatos',
-      'Referencia PMID01',
       'No estéril',
     ],
     presentacion:
@@ -964,7 +987,6 @@ export const productos: Producto[] = [
       'Impermeable: retiene los fluidos y evita la formación de lodo',
       'Base antideslizante',
       'Fácil de tender y retirar',
-      'Referencia 80522',
     ],
     presentacion: 'Caja por 12 unidades individuales.',
     fichas: ['manta-absorbente-xodus'],
@@ -986,7 +1008,6 @@ export const productos: Producto[] = [
       'Capa superior blanca semipermeable',
       'Barrera inferior impermeable',
       'Bolsa individual de PE que garantiza hermeticidad',
-      'Código HQ201512',
       'Descartable',
     ],
     presentacion:
@@ -1001,8 +1022,7 @@ export const productos: Producto[] = [
     categoria: 'instrumental',
     marca: 'q-medical',
     resumen:
-      'Marcador estéril con regla quirúrgica incluida, en blíster individual. ' +
-      'Referencia 663 022.',
+      'Marcador estéril con regla quirúrgica incluida, en blíster individual.',
     descripcion: [
       'Marcadores estériles diseñados para facilitar la identificación y el ' +
         'trazo del contorno del campo quirúrgico sobre la piel donde se ' +
@@ -1013,7 +1033,6 @@ export const productos: Producto[] = [
       'Regla quirúrgica incluida en cada blíster',
       'Empaque primario de papel grado médico y film de polietileno',
       'Apertura peel open',
-      'Referencia 663 022',
       'Hipoalergénico y libre de látex',
       'Contribuye a evitar infecciones de sitio quirúrgico',
       'Estéril, un solo uso',
@@ -1028,7 +1047,7 @@ export const productos: Producto[] = [
     categoria: 'instrumental',
     marca: 'xodus',
     resumen:
-      'Marcador de trazo directo sobre piel, formato pequeño. Referencia NS10402.',
+      'Marcador de trazo directo sobre la piel, en formato pequeño.',
     descripcion: [
       'Marcador quirúrgico no estéril para trazo directo sobre la piel, en ' +
         'formato pequeño, indicado para marcaje preoperatorio fuera del campo ' +
@@ -1036,8 +1055,7 @@ export const productos: Producto[] = [
     ],
     caracteristicas: [
       'Trazo directo sobre piel',
-      'Formato pequeño (Correct Site Marker)',
-      'Referencia NS10402',
+      'Formato pequeño, de un solo uso',
       'No estéril',
     ],
     fichas: ['marcador-piel-no-esteril-xodus'],
@@ -1049,7 +1067,7 @@ export const productos: Producto[] = [
     marca: 'q-medical',
     resumen:
       'Faja plástica de cinco bolsillos para el recuento verificable de gasas ' +
-      'durante la intervención. Referencia RIP-003.',
+      'durante la intervención.',
     descripcion: [
       'Dispositivo utilizado principalmente en quirófanos para facilitar, ' +
         'organizar y verificar el recuento de gasas, torundas o esponjas ' +
@@ -1062,7 +1080,6 @@ export const productos: Producto[] = [
       'Faja plástica provista de cinco bolsillos transparentes',
       'Permite la verificación visual del recuento por el equipo quirúrgico',
       'Caja dispensadora de cartulina grado médico',
-      'Referencia RIP-003',
     ],
     presentacion:
       'Caja dispensadora con 50 bolsas; caja de cartón con 8 dispensadores ' +
@@ -1085,7 +1102,6 @@ export const productos: Producto[] = [
     caracteristicas: [
       'Sobre individual en manga mixta de LDPE y papel grado médico',
       'Apertura peel open',
-      'Referencia Tipo A',
       'Un solo uso',
     ],
     presentacion:
@@ -1155,11 +1171,11 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Caja de cartón multiempaque.',
     variantes: [
-      { codigo: '6.5 g · S', detalle: 'Largo 300 mm · ancho 85 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: '6.5 g · M', detalle: 'Largo 300 mm · ancho 95 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: '6.5 g · L', detalle: 'Largo 300 mm · ancho 105 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: '6.5 g · XL', detalle: 'Largo 300 mm · ancho 115 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: '3.5 g · S/M/L', detalle: 'Largo 240 mm · palma 0.07 mm · dedos 0.10 mm — línea de examen' },
+      { codigo: 'Talla S · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 85 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
+      { codigo: 'Talla M · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 95 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
+      { codigo: 'Talla L · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 105 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
+      { codigo: 'Talla XL · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 115 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
+      { codigo: 'Tallas S, M y L · 3.5 g', codigoEsPresentacion: true, detalle: 'Largo 240 mm · palma 0.07 mm · dedos 0.10 mm — línea de examen' },
     ],
     fichas: ['guantes-nitrilo-comfort'],
   },
@@ -1202,4 +1218,22 @@ export function conteoProductos(cat: string): string {
 
 export function productosDestacados(): Producto[] {
   return productos.filter((p) => p.destacado);
+}
+
+/**
+ * Cómo se muestra una variante en la web.
+ *
+ * La referencia del fabricante no se publica: es interna. Lo que se lee es la
+ * presentación —la capacidad, la talla, la formulación—, que en la mayoría de
+ * los productos vive en el detalle y en unos pocos es el rótulo mismo de la
+ * variante. Devuelve el título y, si lo hay, la aclaración que va debajo.
+ */
+export function presentacionDe(v: Variante): { titulo: string; nota?: string } {
+  if (v.codigoEsPresentacion) {
+    return { titulo: v.codigo, nota: v.detalle };
+  }
+  const partes = v.detalle.split(' — ');
+  const titulo = partes.shift() ?? v.detalle;
+  const nota = partes.join(' — ');
+  return { titulo, nota: nota || undefined };
 }

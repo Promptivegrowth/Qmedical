@@ -62,13 +62,13 @@ export const productosEn: Record<string, ProductoEn> = {
       'Corrugated cardboard box. The number of units per box varies with the ' +
       'capacity of the container.',
     variantes: {
-      MA1112: '0.95 L — phlebotomy',
-      MA1122: '1.89 L — phlebotomy',
+      MA1112: '0.95 L — For the phlebotomy cart',
+      MA1122: '1.89 L — For the phlebotomy cart',
       '1024': '3.0 L',
       MA1212: '4.7 L',
       '1033': '7.0 L',
       ME1282: '7.6 L',
-      MA1331: '11.4 L (3 gal)',
+      MA1331: '11.4 L',
       MA1341: '22.7 L',
       MA1352: '30.3 L',
     },
@@ -97,11 +97,11 @@ export const productosEn: Record<string, ProductoEn> = {
     ],
     presentacion: 'Corrugated cardboard box according to capacity.',
     variantes: {
-      MC1311: '3.8 L — cytotoxic',
-      MC1321: '7.6 L — cytotoxic',
-      'MC1321-R': '7.6 L — special waste',
-      MC1351: '30.3 L — cytotoxic',
-      MV1311: '3.8 L — glass',
+      MC1311: '3.8 L — Cytotoxic waste',
+      MC1321: '7.6 L — Cytotoxic waste',
+      'MC1321-R': '7.6 L — Special waste',
+      MC1351: '30.3 L — Cytotoxic waste',
+      MV1311: '3.8 L — Glass disposal',
     },
   },
 
@@ -121,7 +121,7 @@ export const productosEn: Record<string, ProductoEn> = {
       'Water-based adhesive with a broad-spectrum biocide',
       '30 numbered sheets per unit',
       'Heat-resistant and resistant to oily substances, UV light and ageing',
-      '36" × 45" format (SM3645B4)',
+      '36 × 45 inch format',
     ],
     presentacion: 'Cardboard box containing four mats of 30 sheets each.',
     usos: [
@@ -202,7 +202,6 @@ export const productosEn: Record<string, ProductoEn> = {
       '2 % chlorhexidine gluconate, about 20 mL per unit',
       'Polyurethane sponge with high solution retention',
       'High-density polyethylene peel-open blister',
-      'Model code SPNEXC2SP022',
       'Single use',
     ],
     presentacion:
@@ -222,7 +221,6 @@ export const productosEn: Record<string, ProductoEn> = {
     caracteristicas: [
       '1.5 mL of antiseptic solution per sachet',
       'Airtight foil sachet that opens easily',
-      'Reference K-YX/5*5',
       'External use, single use',
     ],
     presentacion: 'Box of 200 individual sachets.',
@@ -238,12 +236,12 @@ export const productosEn: Record<string, ProductoEn> = {
       'Medical device designed to create a working channel into the internal ' +
         'cavity, allowing surgical instruments from 5 mm to 15 mm in diameter ' +
         'to be introduced during laparoscopic procedures.',
-      'The GYTR-III model has a safety tip with a shielded blade that retracts ' +
+      'It has a safety tip with a shielded blade that retracts ' +
         'on passing through the abdominal wall, reducing the risk of injury to ' +
         'internal structures.',
     ],
     caracteristicas: [
-      'Type III model (GYTR-III) with safety tip and shielded blade',
+      'Safety tip with a shielded blade that retracts on passing through the wall',
       'Working channel for instruments from 5 mm to 15 mm',
       'Double airtight seal',
       'Threaded cannula that minimises trauma to the skin',
@@ -258,7 +256,7 @@ export const productosEn: Record<string, ProductoEn> = {
       'Medical-grade cardboard box with one blister. Corrugated cardboard ' +
       'shipper holding 20 boxes.',
     variantes: {
-      'GYTR-III': 'Individual trocar with safety tip',
+      'GYTR-III': 'Single unit — Trocar with safety tip',
       'Kit A':
         '2 cannulas of 5 mm and 2 of 10 mm with stopcock · obturators with ' +
         'dilating tip of 5 and 10 mm · Veress needle · 250 mL bag',
@@ -301,10 +299,10 @@ export const productosEn: Record<string, ProductoEn> = {
       'Suction bag in individual packaging. Cardboard box holding 50 ' +
       'individually packed bags.',
     variantes: {
-      'MI285-0008': '1000 mL — yellow elbow',
-      'MI286-0008': '1500 mL — purple elbow',
-      'MI287-0008': '2000 mL — light blue elbow',
-      'MI288-0008': '3000 mL — green elbow',
+      'MI285-0008': '1000 mL — Yellow elbow',
+      'MI286-0008': '1500 mL — Purple elbow',
+      'MI287-0008': '2000 mL — Light blue elbow',
+      'MI288-0008': '3000 mL — Green elbow',
     },
   },
 
@@ -331,10 +329,10 @@ export const productosEn: Record<string, ProductoEn> = {
       'Multi-pack cardboard box with the canisters individually wrapped in ' +
       'bubble bags.',
     variantes: {
-      'MI129-0013': 'For the 1000 mL bag — yellow marking',
-      'MI358-0013': 'For the 1500 mL bag — purple marking',
-      'MI301-0013': 'For the 2000 mL bag — light blue marking',
-      'MI302-0013': 'For the 3000 mL bag — green marking',
+      'MI129-0013': 'For the 1000 mL bag — Yellow marking',
+      'MI358-0013': 'For the 1500 mL bag — Purple marking',
+      'MI301-0013': 'For the 2000 mL bag — Light blue marking',
+      'MI302-0013': 'For the 3000 mL bag — Green marking',
     },
   },
 
@@ -401,7 +399,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Keeps its properties from −50 °C to +250 °C',
       'Can be sterilised by any method',
       'Manufactured in an aseptic environment',
-      'Reference SILNIONE MM 71160U',
     ],
     presentacion:
       'Cardboard box holding 20 or 16 rolls depending on diameter; each roll ' +
@@ -476,7 +473,7 @@ export const productosEn: Record<string, ProductoEn> = {
     nombre: 'Enteral feeding set with bottle thread',
     resumen:
       'Sterile set connecting the formula bottle to the patient’s gastric ' +
-      'tube. Code B-SG002B.',
+      'tube.',
     descripcion: [
       'The Enteral Feeding Bottle Set is used together with an enteral feeding ' +
         'bag and a gastric tube. In use it stays connected to the tube inserted ' +
@@ -490,7 +487,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Thread compatible with enteral formula bottles',
       'Polyethylene and medical-grade paper pouch',
       'Peel-open pack',
-      'Reference code B-SG002B',
       'Sterile, single use',
     ],
     presentacion:
@@ -632,7 +628,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Composition: 80 % cellulose and 20 % emulsion',
       'Tear-resistant and does not shed particles',
       'Does not irritate the skin',
-      'Code PCA-8020SA',
       'Single use',
     ],
     presentacion:
@@ -653,7 +648,6 @@ export const productosEn: Record<string, ProductoEn> = {
     caracteristicas: [
       'Four plies reinforced with an inner cotton-thread mesh',
       'Resealable LDPE dispenser bag',
-      'Code PCA-001SP',
       'Single use',
     ],
     presentacion: 'Cardboard box holding 30 bags; each bag with 50 wipes.',
@@ -679,7 +673,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Removes the exposure of patient and clinical staff to the emesis',
       '100 % recyclable',
       'Free of latex, heavy metals and phthalates',
-      'Reference PMID01',
       'Non-sterile',
     ],
     presentacion:
@@ -731,7 +724,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Waterproof: holds the fluid and stops sludge forming',
       'Non-slip base',
       'Easy to lay down and remove',
-      'Reference 80522',
     ],
     presentacion: 'Box of 12 individual units.',
   },
@@ -750,7 +742,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'White semi-permeable top layer',
       'Waterproof bottom barrier',
       'Individual PE bag that guarantees an airtight seal',
-      'Code HQ201512',
       'Disposable',
     ],
     presentacion:
@@ -761,8 +752,7 @@ export const productosEn: Record<string, ProductoEn> = {
   'marcador-piel-esteril': {
     nombre: 'Q-MEDICAL sterile disposable skin marker',
     resumen:
-      'Sterile marker with a surgical ruler included, in an individual ' +
-      'blister. Reference 663 022.',
+      'Sterile marker with a surgical ruler included, in an individual blister.',
     descripcion: [
       'Sterile markers designed to make it easier to identify and outline the ' +
         'surgical field on the skin where the procedure will be carried out, so ' +
@@ -773,7 +763,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Surgical ruler included in every blister',
       'Primary pack of medical-grade paper and polyethylene film',
       'Peel-open pack',
-      'Reference 663 022',
       'Hypoallergenic and latex free',
       'Helps prevent surgical site infections',
       'Sterile, single use',
@@ -785,8 +774,7 @@ export const productosEn: Record<string, ProductoEn> = {
   'marcador-piel-no-esteril': {
     nombre: 'XODUS non-sterile surgical marker',
     resumen:
-      'Marker for drawing directly on the skin, small format. Reference ' +
-      'NS10402.',
+      'Marker for drawing directly on the skin, in a small format.',
     descripcion: [
       'Non-sterile surgical marker for drawing directly on the skin, in a ' +
         'small format, intended for preoperative marking outside the sterile ' +
@@ -794,8 +782,7 @@ export const productosEn: Record<string, ProductoEn> = {
     ],
     caracteristicas: [
       'Draws directly on the skin',
-      'Small format (Correct Site Marker)',
-      'Reference NS10402',
+      'Small, single-use format',
       'Non-sterile',
     ],
   },
@@ -804,7 +791,7 @@ export const productosEn: Record<string, ProductoEn> = {
     nombre: 'Gauze and sponge counting bag',
     resumen:
       'Five-pocket plastic strip for a verifiable gauze count during the ' +
-      'procedure. Reference RIP-003.',
+      'procedure.',
     descripcion: [
       'Device used mainly in operating theatres to make it easier to organise ' +
         'and verify the count of gauzes, swabs or surgical sponges used during ' +
@@ -817,7 +804,6 @@ export const productosEn: Record<string, ProductoEn> = {
       'Plastic strip with five transparent pockets',
       'Lets the surgical team verify the count visually',
       'Medical-grade card dispenser box',
-      'Reference RIP-003',
     ],
     presentacion:
       'Dispenser box with 50 bags; cardboard box of 8 dispensers (400 units).',
@@ -836,7 +822,6 @@ export const productosEn: Record<string, ProductoEn> = {
     caracteristicas: [
       'Individual pouch in a mixed sleeve of LDPE and medical-grade paper',
       'Peel-open pack',
-      'Reference Type A',
       'Single use',
     ],
     presentacion:
@@ -896,12 +881,19 @@ export const productosEn: Record<string, ProductoEn> = {
       'Hypoallergenic, blue',
     ],
     presentacion: 'Multi-pack cardboard box.',
+    codigos: {
+      'Talla S · 6.5 g': 'Size S · 6.5 g',
+      'Talla M · 6.5 g': 'Size M · 6.5 g',
+      'Talla L · 6.5 g': 'Size L · 6.5 g',
+      'Talla XL · 6.5 g': 'Size XL · 6.5 g',
+      'Tallas S, M y L · 3.5 g': 'Sizes S, M and L · 3.5 g',
+    },
     variantes: {
-      '6.5 g · S': 'Length 300 mm · width 85 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
-      '6.5 g · M': 'Length 300 mm · width 95 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
-      '6.5 g · L': 'Length 300 mm · width 105 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
-      '6.5 g · XL': 'Length 300 mm · width 115 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
-      '3.5 g · S/M/L': 'Length 240 mm · palm 0.07 mm · fingers 0.10 mm — examination line',
+      'Talla S · 6.5 g': 'Length 300 mm · width 85 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
+      'Talla M · 6.5 g': 'Length 300 mm · width 95 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
+      'Talla L · 6.5 g': 'Length 300 mm · width 105 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
+      'Talla XL · 6.5 g': 'Length 300 mm · width 115 ± 5 mm · palm 0.10 mm · fingers 0.15 mm',
+      'Tallas S, M y L · 3.5 g': 'Length 240 mm · palm 0.07 mm · fingers 0.10 mm — examination line',
     },
   },
 };

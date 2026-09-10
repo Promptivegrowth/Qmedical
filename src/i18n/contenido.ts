@@ -18,6 +18,7 @@ import type { Especialidad } from '../data/especialidades';
 interface CategoriaEn {
   nombre: string;
   corto: string;
+  sintesis: string;
   descripcion: string;
 }
 
@@ -25,6 +26,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   bioseguridad: {
     nombre: 'Biosafety and waste management',
     corto: 'Biosafety',
+    sintesis: 'Safe containment and disposal of waste',
     descripcion:
       'The set of principles, standards and technologies for avoiding the risk ' +
       'that comes from exposure to biological agents. Puncture-resistant rigid ' +
@@ -33,6 +35,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   antisepsia: {
     nombre: 'Antisepsis and skin preparation',
     corto: 'Antisepsis',
+    sintesis: 'Skin preparation and surgical scrub',
     descripcion:
       'The use of chemical substances to inhibit the growth of, or reduce the ' +
       'number of, micro-organisms on the skin and mucous membranes. ' +
@@ -41,6 +44,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   laparoscopia: {
     nombre: 'Laparoscopic surgery',
     corto: 'Laparoscopy',
+    sintesis: 'Minimally invasive access to the cavity',
     descripcion:
       'A surgical technique that allows the pelvic and abdominal cavity to be ' +
       'seen with the help of an optical lens. Trocars with a safety tip and a ' +
@@ -49,6 +53,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   aspiracion: {
     nombre: 'Suction and aspiration',
     corto: 'Suction',
+    sintesis: 'Closed handling of secretions and fluids',
     descripcion:
       'Closed systems for the temporary storage of secretions and fluids ' +
       'removed from the body: disposable bags, reusable canisters, tubing and ' +
@@ -57,6 +62,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   'nutricion-enteral': {
     nombre: 'Enteral feeding',
     corto: 'Enteral feeding',
+    sintesis: 'Nutritional support for the patient',
     descripcion:
       'A technique of artificial feeding that delivers the nutritional solution ' +
       'directly into the stomach or the intestine. Pumps, bags and sets ' +
@@ -65,6 +71,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   'via-aerea': {
     nombre: 'Airway and anaesthesia',
     corto: 'Airway',
+    sintesis: 'Intubation and airway control',
     descripcion:
       'Video laryngoscopy for precise endotracheal intubation, with disposable ' +
       'blades in every size, from the neonate to the difficult adult airway.',
@@ -72,6 +79,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   'higiene-paciente': {
     nombre: 'Patient hygiene and comfort',
     corto: 'Patient hygiene',
+    sintesis: 'Hygiene and comfort of the bedridden patient',
     descripcion:
       'Rinse-free bed bathing, body drying and single-use clinical wipes, to ' +
       'reduce cross-contamination and the time nursing care takes.',
@@ -79,6 +87,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   absorbentes: {
     nombre: 'Absorbents and surface protection',
     corto: 'Absorbents',
+    sintesis: 'Surfaces kept clean, dry and slip-free',
     descripcion:
       'Non-slip absorbent mats and waterproof protectors that keep the ' +
       'operating theatre clean, dry and free of slip hazards.',
@@ -86,6 +95,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   instrumental: {
     nombre: 'Surgical instruments and accessories',
     corto: 'Instruments',
+    sintesis: 'Supplies for theatre and sterile processing',
     descripcion:
       'Supplies for the operating theatre and the sterile processing ' +
       'department: skin markers, gauze counting, electrosurgical tip cleaning ' +
@@ -94,6 +104,7 @@ const categoriasEn: Record<string, CategoriaEn> = {
   'proteccion-personal': {
     nombre: 'Personal protection',
     corto: 'Personal protection',
+    sintesis: 'A barrier for the clinical team',
     descripcion:
       'A barrier for the healthcare team against chemical, microbiological and ' +
       'cytostatic hazards.',

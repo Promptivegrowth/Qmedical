@@ -12,9 +12,20 @@
    valor de 40 % de negro"). Sin tintes calidos ni frios: el unico color del
    sitio es el azul corporativo.
 
-   Tipografia: el manual pide Athelas Bold y Adobe Caslon Pro Bold, ambas
-   comerciales. Para web se usa Libre Caslon, una revival directa de Caslon,
-   de modo que el texto emparenta con la palabra MEDICAL del logotipo.
+   Tipografia: el manual (pag. 07) pide Athelas Bold —de donde nace la Q del
+   logotipo— y Adobe Caslon Pro Bold —de donde nace la palabra MEDICAL—. Las
+   dos son comerciales y no se pueden servir en web.
+
+   El sustituto es Literata, y no por parecido casual: la dibujo TypeTogether,
+   el mismo estudio de Veronika Burian y Jose Scaglione que dibujo Athelas.
+   Comparten planteamiento —serifa contemporanea de libro, contraste bajo,
+   serifas robustas, altura de x generosa— y Literata se diseno expresamente
+   para leerse en pantalla, con un eje optico que ajusta el trazo al tamano.
+
+   Antes se usaba Libre Caslon Display, una revival de Caslon de contraste
+   altisimo. En texto corrido funciona, pero a cuerpo de titular sus finos se
+   vuelven filamentos y el conjunto adquiere un aire de esquela. Literata
+   sostiene el mismo registro editorial sin esa fragilidad.
    ========================================================================== */
 
 @theme {
@@ -43,11 +54,15 @@
   /* Tipografía */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, Helvetica, Arial, sans-serif;
-  /* Caslon para los titulares: es la familia de la que nace el logotipo */
-  --font-display: 'Libre Caslon Display', 'Adobe Caslon Pro', 'Athelas',
-    Georgia, 'Times New Roman', serif;
-  --font-display-texto: 'Libre Caslon Text', 'Adobe Caslon Pro', 'Athelas',
-    Georgia, 'Times New Roman', serif;
+  /* Serifa de titulares: Literata para todo el mundo.
+     Se descarto encabezar la pila con Athelas —viene instalada en macOS e
+     iOS— porque el sitio se veria distinto segun el sistema del visitante y
+     los titulares cortarian en sitios diferentes. En una web corporativa
+     pesa mas que se vea igual en todas partes. */
+  --font-display: 'Literata', Georgia, 'Times New Roman', serif;
+  /* Una sola familia para los dos usos: el eje optico de Literata hace el
+     trabajo que antes repartian los cortes Display y Text de Libre Caslon. */
+  --font-display-texto: 'Literata', Georgia, 'Times New Roman', serif;
 
   /* Movimiento — la misma curva y tiempos de la referencia */
   --ease-editorial: cubic-bezier(0.4, 0, 0.2, 1);
@@ -143,32 +158,37 @@
   @media (min-width: 768px) { .aire-sm { padding-block: 5rem; } }
 
   /* ── Tipografía editorial ─────────────────────────────────────────────
-     Display en peso 300: el manual pide una serifa transicional y la
-     referencia, un display ligero. El 300 satisface ambas.                */
+     Peso 500 en los titulares. El manual pide los dos cortes en negrita, y
+     un peso intermedio recoge esa intención sin el grosor de un 700, que en
+     un titular largo se vuelve pesado.
+
+     El eje óptico de Literata se deja en automático: el navegador afina el
+     trazo en los cuerpos grandes y lo engorda en los pequeños, que es
+     justamente lo que antes obligaba a mantener dos familias distintas.    */
   .display-xl {
     font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(2.75rem, 6.6vw, 6.5rem);
-    line-height: 0.98;
-    letter-spacing: -0.024em;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 6.1vw, 5.9rem);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
   }
   .display-lg {
     font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(2.15rem, 4.6vw, 4.25rem);
-    line-height: 1.04;
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.2vw, 3.85rem);
+    line-height: 1.08;
+    letter-spacing: -0.024em;
   }
   .display-md {
     font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-    line-height: 1.12;
-    letter-spacing: -0.014em;
+    font-weight: 500;
+    font-size: clamp(1.55rem, 2.45vw, 2.25rem);
+    line-height: 1.18;
+    letter-spacing: -0.018em;
   }
   .display-sm {
     font-family: var(--font-display-texto);
-    font-weight: 400;
+    font-weight: 500;
     font-size: clamp(1.2rem, 1.6vw, 1.5rem);
     line-height: 1.2;
     letter-spacing: -0.008em;
@@ -176,10 +196,10 @@
   /* Cifra suelta, del tamaño de un titular */
   .cifra {
     font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(3.5rem, 9vw, 9rem);
-    line-height: 0.86;
-    letter-spacing: -0.035em;
+    font-weight: 500;
+    font-size: clamp(3.3rem, 8.2vw, 8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
     font-variant-numeric: lining-nums tabular-nums;
   }
 
