@@ -21,9 +21,9 @@ const lineas = categorias.map((c) => ({
 }));
 
 // El nombre del área se traduce; el correo, evidentemente, no.
-const directorio = contactos.map((c, i) => ({
+const directorio = contactos.map((c) => ({
   correo: c.correo,
-  area: lang === 'en' ? (areasEn[i] ?? c.area) : c.area,
+  area: lang === 'en' ? (areasEn[c.correo] ?? c.area) : c.area,
 }));
 
 const horario = lang === 'en' ? empresaEn.horario : site.horario;

@@ -135,9 +135,9 @@ const vias = [
 ];
 
 const lineas = categorias.map((c) => categoriaEn(c, lang));
-const directorio = contactos.map((c, i) => ({
+const directorio = contactos.map((c) => ({
   correo: c.correo,
-  area: lang === 'en' ? (areasEn[i] ?? c.area) : c.area,
+  area: lang === 'en' ? (areasEn[c.correo] ?? c.area) : c.area,
 }));
 const pais = lang === 'en' ? empresaEn.pais : site.direccion.pais;
 

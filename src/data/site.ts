@@ -85,16 +85,18 @@ export const waMensajes = {
     'y el estado de una atención.',
 } as const;
 
+/**
+ * Correos que la empresa publica, en el orden en que quiere verlos.
+ * Los almacenes, planeamiento y gerencia comercial se retiraron a pedido de
+ * la empresa: son buzones internos y no atienden consultas del público.
+ */
 export const contactos = [
   { area: 'Cotizaciones y licitaciones', correo: 'cotizaciones_licitaciones@qmedicalsac.com' },
-  { area: 'Gerencia comercial', correo: 'gerenciacomercial@qmedicalsac.com' },
-  { area: 'Planeamiento', correo: 'planeamiento@qmedicalsac.com' },
   { area: 'Dirección técnica', correo: 'direccion_tecnica@qmedicalsac.com' },
+  { area: 'Importaciones', correo: 'importaciones@qmedicalsac.com' },
   { area: 'Marketing', correo: 'marketing@qmedicalsac.com' },
-  { area: 'Almacén central', correo: 'almacen@qmedicalsac.com' },
-  { area: 'Almacén Napo', correo: 'almacen_napo@qmedicalsac.com' },
-  { area: 'Almacén Argentina', correo: 'almacen_argentina@qmedicalsac.com' },
-  { area: 'Facturación', correo: 'asist.facturacion1@qmedicalsac.com' },
+  { area: 'Facturación', correo: 'psantillan@qmedicalsac.com' },
+  { area: 'Cobranzas', correo: 'finanzas@qmedicalsac.com' },
 ];
 
 export const redes = [

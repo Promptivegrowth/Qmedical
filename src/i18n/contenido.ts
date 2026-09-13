@@ -363,18 +363,21 @@ export const cifrasEn = [
   { etiqueta: 'DIGEMID certification', nota: 'Good Storage Practices' },
 ];
 
-/** Áreas de contacto, en el orden de src/data/site.ts. */
-export const areasEn = [
-  'Quotations and tenders',
-  'Commercial management',
-  'Planning',
-  'Technical direction',
-  'Marketing',
-  'Central warehouse',
-  'Napo warehouse',
-  'Argentina warehouse',
-  'Invoicing',
-];
+/**
+ * Nombre de cada área en inglés, indexado por su correo.
+ *
+ * Antes era una lista que se emparejaba por posición con la de site.ts: al
+ * cambiar el directorio, el inglés mostraba áreas equivocadas sin que nada
+ * fallara. El correo es único y no se mueve, así que sirve de llave.
+ */
+export const areasEn: Record<string, string> = {
+  'cotizaciones_licitaciones@qmedicalsac.com': 'Quotations and tenders',
+  'direccion_tecnica@qmedicalsac.com': 'Technical direction',
+  'importaciones@qmedicalsac.com': 'Imports',
+  'marketing@qmedicalsac.com': 'Marketing',
+  'psantillan@qmedicalsac.com': 'Invoicing',
+  'finanzas@qmedicalsac.com': 'Accounts receivable',
+};
 
 /** Mensajes de WhatsApp ya redactados, en inglés. */
 export const waMensajesEn = {
