@@ -150,15 +150,17 @@ export const valores = [
   {
     titulo: 'Misión',
     texto:
-      'Contribuir y mejorar el sistema de salud del país a través de productos ' +
-      'de calidad y a buenos precios en el mercado.',
+      'Fortalecemos el sistema de salud del Perú suministrando dispositivos ' +
+      'médicos y soluciones de bioseguridad de calidad, con precios ' +
+      'competitivos, atención oportuna y respaldo técnico especializado.',
   },
   {
     titulo: 'Visión',
     texto:
-      'Ser el aliado de referencia de las instituciones de salud del Perú en el ' +
-      'abastecimiento de dispositivos médicos y bioseguridad, reconocidos por ' +
-      'nuestra confiabilidad y respaldo técnico.',
+      'Ser el aliado estratégico de referencia de las instituciones de salud del ' +
+      'Perú, reconocidos por la confiabilidad de nuestros productos, la ' +
+      'excelencia de nuestro servicio, la oportunidad de nuestras soluciones y ' +
+      'nuestro compromiso con el sector salud.',
   },
   {
     titulo: 'Filosofía',

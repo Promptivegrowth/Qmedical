@@ -337,15 +337,17 @@ export const valoresEn = [
   {
     titulo: 'Mission',
     texto:
-      'To contribute to and improve the country’s health system through ' +
-      'quality products at fair market prices.',
+      'We strengthen Peru’s health system by supplying quality medical devices ' +
+      'and biosafety solutions, with competitive prices, prompt service and ' +
+      'specialist technical support.',
   },
   {
     titulo: 'Vision',
     texto:
-      'To be the reference partner of Peru’s healthcare institutions in the ' +
-      'supply of medical devices and biosafety, recognised for our reliability ' +
-      'and technical support.',
+      'To be the strategic partner of reference for Peru’s healthcare ' +
+      'institutions, recognised for the reliability of our products, the ' +
+      'excellence of our service, the timeliness of our solutions and our ' +
+      'commitment to the health sector.',
   },
   {
     titulo: 'Philosophy',
