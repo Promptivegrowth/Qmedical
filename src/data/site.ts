@@ -33,7 +33,7 @@ export const site = {
     href: 'https://wa.me/51977814006',
   },
   correoPrincipal: 'cotizaciones_licitaciones@qmedicalsac.com',
-  horario: 'Lunes a viernes, 8:30 a. m. – 6:00 p. m.',
+  horario: 'Lunes a viernes, 8:00 a. m. – 6:00 p. m.',
   /**
    * Endpoint para el envío de formularios sin servidor propio, de modo que el
    * sitio funcione idéntico en Vercel y en el hosting compartido de cPanel.

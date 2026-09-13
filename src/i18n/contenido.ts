@@ -301,7 +301,7 @@ export const empresaEn = {
     'A Peruvian drugstore specialising in medical devices, biosafety and ' +
     'personal protection for public and private healthcare institutions. ' +
     'BPA (Good Storage Practices) certification granted by DIGEMID.',
-  horario: 'Monday to Friday, 8:30 a.m. – 6:00 p.m.',
+  horario: 'Monday to Friday, 8:00 a.m. – 6:00 p.m.',
   direccionCalle: 'Av. Arica 1442, Urb. Chacra Colorada',
   pais: 'Peru',
 };
