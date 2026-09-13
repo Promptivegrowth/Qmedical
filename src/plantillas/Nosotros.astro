@@ -80,7 +80,7 @@ const T = {
     ],
     certifAnte: 'Certificaciones y acreditaciones',
     certifTitulo: 'Estándares que se auditan, no que se declaran',
-    verDocs: 'Ver la documentación técnica',
+    verDocs: 'Solicitar la documentación técnica',
   },
   en: {
     meta: `About us — ${site.anios} years supplying Peru’s health sector`,
@@ -136,7 +136,7 @@ const T = {
     ],
     certifAnte: 'Certifications and accreditations',
     certifTitulo: 'Standards that are audited, not merely declared',
-    verDocs: 'See the technical documentation',
+    verDocs: 'Request the technical documentation',
   },
 }[lang];
 
@@ -251,7 +251,7 @@ const principios = valores.map((v, i) =>
     id="certificaciones"
     ante={T.certifAnte}
     titulo={T.certifTitulo}
-    a={via(lang, 'fichas')}
+    a={via(lang, 'contacto', undefined, 'cotizar')}
     aTexto={T.verDocs}
   />
 

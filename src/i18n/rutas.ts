@@ -57,7 +57,6 @@ export type Clave =
   | 'producto'
   | 'marcas'
   | 'contacto'
-  | 'fichas'
   | 'reclamos'
   | 'gracias';
 

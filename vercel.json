@@ -26,13 +26,12 @@
     {
       "source": "/video/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    },
-    {
-      "source": "/fichas-tecnicas/(.*).pdf",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
     }
   ],
   "redirects": [
+    { "source": "/fichas-tecnicas", "destination": "/catalogo", "permanent": true },
+    { "source": "/fichas-tecnicas/(.*)", "destination": "/catalogo", "permanent": true },
+    { "source": "/en/datasheets", "destination": "/en/catalog", "permanent": true },
     { "source": "/catalago", "destination": "/catalogo", "permanent": true },
     { "source": "/video-laringoscopio", "destination": "/productos/videolaringoscopio", "permanent": true },
     { "source": "/bomba-de-nutricion-enteral", "destination": "/productos/bomba-nutricion-enteral", "permanent": true },

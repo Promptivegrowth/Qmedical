@@ -35,11 +35,10 @@ El sitio es bilingüe: cada página existe en castellano y en inglés.
 | 10 líneas de producto | `/catalogo/<linea>` | `/en/catalog/<linea>` |
 | 32 fichas de producto | `/productos/<producto>` | `/en/products/<producto>` |
 | 15 marcas asociadas | `/marcas` | `/en/brands` |
-| Biblioteca de 49 fichas técnicas en PDF | `/fichas-tecnicas` | `/en/datasheets` |
 | Contacto y solicitud de cotización | `/contacto` | `/en/contact` |
 | Libro de Reclamaciones (Ley N.° 29571) | `/libro-de-reclamaciones` | `/en/complaints-book` |
 
-En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
+En total, 98 páginas estáticas —49 por idioma— más `sitemap-index.xml`,
 `robots.txt` y `404.html`.
 
 ### Sitio bilingüe
@@ -50,7 +49,7 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   «/en/nosotros» no le sirve de nada a quien lee en inglés.
 - **El identificador de cada producto y de cada línea es el mismo en los dos
   idiomas**: `/catalogo/via-aerea` y `/en/catalog/via-aerea`. Ese tramo identifica
-  una ficha técnica y un código de fabricante; mantenerlo idéntico garantiza que
+  un producto y su referencia de fabricante; mantenerlo idéntico garantiza que
   toda página tenga su gemela exacta, que el conmutador de idioma nunca caiga en un
   404 y que las etiquetas `hreflang` se emparejen sin una tabla de 42 equivalencias
   que mantener a mano.
@@ -69,9 +68,6 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   atributos `name` de los formularios se mantienen en castellano en los dos idiomas
   para que el equipo comercial reciba siempre los correos con los mismos campos; se
   añade una línea con el idioma en que escribió el visitante.
-- **Las fichas técnicas en PDF son las que emite cada fabricante, en castellano.**
-  La versión inglesa lo advierte junto a la descarga en vez de dar a entender que
-  existe una traducción.
 - **El 404 se traduce solo.** El servidor entrega un único `404.html` para cualquier
   dirección desconocida, incluidas las que empiezan por `/en/`; un guion mínimo, antes
   del primer pintado, cambia los textos y los enlaces si la dirección fallida era del
@@ -93,7 +89,7 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   y los valores se ajustaron hasta superar el mínimo AA en todos los casos.
 - **Catálogo sin referencias internas**: las referencias del fabricante (MA1112,
   RIP-003…) no se publican. Se conservan en `src/data/catalogo.ts` porque emparejan
-  cada variante con su ficha técnica, pero lo que se lee es la presentación —la
+  cada variante con su presentación, pero lo que se lee es la presentación —la
   capacidad, la talla, la formulación—, que es por lo que se elige. Cada línea del
   catálogo lleva además una frase en lenguaje llano que dice para qué sirve, de modo
   que el índice se entienda sin conocer el sector.
@@ -117,8 +113,12 @@ En total, 100 páginas estáticas —50 por idioma— más `sitemap-index.xml`,
   momento —blanco y por delante del texto en la mitad cercana, apagado y por detrás
   en la lejana—. Se resuelve entero en CSS, sin un cálculo por fotograma, y se
   detiene mientras se hace scroll.
-- **Fichas técnicas**: las 49 fichas oficiales se publican como PDF descargable, tanto
-  en cada ficha de producto como en la biblioteca general con buscador.
+- **Sin fichas técnicas descargables**: la empresa decidió retirarlas del sitio y
+  entregarlas a petición, así que no hay biblioteca de PDF ni enlaces de descarga.
+  `/fichas-tecnicas` y `/en/datasheets` redirigen con 301 al catálogo, en Vercel y en
+  cPanel. Todo lo retirado —los 49 PDF, su índice, la correspondencia producto↔ficha y
+  el guion que los preparaba— está en el historial del repositorio, en el commit que
+  las quitó, por si algún día se quisieran volver a publicar.
 - **Búsqueda**: índice embebido en la página, filtrado en el navegador. Sin peticiones
   ni dependencias. Acepta enlaces directos: `/catalogo?q=clorhexidina`.
 - **Rendimiento**: ~48 KB de CSS y unos pocos KB de JS por página; todas las imágenes
@@ -167,7 +167,6 @@ optimizada.
 pip install pillow
 
 python scripts/optimize_images.py    # originales -> public/img (WebP)
-python scripts/copy_fichas.py        # PDF -> public/fichas-tecnicas + índice JSON
 python scripts/make_favicons.py      # favicon, apple-touch-icon e íconos PWA
 ```
 
@@ -244,7 +243,6 @@ qmedical-web/
 ├── public/
 │   ├── .htaccess              Configuración de Apache para cPanel
 │   ├── img/                   Imágenes optimizadas (generadas)
-│   └── fichas-tecnicas/       49 fichas técnicas en PDF (generadas)
 ├── scripts/                   Utilidades Python de preparación de recursos
 ├── src/
 │   ├── components/            Header, Footer, Preloader, tarjetas, formularios…
@@ -252,8 +250,7 @@ qmedical-web/
 │   │   ├── site.ts            Datos institucionales, contactos, certificaciones
 │   │   ├── marcas.ts          Las 15 marcas representadas
 │   │   ├── catalogo.ts        Categorías y productos (contenido técnico)
-│   │   ├── especialidades.ts  Las 6 especialidades clínicas que se abastecen
-│   │   └── fichas.json        Índice de PDF (generado)
+│   │   └── especialidades.ts  Las 6 especialidades clínicas que se abastecen
 │   ├── i18n/                  Capa bilingüe
 │   │   ├── mapa-rutas.mjs     Tabla de direcciones (la lee también astro.config)
 │   │   ├── rutas.ts           Ayudantes de enlace, idioma y alternativas

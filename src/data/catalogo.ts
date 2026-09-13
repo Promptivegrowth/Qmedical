@@ -1,18 +1,17 @@
 import manifest from '../../public/img/manifest.json';
-import fichas from './fichas.json';
 
 /* ==========================================================================
    Catálogo Q-MEDICAL S.A.C.
-   El contenido técnico proviene de las fichas técnicas oficiales de cada
-   producto (carpeta "Ficha técnica productos"), publicadas además como PDF
-   descargable en /fichas-tecnicas.
-   ========================================================================== */
 
-export interface Ficha {
-  titulo: string;
-  archivo: string;
-  peso: number;
-}
+   El contenido técnico proviene de las fichas técnicas oficiales de cada
+   producto (carpeta "Ficha técnica productos" en la raíz del proyecto).
+
+   El sitio ya no publica esas fichas como PDF descargable: la empresa decidió
+   retirarlas y entregarlas a petición. Por eso aquí no queda ni el índice de
+   documentos ni la correspondencia producto↔ficha. Si algún día se quisieran
+   volver a publicar, están en el historial del repositorio, en el commit que
+   las retiró.
+   ========================================================================== */
 
 export interface Variante {
   /**
@@ -29,7 +28,6 @@ export interface Variante {
    * el rótulo sí se publica y el detalle pasa a segundo término.
    */
   codigoEsPresentacion?: boolean;
-  ficha?: string;
 }
 
 export interface Producto {
@@ -43,7 +41,6 @@ export interface Producto {
   presentacion?: string;
   usos?: string[];
   variantes?: Variante[];
-  fichas: string[];
   destacado?: boolean;
 }
 
@@ -204,26 +201,15 @@ export const productos: Producto[] = [
       'Caja de cartón corrugado. El número de unidades por caja varía según la ' +
       'capacidad del contenedor.',
     variantes: [
-      { codigo: 'MA1112', detalle: '0.95 L — Para carro de flebotomía', ficha: 'contenedor-punzocortantes-ma1112-0-95l' },
-      { codigo: 'MA1122', detalle: '1.89 L — Para carro de flebotomía', ficha: 'contenedor-punzocortantes-ma1122-1-89l' },
-      { codigo: '1024', detalle: '3.0 L', ficha: 'contenedor-punzocortantes-1024-3l' },
-      { codigo: 'MA1212', detalle: '4.7 L', ficha: 'contenedor-punzocortantes-ma1212-4-7l' },
-      { codigo: '1033', detalle: '7.0 L', ficha: 'contenedor-punzocortantes-1033-7l' },
-      { codigo: 'ME1282', detalle: '7.6 L', ficha: 'contenedor-punzocortantes-me1282-7-6l' },
-      { codigo: 'MA1331', detalle: '11.4 L', ficha: 'contenedor-punzocortantes-ma1331-11-4l' },
-      { codigo: 'MA1341', detalle: '22.7 L', ficha: 'contenedor-punzocortantes-ma1341-22-7l' },
-      { codigo: 'MA1352', detalle: '30.3 L', ficha: 'contenedor-punzocortantes-ma1352-30-3l' },
-    ],
-    fichas: [
-      'contenedor-punzocortantes-ma1112-0-95l',
-      'contenedor-punzocortantes-ma1122-1-89l',
-      'contenedor-punzocortantes-1024-3l',
-      'contenedor-punzocortantes-ma1212-4-7l',
-      'contenedor-punzocortantes-1033-7l',
-      'contenedor-punzocortantes-me1282-7-6l',
-      'contenedor-punzocortantes-ma1331-11-4l',
-      'contenedor-punzocortantes-ma1341-22-7l',
-      'contenedor-punzocortantes-ma1352-30-3l',
+      { codigo: 'MA1112', detalle: '0.95 L — Para carro de flebotomía' },
+      { codigo: 'MA1122', detalle: '1.89 L — Para carro de flebotomía' },
+      { codigo: '1024', detalle: '3.0 L' },
+      { codigo: 'MA1212', detalle: '4.7 L' },
+      { codigo: '1033', detalle: '7.0 L' },
+      { codigo: 'ME1282', detalle: '7.6 L' },
+      { codigo: 'MA1331', detalle: '11.4 L' },
+      { codigo: 'MA1341', detalle: '22.7 L' },
+      { codigo: 'MA1352', detalle: '30.3 L' },
     ],
   },
   {
@@ -253,18 +239,11 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Caja de cartón corrugado según capacidad.',
     variantes: [
-      { codigo: 'MC1311', detalle: '3.8 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1311-3-8l' },
-      { codigo: 'MC1321', detalle: '7.6 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1321-7-6l' },
-      { codigo: 'MC1321-R', detalle: '7.6 L — Residuos especiales', ficha: 'contenedor-residuos-especiales-mc1321-7-6l' },
-      { codigo: 'MC1351', detalle: '30.3 L — Residuos citotóxicos', ficha: 'contenedor-citotoxicos-mc1351-30-3l' },
-      { codigo: 'MV1311', detalle: '3.8 L — Descarte de vidrios', ficha: 'contenedor-vidrio-mv1311-3-8l' },
-    ],
-    fichas: [
-      'contenedor-citotoxicos-mc1311-3-8l',
-      'contenedor-citotoxicos-mc1321-7-6l',
-      'contenedor-residuos-especiales-mc1321-7-6l',
-      'contenedor-citotoxicos-mc1351-30-3l',
-      'contenedor-vidrio-mv1311-3-8l',
+      { codigo: 'MC1311', detalle: '3.8 L — Residuos citotóxicos' },
+      { codigo: 'MC1321', detalle: '7.6 L — Residuos citotóxicos' },
+      { codigo: 'MC1321-R', detalle: '7.6 L — Residuos especiales' },
+      { codigo: 'MC1351', detalle: '30.3 L — Residuos citotóxicos' },
+      { codigo: 'MV1311', detalle: '3.8 L — Descarte de vidrios' },
     ],
   },
   {
@@ -295,7 +274,6 @@ export const productos: Producto[] = [
       'Laboratorios y producción farmacéutica',
       'Producción de alimentos y centros de datos',
     ],
-    fichas: ['tapete-adhesivo-descontaminante'],
   },
 
   /* ------------------------------------------------------------- Antisepsia */
@@ -333,7 +311,6 @@ export const productos: Producto[] = [
       { codigo: '10.5 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos medianos' },
       { codigo: '26 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos amplios' },
     ],
-    fichas: ['aplicador-clorhexidina-2-nex-clorex'],
   },
   {
     slug: 'cepillo-esponja-clorhexidina-4',
@@ -360,7 +337,6 @@ export const productos: Producto[] = [
     presentacion:
       'Caja dispensadora con 40 blísteres de polietileno de alta densidad; ' +
       'caja exterior corrugada por 6 dispensadores.',
-    fichas: ['cepillo-esponja-clorhexidina-4-nex-clorex'],
   },
   {
     slug: 'esponja-clorhexidina-2',
@@ -383,7 +359,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartón corrugado tipo dispensador con 80 blísteres individuales.',
-    fichas: ['esponja-clorhexidina-2-nex-clorex'],
   },
   {
     slug: 'toallitas-limpieza-piel',
@@ -404,7 +379,6 @@ export const productos: Producto[] = [
       'Uso externo, un solo uso',
     ],
     presentacion: 'Caja por 200 sobres individuales.',
-    fichas: ['toallitas-piel-longood'],
   },
 
   /* ----------------------------------------------------------- Laparoscopía */
@@ -441,14 +415,13 @@ export const productos: Producto[] = [
       'Caja de cartón grado médico con un blíster. Embalaje de cartón corrugado ' +
       'conteniendo 20 cajas.',
     variantes: [
-      { codigo: 'GYTR-III', detalle: 'Unidad individual — Trócar con punta de seguridad', ficha: 'trocares-geyi' },
+      { codigo: 'GYTR-III', detalle: 'Unidad individual — Trócar con punta de seguridad' },
       {
         codigo: 'Kit A',
         codigoEsPresentacion: true,
         detalle:
           '2 cánulas de 5 mm y 2 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
-        ficha: 'trocares-geyi-kits',
       },
       {
         codigo: 'Kit B',
@@ -456,7 +429,6 @@ export const productos: Producto[] = [
         detalle:
           '2 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
-        ficha: 'trocares-geyi-kits',
       },
       {
         codigo: 'Kit C',
@@ -464,10 +436,8 @@ export const productos: Producto[] = [
         detalle:
           '3 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
           'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
-        ficha: 'trocares-geyi-kits',
       },
     ],
-    fichas: ['trocares-geyi', 'trocares-geyi-kits'],
   },
 
   /* ------------------------------------------------------------- Aspiración */
@@ -510,7 +480,6 @@ export const productos: Producto[] = [
       { codigo: 'MI287-0008', detalle: '2000 mL — Codo celeste' },
       { codigo: 'MI288-0008', detalle: '3000 mL — Codo verde' },
     ],
-    fichas: ['bolsa-aspiracion-vide'],
   },
   {
     slug: 'canister-reusable',
@@ -545,7 +514,6 @@ export const productos: Producto[] = [
       { codigo: 'MI301-0013', detalle: 'Para bolsa de 2000 mL — Marcado celeste' },
       { codigo: 'MI302-0013', detalle: 'Para bolsa de 3000 mL — Marcado verde' },
     ],
-    fichas: ['canister-reusable-vide'],
   },
   {
     slug: 'accesorios-aspiracion',
@@ -567,7 +535,6 @@ export const productos: Producto[] = [
       'Manifold de 2 vías y de 4 vías',
       'Compatibles con toda la línea de cánister y bolsas VIDE®',
     ],
-    fichas: ['bolsa-aspiracion-vide', 'canister-reusable-vide'],
   },
   {
     slug: 'tubuladura-succion-esteril',
@@ -593,10 +560,9 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Caja conteniendo 50 unidades en sobres individuales.',
     variantes: [
-      { codigo: 'F30A18', detalle: 'Diámetro interno 1.8 mm', ficha: 'tubo-succion-esteril-1-8mm' },
-      { codigo: 'F30A30', detalle: 'Diámetro interno 3 mm', ficha: 'tubo-succion-esteril-3mm' },
+      { codigo: 'F30A18', detalle: 'Diámetro interno 1.8 mm' },
+      { codigo: 'F30A30', detalle: 'Diámetro interno 3 mm' },
     ],
-    fichas: ['tubo-succion-esteril-1-8mm', 'tubo-succion-esteril-3mm'],
   },
   {
     slug: 'tubuladura-silicona',
@@ -630,7 +596,6 @@ export const productos: Producto[] = [
       'Drenaje para máquina de anestesia',
       'Circuitos de máquina de hemodiálisis',
     ],
-    fichas: ['tubuladura-silicona-silpak'],
   },
 
   /* -------------------------------------------------------- Nutrición enteral */
@@ -665,7 +630,6 @@ export const productos: Producto[] = [
       { codigo: 'EP-60', detalle: 'Compatible con bolsas enterales de diversas marcas' },
       { codigo: 'EP-60C', detalle: 'Compatible exclusivamente con bolsas de la misma marca' },
     ],
-    fichas: ['bomba-nutricion-enteral-ep60'],
   },
   {
     slug: 'bolsa-nutricion-enteral',
@@ -695,10 +659,9 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Caja de cartón conteniendo 30 sobres individuales.',
     variantes: [
-      { codigo: 'B-500', detalle: '500 mL', ficha: 'bolsa-nutricion-enteral-500ml' },
-      { codigo: 'B-1000-SE2', detalle: '1000 mL', ficha: 'bolsa-nutricion-enteral-1000ml' },
+      { codigo: 'B-500', detalle: '500 mL' },
+      { codigo: 'B-1000-SE2', detalle: '1000 mL' },
     ],
-    fichas: ['bolsa-nutricion-enteral-500ml', 'bolsa-nutricion-enteral-1000ml'],
   },
   {
     slug: 'set-alimentacion-enteral',
@@ -726,7 +689,6 @@ export const productos: Producto[] = [
     presentacion:
       'Caja de cartón corrugado por 30 sobres individuales; cada sobre con un ' +
       'dispositivo.',
-    fichas: ['set-alimentacion-enteral'],
   },
 
   /* ----------------------------------------------------------------- Vía aérea */
@@ -764,7 +726,6 @@ export const productos: Producto[] = [
       { codigo: 'VS-10M', detalle: 'Configuración media' },
       { codigo: 'VS-10H', detalle: 'Configuración alta' },
     ],
-    fichas: ['videolaringoscopio-vs10'],
   },
   {
     slug: 'hojas-videolaringoscopio',
@@ -788,7 +749,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartón grado médico conteniendo 12 sobres; cada sobre con una unidad.',
-    fichas: ['hojas-videolaringoscopio'],
   },
 
   /* ------------------------------------------------------ Higiene del paciente */
@@ -821,11 +781,10 @@ export const productos: Producto[] = [
       'Caja conteniendo 100 bolsas de polipropileno biorientado (BOPP); cada ' +
       'bolsa con 10 paños.',
     variantes: [
-      { codigo: 'Aloe vera', codigoEsPresentacion: true, detalle: 'Color celeste', ficha: 'bano-facil-aloe-vera' },
-      { codigo: 'Clorhexidina', codigoEsPresentacion: true, detalle: 'Color verde', ficha: 'bano-facil-clorhexidina' },
-      { codigo: 'Manzanilla', codigoEsPresentacion: true, detalle: 'Color rosado', ficha: 'bano-facil-manzanilla' },
+      { codigo: 'Aloe vera', codigoEsPresentacion: true, detalle: 'Color celeste' },
+      { codigo: 'Clorhexidina', codigoEsPresentacion: true, detalle: 'Color verde' },
+      { codigo: 'Manzanilla', codigoEsPresentacion: true, detalle: 'Color rosado' },
     ],
-    fichas: ['bano-facil-aloe-vera', 'bano-facil-clorhexidina', 'bano-facil-manzanilla'],
   },
   {
     slug: 'toalla-secado-corporal',
@@ -855,7 +814,6 @@ export const productos: Producto[] = [
       'Cuidado del paciente en casa',
       'Spa, gimnasios, hotelería y zonas húmedas',
     ],
-    fichas: ['toalla-secado-corporal'],
   },
   {
     slug: 'pano-clinico-qmedical',
@@ -881,7 +839,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartón por 12 bolsas dispensadoras de LDPE; cada bolsa con 50 paños.',
-    fichas: ['pano-clinico-qmedical'],
   },
   {
     slug: 'pano-clinico-telijie',
@@ -909,7 +866,6 @@ export const productos: Producto[] = [
       'Baño de pacientes',
       'Limpieza de instrumental quirúrgico y equipos médicos',
     ],
-    fichas: ['pano-clinico-telijie'],
   },
   {
     slug: 'bolsa-vomito',
@@ -933,7 +889,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartón conteniendo 500 unidades distribuidas en 20 bolsas de 25 piezas.',
-    fichas: ['bolsa-emesis'],
   },
 
   /* ------------------------------------------------------------- Absorbentes */
@@ -963,10 +918,9 @@ export const productos: Producto[] = [
     ],
     presentacion: 'Empaque individual en bolsa de polietileno de baja densidad.',
     variantes: [
-      { codigo: 'Q202', detalle: 'Manta continua para piso', ficha: 'manta-absorbente-jiehong-piso' },
-      { codigo: 'Reversible', detalle: 'Precortada de doble cara', ficha: 'manta-absorbente-jiehong-precortada' },
+      { codigo: 'Q202', detalle: 'Manta continua para piso' },
+      { codigo: 'Reversible', detalle: 'Precortada de doble cara' },
     ],
-    fichas: ['manta-absorbente-jiehong-piso', 'manta-absorbente-jiehong-precortada'],
   },
   {
     slug: 'manta-absorbente-xodus',
@@ -989,7 +943,6 @@ export const productos: Producto[] = [
       'Fácil de tender y retirar',
     ],
     presentacion: 'Caja por 12 unidades individuales.',
-    fichas: ['manta-absorbente-xodus'],
   },
   {
     slug: 'protector-impermeable',
@@ -1012,7 +965,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartón conteniendo 60 protectores, cada uno en bolsa individual.',
-    fichas: ['protector-impermeable-medispo'],
   },
 
   /* ------------------------------------------------------------ Instrumental */
@@ -1039,7 +991,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja de cartulina con 25 blísteres; embalaje corrugado por 10 cajas.',
-    fichas: ['marcador-piel-esteril'],
   },
   {
     slug: 'marcador-piel-no-esteril',
@@ -1058,7 +1009,6 @@ export const productos: Producto[] = [
       'Formato pequeño, de un solo uso',
       'No estéril',
     ],
-    fichas: ['marcador-piel-no-esteril-xodus'],
   },
   {
     slug: 'bolsa-conteo-gasas',
@@ -1084,7 +1034,6 @@ export const productos: Producto[] = [
     presentacion:
       'Caja dispensadora con 50 bolsas; caja de cartón con 8 dispensadores ' +
       '(400 unidades).',
-    fichas: ['bolsas-conteo-esponjas'],
   },
   {
     slug: 'limpiador-puntas-electrocauterio',
@@ -1106,7 +1055,6 @@ export const productos: Producto[] = [
     ],
     presentacion:
       'Caja por 200 sobres individuales; embalaje por 4 cajas (800 sobres).',
-    fichas: ['limpiador-puntas-electrocauterio'],
   },
   {
     slug: 'cepillos-limpieza-instrumental',
@@ -1138,7 +1086,6 @@ export const productos: Producto[] = [
       { codigo: 'N-3000', detalle: 'Cerdas con sustancia antimicrobiana · mango de bloque · 17.78 cm' },
       { codigo: 'N-4000', detalle: '16 filas de cerdas antimicrobianas · mango anatómico · 18 cm' },
     ],
-    fichas: [],
   },
 
   /* ------------------------------------------------------ Protección personal */
@@ -1177,14 +1124,12 @@ export const productos: Producto[] = [
       { codigo: 'Talla XL · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 115 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
       { codigo: 'Tallas S, M y L · 3.5 g', codigoEsPresentacion: true, detalle: 'Largo 240 mm · palma 0.07 mm · dedos 0.10 mm — línea de examen' },
     ],
-    fichas: ['guantes-nitrilo-comfort'],
   },
 ];
 
 /* ------------------------------------------------------------------ helpers */
 
 const imagenes = manifest.productos as Record<string, string[]>;
-export const fichasIndex = fichas as Record<string, Ficha>;
 
 export const categoriaPorSlug = new Map(categorias.map((c) => [c.slug, c]));
 export const productoPorSlug = new Map(productos.map((p) => [p.slug, p]));
@@ -1198,12 +1143,6 @@ export function imagenPrincipal(slug: string, size: 900 | 480 = 900): string {
   const first = imagenesDe(slug)[0];
   if (!first) return '';
   return '/img/' + (size === 900 ? first : first.replace('.webp', '-480.webp'));
-}
-
-export function fichasDe(slug: string): Ficha[] {
-  const p = productoPorSlug.get(slug);
-  if (!p) return [];
-  return p.fichas.map((f) => fichasIndex[f]).filter(Boolean);
 }
 
 export function productosDeCategoria(cat: string): Producto[] {

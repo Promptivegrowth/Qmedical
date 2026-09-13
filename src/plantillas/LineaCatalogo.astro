@@ -38,7 +38,6 @@ const otras = categorias.filter((c) => c.slug !== base.slug).map((c) => ({
   cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
 }));
 const firmas = [...new Set(items.map((p) => marcaPorSlug.get(p.marca)?.nombre))].filter(Boolean) as string[];
-const nFichas = new Set(items.flatMap((p) => p.fichas)).size;
 
 const T = {
   es: {
@@ -105,10 +104,6 @@ const schema = {
         <div>
           <dt class="ante">{T.marcas}</dt>
           <dd>{firmas.join(' · ')}</dd>
-        </div>
-        <div>
-          <dt class="ante">{T.fichas}</dt>
-          <dd>{T.documentos(nFichas)}</dd>
         </div>
         <div>
           <dt class="ante">{T.cobertura}</dt>

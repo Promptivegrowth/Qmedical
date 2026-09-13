@@ -48,9 +48,6 @@ const href = ruta(lang, 'producto', p.slug);
         loading={eager ? 'eager' : 'lazy'} decoding="async" class="entrada__img"
       />
     )}
-    {p.fichas.length > 0 && (
-      <span class="entrada__sello"><Icon name="documento" size={11} />{t.fichaTecnica}</span>
-    )}
   </a>
 
   <div class="entrada__pie">

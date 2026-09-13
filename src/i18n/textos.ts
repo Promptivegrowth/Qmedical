@@ -60,7 +60,6 @@ const es = {
   verCatalogo: 'Ver catálogo',
   verProducto: 'Ver producto',
   escribirWa: 'Escribir por WhatsApp',
-  fichaTecnica: 'Ficha técnica',
   rutaNavegacion: 'Ruta de navegación',
 
   /* ──────────────────────────────────────────────────── Cierre y pie */
@@ -89,7 +88,6 @@ const es = {
     nosotros: 'Nosotros',
     catalogo: 'Catálogo',
     marcas: 'Marcas asociadas',
-    fichas: 'Fichas técnicas',
     reclamos: 'Libro de reclamaciones',
     horario: 'Horario de atención',
     // El nombre ya trae su punto final: «Q-MEDICAL S.A.C.».
@@ -182,7 +180,6 @@ const en: typeof es = {
   verCatalogo: 'View catalogue',
   verProducto: 'View product',
   escribirWa: 'Message us on WhatsApp',
-  fichaTecnica: 'Datasheet',
   rutaNavegacion: 'Breadcrumb',
 
   cierre: {
@@ -210,7 +207,6 @@ const en: typeof es = {
     nosotros: 'About us',
     catalogo: 'Catalogue',
     marcas: 'Partner brands',
-    fichas: 'Datasheets',
     reclamos: 'Complaints Book',
     horario: 'Opening hours',
     derechos: (a: number, n: string) => `© ${a} ${n} All rights reserved.`,

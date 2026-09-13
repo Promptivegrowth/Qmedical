@@ -10,8 +10,6 @@ import {
   productos,
   categoriaPorSlug,
   imagenesDe,
-  fichasDe,
-  fichasIndex,
   productosDeCategoria,
   type Producto,
 } from '../data/catalogo';
@@ -23,10 +21,6 @@ import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 /**
  * Ficha de producto. La lista de direcciones la declara cada página de
  * entrada; aquí llega el producto en castellano y esta plantilla lo traduce.
- *
- * Las fichas técnicas en PDF son las que emite el fabricante, redactadas en
- * castellano. La versión en inglés lo advierte junto a la descarga en lugar
- * de dar a entender que existe una traducción.
  */
 interface Props {
   lang?: Idioma;
@@ -41,7 +35,6 @@ const p = productoEn(origen, lang);
 const cat = categoriaEn(categoriaPorSlug.get(origen.categoria)!, lang);
 const marca = marcaPorSlug.get(origen.marca);
 const imgs = imagenesDe(origen.slug);
-const fichas = fichasDe(origen.slug);
 const relacionados = productosDeCategoria(origen.categoria)
   .filter((o) => o.slug !== origen.slug)
   .slice(0, 4);
@@ -51,20 +44,12 @@ const enlaceFicha = site.url + via(lang, 'producto', origen.slug);
 const T = {
   es: {
     catalogo: 'Catálogo',
-    fichasBoton: (n: number) => (n === 1 ? 'Ficha técnica' : `Fichas técnicas (${n})`),
     prefiereCorreo: '¿Prefiere el correo?',
     correoEnlace: 'Escríbanos con este producto precargado',
     caracteristicas: 'Características técnicas',
     aplicaciones: 'Aplicaciones',
     presentaciones: 'Presentaciones disponibles',
     presentacionesPie: 'Indíquenos cuál necesita al pedir su cotización.',
-    ficha: 'Ficha',
-    descargarFicha: (c: string) => `Descargar la ficha técnica de ${c}`,
-    documentacion: 'Documentación',
-    fichasTitulo: 'Fichas técnicas descargables',
-    fichasTexto:
-      'Documentación oficial del fabricante en PDF, lista para adjuntar a un ' +
-      'requerimiento interno o a un expediente de licitación.',
     tambienEn: (c: string) => `También en ${c.toLowerCase()}`,
     verLinea: 'Ver la línea completa',
     cta: (n: string) => `¿Necesita cotizar ${n}?`,
@@ -82,21 +67,12 @@ const T = {
   },
   en: {
     catalogo: 'Catalogue',
-    fichasBoton: (n: number) => (n === 1 ? 'Datasheet' : `Datasheets (${n})`),
     prefiereCorreo: 'Prefer email?',
     correoEnlace: 'Write to us with this product already filled in',
     caracteristicas: 'Technical features',
     aplicaciones: 'Applications',
     presentaciones: 'Available presentations',
     presentacionesPie: 'Tell us which one you need when you request your quotation.',
-    ficha: 'Sheet',
-    descargarFicha: (c: string) => `Download the datasheet for ${c}`,
-    documentacion: 'Documentation',
-    fichasTitulo: 'Downloadable datasheets',
-    fichasTexto:
-      'Official manufacturer documentation in PDF, ready to attach to an ' +
-      'internal requisition or a tender file. These documents are issued by ' +
-      'the manufacturer in Spanish.',
     tambienEn: (c: string) => `More in ${c.toLowerCase()}`,
     verLinea: 'See the whole line',
     cta: (n: string) => `Do you need a quotation for ${n}?`,
@@ -219,12 +195,6 @@ const schema = [
           <a href={`${via(lang, 'contacto')}?producto=${origen.slug}#cotizar`} class="pill pill-tinta">
             {t.cotizar}<Icon name="flecha" size={16} />
           </a>
-          {fichas.length > 0 && (
-            <a href="#fichas" class="pill pill-linea">
-              <Icon name="descarga" size={16} />
-              {T.fichasBoton(fichas.length)}
-            </a>
-          )}
         </div>
 
         <p class="mt-4 text-[0.8rem] text-[var(--color-tinta-45)]">
@@ -278,20 +248,10 @@ const schema = [
           <ul class="presentaciones mt-7">
             {p.variantes.map((v) => {
               const pres = presentacionDe(v);
-              const doc = v.ficha ? fichasIndex[v.ficha] : undefined;
               return (
                 <li class="presentaciones__fila">
-                  <span class="presentaciones__texto">
-                    <span class="presentaciones__titulo">{pres.titulo}</span>
-                    {pres.nota && <span class="presentaciones__nota">{pres.nota}</span>}
-                  </span>
-                  {doc && (
-                    <a href={doc.archivo} download class="presentaciones__ficha"
-                      aria-label={T.descargarFicha(pres.titulo)}>
-                      <Icon name="descarga" size={15} />
-                      <span>{t.fichaTecnica}</span>
-                    </a>
-                  )}
+                  <span class="presentaciones__titulo">{pres.titulo}</span>
+                  {pres.nota && <span class="presentaciones__nota">{pres.nota}</span>}
                 </li>
               );
             })}
@@ -300,32 +260,6 @@ const schema = [
       )}
     </div>
   </section>
-
-  <!-- ── Fichas técnicas ─────────────────────────────────────────────── -->
-  {fichas.length > 0 && (
-    <section id="fichas" class="aire scroll-mt-24 bg-[var(--color-papel)]">
-      <div class="caja">
-        <p class="ante ante-brand">{T.documentacion}</p>
-        <h2 class="display-md mt-4 max-w-[20ch]">{T.fichasTitulo}</h2>
-        <p class="cuerpo mt-5 max-w-2xl">{T.fichasTexto}</p>
-
-        <ul class="fichas" data-anim-grupo="50">
-          {fichas.map((f) => (
-            <li data-anim="sube">
-              <a href={f.archivo} download class="ficha-item">
-                <span class="ficha-item__ic"><Icon name="documento" size={19} /></span>
-                <span class="min-w-0 flex-1">
-                  <span class="block text-[0.93rem] leading-snug">{f.titulo}</span>
-                  <span class="mt-1 block text-[0.75rem] text-[var(--color-tinta-45)]">PDF · {f.peso} KB</span>
-                </span>
-                <Icon name="descarga" size={17} class="shrink-0 opacity-40" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )}
 
   <!-- ── Relacionados ────────────────────────────────────────────────── -->
   {relacionados.length > 0 && (
@@ -471,17 +405,11 @@ const schema = [
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5rem 1.25rem;
+    /* Sin enlace de descarga ya no hay tercer elemento: la nota acompaña al
+       rótulo en vez de irse al filo opuesto. */
+    gap: 0.35rem 0.9rem;
     padding-block: 1rem;
     border-bottom: 1px solid var(--color-linea);
-  }
-  .presentaciones__texto {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.35rem 0.85rem;
-    min-width: 0;
   }
   .presentaciones__titulo {
     font-family: var(--font-display-texto);
@@ -495,48 +423,8 @@ const schema = [
     line-height: 1.5;
     color: var(--color-tinta-70);
   }
-  .presentaciones__ficha {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    flex: none;
-    font-size: 0.82rem;
-    color: var(--color-brand-700);
-    transition: gap 0.3s var(--ease-salida);
-  }
-  .presentaciones__ficha:hover { gap: 0.65rem; text-decoration: underline; text-underline-offset: 3px; }
 
   /* ── Fichas ───────────────────────────────────────────────────────── */
-  .fichas { display: grid; gap: 0.7rem; margin-top: 2.5rem; }
-  @media (min-width: 768px) { .fichas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .ficha-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 100%;
-    padding: 1.1rem 1.25rem;
-    background: #fff;
-    border: 1px solid var(--color-linea);
-    border-radius: var(--r-md);
-    transition: border-color 0.3s, transform 0.4s var(--ease-salida);
-  }
-  .ficha-item:hover { border-color: var(--color-brand-300); transform: translateY(-2px); }
-  .ficha-item__ic {
-    display: grid;
-    place-items: center;
-    width: 2.6rem;
-    height: 2.6rem;
-    flex: none;
-    border-radius: 999px;
-    border: 1px solid var(--color-linea);
-    color: var(--color-brand-700);
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-  }
-  .ficha-item:hover .ficha-item__ic {
-    background: var(--color-brand-700);
-    border-color: var(--color-brand-700);
-    color: #fff;
-  }
 
   .rejilla-rel { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 2.5rem 1.75rem; }
   @media (min-width: 640px) { .rejilla-rel { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
