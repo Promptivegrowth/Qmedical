@@ -17,7 +17,7 @@ const { lang = 'es' } = Astro.props;
 
 const FOTOS = [
   { src: 'almacen-racks-1', ancho: true },
-  { src: 'almacen-nave-1' },
+  { src: 'almacen-pasillo-3' },
   { src: 'almacen-venezuela-3' },
   { src: 'almacen-venezuela-1' },
   { src: 'almacen-venezuela-2' },
@@ -73,7 +73,7 @@ const T = {
     ],
     fotos: [
       'Racks del almacén central de Q-MEDICAL, con producto rotulado por lote',
-      'Nave de racks selectivos con pallets identificados',
+      'Pasillo entre racks, con producto rotulado por lote',
       'Carga paletizada en el almacén de la avenida Venezuela',
       'Zona de acopio con producto paletizado y señalización de piso',
       'Pasillo entre pallets en el almacén de la avenida Venezuela',
@@ -129,7 +129,7 @@ const T = {
     ],
     fotos: [
       'Racking at the Q-MEDICAL central warehouse, with product labelled by batch',
-      'Selective racking with identified pallets',
+      'Aisle between racking, with product labelled by batch',
       'Palletised load at the Avenida Venezuela warehouse',
       'Collection area with palletised product and floor markings',
       'Aisle between pallets at the Avenida Venezuela warehouse',
@@ -140,7 +140,9 @@ const T = {
   },
 }[lang];
 
-const galeria = FOTOS.map((f, i) => ({ ...f, alt: T.fotos[i] }));
+// La segunda comparte fila con la ancha, y es la que se estira hasta su
+// alto: sin eso la fila quedaba coja por abajo.
+const galeria = FOTOS.map((f, i) => ({ ...f, alt: T.fotos[i], acompana: i === 1 }));
 
 // Misión, visión y filosofía comparten el orden en los dos idiomas.
 const principios = valores.map((v, i) =>
@@ -162,7 +164,7 @@ const principios = valores.map((v, i) =>
     titulo={T.titulo}
     texto={T.bajada}
     migas={[{ nombre: T.miga }]}
-    foto="/img/fotos/almacen-pasillo-3-1600.webp"
+    foto="/img/fotos/almacen-pasillo-2-1600.webp"
     dato={{ valor: String(site.anios), etiqueta: T.dato }}
   />
 
@@ -232,7 +234,14 @@ const principios = valores.map((v, i) =>
 
       <div class="galeria" data-anim-grupo="60">
         {galeria.map((g) => (
-          <figure class:list={['lamina galeria__pieza', g.ancho && 'galeria__pieza--ancha']} data-anim="cortina">
+          <figure
+            class:list={[
+              'lamina galeria__pieza',
+              g.ancho && 'galeria__pieza--ancha',
+              g.acompana && 'galeria__pieza--acompana',
+            ]}
+            data-anim="cortina"
+          >
             <img
               src={`/img/fotos/${g.src}-1000.webp`}
               srcset={`/img/fotos/${g.src}-640.webp 640w, /img/fotos/${g.src}-1000.webp 1000w, /img/fotos/${g.src}-1600.webp 1600w`}
@@ -333,5 +342,13 @@ const principios = valores.map((v, i) =>
   .galeria__pieza { aspect-ratio: 4 / 3; }
   .galeria__pieza::after { display: none; }
   .galeria__pieza--ancha { grid-column: span 2; aspect-ratio: 16 / 9; }
+
+  /* La ancha va a 16:9 y las demás a 4:3, así que en la primera fila no
+     llegaban al mismo alto y quedaba un hueco debajo de la de la derecha.
+     Esa suelta su proporción y se estira hasta el alto que marca la ancha;
+     la imagen recorta, que para eso lleva object-fit. */
+  @media (min-width: 768px) {
+    .galeria__pieza--acompana { aspect-ratio: auto; height: 100%; }
+  }
 
 </style>
