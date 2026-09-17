@@ -30,13 +30,17 @@ const { lang = 'es' } = Astro.props;
 const T = {
   es: {
     eyebrow: 'Marcas asociadas',
-    titulo: 'Las marcas que elegimos para las instituciones que no pueden fallar',
+    titulo:
+      'Aliados con las mejores marcas líderes en salud a nivel mundial: ' +
+      'excelencia que cuida vidas.',
     cta: (n: number) => `Conocer las ${n} marcas`,
     lista: 'Marcas asociadas a Q-MEDICAL',
   },
   en: {
     eyebrow: 'Partner brands',
-    titulo: 'The brands we choose for the institutions that cannot fail',
+    titulo:
+      'Partnered with the world’s leading healthcare brands: excellence that ' +
+      'cares for lives.',
     cta: (n: number) => `Meet the ${n} brands`,
     lista: 'Brands partnered with Q-MEDICAL',
   },
@@ -281,11 +285,11 @@ const orbes = marcas.map((m, i) => {
   }
 
   .constelacion__titulo {
-    max-width: 13ch;
+    max-width: 18ch;
     margin: 1rem auto 0;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(2.4rem, 8.6vw, 8.6rem);
+    font-size: clamp(1.7rem, 6.3vw, 5.9rem);
     line-height: 0.9;
     letter-spacing: -0.03em;
     text-wrap: balance;
@@ -325,13 +329,13 @@ const orbes = marcas.map((m, i) => {
   /* ── Adaptaciones ───────────────────────────────────────────────────── */
   @media (max-width: 1023px) {
     .constelacion { --rx: 44vw; --ry: 32vh; --cy: 55%; --k: 0.74; }
-    .constelacion__titulo { max-width: 12ch; }
+    .constelacion__titulo { max-width: 17ch; }
   }
   @media (max-width: 767px) {
     .constelacion { --rx: 46vw; --ry: 29vh; --cy: 56%; --k: 0.54; --dur: 40s; }
     .constelacion__titulo {
-      max-width: 13ch;
-      font-size: clamp(1.95rem, 10.2vw, 4.2rem);
+      max-width: 17ch;
+      font-size: clamp(1.55rem, 8.6vw, 3.6rem);
     }
   }
   @media (max-width: 419px) {
