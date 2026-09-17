@@ -24,10 +24,10 @@ export const site = {
       return `${this.calle}, ${this.distrito}, ${this.ciudad} — ${this.pais}`;
     },
   },
-  telefonos: [
-    { etiqueta: '(01) 424-7290', href: 'tel:+5114247290' },
-    { etiqueta: '(01) 433-4197', href: 'tel:+5114334197' },
-  ],
+  /* Se publica un solo numero. Sigue siendo una lista porque el pie, la
+     pagina de contacto y la hoja de reclamacion la recorren, y porque anadir
+     otro manana no deberia obligar a tocar ninguna plantilla. */
+  telefonos: [{ etiqueta: '(01) 424-7290', href: 'tel:+5114247290' }],
   whatsapp: {
     numero: '+51 977 814 006',
     href: 'https://wa.me/51977814006',
