@@ -2,11 +2,19 @@
 """
 Optimiza y redimensiona los archivos originales de Q-MEDICAL hacia public/img.
 
-Los originales (PNG de 4167x4167 px, ~430 MB en total, y RAW .RW2 de ~360 MB)
-NO se versionan en el repositorio: solo su version optimizada en WebP.
+Los originales (PNG de 4167x4167 px, ~430 MB en total, RAW .RW2 de ~360 MB y
+las fotos retocadas, ~66 MB) NO se versionan en el repositorio: solo su
+version optimizada en WebP.
 
 Uso:  python scripts/optimize_images.py [ruta a la carpeta "Q-MEDICAL - Web"]
 Requiere: pip install pillow
+
+OJO con el orden: este guion vacia public/img entero antes de regenerarlo, y
+el poster de la portada no sale de aqui sino del video. Despues de ejecutarlo
+hay que volver a generarlo:
+
+    python scripts/optimize_images.py
+    python scripts/poster_video.py
 """
 import io
 import json
@@ -28,6 +36,7 @@ OUT = os.path.join(ROOT, "public", "img")
 P = os.path.join
 CAT = P(SRC, "Fotos catálogo")
 FOT = P(SRC, "Fotos")
+RETOCADAS = P(SRC, "fotos retocadas", "Editadas")
 LOGOS = P(SRC, "Logos marcas asociadas")
 QLOGO = P(SRC, "Logo Q-Medical")
 
@@ -266,13 +275,39 @@ PRODUCTS = {
     ],
 }
 
-# fotos de instalaciones: previews JPEG embebidos en los RAW .RW2
-ALMACEN = ["P1360310", "P1360322", "P1360352", "P1360328", "P1360349",
-           "P1360266", "P1360288", "P1360232"]
+# Fotos de instalaciones. Son las retocadas que entrego la empresa y sustituyen
+# por completo a la primera tanda, que salia de los RAW .RW2 sin retocar.
+#
+# El nombre publicado describe el plano, no el numero de archivo de la camara:
+# asi se sabe que es cada foto sin abrirla, y cambiar el original manana no
+# obliga a renombrar nada en las plantillas.
+INSTALACIONES = [
+    # Pasillos de racks. Son los planos con mas profundidad, los que aguantan
+    # un texto encima y un velo oscuro.
+    ("Almacén (2).jpg", "almacen-pasillo-1"),
+    ("Almacén (3).jpg", "almacen-pasillo-2"),
+    ("Almacén (1).jpg", "almacen-pasillo-3"),
+    # Racks de cerca, sin punto de fuga.
+    ("Almacén (4).png", "almacen-racks-1"),
+    ("Almacén (5).jpg", "almacen-racks-2"),
+    # Nave, reveladas de los RAW retocados.
+    ("P1360298.dng", "almacen-nave-1"),
+    ("P1360323.dng", "almacen-nave-2"),
+    # El almacen de la avenida Venezuela: carga paletizada, no racks.
+    ("Almacén Venezuela (1).jpg", "almacen-venezuela-1"),
+    ("Almacén Venezuela (2).jpg", "almacen-venezuela-2"),
+    ("Almacén Venezuela (3).jpg", "almacen-venezuela-3"),
+    # El unico plano con figura humana.
+    ("Foto operario almacen.png", "operario-almacen"),
+]
 
 
-def extract_rw2_preview(path):
-    """Extrae el JPEG de mayor resolucion embebido en un RAW Panasonic .RW2."""
+def preview_raw(path):
+    """Extrae el JPEG de mayor resolucion embebido en un RAW.
+
+    Sirve igual para los .RW2 de Panasonic que para los .dng revelados: los
+    dos guardan dentro una vista previa JPEG a tamano util, y asi no hace
+    falta un revelador RAW para publicar la foto."""
     data = open(path, "rb").read()
     best = None
     i = 0
@@ -318,29 +353,22 @@ def main():
         print("  %-34s %d imagen(es)" % (slug, len(rels)))
 
     print("== Instalaciones ==")
-    for name in ALMACEN:
-        src = P(FOT, name + ".RW2")
+    for archivo, key in INSTALACIONES:
+        src = P(RETOCADAS, archivo)
         if not os.path.exists(src):
             print("  !! FALTA %s" % src)
             continue
         total_in += os.path.getsize(src)
-        im = extract_rw2_preview(src)
-        if im is None:
-            print("  !! sin preview %s" % name)
+        entrada = preview_raw(src) if archivo.lower().endswith(".dng") else src
+        if entrada is None:
+            print("  !! sin vista previa dentro de %s" % archivo)
             continue
-        key = "almacen-" + name.lower()
-        rels = emit_photo(im, key)
-        total_out += sum(os.path.getsize(P(OUT, r)) for r in rels)
+        rels = emit_photo(entrada, key)
+        peso = sum(os.path.getsize(P(OUT, r)) for r in rels)
+        total_out += peso
         manifest["fotos"][key] = rels[0]
-        print("  %s" % key)
-
-    src = P(FOT, "Foto operario almacen.png")
-    if os.path.exists(src):
-        total_in += os.path.getsize(src)
-        rels = emit_photo(src, "equipo-almacen")
-        total_out += sum(os.path.getsize(P(OUT, r)) for r in rels)
-        manifest["fotos"]["equipo-almacen"] = rels[0]
-        print("  equipo-almacen")
+        print("  %-22s <- %-34s %6.1f KB -> %5.1f KB"
+              % (key, archivo, os.path.getsize(src) / 1024, peso / 1024))
 
     print("== Marcas ==")
     for f in sorted(os.listdir(LOGOS)):

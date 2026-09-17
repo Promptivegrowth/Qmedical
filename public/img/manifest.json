@@ -140,15 +140,17 @@
   ]
  },
  "fotos": {
-  "almacen-p1360310": "fotos/almacen-p1360310-1600.webp",
-  "almacen-p1360322": "fotos/almacen-p1360322-1600.webp",
-  "almacen-p1360352": "fotos/almacen-p1360352-1600.webp",
-  "almacen-p1360328": "fotos/almacen-p1360328-1600.webp",
-  "almacen-p1360349": "fotos/almacen-p1360349-1600.webp",
-  "almacen-p1360266": "fotos/almacen-p1360266-1600.webp",
-  "almacen-p1360288": "fotos/almacen-p1360288-1600.webp",
-  "almacen-p1360232": "fotos/almacen-p1360232-1600.webp",
-  "equipo-almacen": "fotos/equipo-almacen-1600.webp"
+  "almacen-pasillo-1": "fotos/almacen-pasillo-1-1600.webp",
+  "almacen-pasillo-2": "fotos/almacen-pasillo-2-1600.webp",
+  "almacen-pasillo-3": "fotos/almacen-pasillo-3-1600.webp",
+  "almacen-racks-1": "fotos/almacen-racks-1-1600.webp",
+  "almacen-racks-2": "fotos/almacen-racks-2-1600.webp",
+  "almacen-nave-1": "fotos/almacen-nave-1-1600.webp",
+  "almacen-nave-2": "fotos/almacen-nave-2-1600.webp",
+  "almacen-venezuela-1": "fotos/almacen-venezuela-1-1600.webp",
+  "almacen-venezuela-2": "fotos/almacen-venezuela-2-1600.webp",
+  "almacen-venezuela-3": "fotos/almacen-venezuela-3-1600.webp",
+  "operario-almacen": "fotos/operario-almacen-1600.webp"
  },
  "marcas": {
   "alleva-medical": "marcas/alleva-medical.webp",

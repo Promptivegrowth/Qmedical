@@ -16,11 +16,11 @@ interface Props {
 const { lang = 'es' } = Astro.props;
 
 const FOTOS = [
-  { src: 'almacen-p1360322', ancho: true },
-  { src: 'almacen-p1360352' },
-  { src: 'almacen-p1360349' },
-  { src: 'almacen-p1360288' },
-  { src: 'almacen-p1360328' },
+  { src: 'almacen-racks-1', ancho: true },
+  { src: 'almacen-nave-1' },
+  { src: 'almacen-venezuela-3' },
+  { src: 'almacen-venezuela-1' },
+  { src: 'almacen-venezuela-2' },
 ];
 
 const T = {
@@ -72,11 +72,11 @@ const T = {
       { t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
     ],
     fotos: [
-      'Pasillo principal de racks del almacén central de Q-MEDICAL',
-      'Racks selectivos con productos identificados y rotulados',
-      'Zona de acopio con productos paletizados y señalización de piso',
-      'Estanterías con cajas de producto terminado ordenadas por lote',
-      'Vista del almacén hacia la zona de despacho',
+      'Racks del almacén central de Q-MEDICAL, con producto rotulado por lote',
+      'Nave de racks selectivos con pallets identificados',
+      'Carga paletizada en el almacén de la avenida Venezuela',
+      'Zona de acopio con producto paletizado y señalización de piso',
+      'Pasillo entre pallets en el almacén de la avenida Venezuela',
     ],
     certifAnte: 'Certificaciones y acreditaciones',
     certifTitulo: 'Estándares que se auditan, no que se declaran',
@@ -128,11 +128,11 @@ const T = {
       { t: 'Traceability', d: 'Records that trace any unit from receipt through to dispatch.' },
     ],
     fotos: [
-      'Main racking aisle of the Q-MEDICAL central warehouse',
-      'Selective racking with identified and labelled products',
-      'Collection area with palletised products and floor markings',
-      'Shelving with boxes of finished product arranged by batch',
-      'View of the warehouse towards the dispatch area',
+      'Racking at the Q-MEDICAL central warehouse, with product labelled by batch',
+      'Selective racking with identified pallets',
+      'Palletised load at the Avenida Venezuela warehouse',
+      'Collection area with palletised product and floor markings',
+      'Aisle between pallets at the Avenida Venezuela warehouse',
     ],
     certifAnte: 'Certifications and accreditations',
     certifTitulo: 'Standards that are audited, not merely declared',
@@ -154,7 +154,7 @@ const principios = valores.map((v, i) =>
   clave="nosotros"
   title={T.meta}
   description={T.metaDesc}
-  image="/img/fotos/equipo-almacen-1600.webp"
+  image="/img/fotos/operario-almacen-1600.webp"
 >
   <Portada
     lang={lang}
@@ -162,7 +162,7 @@ const principios = valores.map((v, i) =>
     titulo={T.titulo}
     texto={T.bajada}
     migas={[{ nombre: T.miga }]}
-    foto="/img/fotos/almacen-p1360352-1600.webp"
+    foto="/img/fotos/almacen-pasillo-3-1600.webp"
     dato={{ valor: String(site.anios), etiqueta: T.dato }}
   />
 

@@ -53,10 +53,10 @@ const T = {
     catalogoTitulo: 'Piezas que definen la línea',
     losProductos: (n: number) => `Los ${n} productos`,
     fotos: [
-      'Pasillo principal del almacén central de Q-MEDICAL',
-      'Operario de Q-MEDICAL verificando existencias',
-      'Estanterías con producto rotulado por lote',
-      'Racks selectivos del almacén',
+      'Pasillo de racks del almacén central de Q-MEDICAL',
+      'Operario de Q-MEDICAL trasladando producto con transpaleta',
+      'Racks con cajas rotuladas y pallets identificados',
+      'Estantería con producto ordenado por lote',
     ],
   },
   en: {
@@ -89,23 +89,23 @@ const T = {
     catalogoTitulo: 'The pieces that define the line',
     losProductos: (n: number) => `All ${n} products`,
     fotos: [
-      'Main aisle of the Q-MEDICAL central warehouse',
-      'A Q-MEDICAL operator checking stock',
-      'Shelving with product labelled by batch',
-      'Selective racking in the warehouse',
+      'Racking aisle of the Q-MEDICAL central warehouse',
+      'A Q-MEDICAL operator moving product with a pallet truck',
+      'Racking with labelled boxes and identified pallets',
+      'Shelving with product arranged by batch',
     ],
   },
 }[lang];
 
 // Las cuatro fotografias del bloque del compromiso. El archivo es el mismo
 // en los dos idiomas; el pie viene de la tabla de textos.
-// almacen-p1360310 no esta aqui a proposito: es la que abre la seccion de
+// almacen-pasillo-1 no esta aqui a proposito: es la que abre la banda de
 // cierre del pie, y repetirla restaria a las dos.
 const ARCHIVOS_FOTOS = [
-  'almacen-p1360322',
-  'equipo-almacen',
-  'almacen-p1360266',
-  'almacen-p1360352',
+  'almacen-pasillo-2',
+  'operario-almacen',
+  'almacen-nave-2',
+  'almacen-racks-2',
 ];
 const galeria = ARCHIVOS_FOTOS.map((src, i) => ({ src, alt: T.fotos[i] }));
 
