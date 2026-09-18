@@ -296,7 +296,9 @@ INSTALACIONES = [
     # El almacen de la avenida Venezuela: carga paletizada, no racks.
     ("Almacén Venezuela (1).jpg", "almacen-venezuela-1"),
     ("Almacén Venezuela (2).jpg", "almacen-venezuela-2"),
-    ("Almacén Venezuela (3).jpg", "almacen-venezuela-3"),
+    # La empresa pidio quitar el cartel de salida que asomaba en la pared:
+    # se usa la version retocada, no la original, que sigue en la carpeta.
+    ("Almacén Venezuela (3) - sin señalética.jpg", "almacen-venezuela-3"),
     # El unico plano con figura humana.
     ("Foto operario almacen.png", "operario-almacen"),
 ]

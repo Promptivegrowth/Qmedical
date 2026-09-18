@@ -78,7 +78,10 @@ const rotuloEnlace = aTexto ?? T.ver;
     <div class="respaldo__alto" data-anim-grupo="90">
       <div>
         <p class:list={['ante', claro ? 'ante-brand' : 'ante-claro']} data-anim="sube">{rotuloAnte}</p>
-        <h2 class="display-lg mt-5 max-w-[17ch]" data-anim="sube">{rotuloTitulo}</h2>
+        <!-- 22 caracteres por linea: el titular de /nosotros es una frase
+             larga y con 17 se iba a seis lineas, en una columna estrecha
+             que se leia como una torre. -->
+        <h2 class="display-lg mt-5 max-w-[22ch]" data-anim="sube">{rotuloTitulo}</h2>
       </div>
       <div class="respaldo__nota" data-anim="sube">
         <p>{T.nota}</p>
