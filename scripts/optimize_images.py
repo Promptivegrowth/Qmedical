@@ -296,9 +296,14 @@ INSTALACIONES = [
     # El almacen de la avenida Venezuela: carga paletizada, no racks.
     ("Almacén Venezuela (1).jpg", "almacen-venezuela-1"),
     ("Almacén Venezuela (2).jpg", "almacen-venezuela-2"),
-    # La empresa pidio quitar el cartel de salida que asomaba en la pared:
-    # se usa la version retocada, no la original, que sigue en la carpeta.
-    ("Almacén Venezuela (3) - sin señalética.jpg", "almacen-venezuela-3"),
+    # La empresa pidio quitar el cartel de salida que asomaba en la pared: se
+    # usa la version retocada, no la original, que sigue en la carpeta.
+    #
+    # El nombre publicado NO puede ser el de la foto anterior. Todo /img/ se
+    # sirve con Cache-Control immutable a un ano, de modo que cambiar el
+    # contenido de una URL ya visitada no llega a quien ya la tiene: hay que
+    # cambiar la URL. De ahi el sufijo.
+    ("Almacén Venezuela (3) - sin señalética.jpg", "almacen-venezuela-3-limpia"),
     # El unico plano con figura humana.
     ("Foto operario almacen.png", "operario-almacen"),
 ]
