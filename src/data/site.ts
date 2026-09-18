@@ -118,7 +118,7 @@ export const navegacion = [
 export const certificaciones = [
   {
     sigla: 'BPA',
-    icono: 'certificado',
+    icono: 'acreditacion',
     nombre: 'Buenas Prácticas de Almacenamiento',
     emisor: 'DIGEMID — Ministerio de Salud del Perú',
     detalle:
@@ -128,7 +128,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 37001',
-    icono: 'escudo',
+    icono: 'balanza',
     nombre: 'Sistema de gestión antisoborno',
     emisor: 'Norma internacional ISO',
     detalle:
@@ -137,7 +137,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 14001',
-    icono: 'hoja',
+    icono: 'hoja-ambiental',
     nombre: 'Sistema de gestión ambiental',
     emisor: 'Norma internacional ISO',
     detalle:
@@ -148,6 +148,7 @@ export const certificaciones = [
 
 export const valores = [
   {
+    icono: 'brujula',
     titulo: 'Misión',
     texto:
       'Fortalecemos el sistema de salud del Perú suministrando dispositivos ' +
@@ -155,6 +156,7 @@ export const valores = [
       'competitivos, atención oportuna y respaldo técnico especializado.',
   },
   {
+    icono: 'horizonte',
     titulo: 'Visión',
     texto:
       'Ser el aliado estratégico de referencia de las instituciones de salud del ' +
@@ -163,6 +165,7 @@ export const valores = [
       'nuestro compromiso con el sector salud.',
   },
   {
+    icono: 'compromiso',
     titulo: 'Filosofía',
     texto:
       'El compromiso es de nosotros: cada entrega sostiene el trabajo de un ' +

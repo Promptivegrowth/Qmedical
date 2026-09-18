@@ -13,3 +13,8 @@ sitio usa se copian a src/icons/ con nombre semantico mediante
 
 y se incrustan en la compilacion. El sitio publicado no descarga nada de
 terceros por este concepto.
+
+Los seis iconos de PROPIOS (acreditacion, balanza, hoja-ambiental, brujula,
+horizonte, compromiso) NO son de Tabler: estan dibujados para este sitio
+sobre la misma reticula de 24 y con el mismo grosor de trazo, para que
+convivan con los demas sin desentonar.

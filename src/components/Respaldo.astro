@@ -7,20 +7,21 @@ import { certificacionesEn } from '../i18n/contenido';
 /**
  * Respaldo documental: las acreditaciones de la empresa.
  *
- * Antes eran tres columnas separadas por filetes finos: información correcta,
- * pero sin peso. Un comité de compras que llega aquí está comprobando si el
- * proveedor es homologable, así que la sección tiene que sostener eso.
+ * Un comité de compras que llega aquí está comprobando si el proveedor es
+ * homologable, así que cada acreditación es una placa con superficie propia
+ * —fondo, borde, grano y un filo de luz— y es un enlace de verdad: se puede
+ * pulsar, tabular y responde al foco, no solo al ratón.
  *
- * Ahora cada acreditación es una placa con superficie propia —fondo, borde y
- * un filo superior de luz— y es un enlace de verdad a la página de la
- * empresa: se puede pulsar, se puede tabular y responde al foco, no solo al
- * ratón. El sello se dibuja trazo a trazo al entrar en pantalla y la sigla
- * queda además de fondo, en marca de agua, como en un diploma.
+ * Las placas tienen relieve. Llegan giradas y se asientan, con un barrido de
+ * luz encima, y después siguen al puntero inclinándose; el contenido vive en
+ * planos a distinta altura, así que al girar se despega del fondo. Eso obliga
+ * a que ningún antepasado aplane el espacio: `overflow: hidden` sobre la placa
+ * anularía `transform-style: preserve-3d`. Por eso el recorte vive en una capa
+ * aparte, .placa__fx, que se recorta a sí misma y deja el relieve intacto.
  *
- * El brillo que sigue al puntero es el único añadido con JavaScript. Solo se
- * activa en equipos con ratón, solo mientras el puntero está encima de una
- * placa, y escribe dos variables CSS dentro de un requestAnimationFrame: no
- * toca el layout ni corre cuando nadie lo mira.
+ * Todo lo que se mueve es transform u opacity —trabajo de compositor, sin
+ * layout ni repintado— y los recorridos de luz de los cantos se detienen
+ * cuando la sección no está en pantalla.
  */
 interface Props {
   lang?: Idioma;
@@ -71,7 +72,7 @@ const rotuloTitulo = titulo ?? T.titulo;
 const rotuloEnlace = aTexto ?? T.ver;
 ---
 
-<section id={id} class:list={['respaldo', claro && 'es-clara']}>
+<section id={id} class:list={['respaldo', claro && 'es-clara']} data-respaldo>
   <div class="respaldo__trama trama" aria-hidden="true"></div>
 
   <div class="caja relative">
@@ -91,17 +92,29 @@ const rotuloEnlace = aTexto ?? T.ver;
       </div>
     </div>
 
-    <ol class="respaldo__placas" data-anim-grupo="130">
-      {avales.map((c) => (
-        <li data-anim="sube">
+    <ol class="respaldo__placas" data-anim-grupo="150">
+      {avales.map((c, i) => (
+        // Sin valor en data-anim: la entrada del li es solo el fundido, y
+        // todo el movimiento lo pone la propia placa al asentarse. Con las
+        // dos cosas a la vez el conjunto se leia blando.
+        <li data-anim style={`--filo-espera:${(i * 1.9).toFixed(1)}s`}>
           <a href={destino} class="placa" data-placa>
-            <span class="placa__brillo" aria-hidden="true"></span>
-            <span class="placa__marca" aria-hidden="true">{c.sigla}</span>
+            {/* Capa de efectos: se recorta a si misma, nunca al contenido.
+                Si el recorte viviera en la placa, aplanaria el relieve. */}
+            <span class="placa__fx" aria-hidden="true">
+              <span class="placa__grano"></span>
+              <span class="placa__marca">{c.sigla}</span>
+              <span class="placa__canto placa__canto--sup"></span>
+              <span class="placa__canto placa__canto--izq"></span>
+              <span class="placa__brillo"></span>
+              <span class="placa__barrido"></span>
+            </span>
 
             <span class="placa__alto">
               <span class="folio placa__folio">{c.n}</span>
               <span class="placa__sello">
-                <Icon name={c.icono} size={26} stroke={1.2} anim />
+                <span class="placa__sello-halo" aria-hidden="true"></span>
+                <Icon name={c.icono} size={26} stroke={1.3} anim />
               </span>
             </span>
 
@@ -133,12 +146,15 @@ const rotuloEnlace = aTexto ?? T.ver;
     padding-block: 5rem;
     background: var(--color-brand-700);
     color: #fff;
+    /* Color del filo que recorre los cantos, y del halo del sello. */
+    --filo: rgba(255, 255, 255, 0.9);
   }
   @media (min-width: 1024px) { .respaldo { padding-block: 8rem; } }
 
   .respaldo.es-clara {
     background: var(--color-papel);
     color: var(--color-tinta);
+    --filo: var(--color-brand-300);
   }
   .respaldo__trama { position: absolute; inset: 0; opacity: 0.4; }
   .respaldo.es-clara .respaldo__trama { display: none; }
@@ -184,17 +200,20 @@ const rotuloEnlace = aTexto ?? T.ver;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--medianil);
     margin-top: 3.5rem;
+    /* La perspectiva vive en la lista, no en cada placa: así las tres giran
+       hacia el mismo punto de fuga y la fila se lee como una sola escena. */
+    perspective: 1500px;
+    perspective-origin: 50% 38%;
   }
   @media (min-width: 700px) {
     .respaldo__placas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (min-width: 1024px) { .respaldo__placas { margin-top: 5rem; } }
-  .respaldo__placas > li { display: flex; }
+  .respaldo__placas > li { display: flex; transform-style: preserve-3d; }
 
   .placa {
     position: relative;
     isolation: isolate;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
@@ -205,11 +224,24 @@ const rotuloEnlace = aTexto ?? T.ver;
     background: rgba(255, 255, 255, 0.05);
     /* Filo de luz en el borde superior: el detalle que da cuerpo de placa. */
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    transition: background-color 0.45s var(--ease-editorial),
+    /* Sin overflow aquí: recortar la placa aplanaría el relieve. El recorte
+       está en .placa__fx, que se recorta a sí misma. */
+    transform-style: preserve-3d;
+    transform: translate3d(0, var(--alza, 0px), 0)
+      rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.7s var(--ease-salida),
+      background-color 0.45s var(--ease-editorial),
       border-color 0.45s var(--ease-editorial),
-      transform 0.5s var(--ease-salida);
+      box-shadow 0.45s var(--ease-editorial);
   }
   @media (min-width: 1024px) { .placa { padding: 2.25rem; } }
+
+  /* Con el puntero encima el giro lo manda el puntero, sin inercia: con la
+     transición larga la placa perseguía al cursor con retardo. */
+  .placa.esta-viva { transition: transform 0.12s linear,
+    background-color 0.45s var(--ease-editorial),
+    border-color 0.45s var(--ease-editorial),
+    box-shadow 0.45s var(--ease-editorial); }
 
   .respaldo.es-clara .placa {
     border-color: var(--color-linea);
@@ -219,25 +251,128 @@ const rotuloEnlace = aTexto ?? T.ver;
 
   .placa:hover,
   .placa:focus-visible {
+    --alza: -6px;
     background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      0 28px 55px -26px rgba(0, 0, 0, 0.65);
   }
   .respaldo.es-clara .placa:hover,
   .respaldo.es-clara .placa:focus-visible {
     background: #fff;
     border-color: var(--color-brand-300);
+    box-shadow: 0 26px 50px -28px rgba(27, 47, 122, 0.45);
   }
 
-  /* Brillo que sigue al puntero. Sin puntero encima queda en cero. */
+  /* ── Capa de efectos ──────────────────────────────────────────────── */
+  /* Capa de efectos. Ojo: aquí el recorte del contenedor no es de fiar. Con
+     la placa promovida a su propia capa de composición —lleva transform 3D y
+     una animación de entrada—, el navegador no aplicaba `overflow: hidden` ni
+     `contain: paint` a los hijos posicionados, y la marca de agua salía por
+     debajo del borde. Comprobado a mano tiñéndola de rojo.
+
+     Así que ninguna pieza de aquí dentro se apoya en este recorte: cada una
+     se queda dentro de su propia caja. Cuesta un par de líneas más y no
+     depende de cómo decida componer el navegador. */
+  .placa__fx {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* Grano de la superficie: hilos finos en diagonal, como un laminado. */
+  .placa__grano {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.045) 0 1px,
+      transparent 1px 8px
+    );
+  }
+  .respaldo.es-clara .placa__grano {
+    background-image: repeating-linear-gradient(
+      115deg,
+      rgba(27, 47, 122, 0.035) 0 1px,
+      transparent 1px 8px
+    );
+  }
+
+  /* La sigla, de nuevo y en grande, como la marca de agua de un diploma.
+     Ocupa el ancho de la placa y una franja baja, y es su propio `overflow`
+     el que corta la sigla: por arriba deja ver solo el tramo alto de las
+     letras, y por los lados y por abajo la recorta el borde redondeado. El
+     texto se sale de la caja, pero la caja no se sale de la placa. */
+  .placa__marca {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.6em;
+    overflow: hidden;
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 9vw, 7.5rem);
+    line-height: 0.84;
+    letter-spacing: -0.04em;
+    text-align: right;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.05);
+  }
+  .respaldo.es-clara .placa__marca { color: var(--color-brand-50); }
+
+  /* Filo de luz: un destello recorre el canto superior y el izquierdo, como
+     la luz al pasar por el borde de una placa grabada. Lento y tenue: tiene
+     que notarse sin llamar. Arrancan pasada la esquina redondeada, porque si
+     empezaran antes el recorte se comería el destello al entrar y parecería
+     que parpadea. */
+  .placa__canto { position: absolute; overflow: hidden; }
+  .placa__canto--sup { top: 0; left: var(--r-lg); right: 0; height: 2px; }
+  .placa__canto--izq { left: 0; top: var(--r-lg); bottom: 0; width: 2px; }
+  .placa__canto::before {
+    content: '';
+    position: absolute;
+    /* El halo sigue la forma del degradado, no la caja: por eso drop-shadow */
+    filter: drop-shadow(0 0 6px var(--filo));
+    /* Quietos mientras la sección no está en pantalla: una animación infinita
+       fuera de vista es trabajo de compositor tirado a la basura. */
+    animation-play-state: paused;
+  }
+  [data-respaldo].a-la-vista .placa__canto::before { animation-play-state: running; }
+  .placa__canto--sup::before {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 38%;
+    background: linear-gradient(90deg, transparent, var(--filo), transparent);
+    animation: placa-filo-x 7s linear var(--filo-espera, 0s) infinite;
+  }
+  .placa__canto--izq::before {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 30%;
+    background: linear-gradient(180deg, transparent, var(--filo), transparent);
+    animation: placa-filo-y 7s linear var(--filo-espera, 0s) infinite;
+  }
+  @keyframes placa-filo-x {
+    0% { transform: translateX(-105%); }
+    36%, 100% { transform: translateX(270%); }
+  }
+  @keyframes placa-filo-y {
+    0% { transform: translateY(-105%); }
+    36%, 100% { transform: translateY(340%); }
+  }
+
+  /* Reflejo que sigue al puntero. Sin puntero encima queda en cero. */
   .placa__brillo {
     position: absolute;
     inset: 0;
-    z-index: -1;
     opacity: 0;
     background: radial-gradient(
       18rem circle at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0.18),
       transparent 70%
     );
     transition: opacity 0.5s var(--ease-editorial);
@@ -251,38 +386,89 @@ const rotuloEnlace = aTexto ?? T.ver;
     );
   }
 
-  /* La sigla, de nuevo y en grande, como la marca de agua de un diploma. */
-  .placa__marca {
+  /* Barrido de luz: una sola pasada al entrar, acompañando al giro. La franja
+     no se mueve: lo que viaja es el degradado dentro de una caja que ocupa
+     exactamente la placa, así que no hay nada que recortar. */
+  .placa__barrido {
     position: absolute;
-    right: -0.35em;
-    bottom: -0.34em;
-    z-index: -1;
-    font-family: var(--font-display);
-    font-size: clamp(5rem, 9vw, 7.5rem);
-    line-height: 1;
-    letter-spacing: -0.04em;
-    white-space: nowrap;
-    color: rgba(255, 255, 255, 0.05);
-    pointer-events: none;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
   }
-  .respaldo.es-clara .placa__marca { color: var(--color-brand-50); }
+  .placa__barrido::before {
+    content: '';
+    position: absolute;
+    inset: -60% -80%;
+    background: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 62%
+    );
+    transform: translateX(-130%) rotate(8deg);
+  }
+  .respaldo.es-clara .placa__barrido::before {
+    background: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgba(27, 47, 122, 0.12) 50%,
+      transparent 62%
+    );
+  }
+  @keyframes placa-barrido {
+    from { transform: translateX(-130%) rotate(8deg); }
+    to { transform: translateX(130%) rotate(8deg); }
+  }
+
+  /* ── Entrada ──────────────────────────────────────────────────────── */
+  /* La placa llega girada y se asienta. Rellena sólo hacia atrás: al terminar
+     suelta el transform para que el giro vuelva a mandarlo el puntero. */
+  @keyframes placa-presenta {
+    0% { transform: translate3d(0, 26px, 0) scale(0.955) rotateX(10deg) rotateY(-14deg); }
+    55% { transform: translate3d(0, 0, 0) scale(1) rotateX(-2.5deg) rotateY(5deg); }
+    100% { transform: translate3d(0, 0, 0) scale(1) rotateX(0deg) rotateY(0deg); }
+  }
+  :global(.js) .respaldo__placas > li.visible .placa {
+    animation: placa-presenta 1.25s var(--ease-salida) var(--retraso, 0ms) backwards;
+  }
+  :global(.js) .respaldo__placas > li.visible .placa__barrido::before {
+    animation: placa-barrido 1.4s var(--ease-salida) calc(var(--retraso, 0ms) + 400ms) 1 both;
+  }
+
+  /* ── Planos de profundidad ────────────────────────────────────────── */
+  .placa__alto,
+  .placa__cuerpo,
+  .placa__pie { position: relative; z-index: 1; }
+  .placa__alto { transform: translateZ(26px); }
+  .placa__cuerpo { transform: translateZ(16px); }
+  .placa__pie { transform: translateZ(34px); }
 
   .placa__alto { display: flex; align-items: flex-start; justify-content: space-between; }
-  .placa__folio { color: rgba(255, 255, 255, 0.45); }
+  /* 0.58 y no menos: sobre el fondo de la placa da 4.68:1, y por debajo
+     de 0.55 este ordinal se quedaba en 3.45:1, bajo el minimo AA. */
+  .placa__folio { color: rgba(255, 255, 255, 0.58); }
   .respaldo.es-clara .placa__folio { color: var(--color-tinta-45); }
 
-  /* Sello: el icono dentro de su anillo, como el troquel de un certificado. */
+  /* Sello: el icono dentro de su anillo, como el troquel de un certificado.
+     Crece con el ancho de la placa; el icono ocupa siempre la misma fracción
+     del anillo, así que a 360 px se ve igual de proporcionado que a 1440. */
   .placa__sello {
+    position: relative;
     display: grid;
     place-items: center;
-    width: 3.4rem;
-    height: 3.4rem;
+    width: clamp(3rem, 3.4vw + 1.6rem, 4.1rem);
+    aspect-ratio: 1;
     flex: none;
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 999px;
     color: #fff;
     transition: border-color 0.45s var(--ease-editorial),
       background-color 0.45s var(--ease-editorial);
+  }
+  .placa__sello :global(svg) {
+    position: relative;
+    width: 52%;
+    height: auto;
   }
   .respaldo.es-clara .placa__sello {
     border-color: var(--color-linea-2);
@@ -295,6 +481,23 @@ const rotuloEnlace = aTexto ?? T.ver;
   .respaldo.es-clara .placa:hover .placa__sello {
     border-color: var(--color-brand-300);
     background: var(--color-brand-50);
+  }
+
+  /* Halo del sello: un anillo que se expande al pasar el puntero, para que el
+     troquel responda igual que el resto de la placa. */
+  .placa__sello-halo {
+    position: absolute;
+    inset: -1px;
+    border: 1px solid var(--filo);
+    border-radius: 999px;
+    opacity: 0;
+    transform: scale(1);
+    transition: transform 0.7s var(--ease-salida), opacity 0.7s var(--ease-salida);
+  }
+  .placa:hover .placa__sello-halo { animation: placa-halo 1.4s var(--ease-salida) infinite; }
+  @keyframes placa-halo {
+    0% { opacity: 0.55; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.5); }
   }
 
   .placa__cuerpo { display: grid; gap: 0.7rem; }
@@ -340,7 +543,8 @@ const rotuloEnlace = aTexto ?? T.ver;
     font-size: 0.66rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.38);
+    /* Mismo motivo que el ordinal: a 0.38 se quedaba en 2.90:1. */
+    color: rgba(255, 255, 255, 0.58);
   }
   .respaldo.es-clara .placa__rotulo { color: var(--color-tinta-45); }
 
@@ -366,19 +570,32 @@ const rotuloEnlace = aTexto ?? T.ver;
     transform: translateX(4px);
   }
 
+  /* Sin relieve en pantallas estrechas: una placa a todo el ancho girando
+     bajo el dedo estorba más de lo que aporta, y el giro lo manda un puntero
+     que ahí no existe. */
+  @media (max-width: 699px) {
+    .respaldo__placas { perspective: none; }
+    .placa { transform: translate3d(0, var(--alza, 0px), 0); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .placa,
     .placa__flecha { transition: none; }
-    .placa:hover { transform: none; }
+    .placa:hover { --alza: 0px; }
+    :global(.js) .respaldo__placas > li.visible .placa,
+    :global(.js) .respaldo__placas > li.visible .placa__barrido::before { animation: none; }
+    .placa__canto,
+    .placa__barrido { display: none; }
+    .placa:hover .placa__sello-halo { animation: none; }
   }
 </style>
 
 <script>
-  /* Brillo que sigue al puntero.
+  /* Relieve de las placas.
      Solo en equipos con ratón —en táctil no hay puntero que seguir y sería
      trabajo perdido—, solo mientras el puntero está sobre una placa, y con la
-     escritura agrupada en un requestAnimationFrame. Se escriben dos variables
-     CSS que alimentan un degradado: no se toca el layout. */
+     escritura agrupada en un requestAnimationFrame. Se escriben cuatro
+     variables CSS que alimentan el giro y el reflejo: no se toca el layout. */
   const finoYConHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -389,10 +606,16 @@ const rotuloEnlace = aTexto ?? T.ver;
       let pendiente = false;
       let x = 0;
       let y = 0;
+      let px = 0.5;
+      let py = 0.5;
 
       const pintar = () => {
         placa.style.setProperty('--mx', `${x}px`);
         placa.style.setProperty('--my', `${y}px`);
+        /* Giro corto a propósito: son tres placas en fila, no una tarjeta
+           sola. Pasados los 8° el texto empieza a deformarse al leerlo. */
+        placa.style.setProperty('--ry', `${((px - 0.5) * 9).toFixed(2)}deg`);
+        placa.style.setProperty('--rx', `${((0.5 - py) * 6).toFixed(2)}deg`);
         pendiente = false;
       };
 
@@ -402,12 +625,42 @@ const rotuloEnlace = aTexto ?? T.ver;
           const r = placa.getBoundingClientRect();
           x = e.clientX - r.left;
           y = e.clientY - r.top;
+          px = x / r.width;
+          py = y / r.height;
+          placa.classList.add('esta-viva');
           if (pendiente) return;
           pendiente = true;
           requestAnimationFrame(pintar);
         },
         { passive: true }
       );
+
+      /* Al salir vuelve a plano con la transición larga, que es la que da la
+         sensación de peso. */
+      placa.addEventListener('pointerleave', () => {
+        placa.classList.remove('esta-viva');
+        placa.style.setProperty('--rx', '0deg');
+        placa.style.setProperty('--ry', '0deg');
+      });
     });
+  }
+
+  /* Los recorridos de luz de los cantos solo corren con la sección en
+     pantalla. Este observador sí vigila en los dos sentidos —a diferencia del
+     de las entradas, que suelta su objetivo en cuanto aparece—, porque aquí
+     hace falta volver a pararlos al salir. */
+  if (!quieto.matches) {
+    const bandas = document.querySelectorAll<HTMLElement>('[data-respaldo]');
+    if (bandas.length && 'IntersectionObserver' in window) {
+      const ojo = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) e.target.classList.toggle('a-la-vista', e.isIntersecting);
+        },
+        { rootMargin: '120px 0px' }
+      );
+      bandas.forEach((b) => ojo.observe(b));
+    } else {
+      bandas.forEach((b) => b.classList.add('a-la-vista'));
+    }
   }
 </script>

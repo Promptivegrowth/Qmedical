@@ -438,10 +438,14 @@
   .js [data-anim='cortina'].visible > :first-child { clip-path: inset(0 0 0 0); }
   .js [data-anim='lineas'] { transform: translateY(22px); }
 
+  /* Al terminar se retira el recorte del todo. Con `inset(0)` la caja
+     seguia recortada a su propio borde, y cualquier hijo que se moviera al
+     pasar el puntero —una tarjeta que sube unos pixeles— perdia lo que
+     sobresalia. La cortina no lo necesita: recorta su primer hijo. */
   .js [data-anim].visible {
     opacity: 1;
     transform: none;
-    clip-path: inset(0 0 0 0);
+    clip-path: none;
   }
 
   /* Parallax: lo alimenta el layout con --py */
