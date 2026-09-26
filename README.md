@@ -182,25 +182,22 @@ Para añadir o cambiar un producto:
 
 ---
 
-## Formularios
+## Formularios y datos de contacto
 
-El sitio es estático, así que los formularios de cotización y del Libro de
-Reclamaciones se envían mediante [Web3Forms](https://web3forms.com) (gratuito, sin
-servidor propio, funciona igual en Vercel y en cPanel).
+Los formularios de cotización y del Libro de Reclamaciones se envían al **portal del
+Grupo Pacheco** (`public/js/portal.js`), que guarda cada registro, numera las hojas de
+reclamación, genera su PDF y envía los correos (los avisos del libro van a Dirección
+Técnica). Funciona igual en Vercel y en cPanel, sin claves ni servidor propio.
 
-**Para activarlos:**
+- La cotización lleva a la página de gracias; el libro muestra en la misma página la
+  constancia con el número de la hoja y la fecha límite de respuesta.
+- El libro pide el ubigeo del domicilio en cascada (INEI 2026, `public/data/ubigeo-peru.json`).
+- Si el portal no responde, el formulario abre el gestor de correo del visitante con el
+  mensaje ya redactado. Nunca queda un botón que no hace nada.
 
-1. Cree una clave gratuita en <https://web3forms.com> con el correo
-   `cotizaciones_licitaciones@qmedicalsac.com`.
-2. Defina la variable de entorno `PUBLIC_FORM_ACCESS_KEY` con esa clave:
-   - En Vercel: *Settings → Environment Variables*.
-   - En local o para el build de cPanel: cree un archivo `.env` con
-     `PUBLIC_FORM_ACCESS_KEY=su-clave`.
-3. Vuelva a compilar.
-
-**Mientras la clave esté vacía** los formularios siguen siendo funcionales: validan
-los campos y abren el gestor de correo del visitante con el mensaje ya redactado.
-Nunca queda un botón que no hace nada.
+Teléfono, WhatsApp, correos por área, dirección, horario y redes se editan en el portal
+y se aplican en vivo (`public/js/datos-vivos.js`). Los valores de `src/data/site.ts`
+quedan como respaldo si el portal no responde.
 
 ---
 
@@ -212,8 +209,7 @@ Vercel detecta Astro automáticamente. No hace falta configurar nada: `vercel.js
 trae las cabeceras de caché y seguridad y las redirecciones desde las URL antiguas.
 
 1. *Add New → Project* e importe el repositorio.
-2. Añada la variable `PUBLIC_FORM_ACCESS_KEY`.
-3. Apunte el dominio `qmedicalsac.com` a Vercel.
+2. Apunte el dominio `qmedicalsac.com` a Vercel.
 
 Cada `git push` a `main` publica una nueva versión.
 

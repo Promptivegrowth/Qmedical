@@ -34,15 +34,9 @@ export const site = {
   },
   correoPrincipal: 'cotizaciones_licitaciones@qmedicalsac.com',
   horario: 'Lunes a viernes, 8:00 a. m. – 6:00 p. m.',
-  /**
-   * Endpoint para el envío de formularios sin servidor propio, de modo que el
-   * sitio funcione idéntico en Vercel y en el hosting compartido de cPanel.
-   * Basta con crear una clave gratuita en https://web3forms.com y pegarla aquí
-   * (o definir PUBLIC_FORM_ACCESS_KEY en las variables de entorno).
-   * Mientras esté vacío, los formularios abren el gestor de correo del usuario.
-   */
-  formAccessKey: import.meta.env.PUBLIC_FORM_ACCESS_KEY ?? '',
-  formEndpoint: 'https://api.web3forms.com/submit',
+  // Los formularios se envían al portal del Grupo Pacheco (public/js/portal.js)
+  // y estos datos de contacto se editan allí: los de este archivo son el
+  // respaldo que se ve si el portal no responde.
 } as const;
 
 /* --------------------------------------------------------------- WhatsApp */

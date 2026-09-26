@@ -76,6 +76,8 @@ MAPA = {
     'instagram': 'brand-instagram',
     'linkedin': 'brand-linkedin',
     'youtube': 'brand-youtube',
+    'tiktok': 'brand-tiktok',
+    'x': 'brand-x',
 }
 
 

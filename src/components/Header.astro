@@ -59,13 +59,13 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
           <span class="sm:hidden truncate">{t.cintilloCorto}</span>
         </p>
         <div class="flex shrink-0 items-center gap-3">
-          <a href={site.telefonos[0].href} class="cintillo__enlace hidden lg:inline-flex">
-            <Icon name="telefono" size={12} />{site.telefonos[0].etiqueta}
+          <a href={site.telefonos[0].href} class="cintillo__enlace hidden lg:inline-flex" data-vivo="telefono-principal" data-vivo-icono>
+            <Icon name="telefono" size={12} /><span>{site.telefonos[0].etiqueta}</span>
           </a>
           <span class="hidden lg:block h-3 w-px bg-current opacity-20" aria-hidden="true"></span>
           <a href={whatsapp(wa.general)} target="_blank" rel="noopener" class="cintillo__enlace inline-flex">
             <Icon name="whatsapp" size={12} />
-            <span class="hidden sm:inline">{site.whatsapp.numero}</span>
+            <span class="hidden sm:inline" data-vivo="whatsapp-numero">{site.whatsapp.numero}</span>
             <span class="sm:hidden">WhatsApp</span>
           </a>
         </div>
@@ -253,8 +253,8 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
         <a href={whatsapp(wa.general)} target="_blank" rel="noopener" class="pill pill-linea w-full">
           <Icon name="whatsapp" size={16} />{t.escribirWa}
         </a>
-        <a href={site.telefonos[0].href} class="pill pill-linea w-full">
-          <Icon name="telefono" size={15} />{site.telefonos[0].etiqueta}
+        <a href={site.telefonos[0].href} class="pill pill-linea w-full" data-vivo="telefono-principal" data-vivo-icono>
+          <Icon name="telefono" size={15} /><span>{site.telefonos[0].etiqueta}</span>
         </a>
         <a href={destinoIdioma} hreflang={otro} lang={otro} class="pill pill-linea w-full">
           {textos(otro).verEn(NOMBRE_IDIOMA[otro])}

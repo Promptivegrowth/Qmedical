@@ -1,11 +1,14 @@
 ---
 /**
- * Envoltorio de formulario que funciona sin servidor propio, de modo que el
- * sitio se comporta igual en Vercel que en el hosting compartido de cPanel.
+ * Envoltorio de formulario. Envía al portal del Grupo Pacheco
+ * (public/js/portal.js), que guarda cada registro, numera el Libro de
+ * Reclamaciones, genera su PDF y avisa por correo. Funciona igual con la web
+ * en Vercel que en el hosting de cPanel.
  *
- * · Si `site.formAccessKey` tiene valor, se envía a Web3Forms.
- * · Si no, abre el gestor de correo del visitante con todos los campos ya
- *   redactados. Nunca queda un botón que no hace nada.
+ * · tipo="contacto": al enviarse, lleva a la página de gracias.
+ * · tipo="reclamo":  muestra la constancia (número y plazo) en la misma página.
+ * · Si el portal no responde, abre el gestor de correo del visitante con todos
+ *   los campos ya redactados. Nunca queda un botón que no hace nada.
  */
 import { site } from '../data/site';
 import { ruta, type Idioma } from '../i18n/rutas';
@@ -15,30 +18,24 @@ interface Props {
   id: string;
   asunto: string;
   destino?: string;
+  tipo?: 'contacto' | 'reclamo';
   class?: string;
 }
-const { lang = 'es', id, asunto, destino = site.correoPrincipal, class: klass = '' } = Astro.props;
-const conServicio = Boolean(site.formAccessKey);
+const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contacto', class: klass = '' } = Astro.props;
 ---
 
 <form
   id={id}
   class={klass}
   method="POST"
-  action={conServicio ? site.formEndpoint : undefined}
   data-form
+  data-tipo={tipo}
   data-destino={destino}
   data-asunto={asunto}
+  data-gracias={ruta(lang, 'gracias')}
   data-lang={lang}
   novalidate
 >
-  {conServicio && <input type="hidden" name="access_key" value={site.formAccessKey} />}
-  <input type="hidden" name="subject" value={asunto} />
-  <input type="hidden" name="from_name" value="Formulario web — Q-MEDICAL S.A.C." />
-  <input type="hidden" name="redirect" value={site.url + ruta(lang, 'gracias')} />
-  <!-- El idioma viaja con el envio: quien responde sabe en que lengua escribir -->
-  <input type="hidden" name="idioma" value={lang === 'en' ? 'English' : 'Espanol'} />
-
   <!-- Trampa antispam: invisible para las personas, tentadora para los bots -->
   <input type="checkbox" name="botcheck" class="hidden" style="display:none"
     tabindex="-1" autocomplete="off" aria-hidden="true" />
@@ -46,6 +43,7 @@ const conServicio = Boolean(site.formAccessKey);
   <slot />
 
   <p data-form-error class="aviso-error hidden" role="alert"></p>
+  <div data-form-ok class="aviso-ok hidden" role="status" tabindex="-1"></div>
 </form>
 
 <style>
@@ -58,31 +56,165 @@ const conServicio = Boolean(site.formAccessKey);
     font-size: 0.86rem;
     color: #8c2f2f;
   }
+  .aviso-ok {
+    margin-top: 1.25rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid #b9d3b9;
+    border-radius: var(--r-sm);
+    background: #f1f8f1;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #1f5a2c;
+  }
+  .aviso-ok:focus {
+    outline: none;
+  }
 </style>
 
 <script>
+  type Portal = { endpoint: (tipo: string) => string };
+  type Respuesta = { ok?: boolean; error?: string; campo?: string; codigo?: string; vence?: string; correoEnviado?: boolean };
+
   const AVISOS = {
     es: {
       faltan: 'Revise los campos marcados: falta información obligatoria.',
-      asunto: 'Consulta desde la web',
       correoAbierto: (d: string) =>
-        'Se abrió su gestor de correo con el mensaje redactado. Si no ocurrió ' +
-        `nada, escríbanos directamente a ${d}.`,
-      idioma: 'Idioma',
+        'No pudimos conectar con el servidor: se abrió su gestor de correo con el mensaje redactado. ' +
+        `Si no ocurrió nada, escríbanos directamente a ${d}.`,
+      revisar: 'Revise el campo marcado e inténtelo de nuevo.',
+      muchos: 'Demasiados envíos seguidos. Inténtelo de nuevo en unos minutos.',
+      enviando: 'Enviando…',
+      constancia: (r: Respuesta, correo: string, fecha: string) =>
+        `<strong>Hoja registrada N.º ${r.codigo}.</strong> ` +
+        (r.correoEnviado
+          ? `Le enviamos la hoja de reclamación en PDF a ${correo}. `
+          : 'Conserve este número como constancia. ') +
+        `Le responderemos a más tardar el <strong>${fecha}</strong>.`,
     },
     en: {
       faltan: 'Please check the highlighted fields: required information is missing.',
-      asunto: 'Enquiry from the website',
       correoAbierto: (d: string) =>
-        'Your email client should have opened with the message ready. If nothing ' +
-        `happened, write to us directly at ${d}.`,
-      idioma: 'Language',
+        'We could not reach the server, so your email client opened with the message ready. ' +
+        `If nothing happened, write to us directly at ${d}.`,
+      revisar: 'Please check the highlighted field and try again.',
+      muchos: 'Too many submissions in a row. Please try again in a few minutes.',
+      enviando: 'Sending…',
+      constancia: (r: Respuesta, correo: string, fecha: string) =>
+        `<strong>Complaint No. ${r.codigo} filed.</strong> ` +
+        (r.correoEnviado ? `We have emailed the complaint form (PDF) to ${correo}. ` : 'Please keep this number as proof. ') +
+        `We will reply no later than <strong>${fecha}</strong>.`,
     },
   };
 
+  const texto = (f: FormData, nombre: string) => String(f.get(nombre) ?? '').trim();
+
+  /** Monto escrito libremente («S/ 1 250,50») → número; vacío si no se entiende. */
+  const monto = (v: string) => {
+    const limpio = v.replace(/[^\d.,]/g, '');
+    if (!limpio) return undefined;
+    const normal = limpio.includes(',') && !limpio.includes('.') ? limpio.replace(',', '.') : limpio.replace(/,/g, '');
+    const n = Number(normal);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  const TIPO_DOC: Record<string, string> = { DNI: 'DNI', 'Carné de extranjería': 'CE', Pasaporte: 'Pasaporte', RUC: 'RUC' };
+
+  // Campo del formulario ← nombre en la API del portal
+  const CAMPO_FORM: Record<string, string> = {
+    nombre: 'Nombres y apellidos',
+    tipo_documento: 'Tipo de documento',
+    numero_documento: 'Número de documento',
+    domicilio: 'Domicilio',
+    correo: 'Correo electrónico',
+    telefono: 'Teléfono',
+    apoderado: 'Padre, madre o apoderado',
+    bien_tipo: 'Tipo de bien',
+    monto: 'Monto reclamado',
+    bien_descripcion: 'Descripción del bien',
+    tipo: 'Tipo de reclamación',
+    detalle: 'Detalle de la reclamación',
+    pedido: 'Pedido del consumidor',
+    acepta: 'Declaración de veracidad',
+  };
+
+  function carga(form: HTMLFormElement) {
+    const f = new FormData(form);
+    const robot = f.get('botcheck') ? 'si' : undefined;
+    if (form.dataset.tipo === 'reclamo') {
+      const apoderado = texto(f, 'Padre, madre o apoderado');
+      return {
+        ruta: 'reclamo',
+        cuerpo: {
+          tipo: texto(f, 'Tipo de reclamación').toLowerCase(),
+          nombre: texto(f, 'Nombres y apellidos'),
+          tipo_documento: TIPO_DOC[texto(f, 'Tipo de documento')] ?? texto(f, 'Tipo de documento'),
+          numero_documento: texto(f, 'Número de documento'),
+          domicilio: texto(f, 'Domicilio'),
+          ubigeo: texto(f, 'ubigeo'),
+          correo: texto(f, 'Correo electrónico'),
+          telefono: texto(f, 'Teléfono'),
+          // El campo del apoderado solo se llena si el consumidor es menor de edad.
+          menor_edad: Boolean(apoderado),
+          apoderado: apoderado || undefined,
+          bien_tipo: texto(f, 'Tipo de bien').toLowerCase(),
+          monto: monto(texto(f, 'Monto reclamado')),
+          bien_descripcion: texto(f, 'Descripción del bien'),
+          detalle: texto(f, 'Detalle de la reclamación'),
+          pedido: texto(f, 'Pedido del consumidor'),
+          acepta: Boolean(f.get('Declaración de veracidad')),
+          sitio_web: robot,
+        },
+      };
+    }
+    return {
+      ruta: 'contacto',
+      cuerpo: {
+        tipo: 'cotizacion',
+        nombre: texto(f, 'Nombre'),
+        empresa: texto(f, 'Institución'),
+        correo: texto(f, 'Correo'),
+        telefono: texto(f, 'Teléfono'),
+        asunto: texto(f, 'Línea de interés'),
+        mensaje: texto(f, 'Mensaje'),
+        pagina: window.location.href,
+        datos: { idioma: form.dataset.lang === 'en' ? 'English' : 'Español' },
+        sitio_web: robot,
+      },
+    };
+  }
+
+  function abrirCorreo(form: HTMLFormElement) {
+    const datos = new FormData(form);
+    const lineas: string[] = [];
+    for (const [clave, valor] of datos.entries()) {
+      if (['botcheck', 'ubigeo'].includes(clave)) continue;
+      if (typeof valor !== 'string' || !valor.trim()) continue;
+      const campo = form.querySelector(`[name="${CSS.escape(clave)}"]`);
+      const etiqueta =
+        campo?.closest('label')?.querySelector('.rotulo')?.textContent?.trim() ||
+        form.querySelector(`label[for="${CSS.escape(campo?.id ?? '')}"]`)?.textContent?.trim() ||
+        clave;
+      lineas.push(`${etiqueta.replace(/\s+/g, ' ')}: ${valor}`);
+    }
+    // El ubigeo viaja con sus nombres, no con el código.
+    const ub = form.querySelector('[data-ubigeo]');
+    if (ub) {
+      const nombres = ['departamento', 'provincia', 'distrito']
+        .map((n) => ub.querySelector<HTMLSelectElement>(`[data-ubigeo-nivel="${n}"]`))
+        .map((s) => (s && s.value ? s.options[s.selectedIndex].text : ''))
+        .filter(Boolean);
+      if (nombres.length) lineas.push(`Ubigeo: ${nombres.reverse().join(', ')}`);
+    }
+    const asunto = encodeURIComponent(form.dataset.asunto ?? 'Consulta desde la web');
+    window.location.href = `mailto:${form.dataset.destino}?subject=${asunto}&body=${encodeURIComponent(lineas.join('\n'))}`;
+  }
+
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     const error = form.querySelector<HTMLElement>('[data-form-error]');
+    const exito = form.querySelector<HTMLElement>('[data-form-ok]');
+    const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     const idioma = form.dataset.lang === 'en' ? 'en' : 'es';
+    const T = AVISOS[idioma];
 
     const mostrarError = (msg: string) => {
       if (!error) return;
@@ -91,40 +223,74 @@ const conServicio = Boolean(site.formAccessKey);
       error.scrollIntoView({ block: 'center', behavior: 'smooth' });
     };
 
-    form.addEventListener('submit', (ev) => {
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
       error?.classList.add('hidden');
+      exito?.classList.add('hidden');
 
       if (!form.checkValidity()) {
-        ev.preventDefault();
         form.querySelector<HTMLInputElement>(':invalid')?.focus();
-        mostrarError(AVISOS[idioma].faltan);
+        mostrarError(T.faltan);
         return;
       }
 
-      // Sin endpoint configurado: se compone un correo con todo el contenido.
-      if (!form.getAttribute('action')) {
-        ev.preventDefault();
-        const datos = new FormData(form);
-        const lineas: string[] = [];
+      const portal = (window as unknown as { GrupoPacheco?: Portal }).GrupoPacheco;
+      const { ruta: destino, cuerpo } = carga(form);
+      const textoBoton = boton?.innerHTML ?? '';
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = T.enviando;
+      }
 
-        for (const [clave, valor] of datos.entries()) {
-          if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck', 'idioma'].includes(clave)) continue;
-          if (typeof valor !== 'string' || !valor.trim()) continue;
-          const campo = form.querySelector(`[name="${CSS.escape(clave)}"]`);
-          const etiqueta =
-            campo?.closest('label')?.querySelector('.rotulo')?.textContent?.trim() ||
-            form.querySelector(`label[for="${CSS.escape(campo?.id ?? '')}"]`)?.textContent?.trim() ||
-            clave;
-          lineas.push(`${etiqueta.replace(/\s+/g, ' ')}: ${valor}`);
+      try {
+        if (!portal) throw new Error('sin-portal');
+        const r = await fetch(portal.endpoint(destino), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(cuerpo),
+        });
+        const res: Respuesta = await r.json().catch(() => ({}));
+
+        if (r.ok && res.ok) {
+          if (form.dataset.tipo !== 'reclamo') {
+            window.location.href = form.dataset.gracias ?? '/';
+            return;
+          }
+          if (!res.codigo) return; // robot atrapado: sin constancia
+          const fecha = new Intl.DateTimeFormat(idioma === 'en' ? 'en-GB' : 'es-PE', {
+            timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric',
+          }).format(new Date(`${res.vence}T00:00:00Z`));
+          const correo = String(cuerpo.correo ?? '');
+          form.reset();
+          (form.querySelector('[data-ubigeo]') as (HTMLElement & { reiniciarUbigeo?: () => void }) | null)?.reiniciarUbigeo?.();
+          if (exito) {
+            exito.innerHTML = T.constancia(res, correo.replace(/[<>&"]/g, ''), fecha);
+            exito.classList.remove('hidden');
+            exito.focus();
+            exito.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }
+          return;
         }
 
-        const asunto = encodeURIComponent(form.dataset.asunto ?? 'Consulta desde la web');
-        const cuerpo = encodeURIComponent(lineas.join('\n'));
-        window.location.href = `mailto:${form.dataset.destino}?subject=${asunto}&body=${cuerpo}`;
-
-        setTimeout(() => {
-          mostrarError(AVISOS[idioma].correoAbierto(form.dataset.destino ?? ''));
-        }, 1200);
+        if (r.status === 422 || r.status === 429) {
+          mostrarError(idioma === 'en' ? (r.status === 429 ? T.muchos : T.revisar) : (res.error ?? T.revisar));
+          const nombre = res.campo === 'ubigeo' ? null : CAMPO_FORM[res.campo ?? ''];
+          const campo = res.campo === 'ubigeo'
+            ? form.querySelector<HTMLElement>('[data-ubigeo-nivel="departamento"]')
+            : nombre ? form.querySelector<HTMLElement>(`[name="${CSS.escape(nombre)}"]`) : null;
+          campo?.focus();
+          return;
+        }
+        throw new Error(`HTTP ${r.status}`);
+      } catch {
+        // Sin conexión con el portal: el correo redactado como respaldo.
+        abrirCorreo(form);
+        setTimeout(() => mostrarError(T.correoAbierto(form.dataset.destino ?? '')), 1200);
+      } finally {
+        if (boton) {
+          boton.disabled = false;
+          boton.innerHTML = textoBoton;
+        }
       }
     });
 

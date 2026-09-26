@@ -80,7 +80,7 @@ const enlacesEmpresa = [
           class="pill relleno relleno--claro"
           data-anim="sube"
         >
-          <Icon name="whatsapp" size={17} />WhatsApp {site.whatsapp.numero}
+          <Icon name="whatsapp" size={17} />WhatsApp <span data-vivo="whatsapp-numero">{site.whatsapp.numero}</span>
         </a>
       </div>
     </div>
@@ -96,13 +96,16 @@ const enlacesEmpresa = [
         />
         <p class="mt-6 max-w-sm text-[0.92rem] leading-relaxed text-white/55">{t.pie.sobre}</p>
         <ul class="mt-8 flex gap-2.5">
-          {redes.map((r) => (
-            <li>
-              <a href={r.href} target="_blank" rel="noopener" aria-label={r.nombre} class="pie__red">
-                <Icon name={r.icono} size={16} />
-              </a>
-            </li>
-          ))}
+          {[['instagram', 'Instagram'], ['facebook', 'Facebook'], ['linkedin', 'LinkedIn'], ['youtube', 'YouTube'], ['tiktok', 'TikTok'], ['x', 'X']].map(([red, nombre]) => {
+            const actual = redes.find((r) => r.icono === red);
+            return (
+              <li data-red-envoltura hidden={!actual}>
+                <a href={actual?.href ?? '#'} target="_blank" rel="noopener" aria-label={nombre} class="pie__red" data-red={red}>
+                  <Icon name={red} size={16} />
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -129,7 +132,7 @@ const enlacesEmpresa = [
         <ul class="mt-5 space-y-4 text-[0.88rem]">
           <li class="flex gap-3">
             <Icon name="lugar" size={16} class="mt-0.5 shrink-0 text-white/30" />
-            <span class="text-white/70">
+            <span class="text-white/70" data-vivo="direccion">
               {site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {pais}
             </span>
           </li>
@@ -137,17 +140,17 @@ const enlacesEmpresa = [
             <Icon name="telefono" size={16} class="mt-0.5 shrink-0 text-white/30" />
             <span>
               {site.telefonos.map((t, i) => (
-                <>{i > 0 && <br />}<a href={t.href} class="pie__enlace">{t.etiqueta}</a></>
+                <>{i > 0 && <br />}<a href={t.href} class="pie__enlace" data-vivo={i === 0 ? 'telefono-principal' : undefined}>{t.etiqueta}</a></>
               ))}
             </span>
           </li>
           <li class="flex gap-3">
             <Icon name="correo" size={16} class="mt-0.5 shrink-0 text-white/30" />
-            <a href={`mailto:${site.correoPrincipal}`} class="pie__enlace break-all">{site.correoPrincipal}</a>
+            <a href={`mailto:${site.correoPrincipal}`} class="pie__enlace break-all" data-vivo="correo-principal">{site.correoPrincipal}</a>
           </li>
           <li class="flex gap-3">
             <Icon name="reloj" size={16} class="mt-0.5 shrink-0 text-white/30" />
-            <span class="text-white/70">{horario}</span>
+            <span class="text-white/70" data-vivo="horario">{horario}</span>
           </li>
         </ul>
       </div>

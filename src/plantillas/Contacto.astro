@@ -246,7 +246,7 @@ const schema = {
           <h2 class="display-sm">{T.oficinas}</h2>
           <p class="mt-4 flex gap-3 text-[0.93rem] leading-relaxed">
             <Icon name="lugar" size={17} class="mt-0.5 shrink-0 text-[var(--color-brand-700)]" />
-            <span>{site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {pais}</span>
+            <span data-vivo="direccion">{site.direccion.calle}<br />{site.direccion.distrito} — {site.direccion.ciudad}, {pais}</span>
           </p>
 
           <!-- El mapa se carga a petición: evita la llamada a Google en cada
@@ -270,9 +270,15 @@ const schema = {
 
         <div class="tarjeta">
           <h2 class="display-sm">{T.correosArea}</h2>
-          <ul class="mt-5 divide-y divide-[var(--color-linea)]">
-            {directorio.map((c) => (
+          <ul class="mt-5 divide-y divide-[var(--color-linea)]" data-vivo-lista="correo">
+            <template>
               <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                <span class="text-[0.82rem] text-[var(--color-tinta-45)]" data-campo="etiqueta"></span>
+                <a class="break-all text-[0.84rem] text-[var(--color-brand-700)] hover:underline" data-campo="valor"></a>
+              </li>
+            </template>
+            {directorio.map((c) => (
+              <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3" data-vivo-item>
                 <span class="text-[0.82rem] text-[var(--color-tinta-45)]">{c.area}</span>
                 <a href={`mailto:${c.correo}`} class="break-all text-[0.84rem] text-[var(--color-brand-700)] hover:underline">
                   {c.correo}
@@ -285,13 +291,16 @@ const schema = {
         <div class="tarjeta">
           <h2 class="display-sm">{T.siganos}</h2>
           <ul class="mt-5 flex flex-wrap gap-2">
-            {redes.map((r) => (
-              <li>
-                <a href={r.href} target="_blank" rel="noopener" class="pill pill-linea !min-h-0 !px-4 !py-2 !text-[0.83rem]">
-                  <Icon name={r.icono} size={15} />{r.nombre}
-                </a>
-              </li>
-            ))}
+            {[['instagram', 'Instagram'], ['facebook', 'Facebook'], ['linkedin', 'LinkedIn'], ['youtube', 'YouTube'], ['tiktok', 'TikTok'], ['x', 'X']].map(([red, nombre]) => {
+              const actual = redes.find((r) => r.icono === red);
+              return (
+                <li data-red-envoltura hidden={!actual}>
+                  <a href={actual?.href ?? '#'} target="_blank" rel="noopener" class="pill pill-linea !min-h-0 !px-4 !py-2 !text-[0.83rem]" data-red={red}>
+                    <Icon name={red} size={15} />{nombre}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
           <div class="mt-6 border-t border-[var(--color-linea)] pt-5">
             <p class="text-[0.85rem] text-[var(--color-tinta-70)]">{T.reclamoPregunta}</p>
