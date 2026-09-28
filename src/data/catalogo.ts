@@ -18,8 +18,12 @@ export interface Variante {
    * Referencia del fabricante. NO se publica en la web: es un dato interno
    * de la empresa. Se conserva porque es la que empareja la variante con su
    * ficha técnica y la que viaja en la orden de compra.
+   *
+   * Es opcional: hay presentaciones que son una medida y nada más —los
+   * diámetros de una tubuladura, por ejemplo—, y para esas la empresa no
+   * maneja ninguna referencia que anotar.
    */
-  codigo: string;
+  codigo?: string;
   /** Lo que distingue a esta presentación, en el lenguaje de quien compra. */
   detalle: string;
   /**
@@ -596,6 +600,14 @@ export const productos: Producto[] = [
       'Drenaje para máquina de anestesia',
       'Circuitos de máquina de hemodiálisis',
     ],
+    // Sin código: son medidas, no referencias internas.
+    variantes: [
+      { detalle: '4 mm × 7 mm' },
+      { detalle: '6 mm × 9 mm' },
+      { detalle: '7 mm × 10 mm' },
+      { detalle: '7 mm × 12 mm' },
+      { detalle: '8 mm × 12 mm' },
+    ],
   },
 
   /* -------------------------------------------------------- Nutrición enteral */
@@ -1168,7 +1180,7 @@ export function productosDestacados(): Producto[] {
  * variante. Devuelve el título y, si lo hay, la aclaración que va debajo.
  */
 export function presentacionDe(v: Variante): { titulo: string; nota?: string } {
-  if (v.codigoEsPresentacion) {
+  if (v.codigoEsPresentacion && v.codigo) {
     return { titulo: v.codigo, nota: v.detalle };
   }
   const partes = v.detalle.split(' — ');

@@ -426,8 +426,11 @@ export function productoEn(p: Producto, idioma: Idioma): Producto {
 
   const variantes: Variante[] | undefined = p.variantes?.map((v) => ({
     ...v,
-    codigo: t.codigos?.[v.codigo] ?? v.codigo,
-    detalle: t.variantes?.[v.codigo] ?? v.detalle,
+    // Las traducciones de variantes se indexan por la referencia del
+    // fabricante. Sin referencia no hay nada que buscar: una medida se lee
+    // igual en los dos idiomas.
+    codigo: v.codigo ? (t.codigos?.[v.codigo] ?? v.codigo) : undefined,
+    detalle: (v.codigo ? t.variantes?.[v.codigo] : undefined) ?? v.detalle,
   }));
 
   return {

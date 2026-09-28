@@ -1,172 +1,172 @@
 {
-  "productos": {
-    "contenedores-punzocortantes": [
-      "productos/contenedores-punzocortantes-1.webp",
-      "productos/contenedores-punzocortantes-2.webp",
-      "productos/contenedores-punzocortantes-3.webp",
-      "productos/contenedores-punzocortantes-4.webp",
-      "productos/contenedores-punzocortantes-5.webp",
-      "productos/contenedores-punzocortantes-6.webp",
-      "productos/contenedores-punzocortantes-7.webp",
-      "productos/contenedores-punzocortantes-8.webp",
-      "productos/contenedores-punzocortantes-9.webp"
-    ],
-    "contenedores-citotoxicos": [
-      "productos/contenedores-citotoxicos-1.webp",
-      "productos/contenedores-citotoxicos-2.webp",
-      "productos/contenedores-citotoxicos-3.webp",
-      "productos/contenedores-citotoxicos-4.webp",
-      "productos/contenedores-citotoxicos-5.webp",
-      "productos/contenedores-citotoxicos-6.webp"
-    ],
-    "alfombra-descontaminante": [
-      "productos/alfombra-descontaminante-1.webp"
-    ],
-    "aplicador-clorhexidina-2": [
-      "productos/aplicador-clorhexidina-2-1.webp",
-      "productos/aplicador-clorhexidina-2-2.webp",
-      "productos/aplicador-clorhexidina-2-3.webp",
-      "productos/aplicador-clorhexidina-2-4.webp"
-    ],
-    "cepillo-esponja-clorhexidina-4": [
-      "productos/cepillo-esponja-clorhexidina-4-1.webp",
-      "productos/cepillo-esponja-clorhexidina-4-2.webp"
-    ],
-    "esponja-clorhexidina-2": [
-      "productos/esponja-clorhexidina-2-1.webp"
-    ],
-    "toallitas-limpieza-piel": [
-      "productos/toallitas-limpieza-piel-1.webp",
-      "productos/toallitas-limpieza-piel-2.webp"
-    ],
-    "trocares-desechables": [
-      "productos/trocares-desechables-1.webp",
-      "productos/trocares-desechables-2.webp",
-      "productos/trocares-desechables-3.webp",
-      "productos/trocares-desechables-4.webp"
-    ],
-    "bolsas-aspiracion": [
-      "productos/bolsas-aspiracion-1.webp",
-      "productos/bolsas-aspiracion-2.webp",
-      "productos/bolsas-aspiracion-3.webp",
-      "productos/bolsas-aspiracion-4.webp"
-    ],
-    "canister-reusable": [
-      "productos/canister-reusable-1.webp",
-      "productos/canister-reusable-2.webp",
-      "productos/canister-reusable-3.webp",
-      "productos/canister-reusable-4.webp"
-    ],
-    "accesorios-aspiracion": [
-      "productos/accesorios-aspiracion-1.webp",
-      "productos/accesorios-aspiracion-2.webp",
-      "productos/accesorios-aspiracion-3.webp",
-      "productos/accesorios-aspiracion-4.webp",
-      "productos/accesorios-aspiracion-5.webp",
-      "productos/accesorios-aspiracion-6.webp"
-    ],
-    "tubuladura-succion-esteril": [
-      "productos/tubuladura-succion-esteril-1.webp"
-    ],
-    "tubuladura-silicona": [
-      "productos/tubuladura-silicona-1.webp",
-      "productos/tubuladura-silicona-2.webp"
-    ],
-    "bomba-nutricion-enteral": [
-      "productos/bomba-nutricion-enteral-1.webp"
-    ],
-    "bolsa-nutricion-enteral": [
-      "productos/bolsa-nutricion-enteral-1.webp"
-    ],
-    "set-alimentacion-enteral": [
-      "productos/set-alimentacion-enteral-1.webp"
-    ],
-    "videolaringoscopio": [
-      "productos/videolaringoscopio-1.webp"
-    ],
-    "hojas-videolaringoscopio": [
-      "productos/hojas-videolaringoscopio-1.webp"
-    ],
-    "pano-bano-facil": [
-      "productos/pano-bano-facil-1.webp",
-      "productos/pano-bano-facil-2.webp",
-      "productos/pano-bano-facil-3.webp",
-      "productos/pano-bano-facil-4.webp"
-    ],
-    "toalla-secado-corporal": [
-      "productos/toalla-secado-corporal-1.webp"
-    ],
-    "pano-clinico-qmedical": [
-      "productos/pano-clinico-qmedical-1.webp"
-    ],
-    "pano-clinico-telijie": [
-      "productos/pano-clinico-telijie-1.webp"
-    ],
-    "bolsa-vomito": [
-      "productos/bolsa-vomito-1.webp"
-    ],
-    "manta-absorbente-jiehong": [
-      "productos/manta-absorbente-jiehong-1.webp",
-      "productos/manta-absorbente-jiehong-2.webp"
-    ],
-    "manta-absorbente-xodus": [
-      "productos/manta-absorbente-xodus-1.webp"
-    ],
-    "protector-impermeable": [
-      "productos/protector-impermeable-1.webp"
-    ],
-    "marcador-piel-esteril": [
-      "productos/marcador-piel-esteril-1.webp"
-    ],
-    "marcador-piel-no-esteril": [
-      "productos/marcador-piel-no-esteril-1.webp"
-    ],
-    "limpiador-puntas-electrocauterio": [
-      "productos/limpiador-puntas-electrocauterio-1.webp"
-    ],
-    "bolsa-conteo-gasas": [
-      "productos/bolsa-conteo-gasas-1.webp"
-    ],
-    "cepillos-limpieza-instrumental": [
-      "productos/cepillos-limpieza-instrumental-1.webp",
-      "productos/cepillos-limpieza-instrumental-2.webp",
-      "productos/cepillos-limpieza-instrumental-3.webp",
-      "productos/cepillos-limpieza-instrumental-4.webp",
-      "productos/cepillos-limpieza-instrumental-5.webp",
-      "productos/cepillos-limpieza-instrumental-6.webp"
-    ],
-    "guantes-nitrilo": [
-      "productos/guantes-nitrilo-1.webp"
-    ]
-  },
-  "fotos": {
-    "almacen-pasillo-1": "fotos/almacen-pasillo-1-1600.webp",
-    "almacen-pasillo-2": "fotos/almacen-pasillo-2-1600.webp",
-    "almacen-pasillo-3": "fotos/almacen-pasillo-3-1600.webp",
-    "almacen-racks-1": "fotos/almacen-racks-1-1600.webp",
-    "almacen-racks-2": "fotos/almacen-racks-2-1600.webp",
-    "almacen-nave-1": "fotos/almacen-nave-1-1600.webp",
-    "almacen-nave-2": "fotos/almacen-nave-2-1600.webp",
-    "almacen-venezuela-1": "fotos/almacen-venezuela-1-1600.webp",
-    "almacen-venezuela-2": "fotos/almacen-venezuela-2-1600.webp",
-    "operario-almacen": "fotos/operario-almacen-1600.webp",
-    "almacen-venezuela-3-limpia": "fotos/almacen-venezuela-3-limpia-1600.webp"
-  },
-  "marcas": {
-    "alleva-medical": "marcas/alleva-medical.webp",
-    "bano-facil": "marcas/bano-facil.webp",
-    "comfort-rubber-gloves": "marcas/comfort-rubber-gloves.webp",
-    "geyi": "marcas/geyi.webp",
-    "jiehong": "marcas/jiehong.webp",
-    "kangbao": "marcas/kangbao.webp",
-    "longood": "marcas/longood.webp",
-    "maxcon": "marcas/maxcon.webp",
-    "medcaptain": "marcas/medcaptain.webp",
-    "medispo": "marcas/medispo.webp",
-    "nex-medical": "marcas/nex-medical.webp",
-    "q-medical": "marcas/q-medical.webp",
-    "silpak": "marcas/silpak.webp",
-    "telijie": "marcas/telijie.webp",
-    "xodus": "marcas/xodus.webp"
-  }
+ "productos": {
+  "contenedores-punzocortantes": [
+   "productos/contenedores-punzocortantes-1-5c0f722b.webp",
+   "productos/contenedores-punzocortantes-2-c13eef3e.webp",
+   "productos/contenedores-punzocortantes-3-2c317d9e.webp",
+   "productos/contenedores-punzocortantes-4-46a5757f.webp",
+   "productos/contenedores-punzocortantes-5-38882e98.webp",
+   "productos/contenedores-punzocortantes-6-66a5e01e.webp",
+   "productos/contenedores-punzocortantes-7-fa9eae38.webp",
+   "productos/contenedores-punzocortantes-8-31c2da79.webp",
+   "productos/contenedores-punzocortantes-9-839ad2d5.webp"
+  ],
+  "contenedores-citotoxicos": [
+   "productos/contenedores-citotoxicos-1-8cecb843.webp",
+   "productos/contenedores-citotoxicos-2-1c162f26.webp",
+   "productos/contenedores-citotoxicos-3-85cec015.webp",
+   "productos/contenedores-citotoxicos-4-29560bb6.webp",
+   "productos/contenedores-citotoxicos-5-7dada183.webp",
+   "productos/contenedores-citotoxicos-6-6f5dbc67.webp"
+  ],
+  "alfombra-descontaminante": [
+   "productos/alfombra-descontaminante-1-dd9c4644.webp"
+  ],
+  "aplicador-clorhexidina-2": [
+   "productos/aplicador-clorhexidina-2-1-128c3704.webp",
+   "productos/aplicador-clorhexidina-2-2-96445f07.webp",
+   "productos/aplicador-clorhexidina-2-3-a0cab6a4.webp",
+   "productos/aplicador-clorhexidina-2-4-326254f7.webp"
+  ],
+  "cepillo-esponja-clorhexidina-4": [
+   "productos/cepillo-esponja-clorhexidina-4-1-6ae7d4ea.webp",
+   "productos/cepillo-esponja-clorhexidina-4-2-6ee807b7.webp"
+  ],
+  "esponja-clorhexidina-2": [
+   "productos/esponja-clorhexidina-2-1-b6912812.webp"
+  ],
+  "toallitas-limpieza-piel": [
+   "productos/toallitas-limpieza-piel-1-c20a4349.webp",
+   "productos/toallitas-limpieza-piel-2-0e6d4424.webp"
+  ],
+  "trocares-desechables": [
+   "productos/trocares-desechables-1-fe531f2e.webp",
+   "productos/trocares-desechables-2-f6d7e7cb.webp",
+   "productos/trocares-desechables-3-248d701f.webp",
+   "productos/trocares-desechables-4-4701449a.webp"
+  ],
+  "bolsas-aspiracion": [
+   "productos/bolsas-aspiracion-1-682882f2.webp",
+   "productos/bolsas-aspiracion-2-29ddfe9d.webp",
+   "productos/bolsas-aspiracion-3-816487b1.webp",
+   "productos/bolsas-aspiracion-4-fc669730.webp"
+  ],
+  "canister-reusable": [
+   "productos/canister-reusable-1-8c21a885.webp",
+   "productos/canister-reusable-2-f96c75c1.webp",
+   "productos/canister-reusable-3-763a2add.webp",
+   "productos/canister-reusable-4-9cb367ab.webp"
+  ],
+  "accesorios-aspiracion": [
+   "productos/accesorios-aspiracion-1-2239f726.webp",
+   "productos/accesorios-aspiracion-2-cbe75a4b.webp",
+   "productos/accesorios-aspiracion-3-592ae721.webp",
+   "productos/accesorios-aspiracion-4-d5eac562.webp",
+   "productos/accesorios-aspiracion-5-0d3ca952.webp",
+   "productos/accesorios-aspiracion-6-969c7e15.webp"
+  ],
+  "tubuladura-succion-esteril": [
+   "productos/tubuladura-succion-esteril-1-d7b800b6.webp"
+  ],
+  "tubuladura-silicona": [
+   "productos/tubuladura-silicona-1-561ed6b5.webp",
+   "productos/tubuladura-silicona-2-9b570891.webp"
+  ],
+  "bomba-nutricion-enteral": [
+   "productos/bomba-nutricion-enteral-1-5d20578d.webp"
+  ],
+  "bolsa-nutricion-enteral": [
+   "productos/bolsa-nutricion-enteral-1-038bd955.webp"
+  ],
+  "set-alimentacion-enteral": [
+   "productos/set-alimentacion-enteral-1-7f28ed78.webp"
+  ],
+  "videolaringoscopio": [
+   "productos/videolaringoscopio-1-19a77c1a.webp"
+  ],
+  "hojas-videolaringoscopio": [
+   "productos/hojas-videolaringoscopio-1-da14f565.webp"
+  ],
+  "pano-bano-facil": [
+   "productos/pano-bano-facil-1-997aa3b7.webp",
+   "productos/pano-bano-facil-2-82b60f88.webp",
+   "productos/pano-bano-facil-3-88f62945.webp",
+   "productos/pano-bano-facil-4-e789b65d.webp"
+  ],
+  "toalla-secado-corporal": [
+   "productos/toalla-secado-corporal-1-cfcc2da0.webp"
+  ],
+  "pano-clinico-qmedical": [
+   "productos/pano-clinico-qmedical-1-163c76be.webp"
+  ],
+  "pano-clinico-telijie": [
+   "productos/pano-clinico-telijie-1-2c25e033.webp"
+  ],
+  "bolsa-vomito": [
+   "productos/bolsa-vomito-1-f6a7206d.webp"
+  ],
+  "manta-absorbente-jiehong": [
+   "productos/manta-absorbente-jiehong-1-3c2e408c.webp",
+   "productos/manta-absorbente-jiehong-2-9ce0ac54.webp"
+  ],
+  "manta-absorbente-xodus": [
+   "productos/manta-absorbente-xodus-1-268ba73a.webp"
+  ],
+  "protector-impermeable": [
+   "productos/protector-impermeable-1-be317988.webp"
+  ],
+  "marcador-piel-esteril": [
+   "productos/marcador-piel-esteril-1-7280eef1.webp"
+  ],
+  "marcador-piel-no-esteril": [
+   "productos/marcador-piel-no-esteril-1-22acaa60.webp"
+  ],
+  "limpiador-puntas-electrocauterio": [
+   "productos/limpiador-puntas-electrocauterio-1-21668331.webp"
+  ],
+  "bolsa-conteo-gasas": [
+   "productos/bolsa-conteo-gasas-1-23b23d13.webp"
+  ],
+  "cepillos-limpieza-instrumental": [
+   "productos/cepillos-limpieza-instrumental-1-bb89cd76.webp",
+   "productos/cepillos-limpieza-instrumental-2-db8165bf.webp",
+   "productos/cepillos-limpieza-instrumental-3-11e16cd9.webp",
+   "productos/cepillos-limpieza-instrumental-4-4c181ce9.webp",
+   "productos/cepillos-limpieza-instrumental-5-5e2c1f42.webp",
+   "productos/cepillos-limpieza-instrumental-6-8be3a821.webp"
+  ],
+  "guantes-nitrilo": [
+   "productos/guantes-nitrilo-1-27f115fe.webp"
+  ]
+ },
+ "fotos": {
+  "almacen-pasillo-1": "fotos/almacen-pasillo-1-1600.webp",
+  "almacen-pasillo-2": "fotos/almacen-pasillo-2-1600.webp",
+  "almacen-pasillo-3": "fotos/almacen-pasillo-3-1600.webp",
+  "almacen-racks-1": "fotos/almacen-racks-1-1600.webp",
+  "almacen-racks-2": "fotos/almacen-racks-2-1600.webp",
+  "almacen-nave-1": "fotos/almacen-nave-1-1600.webp",
+  "almacen-nave-2": "fotos/almacen-nave-2-1600.webp",
+  "almacen-venezuela-1": "fotos/almacen-venezuela-1-1600.webp",
+  "almacen-venezuela-2": "fotos/almacen-venezuela-2-1600.webp",
+  "almacen-venezuela-3-limpia": "fotos/almacen-venezuela-3-limpia-1600.webp",
+  "operario-almacen": "fotos/operario-almacen-1600.webp"
+ },
+ "marcas": {
+  "alleva-medical": "marcas/alleva-medical.webp",
+  "bano-facil": "marcas/bano-facil.webp",
+  "comfort-rubber-gloves": "marcas/comfort-rubber-gloves.webp",
+  "geyi": "marcas/geyi.webp",
+  "jiehong": "marcas/jiehong.webp",
+  "kangbao": "marcas/kangbao.webp",
+  "longood": "marcas/longood.webp",
+  "maxcon": "marcas/maxcon.webp",
+  "medcaptain": "marcas/medcaptain.webp",
+  "medispo": "marcas/medispo.webp",
+  "nex-medical": "marcas/nex-medical.webp",
+  "q-medical": "marcas/q-medical.webp",
+  "silpak": "marcas/silpak.webp",
+  "telijie": "marcas/telijie.webp",
+  "xodus": "marcas/xodus.webp"
+ }
 }

@@ -16,6 +16,7 @@ hay que volver a generarlo:
     python scripts/optimize_images.py
     python scripts/poster_video.py
 """
+import hashlib
 import io
 import json
 import os
@@ -23,7 +24,7 @@ import shutil
 import sys
 import unicodedata
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -56,17 +57,71 @@ def slugify(text):
     return "".join(out).strip("-")
 
 
+def despegar_fondo(im, umbral=12):
+    """Vuelve transparente el fondo liso de una imagen opaca.
+
+    Los originales del catalogo llegan casi todos en PNG recortado, y se
+    apoyan sobre la tarjeta blanca sin que se note su caja. Los que llegan en
+    JPEG traen un fondo que casi nunca es blanco puro —el de la tubuladura de
+    silicona es (247, 247, 247)— y se publicaban como un rectangulo gris
+    visible en medio de la tarjeta.
+
+    Se inunda desde las cuatro esquinas y no por color: asi solo desaparece el
+    fondo que toca el borde. Importa porque estos productos son casi tan
+    claros como su fondo —la silicona es color crema— y un umbral aplicado a
+    toda la imagen se comeria el producto.
+
+    Solo actua cuando el fondo es claro y uniforme en las cuatro esquinas. Con
+    cualquier otra cosa devuelve la imagen intacta: una foto de ambiente no
+    tiene por que perder su fondo.
+    """
+    if im.mode != "RGBA":
+        im = im.convert("RGBA")
+    if im.getchannel("A").getextrema()[0] < 255:
+        return im                                   # ya trae transparencia
+
+    rgb = im.convert("RGB")
+    esquinas = [rgb.getpixel(q) for q in
+                ((0, 0), (rgb.width - 1, 0), (0, rgb.height - 1), (rgb.width - 1, rgb.height - 1))]
+    if min(min(c) for c in esquinas) < 230:
+        return im                                   # el fondo no es claro
+    if max(max(c) - min(c) for c in zip(*esquinas)) > 6:
+        return im                                   # las esquinas no coinciden
+
+    CENTINELA = (255, 0, 255)
+    marca = rgb.copy()
+    for q in ((0, 0), (marca.width - 1, 0), (0, marca.height - 1), (marca.width - 1, marca.height - 1)):
+        ImageDraw.floodfill(marca, q, CENTINELA, thresh=umbral)
+
+    # Opaco donde el relleno NO llego. El desenfoque de medio pixel suaviza el
+    # borde: sin el, el recorte queda dentado sobre el blanco de la tarjeta.
+    fuera = ImageChops.difference(marca, Image.new("RGB", marca.size, CENTINELA))
+    alfa = fuera.convert("L").point(lambda v: 0 if v < 8 else 255)
+    alfa = alfa.filter(ImageFilter.GaussianBlur(0.6))
+    im = im.copy()
+    im.putalpha(alfa)
+    return im
+
+
 def trim(im, pad_ratio=0.03):
     """Recorta el margen vacio (transparente o blanco) y anade un padding."""
     if im.mode != "RGBA":
         im = im.convert("RGBA")
     alpha = im.getchannel("A")
     box = alpha.point(lambda v: 255 if v > 8 else 0).getbbox()
-    if box is None or (box[2] - box[0]) < im.width * 0.02:
+    # Un JPEG llega opaco entero, de modo que su caja alfa es la imagen
+    # completa y no recortaba nada: el producto quedaba pequeno dentro de su
+    # marco, con mucho blanco alrededor, mientras los PNG con transparencia
+    # de al lado si se ajustaban. Cuando la alfa no dice nada util se busca
+    # el margen por diferencia contra el blanco.
+    inutil = box is None or box == (0, 0, im.width, im.height)
+    if inutil or (box[2] - box[0]) < im.width * 0.02:
         rgb = im.convert("RGB")
         bg = Image.new("RGB", rgb.size, (255, 255, 255))
-        box = ImageChops.difference(rgb, bg).convert("L").point(
+        blanco = ImageChops.difference(rgb, bg).convert("L").point(
             lambda v: 255 if v > 10 else 0).getbbox()
+        if blanco:
+            box = blanco
     if box:
         im = im.crop(box)
     pad = int(max(im.size) * pad_ratio)
@@ -94,12 +149,29 @@ def save_webp(im, path, quality=82):
 
 
 def emit_product(src_path, slug, index, sizes=(900, 480)):
-    im = trim(Image.open(src_path).convert("RGBA"))
+    """Exporta la foto de un producto, con un resumen del contenido en el
+    nombre.
+
+    Todo /img/ se sirve con Cache-Control immutable a un ano. Cambiar la foto
+    de un producto conservando el nombre no llegaria a ningun navegador que ya
+    la tuviera: hay que cambiar la URL. La huella lo hace solo, y cuando la
+    foto no cambia el nombre tampoco, asi que no se reescribe medio catalogo
+    en cada pasada.
+
+    Las plantillas no se enteran de nada: las rutas de producto salen todas
+    del manifiesto (manifest.productos), nunca escritas a mano.
+    """
+    im = trim(despegar_fondo(Image.open(src_path).convert("RGBA")))
+    # La huella sale de la imagen ya recortada y a su tamano final, no del
+    # archivo de origen: reexportar el mismo original no cambia la URL, y dos
+    # originales que acaban en la misma imagen la comparten.
+    base = square(im, sizes[0])
+    huella = hashlib.sha256(base.tobytes()).hexdigest()[:8]
     written = []
     for s in sizes:
         suffix = "" if s == sizes[0] else "-%d" % s
-        rel = "productos/%s-%d%s.webp" % (slug, index, suffix)
-        save_webp(square(im, s), P(OUT, rel), 84)
+        rel = "productos/%s-%d-%s%s.webp" % (slug, index, huella, suffix)
+        save_webp(base if s == sizes[0] else square(im, s), P(OUT, rel), 84)
         written.append(rel)
     return written
 
@@ -204,7 +276,10 @@ PRODUCTS = {
         P(CAT, "Q-Medical/Productos Catálogo_Tubuladora de succión esteril.png"),
     ],
     "tubuladura-silicona": [
-        P(CAT, "Silpak/Productos Catálogo_TUBULADORA DE SILICONA.png"),
+        # La empresa entrego el mismo plano sobre fondo blanco. El original a
+        # fondo negro sigue en la carpeta, pero desentonaba: el resto del
+        # catalogo va sobre blanco.
+        P(CAT, "Silpak/Productos Catálogo_TUBULADORA DE SILICONA - fondo blanco.jpg"),
         P(FOT, "1_Mesa de trabajo 1 copia 2.png"),
     ],
     "bomba-nutricion-enteral": [
