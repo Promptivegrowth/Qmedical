@@ -262,6 +262,7 @@ const schema = {
 
   .tesela__img {
     width: 100%;
+    flex: none;
     aspect-ratio: 1;
     object-fit: contain;
     padding: 12%;
@@ -269,7 +270,19 @@ const schema = {
   }
   .tesela:hover .tesela__img { transform: scale(1.07); }
 
-  .tesela__pie { margin-top: auto; }
+  /* El pie ocupa lo que sobra de la tarjeta en vez de pegarse abajo.
+
+     Con `margin-top: auto` el bloque entero se iba al fondo, y como las
+     teselas de una fila miden todas lo mismo pero sus sintesis no ocupan las
+     mismas lineas, el titulo de las de una sola linea bajaba respecto al de
+     sus vecinas. Anclando el pie arriba, los nombres de toda la fila salen a
+     la misma altura; el recuento se descuelga solo al fondo, de modo que
+     tambien queda alineado entre si. */
+  .tesela__pie {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
   .tesela__sintesis {
     margin-top: 0.3rem;
     font-size: 0.78rem;
@@ -284,7 +297,8 @@ const schema = {
   }
   .tesela__cuenta {
     display: block;
-    margin-top: 0.3rem;
+    margin-top: auto;
+    padding-top: 0.55rem;
     font-size: 0.75rem;
     color: var(--color-tinta-45);
   }
