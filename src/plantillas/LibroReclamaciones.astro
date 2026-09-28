@@ -69,12 +69,14 @@ const T = {
     ubElijaProv: 'Elija la provincia',
     lCorreo: 'Correo electrónico *',
     lTelefono: 'Teléfono *',
-    lApoderado: 'Si es menor de edad, nombre del padre, madre o apoderado',
+    lMenor: 'El consumidor es menor de edad',
+    lApoderado: 'Nombre del padre, madre o apoderado *',
     paso2: '2. Identificación del bien contratado',
     lTipo: 'Tipo *',
     oProducto: 'Producto',
     oServicio: 'Servicio',
-    lMonto: 'Monto reclamado (S/)',
+    lMonto: 'Monto reclamado',
+    lMoneda: 'Moneda',
     pOpcional: 'Opcional',
     lDescripcion: 'Descripción del producto o servicio *',
     pDescripcion:
@@ -138,12 +140,14 @@ const T = {
     ubElijaProv: 'Choose the province first',
     lCorreo: 'Email address *',
     lTelefono: 'Phone *',
-    lApoderado: 'If a minor, the name of the parent or legal guardian',
+    lMenor: 'The consumer is a minor',
+    lApoderado: 'Name of the parent or legal guardian *',
     paso2: '2. Details of the goods or service',
     lTipo: 'Type *',
     oProducto: 'Product',
     oServicio: 'Service',
-    lMonto: 'Amount claimed (S/)',
+    lMonto: 'Amount claimed',
+    lMoneda: 'Currency',
     pOpcional: 'Optional',
     lDescripcion: 'Description of the product or service *',
     pDescripcion:
@@ -236,7 +240,7 @@ const domicilio = lang === 'en'
             </label>
             <label>
               <span class="rotulo">{T.lTipoDoc}</span>
-              <select name="Tipo de documento" class="campo" required>
+              <select name="Tipo de documento" class="campo" required data-doc-tipo>
                 <option value="DNI">DNI</option>
                 <option value="Carné de extranjería">Carné de extranjería</option>
                 <option value="Pasaporte">Pasaporte</option>
@@ -245,7 +249,13 @@ const domicilio = lang === 'en'
             </label>
             <label>
               <span class="rotulo">{T.lNumDoc}</span>
-              <input type="text" name="Número de documento" class="campo" required inputmode="numeric" />
+              <!-- El guion de abajo ajusta pattern, inputmode y maxlength segun el
+                   tipo: DNI son 8 digitos, RUC 11, y el pasaporte lleva letras.
+                   El pattern va como expresion y no como texto porque Astro se
+                   come la barra invertida en el atributo: quedaba pattern="d{8}",
+                   que ningun DNI puede cumplir. -->
+              <input type="text" name="Número de documento" class="campo" required
+                inputmode="numeric" pattern={'\\d{8}'} maxlength="8" data-doc-numero />
             </label>
             <label class="sm:col-span-2">
               <span class="rotulo">{T.lDomicilio}</span>
@@ -280,7 +290,14 @@ const domicilio = lang === 'en'
               <span class="rotulo">{T.lTelefono}</span>
               <input type="tel" name="Teléfono" class="campo" required autocomplete="tel" />
             </label>
-            <label class="sm:col-span-2">
+            <!-- El Anexo I pide declarar si el consumidor es menor de edad; al
+                 marcarlo aparece el apoderado y pasa a ser obligatorio. -->
+            <label class="flex items-start gap-3 sm:col-span-2">
+              <input type="checkbox" name="Es menor de edad" value="Sí"
+                class="mt-1 h-4 w-4 accent-[#152e7f]" data-menor />
+              <span class="text-sm leading-relaxed">{T.lMenor}</span>
+            </label>
+            <label class="sm:col-span-2" data-apoderado hidden>
               <span class="rotulo">{T.lApoderado}</span>
               <input type="text" name="Padre, madre o apoderado" class="campo" />
             </label>
@@ -297,10 +314,20 @@ const domicilio = lang === 'en'
                 <option value="Servicio">{T.oServicio}</option>
               </select>
             </label>
-            <label>
-              <span class="rotulo">{T.lMonto}</span>
-              <input type="text" name="Monto reclamado" class="campo" inputmode="decimal" placeholder={T.pOpcional} />
-            </label>
+            <div class="grid grid-cols-[1fr_auto] gap-3">
+              <label>
+                <span class="rotulo">{T.lMonto}</span>
+                <input type="text" name="Monto reclamado" class="campo" inputmode="decimal"
+                  placeholder={T.pOpcional} />
+              </label>
+              <label>
+                <span class="rotulo">{T.lMoneda}</span>
+                <select name="Moneda" class="campo">
+                  <option value="PEN">S/ (PEN)</option>
+                  <option value="USD">$ (USD)</option>
+                </select>
+              </label>
+            </div>
             <label class="sm:col-span-2">
               <span class="rotulo">{T.lDescripcion}</span>
               <textarea name="Descripción del bien" rows="3" class="campo resize-y" required
@@ -367,6 +394,48 @@ const domicilio = lang === 'en'
     </div>
   </section>
   <script src="/js/ubigeo.js" defer is:inline></script>
+
+  <script>
+    /* Dos ajustes del formulario que dependen de lo que elija el consumidor.
+
+       1. La casilla de menor de edad muestra el apoderado y lo hace
+          obligatorio. Mientras esta oculto no puede ser `required`, porque un
+          campo obligatorio invisible bloquea el envio sin decir por que.
+       2. El numero de documento cambia de forma segun el tipo: el portal
+          exige 8 digitos para el DNI y 11 para el RUC, y conviene que el
+          navegador lo diga antes de enviar y abra el teclado adecuado. */
+    const menor = document.querySelector('[data-menor]');
+    const bloqueApoderado = document.querySelector('[data-apoderado]');
+    const campoApoderado = bloqueApoderado?.querySelector('input');
+
+    menor?.addEventListener('change', () => {
+      const esMenor = menor.checked;
+      if (bloqueApoderado) bloqueApoderado.hidden = !esMenor;
+      if (campoApoderado) {
+        campoApoderado.required = esMenor;
+        if (!esMenor) campoApoderado.value = '';
+        else campoApoderado.focus();
+      }
+    });
+
+    const FORMA_DOC = {
+      DNI: { pattern: '\\d{8}', inputmode: 'numeric', maxlength: '8' },
+      RUC: { pattern: '\\d{11}', inputmode: 'numeric', maxlength: '11' },
+      'Carné de extranjería': { pattern: '[A-Za-z0-9-]{6,15}', inputmode: 'text', maxlength: '15' },
+      Pasaporte: { pattern: '[A-Za-z0-9-]{6,15}', inputmode: 'text', maxlength: '15' },
+    };
+    const tipoDoc = document.querySelector('[data-doc-tipo]');
+    const numDoc = document.querySelector('[data-doc-numero]');
+
+    tipoDoc?.addEventListener('change', () => {
+      const forma = FORMA_DOC[tipoDoc.value];
+      if (!forma || !numDoc) return;
+      numDoc.setAttribute('pattern', forma.pattern);
+      numDoc.setAttribute('inputmode', forma.inputmode);
+      numDoc.setAttribute('maxlength', forma.maxlength);
+      numDoc.value = '';
+    });
+  </script>
 </Base>
 
 <style>

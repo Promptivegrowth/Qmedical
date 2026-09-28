@@ -78,6 +78,7 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
   const AVISOS = {
     es: {
       faltan: 'Revise los campos marcados: falta información obligatoria.',
+      faltaUbigeo: 'Elija departamento, provincia y distrito.',
       correoAbierto: (d: string) =>
         'No pudimos conectar con el servidor: se abrió su gestor de correo con el mensaje redactado. ' +
         `Si no ocurrió nada, escríbanos directamente a ${d}.`,
@@ -93,6 +94,7 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
     },
     en: {
       faltan: 'Please check the highlighted fields: required information is missing.',
+      faltaUbigeo: 'Please select department, province and district.',
       correoAbierto: (d: string) =>
         'We could not reach the server, so your email client opened with the message ready. ' +
         `If nothing happened, write to us directly at ${d}.`,
@@ -142,6 +144,7 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
     const robot = f.get('botcheck') ? 'si' : undefined;
     if (form.dataset.tipo === 'reclamo') {
       const apoderado = texto(f, 'Padre, madre o apoderado');
+      const esMenor = Boolean(f.get('Es menor de edad'));
       return {
         ruta: 'reclamo',
         cuerpo: {
@@ -153,10 +156,12 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
           ubigeo: texto(f, 'ubigeo'),
           correo: texto(f, 'Correo electrónico'),
           telefono: texto(f, 'Teléfono'),
-          // El campo del apoderado solo se llena si el consumidor es menor de edad.
-          menor_edad: Boolean(apoderado),
+          // Lo declara el consumidor con su casilla, no se deduce de que haya
+          // escrito un nombre: el portal exige el apoderado solo si es menor.
+          menor_edad: esMenor,
           apoderado: apoderado || undefined,
           bien_tipo: texto(f, 'Tipo de bien').toLowerCase(),
+          moneda: texto(f, 'Moneda') || 'PEN',
           monto: monto(texto(f, 'Monto reclamado')),
           bien_descripcion: texto(f, 'Descripción del bien'),
           detalle: texto(f, 'Detalle de la reclamación'),
@@ -176,8 +181,15 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
         telefono: texto(f, 'Teléfono'),
         asunto: texto(f, 'Línea de interés'),
         mensaje: texto(f, 'Mensaje'),
-        pagina: window.location.href,
-        datos: { idioma: form.dataset.lang === 'en' ? 'English' : 'Español' },
+        // La ruta, no la URL entera: el portal corta `pagina` en 300
+        // caracteres y una dirección larga se rechazaría con un 422.
+        pagina: window.location.pathname,
+        datos: {
+          idioma: form.dataset.lang === 'en' ? 'English' : 'Español',
+          // Queda registrado con el mensaje: es la constancia de que el
+          // visitante autorizó el tratamiento de sus datos (Ley 29733).
+          consentimiento: f.get('Autoriza el tratamiento de datos') ? 'Sí' : 'No',
+        },
         sitio_web: robot,
       },
     };
@@ -187,14 +199,17 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
     const datos = new FormData(form);
     const lineas: string[] = [];
     for (const [clave, valor] of datos.entries()) {
-      if (['botcheck', 'ubigeo'].includes(clave)) continue;
+      // La moneda no va en su propia linea: se pega al monto, que sin ella
+      // no dice nada.
+      if (['botcheck', 'ubigeo', 'Moneda'].includes(clave)) continue;
       if (typeof valor !== 'string' || !valor.trim()) continue;
       const campo = form.querySelector(`[name="${CSS.escape(clave)}"]`);
       const etiqueta =
         campo?.closest('label')?.querySelector('.rotulo')?.textContent?.trim() ||
         form.querySelector(`label[for="${CSS.escape(campo?.id ?? '')}"]`)?.textContent?.trim() ||
         clave;
-      lineas.push(`${etiqueta.replace(/\s+/g, ' ')}: ${valor}`);
+      const moneda = clave === 'Monto reclamado' ? ` ${datos.get('Moneda') ?? 'PEN'}` : '';
+      lineas.push(`${etiqueta.replace(/\s+/g, ' ')}: ${valor}${moneda}`);
     }
     // El ubigeo viaja con sus nombres, no con el código.
     const ub = form.querySelector('[data-ubigeo]');
@@ -232,6 +247,21 @@ const { lang = 'es', id, asunto, destino = site.correoPrincipal, tipo = 'contact
         form.querySelector<HTMLInputElement>(':invalid')?.focus();
         mostrarError(T.faltan);
         return;
+      }
+
+      // Los tres selectores del ubigeo arrancan deshabilitados, y un campo
+      // deshabilitado no entra en la validación del navegador: sin esto, una
+      // dirección a medias llegaba al portal y volvía con un 422.
+      const ubigeo = form.querySelector<HTMLElement>('[data-ubigeo]');
+      if (ubigeo) {
+        const sinElegir = ['departamento', 'provincia', 'distrito'].some(
+          (n) => !ubigeo.querySelector<HTMLSelectElement>(`[data-ubigeo-nivel="${n}"]`)?.value
+        );
+        if (sinElegir) {
+          mostrarError(T.faltaUbigeo);
+          ubigeo.querySelector<HTMLSelectElement>('[data-ubigeo-nivel="departamento"]')?.focus();
+          return;
+        }
       }
 
       const portal = (window as unknown as { GrupoPacheco?: Portal }).GrupoPacheco;

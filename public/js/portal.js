@@ -4,17 +4,20 @@
      publicable: pública por diseño, la base solo deja leer lo visible.
    - Envío de formularios (contacto, cotización, libro de reclamaciones) a la
      API del portal, que guarda, numera y avisa por correo.
-   En local (localhost) usa el portal de desarrollo.
+
+   En local se usa el portal de producción, no uno local: el portal tiene
+   registrado `http://localhost:4321` entre sus orígenes permitidos, así que
+   desde ahí se prueba contra el mismo servidor que atiende al público. Hay
+   que servir la web en ese puerto; desde otro, el portal rechaza por CORS.
    ========================================================================== */
 (function () {
   'use strict';
 
-  var local = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
   var cfg = {
     empresa: 'qmedical',
     supabaseUrl: 'https://youlxcpbffsvokhygubh.supabase.co',
     clave: 'sb_publishable_ldYnYlLuvA4fVu8Hnlh-nw_M2C2Hkui',
-    portal: local ? 'http://localhost:3100' : 'https://panel-grupo-pacheco.vercel.app',
+    portal: 'https://panel-grupo-pacheco.vercel.app',
   };
 
   cfg.endpoint = function (tipo) {

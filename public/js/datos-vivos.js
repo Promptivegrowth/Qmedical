@@ -23,8 +23,10 @@
 (function () {
   'use strict';
 
+  // Se resuelve aquí y no al declarar el módulo: el orden de carga de los
+  // scripts no está garantizado en todos los alojamientos.
   var gp = window.GrupoPacheco;
-  if (!gp) return;
+  if (!gp || typeof gp.leer !== 'function') return;
 
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
   var ingles = /^en\b/i.test(document.documentElement.lang || '');

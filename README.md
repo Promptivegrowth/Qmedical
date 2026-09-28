@@ -199,6 +199,18 @@ Teléfono, WhatsApp, correos por área, dirección, horario y redes se editan en
 y se aplican en vivo (`public/js/datos-vivos.js`). Los valores de `src/data/site.ts`
 quedan como respaldo si el portal no responde.
 
+**Para probar los formularios en local hay que servir la web en el puerto 4321.** No es
+un capricho del proyecto: el portal solo acepta envíos desde los orígenes que tiene
+registrados para Q-Medical, y son `https://qmedicalsac.com`, `https://www.qmedicalsac.com`
+y `http://localhost:4321`. Desde cualquier otro puerto —o desde una *preview* de
+Vercel— el envío falla por CORS y el formulario cae al respaldo por correo, que parece
+un fallo de la web sin serlo. `npm run dev` y `npm run preview` ya usan ese puerto; si
+está ocupado, Astro salta al siguiente y las pruebas dejan de funcionar.
+
+Las hojas del Libro de Reclamaciones **no se pueden borrar** desde el portal: son
+registro legal. Al probar, envía una sola y avisa del número para que se descarte antes
+de publicar.
+
 ---
 
 ## Despliegue
