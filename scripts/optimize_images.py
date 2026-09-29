@@ -316,7 +316,9 @@ PRODUCTS = {
         P(CAT, "Q-Medical/Productos Catálogo_Bolsa para vómito.png"),
     ],
     "manta-absorbente-jiehong": [
-        P(CAT, "Jiehong/Productos Catálogo_Manta absorbente de fluidos.png"),
+        # La empresa pidio quitar la etiqueta del producto que asomaba en la
+        # foto; se usa la version sin ella. La original sigue en la carpeta.
+        P(CAT, "Jiehong/Productos Catálogo_Manta absorbente de fluidos - sin etiqueta.jpg"),
         P(CAT, "Jiehong/Productos Catálogo_Manta absorbente de fluidos pre cortada.png"),
     ],
     "manta-absorbente-xodus": [
@@ -333,6 +335,9 @@ PRODUCTS = {
     ],
     "limpiador-puntas-electrocauterio": [
         P(CAT, "Q-Medical/Productos Catálogo_Limpiador de punta de electrocautil.png"),
+    ],
+    "contador-agujas": [
+        P(CAT, "Kangbao/Productos Catálogo_Contador de agujas doble iman.jpg"),
     ],
     "bolsa-conteo-gasas": [
         P(CAT, "Q-Medical/Productos Catálogo_Bolsa contador de gasa.png"),

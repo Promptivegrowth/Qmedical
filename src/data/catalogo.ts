@@ -1023,6 +1023,30 @@ export const productos: Producto[] = [
     ],
   },
   {
+    slug: 'contador-agujas',
+    nombre: 'Contador de agujas de doble imán KANGBAO',
+    categoria: 'instrumental',
+    marca: 'kangbao',
+    resumen:
+      'Estuche con dos láminas imantadas para el recuento verificable de ' +
+      'agujas en sala de operaciones.',
+    descripcion: [
+      'Dispositivo médico diseñado para el reconteo de agujas durante el acto ' +
+        'quirúrgico y al cerrarlo. El estuche, de color rojo, aloja en su ' +
+        'interior dos láminas imantadas que retienen las agujas usadas.',
+      'Las posiciones van numeradas, de modo que el recuento queda a la vista ' +
+        'y puede verificarse sin manipular el material punzocortante.',
+    ],
+    caracteristicas: [
+      'Dos láminas imantadas que retienen las agujas usadas',
+      'Posiciones numeradas para verificar el recuento a simple vista',
+      'Estuche rígido con tapa abatible, en rojo de alta visibilidad',
+      'Permite contar sin manipular el material punzocortante',
+    ],
+    presentacion:
+      'Caja de 28 blísteres. El estuche mide 11.3 × 5.4 × 1.5 cm.',
+  },
+  {
     slug: 'bolsa-conteo-gasas',
     nombre: 'Bolsa para conteo de gasas y esponjas',
     categoria: 'instrumental',

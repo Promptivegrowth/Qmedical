@@ -787,6 +787,26 @@ export const productosEn: Record<string, ProductoEn> = {
     ],
   },
 
+  'contador-agujas': {
+    nombre: 'KANGBAO double-magnet needle counter',
+    resumen:
+      'Case with two magnetic strips for a verifiable needle count in the ' +
+      'operating theatre.',
+    descripcion: [
+      'Medical device designed for counting needles during the procedure and ' +
+        'when closing. The red case holds two magnetic strips inside, which ' +
+        'retain the used needles.',
+      'The positions are numbered, so the count stays visible and can be ' +
+        'verified without handling the sharps.',
+    ],
+    caracteristicas: [
+      'Two magnetic strips that retain the used needles',
+      'Numbered positions, so the count can be checked at a glance',
+      'Rigid case with a hinged lid, in high-visibility red',
+      'Allows counting without handling the sharps',
+    ],
+    presentacion: 'Box of 28 blisters. The case measures 11.3 × 5.4 × 1.5 cm.',
+  },
   'bolsa-conteo-gasas': {
     nombre: 'Gauze and sponge counting bag',
     resumen:

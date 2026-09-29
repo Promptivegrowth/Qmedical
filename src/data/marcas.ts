@@ -162,7 +162,7 @@ export const marcas: Marca[] = [
       'Contadores de agujas de doble imán para el recuento seguro de material ' +
       'punzocortante en sala de operaciones.',
     linea: 'Seguridad quirúrgica',
-    productos: [],
+    productos: ['contador-agujas'],
   },
 ];
 
