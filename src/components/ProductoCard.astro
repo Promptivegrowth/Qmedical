@@ -31,7 +31,7 @@ const p = productoEn(producto, lang);
 
 const img = imagenPrincipal(p.slug, 900);
 const imgSm = imagenPrincipal(p.slug, 480);
-const marca = marcaPorSlug.get(p.marca);
+const marca = p.marca ? marcaPorSlug.get(p.marca) : undefined;
 const catBase = categoriaPorSlug.get(p.categoria);
 const cat = catBase ? categoriaEn(catBase, lang) : undefined;
 const href = ruta(lang, 'producto', p.slug);
@@ -121,7 +121,16 @@ const href = ruta(lang, 'producto', p.slug);
     padding-top: 1.1rem;
   }
 
+  /* Guarda su línea aunque esté vacía. Un producto sin marca asignada no
+     imprime crédito, y sin esta altura mínima su título subía y se
+     descolgaba del de las entradas vecinas de la misma fila.
+
+     `1lh` es exactamente una línea de este texto, así que sigue al
+     interlineado si alguna vez cambia; el valor en em va delante como
+     reserva para los navegadores que no conocen la unidad. */
   .entrada__credito {
+    min-height: 1.6em;
+    min-height: 1lh;
     font-size: 0.68rem;
     font-weight: 500;
     letter-spacing: 0.12em;

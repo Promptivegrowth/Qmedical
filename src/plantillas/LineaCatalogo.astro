@@ -37,7 +37,7 @@ const otras = categorias.filter((c) => c.slug !== base.slug).map((c) => ({
   href: via(lang, 'categoria', c.slug),
   cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
 }));
-const firmas = [...new Set(items.map((p) => marcaPorSlug.get(p.marca)?.nombre))].filter(Boolean) as string[];
+const firmas = [...new Set(items.map((p) => (p.marca ? marcaPorSlug.get(p.marca)?.nombre : undefined)))].filter(Boolean) as string[];
 
 const T = {
   es: {

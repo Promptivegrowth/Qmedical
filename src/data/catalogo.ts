@@ -38,7 +38,15 @@ export interface Producto {
   slug: string;
   nombre: string;
   categoria: string;
-  marca: string;
+  /**
+    * Marca asociada, por su slug en data/marcas.ts.
+    *
+    * Es opcional porque un producto puede entrar al catalogo antes de que la
+    * empresa confirme de quien es. Mientras falte, la ficha y la tarjeta
+    * simplemente no muestran credito de marca: no se sustituye por otra ni
+    * se atribuye a Q-MEDICAL.
+    */
+  marca?: string;
   resumen: string;
   descripcion: string[];
   caracteristicas: string[];
@@ -281,6 +289,28 @@ export const productos: Producto[] = [
   },
 
   /* ------------------------------------------------------------- Antisepsia */
+  {
+    // Sin `marca`: la empresa todavia no ha confirmado de quien es.
+    slug: 'aplicador-clorhexidina-6ml',
+    nombre: 'Aplicador de clorhexidina 2 % en alcohol isopropílico 70 % — 6 mL',
+    categoria: 'antisepsia',
+    resumen:
+      'Aplicador de 6 mL con gluconato de clorhexidina al 2 % y alcohol ' +
+      'isopropílico al 70 %, para desinfección de la piel.',
+    descripcion: [
+      'Aplicador de desinfección con una formulación de gluconato de ' +
+        'clorhexidina al 2 % (CHG) y alcohol isopropílico al 70 % (IPA), que ' +
+        'cumple los requisitos clínicos de espectro de acción biocida contra ' +
+        'bacterias, hongos y virus.',
+    ],
+    caracteristicas: [
+      'Gluconato de clorhexidina al 2 % (CHG)',
+      'Alcohol isopropílico al 70 % (IPA)',
+      'Espectro de acción biocida contra bacterias, hongos y virus',
+      'Volumen de 6 mL',
+    ],
+    presentacion: 'Caja de 6 unidades.',
+  },
   {
     slug: 'aplicador-clorhexidina-2',
     nombre: 'Aplicador estéril NEX CLOREX 2% PREP',

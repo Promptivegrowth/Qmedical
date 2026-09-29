@@ -33,7 +33,7 @@ const wa = lang === 'en' ? waMensajesEn : waMensajes;
 const p = productoEn(origen, lang);
 
 const cat = categoriaEn(categoriaPorSlug.get(origen.categoria)!, lang);
-const marca = marcaPorSlug.get(origen.marca);
+const marca = origen.marca ? marcaPorSlug.get(origen.marca) : undefined;
 const imgs = imagenesDe(origen.slug);
 const relacionados = productosDeCategoria(origen.categoria)
   .filter((o) => o.slug !== origen.slug)
@@ -100,7 +100,7 @@ const schema = [
     name: p.nombre,
     description: p.resumen,
     image: imgs.map((i) => `${site.url}/img/${i}`),
-    brand: { '@type': 'Brand', name: marca?.nombre ?? 'Q-MEDICAL' },
+    ...(marca ? { brand: { '@type': 'Brand', name: marca.nombre } } : {}),
     category: cat.nombre,
     url: enlaceFicha,
     // Se publica la presentación, no la referencia del fabricante.

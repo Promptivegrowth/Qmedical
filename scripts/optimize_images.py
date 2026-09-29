@@ -229,6 +229,11 @@ PRODUCTS = {
     "alfombra-descontaminante": [
         P(CAT, "Q-Medical/Productos Catálogo_Alfombra descontaminante.png"),
     ],
+    # Sin marca asignada todavia: la carpeta lo dice, y hay que moverla
+    # cuando la empresa confirme de quien es el producto.
+    "aplicador-clorhexidina-6ml": [
+        P(CAT, "Por asignar/Productos Catálogo_Aplicador clorhexidina 2 6 ml.jpg"),
+    ],
     "aplicador-clorhexidina-2": [
         P(FOT, "1_Mesa de trabajo 1 copia 13.png"),
         P(CAT, "Nex Medical/Productos Catálogo sin fondo_Aplicador Nex Medical 3 mL.png"),

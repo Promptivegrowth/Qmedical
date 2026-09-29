@@ -132,6 +132,25 @@ export const productosEn: Record<string, ProductoEn> = {
   },
 
   /* ------------------------------------------------------------- Antisepsis */
+  'aplicador-clorhexidina-6ml': {
+    nombre: 'Chlorhexidine 2 % in 70 % isopropyl alcohol applicator — 6 mL',
+    resumen:
+      '6 mL applicator with 2 % chlorhexidine gluconate and 70 % isopropyl ' +
+      'alcohol, for skin disinfection.',
+    descripcion: [
+      'Disinfection applicator with a formulation of 2 % chlorhexidine ' +
+        'gluconate (CHG) and 70 % isopropyl alcohol (IPA), meeting the ' +
+        'clinical requirement for a biocidal spectrum against bacteria, fungi ' +
+        'and viruses.',
+    ],
+    caracteristicas: [
+      '2 % chlorhexidine gluconate (CHG)',
+      '70 % isopropyl alcohol (IPA)',
+      'Biocidal spectrum against bacteria, fungi and viruses',
+      '6 mL volume',
+    ],
+    presentacion: 'Box of 6 units.',
+  },
   'aplicador-clorhexidina-2': {
     nombre: 'NEX CLOREX 2% PREP sterile applicator',
     resumen:
