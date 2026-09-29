@@ -335,8 +335,10 @@ const principios = valores.map((v, i) => ({
   }
   @media (min-width: 1024px) { .valor { padding: 2.75rem; } }
 
-  .valor:hover,
-  .valor:focus-within {
+  /* Igual que en las placas de certificacion: el disparador va en el <li>,
+     que no se mueve. Sobre la propia lamina, al subir se apartaba del puntero
+     en el borde inferior y se quedaba temblando. */
+  .valores > li:is(:hover, :focus-within) .valor {
     --alza: -6px;
     border-color: var(--color-brand-300);
     box-shadow: 0 28px 55px -30px rgba(27, 47, 122, 0.42);
@@ -355,8 +357,7 @@ const principios = valores.map((v, i) => ({
     transform: scaleX(0);
     transition: transform 0.85s var(--ease-salida);
   }
-  .valor:hover .valor__filo,
-  .valor:focus-within .valor__filo { transform: scaleX(1); }
+  .valores > li:is(:hover, :focus-within) .valor__filo { transform: scaleX(1); }
 
   /* Sello: el signo dentro de su anillo. Crece con el ancho de la lámina y
      el icono ocupa siempre la misma fracción, así que a 360 px se ve igual
@@ -375,8 +376,7 @@ const principios = valores.map((v, i) => ({
       background-color 0.45s var(--ease-editorial);
   }
   .valor__sello :global(svg) { position: relative; width: 54%; height: auto; }
-  .valor:hover .valor__sello,
-  .valor:focus-within .valor__sello {
+  .valores > li:is(:hover, :focus-within) .valor__sello {
     border-color: var(--color-brand-300);
     background: var(--color-brand-50);
   }
@@ -388,7 +388,7 @@ const principios = valores.map((v, i) => ({
     border-radius: 999px;
     opacity: 0;
   }
-  .valor:hover .valor__halo { animation: valor-halo 1.6s var(--ease-salida) infinite; }
+  .valores > li:is(:hover, :focus-within) .valor__halo { animation: valor-halo 1.6s var(--ease-salida) infinite; }
   @keyframes valor-halo {
     0% { opacity: 0.6; transform: scale(1); }
     100% { opacity: 0; transform: scale(1.5); }
@@ -422,8 +422,8 @@ const principios = valores.map((v, i) => ({
 
   @media (prefers-reduced-motion: reduce) {
     .valor { transition: none; }
-    .valor:hover { --alza: 0px; }
-    .valor:hover .valor__halo { animation: none; }
+    .valores > li:is(:hover, :focus-within) .valor { --alza: 0px; }
+    .valores > li:is(:hover, :focus-within) .valor__halo { animation: none; }
     :global(.js) .valor__sello,
     :global(.js) .valor__titulo,
     :global(.js) .valor__texto { opacity: 1; transform: none; transition: none; }

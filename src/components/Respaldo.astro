@@ -104,8 +104,7 @@ const rotuloEnlace = aTexto ?? T.ver;
             <span class="placa__fx" aria-hidden="true">
               <span class="placa__grano"></span>
               <span class="placa__marca">{c.sigla}</span>
-              <span class="placa__canto placa__canto--sup"></span>
-              <span class="placa__canto placa__canto--izq"></span>
+              <span class="placa__filo"></span>
               <span class="placa__brillo"></span>
               <span class="placa__barrido"></span>
             </span>
@@ -139,6 +138,15 @@ const rotuloEnlace = aTexto ?? T.ver;
 </section>
 
 <style>
+  /* El angulo del filo tiene que estar registrado: una propiedad
+     personalizada sin tipo no interpola, y la luz daria saltos en vez de
+     girar. */
+  @property --giro {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
   /* ── La banda ─────────────────────────────────────────────────────── */
   .respaldo {
     position: relative;
@@ -249,16 +257,20 @@ const rotuloEnlace = aTexto ?? T.ver;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
-  .placa:hover,
-  .placa:focus-visible {
+  /* El hover se dispara desde el <li>, no desde la placa.
+     La placa sube seis pixeles, y con el disparador encima de ella eso la
+     apartaba de debajo del puntero cuando el cursor estaba cerca del borde
+     inferior: dejaba de casar :hover, volvia a bajar, volvia a casar... y se
+     quedaba temblando, como si se resistiera a subir. El <li> se queda
+     quieto, asi que el puntero nunca lo pierde. */
+  .respaldo__placas > li:is(:hover, :focus-within) .placa {
     --alza: -6px;
     background: rgba(255, 255, 255, 0.09);
     border-color: rgba(255, 255, 255, 0.42);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24),
       0 28px 55px -26px rgba(0, 0, 0, 0.65);
   }
-  .respaldo.es-clara .placa:hover,
-  .respaldo.es-clara .placa:focus-visible {
+  .respaldo.es-clara .respaldo__placas > li:is(:hover, :focus-within) .placa {
     background: #fff;
     border-color: var(--color-brand-300);
     box-shadow: 0 26px 50px -28px rgba(27, 47, 122, 0.45);
@@ -322,47 +334,41 @@ const rotuloEnlace = aTexto ?? T.ver;
   }
   .respaldo.es-clara .placa__marca { color: var(--color-brand-50); }
 
-  /* Filo de luz: un destello recorre el canto superior y el izquierdo, como
-     la luz al pasar por el borde de una placa grabada. Lento y tenue: tiene
-     que notarse sin llamar. Arrancan pasada la esquina redondeada, porque si
-     empezaran antes el recorte se comería el destello al entrar y parecería
-     que parpadea. */
-  .placa__canto { position: absolute; overflow: hidden; }
-  .placa__canto--sup { top: 0; left: var(--r-lg); right: 0; height: 2px; }
-  .placa__canto--izq { left: 0; top: var(--r-lg); bottom: 0; width: 2px; }
-  .placa__canto::before {
-    content: '';
+  /* Filo de luz: un destello recorre el borde de la placa, como la luz al
+     pasar por el canto de una placa grabada. Lento y tenue: tiene que notarse
+     sin llamar.
+
+     Antes eran dos tiras rectas, una arriba y otra a la izquierda. El
+     destello llegaba a la esquina y seguia de largo en linea recta, saliendose
+     de la placa: la forma redondeada no existia para el. Ahora es un arco de
+     degradado conico que gira, recortado al contorno con una mascara en
+     anillo, de modo que el recorrido es el borde real —curvas incluidas— y da
+     la vuelta entera. */
+  .placa__filo {
     position: absolute;
-    /* El halo sigue la forma del degradado, no la caja: por eso drop-shadow */
-    filter: drop-shadow(0 0 6px var(--filo));
-    /* Quietos mientras la sección no está en pantalla: una animación infinita
-       fuera de vista es trabajo de compositor tirado a la basura. */
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--giro),
+      transparent 0 72%,
+      var(--filo) 84%,
+      transparent 92%
+    );
+    /* Dos capas iguales, una recortada a la caja de contenido: al excluir una
+       de otra queda solo el anillo del grosor del relleno. */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    /* Quieto mientras la sección no está en pantalla: una animación infinita
+       fuera de vista es trabajo tirado a la basura. */
+    animation: placa-giro 9s linear var(--filo-espera, 0s) infinite;
     animation-play-state: paused;
   }
-  [data-respaldo].a-la-vista .placa__canto::before { animation-play-state: running; }
-  .placa__canto--sup::before {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 38%;
-    background: linear-gradient(90deg, transparent, var(--filo), transparent);
-    animation: placa-filo-x 7s linear var(--filo-espera, 0s) infinite;
-  }
-  .placa__canto--izq::before {
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 30%;
-    background: linear-gradient(180deg, transparent, var(--filo), transparent);
-    animation: placa-filo-y 7s linear var(--filo-espera, 0s) infinite;
-  }
-  @keyframes placa-filo-x {
-    0% { transform: translateX(-105%); }
-    36%, 100% { transform: translateX(270%); }
-  }
-  @keyframes placa-filo-y {
-    0% { transform: translateY(-105%); }
-    36%, 100% { transform: translateY(340%); }
+  [data-respaldo].a-la-vista .placa__filo { animation-play-state: running; }
+  @keyframes placa-giro {
+    to { --giro: 360deg; }
   }
 
   /* Reflejo que sigue al puntero. Sin puntero encima queda en cero. */
@@ -377,7 +383,7 @@ const rotuloEnlace = aTexto ?? T.ver;
     );
     transition: opacity 0.5s var(--ease-editorial);
   }
-  .placa:hover .placa__brillo { opacity: 1; }
+  .respaldo__placas > li:is(:hover, :focus-within) .placa__brillo { opacity: 1; }
   .respaldo.es-clara .placa__brillo {
     background: radial-gradient(
       18rem circle at var(--mx, 50%) var(--my, 50%),
@@ -474,11 +480,11 @@ const rotuloEnlace = aTexto ?? T.ver;
     border-color: var(--color-linea-2);
     color: var(--color-brand-700);
   }
-  .placa:hover .placa__sello {
+  .respaldo__placas > li:is(:hover, :focus-within) .placa__sello {
     border-color: rgba(255, 255, 255, 0.55);
     background: rgba(255, 255, 255, 0.08);
   }
-  .respaldo.es-clara .placa:hover .placa__sello {
+  .respaldo.es-clara .respaldo__placas > li:is(:hover, :focus-within) .placa__sello {
     border-color: var(--color-brand-300);
     background: var(--color-brand-50);
   }
@@ -494,7 +500,7 @@ const rotuloEnlace = aTexto ?? T.ver;
     transform: scale(1);
     transition: transform 0.7s var(--ease-salida), opacity 0.7s var(--ease-salida);
   }
-  .placa:hover .placa__sello-halo { animation: placa-halo 1.4s var(--ease-salida) infinite; }
+  .respaldo__placas > li:is(:hover, :focus-within) .placa__sello-halo { animation: placa-halo 1.4s var(--ease-salida) infinite; }
   @keyframes placa-halo {
     0% { opacity: 0.55; transform: scale(1); }
     100% { opacity: 0; transform: scale(1.5); }
@@ -564,7 +570,7 @@ const rotuloEnlace = aTexto ?? T.ver;
     background: var(--color-papel-2);
     color: var(--color-tinta);
   }
-  .placa:hover .placa__flecha {
+  .respaldo__placas > li:is(:hover, :focus-within) .placa__flecha {
     background: #fff;
     color: var(--color-brand-700);
     transform: translateX(4px);
@@ -581,12 +587,12 @@ const rotuloEnlace = aTexto ?? T.ver;
   @media (prefers-reduced-motion: reduce) {
     .placa,
     .placa__flecha { transition: none; }
-    .placa:hover { --alza: 0px; }
+    .respaldo__placas > li:is(:hover, :focus-within) .placa { --alza: 0px; }
     :global(.js) .respaldo__placas > li.visible .placa,
     :global(.js) .respaldo__placas > li.visible .placa__barrido::before { animation: none; }
-    .placa__canto,
+    .placa__filo,
     .placa__barrido { display: none; }
-    .placa:hover .placa__sello-halo { animation: none; }
+    .respaldo__placas > li:is(:hover, :focus-within) .placa__sello-halo { animation: none; }
   }
 </style>
 
