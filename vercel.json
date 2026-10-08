@@ -9,43 +9,502 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
       ]
     },
     {
       "source": "/_astro/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/img/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/video/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ],
   "redirects": [
-    { "source": "/fichas-tecnicas", "destination": "/catalogo", "permanent": true },
-    { "source": "/fichas-tecnicas/(.*)", "destination": "/catalogo", "permanent": true },
-    { "source": "/en/datasheets", "destination": "/en/catalog", "permanent": true },
-    { "source": "/catalago", "destination": "/catalogo", "permanent": true },
-    { "source": "/video-laringoscopio", "destination": "/productos/videolaringoscopio", "permanent": true },
-    { "source": "/bomba-de-nutricion-enteral", "destination": "/productos/bomba-nutricion-enteral", "permanent": true },
-    { "source": "/trocar-retractil-de-un-solo-uso", "destination": "/productos/trocares-desechables", "permanent": true },
-    { "source": "/contenedores-de-seguridad", "destination": "/catalogo/bioseguridad", "permanent": true },
-    { "source": "/bolsa-de-aspiracion", "destination": "/productos/bolsas-aspiracion", "permanent": true },
-    { "source": "/aplicador-esteril-desechable", "destination": "/productos/aplicador-clorhexidina-2", "permanent": true },
-    { "source": "/bolsa-de-nutricion", "destination": "/productos/bolsa-nutricion-enteral", "permanent": true },
-    { "source": "/pano-clinico-y-toalla-de-un-solo-uso", "destination": "/productos/pano-clinico-qmedical", "permanent": true },
-    { "source": "/lapiz-marcador-de-piel-y-limpiador-de-punta", "destination": "/productos/marcador-piel-esteril", "permanent": true },
-    { "source": "/guantes-de-nitrilo", "destination": "/productos/guantes-nitrilo", "permanent": true },
-    { "source": "/tubuladora-de-silicona-de-un-solo-uso", "destination": "/productos/tubuladura-silicona", "permanent": true },
-    { "source": "/cepillo-para-limpieza-de-instrumental-medico", "destination": "/productos/cepillos-limpieza-instrumental", "permanent": true },
-    { "source": "/iluminador-de-venas", "destination": "/catalogo", "permanent": true },
-    { "source": "/bomba-de-infusion", "destination": "/catalogo", "permanent": true }
+    {
+      "source": "/fichas-tecnicas",
+      "destination": "/catalogo",
+      "permanent": true
+    },
+    {
+      "source": "/fichas-tecnicas/(.*)",
+      "destination": "/catalogo",
+      "permanent": true
+    },
+    {
+      "source": "/en/datasheets",
+      "destination": "/en/catalog",
+      "permanent": true
+    },
+    {
+      "source": "/catalago",
+      "destination": "/catalogo",
+      "permanent": true
+    },
+    {
+      "source": "/video-laringoscopio",
+      "destination": "/productos/videolaringoscopio-vs-10h",
+      "permanent": true
+    },
+    {
+      "source": "/bomba-de-nutricion-enteral",
+      "destination": "/productos/bomba-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/trocar-retractil-de-un-solo-uso",
+      "destination": "/productos/trocar-para-cirugia-laparoscopica",
+      "permanent": true
+    },
+    {
+      "source": "/contenedores-de-seguridad",
+      "destination": "/catalogo/bioseguridad",
+      "permanent": true
+    },
+    {
+      "source": "/bolsa-de-aspiracion",
+      "destination": "/productos/bolsa-aspiracion-secreciones",
+      "permanent": true
+    },
+    {
+      "source": "/aplicador-esteril-desechable",
+      "destination": "/productos/aplicadores-clorhexidina-2",
+      "permanent": true
+    },
+    {
+      "source": "/bolsa-de-nutricion",
+      "destination": "/productos/bolsas-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/pano-clinico-y-toalla-de-un-solo-uso",
+      "destination": "/productos/pano-clinico-absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/lapiz-marcador-de-piel-y-limpiador-de-punta",
+      "destination": "/productos/marcador-piel-esteril",
+      "permanent": true
+    },
+    {
+      "source": "/guantes-de-nitrilo",
+      "destination": "/productos/guantes-nitrilo-sin-polvo",
+      "permanent": true
+    },
+    {
+      "source": "/tubuladora-de-silicona-de-un-solo-uso",
+      "destination": "/productos/manguera-o-tubuladura-de-silicona",
+      "permanent": true
+    },
+    {
+      "source": "/cepillo-para-limpieza-de-instrumental-medico",
+      "destination": "/productos/cepillo-limpieza-instrumental-dental",
+      "permanent": true
+    },
+    {
+      "source": "/iluminador-de-venas",
+      "destination": "/catalogo",
+      "permanent": true
+    },
+    {
+      "source": "/bomba-de-infusion",
+      "destination": "/catalogo",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/absorbentes",
+      "destination": "/catalogo/absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/absorbentes",
+      "destination": "/en/catalog/absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/antisepsia",
+      "destination": "/catalogo/antisepsia",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/antisepsia",
+      "destination": "/en/catalog/antisepsia",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/aspiracion",
+      "destination": "/catalogo/aspiracion",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/aspiracion",
+      "destination": "/en/catalog/aspiracion",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/bioseguridad",
+      "destination": "/catalogo/bioseguridad",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/bioseguridad",
+      "destination": "/en/catalog/bioseguridad",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/higiene-paciente",
+      "destination": "/catalogo/higiene-del-paciente",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/higiene-paciente",
+      "destination": "/en/catalog/higiene-del-paciente",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/instrumental",
+      "destination": "/catalogo/material-medico-no-instrumental",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/instrumental",
+      "destination": "/en/catalog/material-medico-no-instrumental",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/laparoscopia",
+      "destination": "/catalogo/instrumental-para-cirugia-laparoscopica",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/laparoscopia",
+      "destination": "/en/catalog/instrumental-para-cirugia-laparoscopica",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/nutricion-enteral",
+      "destination": "/catalogo/nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/nutricion-enteral",
+      "destination": "/en/catalog/nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/proteccion-personal",
+      "destination": "/catalogo/proteccion-personal",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/proteccion-personal",
+      "destination": "/en/catalog/proteccion-personal",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/via-aerea",
+      "destination": "/catalogo/via-aerea",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/via-aerea",
+      "destination": "/en/catalog/via-aerea",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/accesorios-aspiracion",
+      "destination": "/catalogo/aspiracion/accesorios-para-aspiracion",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/accesorios-aspiracion",
+      "destination": "/en/catalog/aspiracion/accesorios-para-aspiracion",
+      "permanent": true
+    },
+    {
+      "source": "/productos/alfombra-descontaminante",
+      "destination": "/productos/tapete-adhesivo-descontaminante",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/alfombra-descontaminante",
+      "destination": "/en/products/tapete-adhesivo-descontaminante",
+      "permanent": true
+    },
+    {
+      "source": "/productos/aplicador-clorhexidina-2",
+      "destination": "/productos/aplicadores-clorhexidina-2",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/aplicador-clorhexidina-2",
+      "destination": "/en/products/aplicadores-clorhexidina-2",
+      "permanent": true
+    },
+    {
+      "source": "/productos/aplicador-clorhexidina-6ml",
+      "destination": "/productos/aplicadores-clorhexidina-2",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/aplicador-clorhexidina-6ml",
+      "destination": "/en/products/aplicadores-clorhexidina-2",
+      "permanent": true
+    },
+    {
+      "source": "/productos/bolsa-conteo-gasas",
+      "destination": "/productos/bolsas-para-contar-gasas",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/bolsa-conteo-gasas",
+      "destination": "/en/products/bolsas-para-contar-gasas",
+      "permanent": true
+    },
+    {
+      "source": "/productos/bolsa-nutricion-enteral",
+      "destination": "/productos/bolsas-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/bolsa-nutricion-enteral",
+      "destination": "/en/products/bolsas-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/productos/bolsa-vomito",
+      "destination": "/productos/bolsa-emesis",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/bolsa-vomito",
+      "destination": "/en/products/bolsa-emesis",
+      "permanent": true
+    },
+    {
+      "source": "/productos/bolsas-aspiracion",
+      "destination": "/productos/bolsa-aspiracion-secreciones",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/bolsas-aspiracion",
+      "destination": "/en/products/bolsa-aspiracion-secreciones",
+      "permanent": true
+    },
+    {
+      "source": "/productos/bomba-nutricion-enteral",
+      "destination": "/productos/bomba-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/bomba-nutricion-enteral",
+      "destination": "/en/products/bomba-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/productos/canister-reusable",
+      "destination": "/productos/canister-rigido-reusable",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/canister-reusable",
+      "destination": "/en/products/canister-rigido-reusable",
+      "permanent": true
+    },
+    {
+      "source": "/productos/cepillos-limpieza-instrumental",
+      "destination": "/productos/cepillo-limpieza-instrumental-dental",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/cepillos-limpieza-instrumental",
+      "destination": "/en/products/cepillo-limpieza-instrumental-dental",
+      "permanent": true
+    },
+    {
+      "source": "/productos/contador-agujas",
+      "destination": "/productos/contador-de-aguja-doble-iman",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/contador-agujas",
+      "destination": "/en/products/contador-de-aguja-doble-iman",
+      "permanent": true
+    },
+    {
+      "source": "/productos/contenedores-citotoxicos",
+      "destination": "/productos/contenedores-residuos-citotoxicos",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/contenedores-citotoxicos",
+      "destination": "/en/products/contenedores-residuos-citotoxicos",
+      "permanent": true
+    },
+    {
+      "source": "/productos/guantes-nitrilo",
+      "destination": "/productos/guantes-nitrilo-sin-polvo",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/guantes-nitrilo",
+      "destination": "/en/products/guantes-nitrilo-sin-polvo",
+      "permanent": true
+    },
+    {
+      "source": "/productos/manta-absorbente-jiehong",
+      "destination": "/productos/manta-absorbente-de-fluidos-antideslizante",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/manta-absorbente-jiehong",
+      "destination": "/en/products/manta-absorbente-de-fluidos-antideslizante",
+      "permanent": true
+    },
+    {
+      "source": "/productos/manta-absorbente-xodus",
+      "destination": "/productos/mantas-super-absorbentes",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/manta-absorbente-xodus",
+      "destination": "/en/products/mantas-super-absorbentes",
+      "permanent": true
+    },
+    {
+      "source": "/productos/pano-clinico-qmedical",
+      "destination": "/productos/pano-clinico-absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/pano-clinico-qmedical",
+      "destination": "/en/products/pano-clinico-absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/productos/pano-clinico-telijie",
+      "destination": "/productos/pano-clinico-absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/pano-clinico-telijie",
+      "destination": "/en/products/pano-clinico-absorbente",
+      "permanent": true
+    },
+    {
+      "source": "/productos/protector-impermeable",
+      "destination": "/productos/protector-tela-impermeable",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/protector-impermeable",
+      "destination": "/en/products/protector-tela-impermeable",
+      "permanent": true
+    },
+    {
+      "source": "/productos/set-alimentacion-enteral",
+      "destination": "/productos/set-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/set-alimentacion-enteral",
+      "destination": "/en/products/set-de-nutricion-enteral",
+      "permanent": true
+    },
+    {
+      "source": "/productos/toalla-secado-corporal",
+      "destination": "/productos/toalla-para-secado-corporal",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/toalla-secado-corporal",
+      "destination": "/en/products/toalla-para-secado-corporal",
+      "permanent": true
+    },
+    {
+      "source": "/productos/toallitas-limpieza-piel",
+      "destination": "/productos/toallita-limpieza-piel-clorhexidina",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/toallitas-limpieza-piel",
+      "destination": "/en/products/toallita-limpieza-piel-clorhexidina",
+      "permanent": true
+    },
+    {
+      "source": "/productos/trocares-desechables",
+      "destination": "/productos/trocar-para-cirugia-laparoscopica",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/trocares-desechables",
+      "destination": "/en/products/trocar-para-cirugia-laparoscopica",
+      "permanent": true
+    },
+    {
+      "source": "/productos/tubuladura-silicona",
+      "destination": "/productos/manguera-o-tubuladura-de-silicona",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/tubuladura-silicona",
+      "destination": "/en/products/manguera-o-tubuladura-de-silicona",
+      "permanent": true
+    },
+    {
+      "source": "/productos/tubuladura-succion-esteril",
+      "destination": "/productos/tubo-succion-sin-yankauer",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/tubuladura-succion-esteril",
+      "destination": "/en/products/tubo-succion-sin-yankauer",
+      "permanent": true
+    },
+    {
+      "source": "/productos/videolaringoscopio",
+      "destination": "/productos/videolaringoscopio-vs-10h",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/videolaringoscopio",
+      "destination": "/en/products/videolaringoscopio-vs-10h",
+      "permanent": true
+    }
   ]
 }

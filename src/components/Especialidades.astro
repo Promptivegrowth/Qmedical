@@ -2,6 +2,7 @@
 import Icon from './Icon.astro';
 import { especialidades } from '../data/especialidades';
 import { categoriaPorSlug, productosDeCategoria } from '../data/catalogo';
+// La direccion de una categoria lleva su linea delante.
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { categoriaEn, especialidadEn } from '../i18n/contenido';
@@ -52,7 +53,7 @@ const fichas = especialidades.map((base, i) => {
     .filter(Boolean)
     .map((c) => ({
       ...categoriaEn(c!, lang),
-      href: via(lang, 'categoria', c!.slug),
+      href: via(lang, 'categoria', `${c!.linea}/${c!.slug}`),
       total: productosDeCategoria(c!.slug).length,
     }));
   return {

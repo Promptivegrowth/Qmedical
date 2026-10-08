@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { categorias } from '../data/catalogo';
+import { lineas } from '../data/catalogo';
 import { ruta as via } from '../i18n/rutas';
 import { categoriaEn } from '../i18n/contenido';
 
@@ -17,7 +17,7 @@ import { categoriaEn } from '../i18n/contenido';
  *
  * Sin JavaScript queda en castellano, que es el idioma por defecto del sitio.
  */
-const atajos = categorias.map((c) => ({
+const atajos = lineas.map((c) => ({
   es: c,
   en: categoriaEn(c, 'en'),
   href: via('es', 'categoria', c.slug),

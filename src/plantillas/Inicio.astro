@@ -8,10 +8,10 @@ import Especialidades from '../components/Especialidades.astro';
 import Respaldo from '../components/Respaldo.astro';
 import { site } from '../data/site';
 import { marcas } from '../data/marcas';
-import { categorias, productos, productosDeCategoria, productosDestacados } from '../data/catalogo';
+import { lineas as lineasCat, productos, productosDeLinea, productosDestacados } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, empresaEn } from '../i18n/contenido';
+import { lineaEn, categoriaEn, empresaEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -26,7 +26,7 @@ const T = {
     meta: 'Q-MEDICAL S.A.C. — Dispositivos médicos y bioseguridad en el Perú',
     metaDesc: site.descripcion,
     lineasAnte: 'Líneas de producto',
-    lineasTitulo: 'El catálogo, ordenado en diez líneas',
+    lineasTitulo: 'El catálogo, ordenado en once líneas',
     lineasTexto:
       'Cada línea agrupa los productos por la función que cumplen, no por el ' +
       'proveedor que los fabrica. Así el área usuaria encuentra lo que busca ' +
@@ -109,11 +109,13 @@ const ARCHIVOS_FOTOS = [
 ];
 const galeria = ARCHIVOS_FOTOS.map((src, i) => ({ src, alt: T.fotos[i] }));
 
-const matriz = categorias.map((c, i) => ({
-  ...categoriaEn(c, lang),
+const matriz = lineasCat.map((c, i) => ({
+  ...lineaEn(c, lang),
+  corto: lineaEn(c, lang).nombre,
+  sintesis: lineaEn(c, lang).resumen,
   n: String(i + 1).padStart(2, '0'),
   href: via(lang, 'categoria', c.slug),
-  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+  cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
 }));
 
 ---

@@ -93,7 +93,7 @@ const schema = {
 <Base
   lang={lang}
   clave="categoria"
-  slug={base.slug}
+  slug={`${base.linea}/${base.slug}`}
   title={categoria.nombre}
   description={categoria.descripcion}
   schema={schema}
