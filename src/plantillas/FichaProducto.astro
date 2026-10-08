@@ -6,17 +6,19 @@ import CtaContacto from '../components/CtaContacto.astro';
 import { site, waMensajes } from '../data/site';
 import { marcaPorSlug } from '../data/marcas';
 import {
-  presentacionDe,
   productos,
   categoriaPorSlug,
+  lineaPorSlug,
   imagenesDe,
+  imagenDePresentacion,
   productosDeCategoria,
+  resumenDe,
   type Producto,
 } from '../data/catalogo';
 
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+import { categoriaEn, lineaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 
 /**
  * Ficha de producto. La lista de direcciones la declara cada página de
@@ -33,8 +35,39 @@ const wa = lang === 'en' ? waMensajesEn : waMensajes;
 const p = productoEn(origen, lang);
 
 const cat = categoriaEn(categoriaPorSlug.get(origen.categoria)!, lang);
-const marca = origen.marca ? marcaPorSlug.get(origen.marca) : undefined;
-const imgs = imagenesDe(origen.slug);
+const linea = lineaEn(lineaPorSlug.get(origen.linea)!, lang);
+const resumen = resumenDe(p);   // solo para la metadescripción
+
+/* La marca ya no cuelga del producto sino de cada presentación: un mismo
+   producto puede venir de dos fabricantes. Se acredita el conjunto. */
+const marcas = [...new Map(
+  origen.presentaciones
+    .filter((pr) => pr.marca)
+    .map((pr) => [pr.marca, { nombre: pr.marca, slug: pr.marcaSlug }])
+).values()];
+const marca = marcas.length === 1 && marcas[0].slug
+  ? marcaPorSlug.get(marcas[0].slug)
+  : undefined;
+
+/* Las fotos vienen alineadas con las presentaciones; se filtran los huecos
+   para la galería, conservando a qué presentación pertenece cada una. */
+const imgs = imagenesDe(origen.slug).filter(Boolean);
+const galeria = origen.presentaciones
+  .map((pr, i) => ({ pr, src: imagenDePresentacion(origen.slug, i) }))
+  .filter((x) => x.src);
+
+/** La ruta de una categoría lleva su línea delante. */
+const rutaCategoria = via(lang, 'categoria', `${origen.linea}/${origen.categoria}`);
+const rutaLinea = via(lang, 'categoria', origen.linea);
+
+/* Consulta directa por WhatsApp, que es lo que pidió la empresa: el mensaje
+   llega con el producto ya escrito para que nadie tenga que explicarlo. */
+const waProducto = `https://wa.me/${site.whatsapp.numero.replace(/\D/g, '')}?text=` +
+  encodeURIComponent(
+    lang === 'en'
+      ? `Hello, Q-MEDICAL. I would like more information about ${p.nombre}.`
+      : `Hola, Q-MEDICAL. Quisiera más información sobre ${p.nombre}.`
+  );
 const relacionados = productosDeCategoria(origen.categoria)
   .filter((o) => o.slug !== origen.slug)
   .slice(0, 4);
@@ -49,7 +82,16 @@ const T = {
     caracteristicas: 'Características técnicas',
     aplicaciones: 'Aplicaciones',
     presentaciones: 'Presentaciones disponibles',
-    presentacionesPie: 'Indíquenos cuál necesita al pedir su cotización.',
+    presentacionesPie:
+      'Cada presentación se cotiza por separado. Indíquenos cuál necesita y la ' +
+      'cantidad estimada.',
+    unaPresentacion: ' presentación',
+    variasPresentaciones: ' presentaciones',
+    porWhatsapp: 'Consultar por WhatsApp',
+    variasMarcas: 'Disponible de más de un fabricante: ',
+    esMarca: 'Marca',
+    esUnidad: 'Unidad de venta',
+    esDetalle: 'Detalle',
     tambienEn: (c: string) => `También en ${c.toLowerCase()}`,
     verLinea: 'Ver la línea completa',
     cta: (n: string) => `¿Necesita cotizar ${n}?`,
@@ -72,7 +114,16 @@ const T = {
     caracteristicas: 'Technical features',
     aplicaciones: 'Applications',
     presentaciones: 'Available presentations',
-    presentacionesPie: 'Tell us which one you need when you request your quotation.',
+    presentacionesPie:
+      'Each presentation is quoted separately. Tell us which one you need and ' +
+      'the quantity you expect.',
+    unaPresentacion: ' presentation',
+    variasPresentaciones: ' presentations',
+    porWhatsapp: 'Ask on WhatsApp',
+    variasMarcas: 'Available from more than one manufacturer: ',
+    esMarca: 'Brand',
+    esUnidad: 'Sold by',
+    esDetalle: 'Detail',
     tambienEn: (c: string) => `More in ${c.toLowerCase()}`,
     verLinea: 'See the whole line',
     cta: (n: string) => `Do you need a quotation for ${n}?`,
@@ -98,7 +149,7 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: p.nombre,
-    description: p.resumen,
+    description: resumen,
     image: imgs.map((i) => `${site.url}/img/${i}`),
     ...(marca ? { brand: { '@type': 'Brand', name: marca.nombre } } : {}),
     category: cat.nombre,
@@ -114,7 +165,7 @@ const schema = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t.irInicio, item: site.url + via(lang, 'inicio') },
       { '@type': 'ListItem', position: 2, name: T.catalogo, item: site.url + via(lang, 'catalogo') },
-      { '@type': 'ListItem', position: 3, name: cat.corto, item: site.url + via(lang, 'categoria', cat.slug) },
+      { '@type': 'ListItem', position: 3, name: cat.nombre, item: site.url + rutaCategoria },
       { '@type': 'ListItem', position: 4, name: p.nombre },
     ],
   },
@@ -127,8 +178,8 @@ const schema = [
   slug={origen.slug}
   title={p.nombre}
   description={lang === 'en'
-    ? `${p.resumen} ${marca ? marca.nombre + ' brand.' : ''} Downloadable datasheet and quotations for healthcare institutions in Peru.`
-    : `${p.resumen} ${marca ? 'Marca ' + marca.nombre + '.' : ''} Ficha técnica descargable y cotización para instituciones de salud del Perú.`}
+    ? `${resumen} ${marca ? marca.nombre + ' brand.' : ''} Downloadable datasheet and quotations for healthcare institutions in Peru.`
+    : `${resumen} ${marca ? 'Marca ' + marca.nombre + '.' : ''} Ficha técnica descargable y cotización para instituciones de salud del Perú.`}
   image={imgs[0] ? `/img/${imgs[0]}` : undefined}
   schema={schema}
 >
@@ -140,7 +191,7 @@ const schema = [
         <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
         <li><a href={via(lang, 'catalogo')}>{T.catalogo}</a></li>
         <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
-        <li><a href={via(lang, 'categoria', cat.slug)}>{cat.corto}</a></li>
+        <li><a href={rutaCategoria}>{cat.nombre}</a></li>
         <li aria-hidden="true"><Icon name="chevron" size={10} /></li>
         <li><span>{p.nombre}</span></li>
       </ol>
@@ -182,18 +233,26 @@ const schema = [
 
       <div class="apertura__texto min-w-0">
         <p class="credito">
-          {marca && <a href={via(lang, 'marcas') + '#' + marca.slug} class="credito__marca">{marca.nombre}</a>}
-          <a href={via(lang, 'categoria', cat.slug)} class="credito__cat">
-            <Icon name={cat.icono} size={13} />{cat.corto}
+          {marcas.length === 1 && (
+            marcas[0].slug
+              ? <a href={via(lang, 'marcas') + '#' + marcas[0].slug} class="credito__marca">{marcas[0].nombre}</a>
+              : <span class="credito__marca">{marcas[0].nombre}</span>
+          )}
+          <a href={rutaCategoria} class="credito__cat">
+            <Icon name={linea.icono} size={13} />{cat.nombre}
           </a>
         </p>
 
         <h1 class="display-lg mt-6">{p.nombre}</h1>
-        <p class="cuerpo-lg mt-6">{p.resumen}</p>
+        <p class="cuerpo-lg mt-6">{p.descripcion}</p>
 
         <div class="mt-9 flex flex-wrap gap-3">
           <a href={`${via(lang, 'contacto')}?producto=${origen.slug}#cotizar`} class="pill pill-tinta">
             {t.cotizar}<Icon name="flecha" size={16} />
+          </a>
+          <!-- La empresa pidio una via directa, sin formulario de por medio. -->
+          <a href={waProducto} target="_blank" rel="noopener" class="pill pill-linea">
+            <Icon name="whatsapp" size={16} />{T.porWhatsapp}
           </a>
         </div>
 
@@ -203,61 +262,66 @@ const schema = [
             class="underline underline-offset-4">{T.correoEnlace}</a>
         </p>
 
-        <div class="cuerpo mt-10 border-t border-[var(--color-linea)] pt-9">
-          {p.descripcion.map((d) => <p>{d}</p>)}
-        </div>
-
-        {p.presentacion && (
-          <div class="presentaciones__fila">
-            <p class="ante">{t.producto.presentacion}</p>
-            <p class="mt-2 text-[0.92rem] leading-relaxed">{p.presentacion}</p>
-          </div>
+        {marcas.length > 1 && (
+          <p class="mt-6 text-[0.86rem] text-[var(--color-tinta-70)]">
+            {T.variasMarcas}<strong>{marcas.map((m) => m.nombre).join(' · ')}</strong>
+          </p>
         )}
       </div>
     </div>
   </section>
 
-  <!-- ── Características y códigos ───────────────────────────────────── -->
+  <!-- ── Presentaciones y especificaciones ───────────────────────────── -->
   <section class="aire bg-[var(--color-papel-2)]">
-    <div class="caja tecnico">
-      <div class="min-w-0">
-        <h2 class="display-md">{T.caracteristicas}</h2>
-        <ul class="caracteristicas" data-anim-grupo="35">
-          {p.caracteristicas.map((c) => (
-            <li data-anim="sube"><Icon name="visto" size={15} class="mt-[0.35rem] shrink-0 text-[var(--color-brand-700)]" /><span>{c}</span></li>
-          ))}
-        </ul>
-
-        {p.usos && (
-          <div class="mt-12">
-            <h2 class="display-md">{T.aplicaciones}</h2>
-            <ul class="etiquetas mt-6">
-              {p.usos.map((u) => <li>{u}</li>)}
-            </ul>
-          </div>
-        )}
+    <div class="caja">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          <h2 class="display-md">{T.presentaciones}</h2>
+          <p class="cuerpo mt-3 max-w-xl">{T.presentacionesPie}</p>
+        </div>
+        <p class="text-[0.82rem] text-[var(--color-tinta-45)]">
+          {p.presentaciones.length}
+          {p.presentaciones.length === 1 ? T.unaPresentacion : T.variasPresentaciones}
+        </p>
       </div>
 
-      {p.variantes && (
-        <div class="min-w-0">
-          <h2 class="display-md">{T.presentaciones}</h2>
-          <p class="cuerpo mt-4 max-w-md">{T.presentacionesPie}</p>
+      <!-- Una lámina por presentación: su foto, lo que la distingue y su
+           ficha. Es la forma que pidió la empresa, con el cuadro de
+           especificaciones a la vista en vez de escondido en un desplegable. -->
+      <ul class="presentaciones" data-anim-grupo="70">
+        {p.presentaciones.map((pr, i) => {
+          const foto = imagenDePresentacion(origen.slug, i, 480);
+          return (
+            <li class="presentacion" data-anim>
+              <div class="presentacion__foto">
+                {foto
+                  ? <img src={foto} width="480" height="480" loading="lazy" decoding="async"
+                      alt={`${p.nombre}${pr.medida ? ' — ' + pr.medida : ''}`} />
+                  : <span class="presentacion__sinfoto"><Icon name="reticula" size={22} /></span>}
+              </div>
 
-          <!-- Encabeza la medida, que es por lo que se elige; la referencia
-               del fabricante no se publica: es interna de la empresa. -->
-          <ul class="presentaciones mt-7">
-            {p.variantes.map((v) => {
-              const pres = presentacionDe(v);
-              return (
-                <li class="presentaciones__fila">
-                  <span class="presentaciones__titulo">{pres.titulo}</span>
-                  {pres.nota && <span class="presentaciones__nota">{pres.nota}</span>}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+              <div class="presentacion__ficha">
+                {pr.medida && <p class="presentacion__medida">{pr.medida}</p>}
+                <dl class="especificaciones">
+                  {pr.marca && (
+                    <div><dt>{T.esMarca}</dt><dd>{pr.marca}</dd></div>
+                  )}
+                  {pr.unidad && (
+                    <div><dt>{T.esUnidad}</dt><dd>{pr.unidad}</dd></div>
+                  )}
+                  {pr.caracteristicas.map((c) => {
+                    const corte = c.indexOf(':');
+                    return corte > 0
+                      ? <div><dt>{c.slice(0, corte)}</dt><dd>{c.slice(corte + 1).trim()}</dd></div>
+                      : <div><dt>{T.esDetalle}</dt><dd>{c}</dd></div>;
+                  })}
+                </dl>
+                {pr.descripcion && <p class="presentacion__nota">{pr.descripcion}</p>}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   </section>
 
@@ -266,8 +330,8 @@ const schema = [
     <section class="aire bg-[var(--color-papel-2)]">
       <div class="caja">
         <div class="flex flex-wrap items-end justify-between gap-5">
-          <h2 class="display-md">{T.tambienEn(cat.corto)}</h2>
-          <a href={via(lang, 'categoria', cat.slug)} class="enlace">{T.verLinea}<Icon name="flecha" size={15} /></a>
+          <h2 class="display-md">{T.tambienEn(cat.nombre)}</h2>
+          <a href={rutaCategoria} class="enlace">{T.verLinea}<Icon name="flecha" size={15} /></a>
         </div>
         <div class="rejilla-rel mt-10" data-anim-grupo="60">
           {relacionados.map((o) => (
@@ -361,11 +425,105 @@ const schema = [
   }
   .credito__cat:hover { border-color: var(--color-brand-300); color: var(--color-brand-700); }
 
-  .presentaciones__fila {
-    margin-top: 2rem;
-    padding: 1.35rem 1.5rem;
+  /* ── Presentaciones ───────────────────────────────────────────────────
+     Una lámina por presentación: la foto manda, y debajo el cuadro de
+     especificaciones. El cuadro se arma con una lista de definición porque
+     eso es lo que es —pares de dato y valor—, y así se lee bien también en
+     un lector de pantalla y sin hojas de estilo. */
+  .presentaciones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--medianil);
+    margin-top: 2.75rem;
+  }
+  @media (min-width: 640px) { .presentaciones { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .presentaciones { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .presentacion {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-lg);
+    transition: border-color 0.35s var(--ease-editorial),
+      box-shadow 0.45s var(--ease-editorial);
+  }
+  .presentacion:hover {
+    border-color: var(--color-brand-300);
+    box-shadow: 0 24px 46px -30px rgba(27, 47, 122, 0.38);
+  }
+
+  .presentacion__foto {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    padding: 1.25rem;
     background: var(--color-papel-2);
-    border-radius: var(--r-md);
+  }
+  .presentacion__foto img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+  }
+  .presentacion__sinfoto {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-tinta-45);
+  }
+
+  .presentacion__ficha { padding: 1.4rem 1.5rem 1.6rem; }
+
+  .presentacion__medida {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
+  .especificaciones {
+    display: grid;
+    gap: 0;
+    margin-top: 1.1rem;
+    border-top: 1px solid var(--color-linea);
+    font-size: 0.82rem;
+  }
+  .especificaciones > div {
+    display: grid;
+    grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--color-linea);
+  }
+  .especificaciones dt {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+    align-self: center;
+  }
+  .especificaciones dd {
+    margin: 0;
+    line-height: 1.45;
+    color: var(--color-tinta);
+  }
+
+  .presentacion__nota {
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--color-tinta-70);
+  }
+
+  /* En pantallas estrechas el par de dato y valor se apila: con 7rem fijos
+     para el rótulo, los valores largos quedaban en una columna de dos letras. */
+  @media (max-width: 400px) {
+    .especificaciones > div { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
   }
 
   /* ── Técnico ──────────────────────────────────────────────────────── */

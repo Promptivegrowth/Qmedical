@@ -1,0 +1,16 @@
+---
+// Una categoría del catálogo, dentro de su línea. In English.
+import LineaCatalogo from '../../../../plantillas/LineaCatalogo.astro';
+import { categorias } from '../../../../data/catalogo';
+
+export function getStaticPaths() {
+  return categorias.map((c) => ({
+    params: { linea: c.linea, categoria: c.slug },
+    props: { categoria: c },
+  }));
+}
+
+const { categoria } = Astro.props;
+---
+
+<LineaCatalogo lang="en" categoria={categoria} />

@@ -1,10 +1,10 @@
 ---
 import Icon from './Icon.astro';
 import { site, redes, contactos, whatsapp, waMensajes } from '../data/site';
-import { categorias } from '../data/catalogo';
+import { lineas as lineasCat } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, areasEn, empresaEn, waMensajesEn } from '../i18n/contenido';
+import { lineaEn, categoriaEn, areasEn, empresaEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -15,8 +15,9 @@ const t = textos(lang);
 const wa = lang === 'en' ? waMensajesEn : waMensajes;
 const anio = new Date().getFullYear();
 
-const lineas = categorias.map((c) => ({
-  ...categoriaEn(c, lang),
+const lineas = lineasCat.map((c) => ({
+  ...lineaEn(c, lang),
+  corto: lineaEn(c, lang).nombre,
   href: via(lang, 'categoria', c.slug),
 }));
 

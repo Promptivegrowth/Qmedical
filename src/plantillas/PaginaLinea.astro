@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import ProductoCard from '../components/ProductoCard.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import {
+  categoriasDeLinea,
+  productosDeCategoria,
+  productosDeLinea,
+  marcasDe,
+  type Linea,
+} from '../data/catalogo';
+import { site, waMensajes } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+import { textos } from '../i18n/textos';
+import { categoriaEn, lineaEn, waMensajesEn } from '../i18n/contenido';
+
+/**
+ * Una línea del catálogo: el nivel que la empresa usa para ordenar su
+ * portafolio. Muestra sus categorías y, dentro de cada una, sus productos.
+ *
+ * Agrupar por categoría y no listar los productos de corrido es deliberado:
+ * una línea como aspiración mezcla bolsas, cánister y accesorios, y quien
+ * compra busca dentro de uno de esos grupos, no en el montón.
+ *
+ * La lista de direcciones la declara cada página de entrada —getStaticPaths
+ * solo vale ahí—; aquí llega la línea ya resuelta en castellano.
+ */
+interface Props {
+  lang?: Idioma;
+  linea: Linea;
+}
+const { lang = 'es', linea: base } = Astro.props;
+
+const t = textos(lang);
+const wa = lang === 'en' ? waMensajesEn : waMensajes;
+const linea = lineaEn(base, lang);
+
+const grupos = categoriasDeLinea(base.slug).map((c) => ({
+  cat: categoriaEn(c, lang),
+  href: via(lang, 'categoria', `${base.slug}/${c.slug}`),
+  items: productosDeCategoria(c.slug),
+}));
+const total = productosDeLinea(base.slug).length;
+const firmas = marcasDe(productosDeLinea(base.slug));
+
+const T = {
+  es: {
+    ante: 'Línea de producto',
+    catalogo: 'Catálogo',
+    unidad: (n: number) => (n === 1 ? 'producto' : 'productos'),
+    marcas: 'Marcas',
+    cobertura: 'Cobertura',
+    coberturaDato: 'Todas las regiones del Perú',
+    categorias: (n: number) => `${n} categoría${n === 1 ? '' : 's'} en esta línea`,
+    verCategoria: 'Ver la categoría',
+    cta: (l: string) => `¿Necesita cotizar ${l.toLowerCase()}?`,
+    ctaTexto:
+      'Indíquenos los productos, las presentaciones y la institución de ' +
+      'destino. Le respondemos con precio, disponibilidad y tiempo de entrega.',
+  },
+  en: {
+    ante: 'Product line',
+    catalogo: 'Catalogue',
+    unidad: (n: number) => (n === 1 ? 'product' : 'products'),
+    marcas: 'Brands',
+    cobertura: 'Coverage',
+    coberturaDato: 'Every region of Peru',
+    categorias: (n: number) => `${n} categor${n === 1 ? 'y' : 'ies'} in this line`,
+    verCategoria: 'View the category',
+    cta: (l: string) => `Need a quotation for ${l.toLowerCase()}?`,
+    ctaTexto:
+      'Tell us the products, the presentations and the institution they are ' +
+      'for. We reply with pricing, availability and lead time.',
+  },
+}[lang];
+---
+
+<Base
+  lang={lang}
+  clave="categoria"
+  slug={base.slug}
+  title={linea.nombre}
+  description={linea.resumen}
+>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={linea.nombre}
+    texto={linea.resumen}
+    migas={[{ nombre: T.catalogo, href: via(lang, 'catalogo') }, { nombre: linea.nombre }]}
+    dato={{ valor: String(total), etiqueta: T.unidad(total) }}
+  />
+
+  <!-- ── Marcas y cobertura ──────────────────────────────────────────── -->
+  <section class="border-b border-[var(--color-linea)] bg-[var(--color-papel)]">
+    <div class="caja grid gap-8 py-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <p class="ante ante-brand">{T.marcas}</p>
+        <p class="mt-2 text-[0.92rem] leading-relaxed">{firmas.join(' · ')}</p>
+      </div>
+      <div>
+        <p class="ante ante-brand">{T.cobertura}</p>
+        <p class="mt-2 text-[0.92rem] leading-relaxed">{T.coberturaDato}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Las categorías, cada una con sus productos ──────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]">
+    <div class="caja">
+      <p class="ante ante-brand">{T.categorias(grupos.length)}</p>
+
+      {grupos.map((g) => (
+        <div class="grupo">
+          <div class="grupo__alto">
+            <h2 class="display-md">{g.cat.nombre}</h2>
+            <a href={g.href} class="enlace">
+              {T.verCategoria}<Icon name="flecha" size={15} />
+            </a>
+          </div>
+
+          <ul class="rejilla-linea" data-anim-grupo="60">
+            {g.items.map((p) => <ProductoCard lang={lang} producto={p} />)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <CtaContacto
+    lang={lang}
+    titulo={T.cta(linea.nombre)}
+    texto={T.ctaTexto}
+    wa={wa.cotizar}
+  />
+</Base>
+
+<style>
+  .grupo { margin-top: 3.5rem; }
+  .grupo:first-of-type { margin-top: 2rem; }
+
+  .grupo__alto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--color-linea);
+  }
+
+  .rejilla-linea {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem var(--medianil);
+    margin-top: 2.25rem;
+  }
+  @media (min-width: 640px) { .rejilla-linea { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-linea { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+</style>

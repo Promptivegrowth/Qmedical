@@ -1,0 +1,13 @@
+---
+// Una línea del catálogo, con sus categorías. In English.
+import PaginaLinea from '../../../plantillas/PaginaLinea.astro';
+import { lineas } from '../../../data/catalogo';
+
+export function getStaticPaths() {
+  return lineas.map((l) => ({ params: { linea: l.slug }, props: { linea: l } }));
+}
+
+const { linea } = Astro.props;
+---
+
+<PaginaLinea lang="en" linea={linea} />

@@ -1,1244 +1,2144 @@
-import manifest from '../../public/img/manifest.json';
+/**
+ * Catálogo de Q-MEDICAL, en cuatro niveles.
+ *
+ *   línea → categoría → producto → presentación
+ *
+ * La presentación es la unidad que la empresa vende —una capacidad, una
+ * medida, un modelo— y la que tiene fotografía propia. Por eso una ficha de
+ * producto reúne todas sus presentaciones en vez de abrir una página por
+ * cada una: quien compra elige la medida dentro del producto, no entre
+ * páginas casi idénticas.
+ *
+ * Los datos provienen del RESUMEN DE PRODUCTOS 2026 que entregó la empresa;
+ * este archivo lo genera scripts/ a partir de esa hoja, así que conviene
+ * corregir en el origen y volver a generarlo antes que editarlo a mano.
+ */
 
-/* ==========================================================================
-   Catálogo Q-MEDICAL S.A.C.
-
-   El contenido técnico proviene de las fichas técnicas oficiales de cada
-   producto (carpeta "Ficha técnica productos" en la raíz del proyecto).
-
-   El sitio ya no publica esas fichas como PDF descargable: la empresa decidió
-   retirarlas y entregarlas a petición. Por eso aquí no queda ni el índice de
-   documentos ni la correspondencia producto↔ficha. Si algún día se quisieran
-   volver a publicar, están en el historial del repositorio, en el commit que
-   las retiró.
-   ========================================================================== */
-
-export interface Variante {
-  /**
-   * Referencia del fabricante. NO se publica en la web: es un dato interno
-   * de la empresa. Se conserva porque es la que empareja la variante con su
-   * ficha técnica y la que viaja en la orden de compra.
-   *
-   * Es opcional: hay presentaciones que son una medida y nada más —los
-   * diámetros de una tubuladura, por ejemplo—, y para esas la empresa no
-   * maneja ninguna referencia que anotar.
-   */
-  codigo?: string;
-  /** Lo que distingue a esta presentación, en el lenguaje de quien compra. */
-  detalle: string;
-  /**
-   * Marca las variantes cuyo rótulo no es una referencia sino la
-   * presentación misma —una talla, un volumen, una formulación—. En esas,
-   * el rótulo sí se publica y el detalle pasa a segundo término.
-   */
-  codigoEsPresentacion?: boolean;
+export interface Presentacion {
+  /** Lo que distingue a esta presentación: una capacidad, una medida, un modelo. */
+  medida: string;
+  /** Marca, tal como la nombra la empresa. */
+  marca: string;
+  /** Slug de la marca cuando tiene ficha propia en el sitio. */
+  marcaSlug?: string;
+  /** Cómo se vende: por unidades, por cajas… */
+  unidad: string;
+  /** Material, volumen y empaque: lo que cambia de una presentación a otra. */
+  caracteristicas: string[];
+  /** Solo cuando difiere de la descripción del producto. */
+  descripcion?: string;
 }
 
 export interface Producto {
   slug: string;
   nombre: string;
+  /** Slug de la línea a la que pertenece. */
+  linea: string;
+  /** Slug de la categoría dentro de esa línea. */
   categoria: string;
-  /**
-    * Marca asociada, por su slug en data/marcas.ts.
-    *
-    * Es opcional porque un producto puede entrar al catalogo antes de que la
-    * empresa confirme de quien es. Mientras falte, la ficha y la tarjeta
-    * simplemente no muestran credito de marca: no se sustituye por otra ni
-    * se atribuye a Q-MEDICAL.
-    */
-  marca?: string;
-  resumen: string;
-  descripcion: string[];
-  caracteristicas: string[];
-  presentacion?: string;
-  usos?: string[];
-  variantes?: Variante[];
+  descripcion: string;
+  presentaciones: Presentacion[];
   destacado?: boolean;
 }
 
 export interface Categoria {
   slug: string;
   nombre: string;
-  corto: string;
-  /**
-   * Para qué sirve la línea, en una frase y sin jerga. Es lo que permite que
-   * alguien ajeno al sector entienda el índice del catálogo sin abrir nada.
-   */
-  sintesis: string;
-  descripcion: string;
+  /** Línea que la contiene. */
+  linea: string;
+}
+
+export interface Linea {
+  slug: string;
+  nombre: string;
+  resumen: string;
   icono: string;
 }
 
-export const categorias: Categoria[] = [
+export const lineas: Linea[] = [
   {
     slug: 'bioseguridad',
-    nombre: 'Bioseguridad y manejo de residuos',
-    corto: 'Bioseguridad',
-    sintesis: 'Contención y descarte seguro de residuos',
-    descripcion:
-      'Conjunto de principios, normas y tecnologías para evitar el riesgo que ' +
-      'proviene de la exposición a agentes biológicos. Contenedores rígidos ' +
-      'resistentes a la punción para cada tipo de residuo y volumen de servicio.',
+    nombre: 'Bioseguridad',
+    resumen:
+      'Productos para la prevención y el control de riesgos biológicos en ' +
+      'establecimientos de salud.',
     icono: 'bioseguridad',
   },
   {
-    slug: 'antisepsia',
-    nombre: 'Antisepsia y preparación de piel',
-    corto: 'Antisepsia',
-    sintesis: 'Preparación de piel y lavado quirúrgico',
-    descripcion:
-      'Empleo de sustancias químicas para inhibir el crecimiento o disminuir ' +
-      'el número de microorganismos de la piel y mucosas. Formulaciones de ' +
-      'clorhexidina en aplicador, esponja, cepillo y toallita.',
-    icono: 'antisepsia',
-  },
-  {
-    slug: 'laparoscopia',
-    nombre: 'Cirugía laparoscópica',
-    corto: 'Laparoscopía',
-    sintesis: 'Acceso mínimamente invasivo a la cavidad',
-    descripcion:
-      'Técnica quirúrgica que permite la visión de la cavidad pélvico-abdominal ' +
-      'con ayuda de una lente óptica. Trócares con punta de seguridad y hoja ' +
-      'blindada, en unidades y kits.',
+    slug: 'instrumental-para-cirugia-laparoscopica',
+    nombre: 'Instrumental para cirugía laparoscópica',
+    resumen:
+      'Soluciones e instrumental especializado para procedimientos quirúrgicos ' +
+      'mínimamente invasivos.',
     icono: 'laparoscopia',
   },
   {
     slug: 'aspiracion',
-    nombre: 'Aspiración y succión',
-    corto: 'Aspiración',
-    sintesis: 'Manejo cerrado de secreciones y fluidos',
-    descripcion:
-      'Sistemas cerrados para el almacenamiento temporal de secreciones y ' +
-      'fluidos extraídos del cuerpo: bolsas descartables, cánister reusables, ' +
-      'tubuladuras y toda la línea de soportes.',
+    nombre: 'Aspiración',
+    resumen:
+      'Dispositivos y accesorios para la aspiración de secreciones y fluidos.',
     icono: 'aspiracion',
+  },
+  {
+    slug: 'antisepsia',
+    nombre: 'Antisepsia',
+    resumen:
+      'Productos destinados a la limpieza, desinfección y preparación de la piel.',
+    icono: 'antisepsia',
   },
   {
     slug: 'nutricion-enteral',
     nombre: 'Nutrición enteral',
-    corto: 'Nutrición enteral',
-    sintesis: 'Soporte nutricional del paciente',
-    descripcion:
-      'Técnica de alimentación artificial que administra la solución nutritiva ' +
-      'directamente al estómago o el intestino. Bombas, bolsas y sets ' +
-      'compatibles con los accesos enterales de uso hospitalario.',
+    resumen:
+      'Dispositivos y accesorios para la administración segura de nutrientes por ' +
+      'vía enteral.',
     icono: 'nutricion',
   },
   {
-    slug: 'via-aerea',
-    nombre: 'Vía aérea y anestesia',
-    corto: 'Vía aérea',
-    sintesis: 'Intubación y control de la vía aérea',
-    descripcion:
-      'Videolaringoscopía para intubación endotraqueal precisa, con hojas ' +
-      'desechables en todas las tallas, desde recién nacido hasta la vía aérea ' +
-      'difícil del adulto.',
-    icono: 'viaAerea',
-  },
-  {
-    slug: 'higiene-paciente',
-    nombre: 'Higiene y confort del paciente',
-    corto: 'Higiene del paciente',
-    sintesis: 'Higiene y confort del paciente encamado',
-    descripcion:
-      'Baño en cama sin enjuague, secado corporal y paños clínicos de un solo ' +
-      'uso, para reducir la contaminación cruzada y el tiempo de atención de ' +
-      'enfermería.',
+    slug: 'higiene-del-paciente',
+    nombre: 'Higiene del paciente',
+    resumen:
+      'Productos para el cuidado, aseo y bienestar de pacientes.',
     icono: 'higiene',
   },
   {
-    slug: 'absorbentes',
-    nombre: 'Absorbentes y protección de superficies',
-    corto: 'Absorbentes',
-    sintesis: 'Superficies limpias, secas y sin resbalones',
-    descripcion:
-      'Mantas absorbentes antideslizantes y protectores impermeables que ' +
-      'mantienen el quirófano limpio, seco y libre de riesgo de resbalones.',
+    slug: 'absorbente',
+    nombre: 'Absorbente',
+    resumen:
+      'Soluciones para el manejo de fluidos y necesidades de cuidado ' +
+      'hospitalario.',
     icono: 'absorbentes',
-  },
-  {
-    slug: 'instrumental',
-    nombre: 'Instrumental y accesorios quirúrgicos',
-    corto: 'Instrumental',
-    sintesis: 'Insumos de sala y central de esterilización',
-    descripcion:
-      'Insumos de sala de operaciones y de central de esterilización: ' +
-      'marcadores de piel, control de gasas, limpieza de puntas de ' +
-      'electrocauterio y cepillería de instrumental.',
-    icono: 'instrumental',
   },
   {
     slug: 'proteccion-personal',
     nombre: 'Protección personal',
-    corto: 'Protección personal',
-    sintesis: 'Barrera para el equipo asistencial',
-    descripcion:
-      'Barrera para el equipo de salud frente a riesgos químicos, ' +
-      'microbiológicos y citostáticos.',
+    resumen:
+      'Equipos y accesorios para proteger al personal de salud frente a diversos ' +
+      'riesgos.',
     icono: 'proteccion',
+  },
+  {
+    slug: 'material-medico-no-instrumental',
+    nombre: 'Material médico no instrumental',
+    resumen:
+      'Insumos médicos descartables y productos de uso hospitalario.',
+    icono: 'instrumental',
+  },
+  {
+    slug: 'via-aerea',
+    nombre: 'Vía aérea',
+    resumen:
+      'Dispositivos para el manejo, mantenimiento y protección de la vía aérea.',
+    icono: 'viaAerea',
+  },
+  {
+    slug: 'nutricion-parenteral',
+    nombre: 'Nutrición parenteral',
+    resumen:
+      'Productos y accesorios para la administración intravenosa de nutrientes.',
+    icono: 'nutricion',
   },
 ];
 
+export const categorias: Categoria[] = [
+  { slug: 'contenedores-de-bioseguridad', nombre: 'Contenedores de bioseguridad', linea: 'bioseguridad' },
+  { slug: 'tapetes-adhesivos-alfombras-descontaminantes', nombre: 'Tapetes adhesivos (alfombras descontaminantes)', linea: 'bioseguridad' },
+  { slug: 'trocar-para-cirugia-laparoscopica', nombre: 'Trocar para cirugía laparoscópica', linea: 'instrumental-para-cirugia-laparoscopica' },
+  { slug: 'pinzas-para-cirugia-laparoscopica', nombre: 'Pinzas para cirugía laparoscópica', linea: 'instrumental-para-cirugia-laparoscopica' },
+  { slug: 'bolsas-de-aspiracion', nombre: 'Bolsas de aspiración', linea: 'aspiracion' },
+  { slug: 'accesorios-para-aspiracion', nombre: 'Accesorios para aspiración', linea: 'aspiracion' },
+  { slug: 'tubos-de-succion-esteril', nombre: 'Tubos de succión estéril', linea: 'aspiracion' },
+  { slug: 'manguera-o-tubuladura-de-silicona', nombre: 'Manguera o tubuladura de silicona', linea: 'aspiracion' },
+  { slug: 'aplicadores-clorhexidina-2', nombre: 'Aplicadores con gluconato de clorhexidina al 2% + alcohol isopropílico al 70%', linea: 'antisepsia' },
+  { slug: 'bolsas-de-nutricion-enteral', nombre: 'Bolsas de nutrición enteral', linea: 'nutricion-enteral' },
+  { slug: 'set-de-nutricion-enteral', nombre: 'Set de nutrición enteral', linea: 'nutricion-enteral' },
+  { slug: 'bomba-de-nutricion-enteral', nombre: 'Bomba de nutrición enteral', linea: 'nutricion-enteral' },
+  { slug: 'pano-bano-facil', nombre: 'Paño baño fácil', linea: 'higiene-del-paciente' },
+  { slug: 'toalla-para-secado-corporal', nombre: 'Toalla para secado corporal', linea: 'higiene-del-paciente' },
+  { slug: 'pano-clinico-absorbente', nombre: 'Paño clínico absorbente', linea: 'higiene-del-paciente' },
+  { slug: 'bolsa-emesis', nombre: 'Bolsa para emesis o bolsa para vómito', linea: 'higiene-del-paciente' },
+  { slug: 'manta-absorbente-de-fluidos', nombre: 'Manta absorbente de fluidos', linea: 'absorbente' },
+  { slug: 'protector-tela-impermeable', nombre: 'Protector de tela plástica impermeable', linea: 'absorbente' },
+  { slug: 'guantes-de-nitrilo-sin-polvo-6-5-gr', nombre: 'Guantes de nitrilo sin polvo 6.5 GR', linea: 'proteccion-personal' },
+  { slug: 'marcador-de-piel', nombre: 'Marcador de piel', linea: 'material-medico-no-instrumental' },
+  { slug: 'contador-de-aguja', nombre: 'Contador de aguja', linea: 'material-medico-no-instrumental' },
+  { slug: 'bolsas-para-contar-gasas', nombre: 'Bolsas para contar gasas', linea: 'material-medico-no-instrumental' },
+  { slug: 'limpiador-puntas-electrocauterio', nombre: 'Limpiador de puntas de electrocauterio', linea: 'material-medico-no-instrumental' },
+  { slug: 'cepillos-para-limpieza-de-instrumental-medico', nombre: 'Cepillos para limpieza de instrumental médico', linea: 'material-medico-no-instrumental' },
+  { slug: 'videolaringoscopio', nombre: 'Videolaringoscopio', linea: 'via-aerea' },
+  { slug: 'hojas-de-videolaringoscopio', nombre: 'Hojas de videolaringoscopio', linea: 'via-aerea' },
+  { slug: 'bomba-de-infusion', nombre: 'Bomba de infusión', linea: 'nutricion-parenteral' },
+  { slug: 'bomba-de-jeringa', nombre: 'Bomba de jeringa', linea: 'nutricion-parenteral' },
+];
+
 export const productos: Producto[] = [
-  /* ---------------------------------------------------------- Bioseguridad */
   {
     slug: 'contenedores-punzocortantes',
     nombre: 'Contenedores de bioseguridad para punzocortantes',
-    categoria: 'bioseguridad',
-    marca: 'maxcon',
+    linea: 'bioseguridad',
+    categoria: 'contenedores-de-bioseguridad',
+    descripcion:
+      'Diseñado para evitar accidentes con desechos punzocortantes y optimizar ' +
+      'los procesos de manejo y descarte de residuos peligrosos en los diferentes ' +
+      'establecimientos de salud.',
     destacado: true,
-    resumen:
-      'Nueve capacidades, de 0.95 L a 30.3 L, con tapa de cierre definitivo y ' +
-      'desarmador de agujas integrado.',
-    descripcion: [
-      'Contenedores para desechos punzocortantes diseñados para optimizar los ' +
-        'procesos de manejo y descarte de residuos peligrosos con una sola mano, ' +
-        'en los diferentes establecimientos de salud.',
-      'Cada unidad está constituida por dos partes —cuerpo y tapa— y cubre ' +
-        'desde el carro de flebotomía hasta los puntos de acopio de alto ' +
-        'volumen, de modo que cada servicio use el formato que le corresponde.',
-    ],
-    caracteristicas: [
-      'Resistente a la punción según norma internacional',
-      'Recipiente poliédrico de base rectangular con asas laterales para traslado seguro',
-      'Tapa transparente con eje giratorio tipo vaivén que impide el acceso de la mano',
-      'Dos anclajes de cierre final irreversible',
-      'Sistema desarmador de agujas incorporado',
-      'Color rojo translúcido que permite visualizar el nivel de llenado',
-      'Libre de rebabas o aristas cortantes',
-      'Rotulado de riesgo biológico y línea de nivel máximo',
-    ],
-    presentacion:
-      'Caja de cartón corrugado. El número de unidades por caja varía según la ' +
-      'capacidad del contenedor.',
-    variantes: [
-      { codigo: 'MA1112', detalle: '0.95 L — Para carro de flebotomía' },
-      { codigo: 'MA1122', detalle: '1.89 L — Para carro de flebotomía' },
-      { codigo: '1024', detalle: '3.0 L' },
-      { codigo: 'MA1212', detalle: '4.7 L' },
-      { codigo: '1033', detalle: '7.0 L' },
-      { codigo: 'ME1282', detalle: '7.6 L' },
-      { codigo: 'MA1331', detalle: '11.4 L' },
-      { codigo: 'MA1341', detalle: '22.7 L' },
-      { codigo: 'MA1352', detalle: '30.3 L' },
+    presentaciones: [
+      {
+        medida: '0.95 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Polipropileno rígido compostable',
+          'Volumen: 0.95 L',
+          'Caja x 60 unidades',
+        ],
+      },
+      {
+        medida: '1.89 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Polipropileno rígido compostable',
+          'Volumen: 1.89 L',
+          'Caja x 40 unidades',
+        ],
+      },
+      {
+        medida: '4.7 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 4.7 L',
+          'Caja x 20 unidades',
+        ],
+        descripcion:
+          'Contenedor para desechos punzocortantes, diseñado para optimizar los ' +
+          'procesos de manejo y descarte de residuos peligrosos, con una sola mano, ' +
+          'en los diferentes establecimientos de salud. Constituido de dos partes ' +
+          '(cuerpo y tapa).',
+      },
+      {
+        medida: '7.6 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 7.6 L',
+          'Caja x 24 unidades',
+        ],
+      },
+      {
+        medida: '11.4 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 11.4 L',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: '22.7 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 22.7 L',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: '30.3 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 30.3 L',
+          'Caja x 12 unidades',
+        ],
+      },
     ],
   },
   {
-    slug: 'contenedores-citotoxicos',
-    nombre: 'Contenedores para residuos citotóxicos, especiales y vidrios',
-    categoria: 'bioseguridad',
-    marca: 'maxcon',
+    slug: 'contenedores-residuos-citotoxicos',
+    nombre: 'Contenedores para residuos citotóxicos',
+    linea: 'bioseguridad',
+    categoria: 'contenedores-de-bioseguridad',
+    descripcion:
+      'Diseñado para evitar accidentes con artículos punzocortantes y facilitar ' +
+      'la manipulación y desecho de residuos citostáticos de las unidades ' +
+      'especializadas de los centros sanitarios.',
+    presentaciones: [
+      {
+        medida: '3.8 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 3.8 L (1 G)',
+          'Caja x 24 unidades',
+        ],
+      },
+      {
+        medida: '7.6 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 7.6 L (2 G)',
+          'Caja x 24 unidades',
+        ],
+      },
+      {
+        medida: '30.3 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 30.3 L',
+          'Caja x 12 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'contenedores-residuos-vidrio',
+    nombre: 'Contenedores para residuos de vidrios o especiales',
+    linea: 'bioseguridad',
+    categoria: 'contenedores-de-bioseguridad',
+    descripcion:
+      'Diseñado para evitar accidentes con artículos punzocortantes y facilitar ' +
+      'la manipulación y desecho de residuos especiales de vidrio de las unidades ' +
+      'especializadas de los centros sanitarios.',
+    presentaciones: [
+      {
+        medida: '3.8 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 3.8 L',
+          'Caja x 24 unidades',
+        ],
+        descripcion:
+          'Diseñado para evitar accidentes con artículos punzocortantes y facilitar ' +
+          'la manipulación y desecho de residuos de vidrio de las unidades ' +
+          'especializadas de los centros sanitarios.',
+      },
+      {
+        medida: '7.6 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 7.6 L',
+          'Caja x 24 unidades',
+        ],
+      },
+      {
+        medida: '30.3 L',
+        marca: 'MAXCON',
+        marcaSlug: 'maxcon',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: polipropileno rígido compostable',
+          'Volumen : 30.3 L',
+          'Caja x 12 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'tapete-adhesivo-descontaminante',
+    nombre: 'Tapete adhesivo descontaminante 36" x 45"',
+    linea: 'bioseguridad',
+    categoria: 'tapetes-adhesivos-alfombras-descontaminantes',
+    descripcion:
+      'El tapete adhesivo para salas limpia, es un tapete multicapa, compuesto ' +
+      'por 30 hojas de polietileno. Cada hoja está recubierta con un adhesivo de ' +
+      'alta tecnología que contiene sustancias antibacterianas. Gracias a las ' +
+      'sustancias antibacterianas impregnadas en la superficie adhesiva, los ' +
+      'tapetes antibacterianos pueden capturar eficazmente la suciedad, los ' +
+      'gérmenes y el polvo del tráfico peatonal y de las ruedas de los equipos ' +
+      'antes de que entren en el entorno controlado.',
+    presentaciones: [
+      {
+        medida: '36" X 45"',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 4 und',
+        caracteristicas: [
+          'Hojas o Láminas: PE de baja densidad',
+          'Material adhesivo: acrílico en solución acuosa a base de agua para agentes antibacterianos.',
+          'Sustancia antibacteriana: Isotiazolinona',
+          'Caja x 4 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'trocar-para-cirugia-laparoscopica',
+    nombre: 'Trocar para cirugía laparoscópica',
+    linea: 'instrumental-para-cirugia-laparoscopica',
+    categoria: 'trocar-para-cirugia-laparoscopica',
+    descripcion:
+      'Dispositivo médico diseñado para crear un canal de trabajo del medio ' +
+      'interno, para ingreso de instrumentos quirúrgicos.',
     destacado: true,
-    resumen:
-      'Línea amarilla para quimioterapia, residuos especiales y descarte de ' +
-      'vidrios, de 3.8 L a 30.3 L.',
-    descripcion: [
-      'Contenedores rígidos destinados al descarte de material contaminado con ' +
-        'citostáticos, de residuos especiales y de vidrios, diferenciados por ' +
-        'color y rotulado del resto de la línea de bioseguridad.',
-      'Su identificación amarilla y el pictograma correspondiente permiten al ' +
-        'personal segregar correctamente en el punto de generación, requisito ' +
-        'del plan de manejo de residuos sólidos de todo establecimiento de salud.',
-    ],
-    caracteristicas: [
-      'Rotulado específico para citotóxicos, residuos especiales o vidrios',
-      'Color amarillo de identificación normativa',
-      'Resistente a la punción y a la perforación',
-      'Tapa de cierre definitivo con anclajes',
-      'Asas laterales para traslado seguro',
-      'Dimensiones homogéneas que facilitan el apilamiento',
-    ],
-    presentacion: 'Caja de cartón corrugado según capacidad.',
-    variantes: [
-      { codigo: 'MC1311', detalle: '3.8 L — Residuos citotóxicos' },
-      { codigo: 'MC1321', detalle: '7.6 L — Residuos citotóxicos' },
-      { codigo: 'MC1321-R', detalle: '7.6 L — Residuos especiales' },
-      { codigo: 'MC1351', detalle: '30.3 L — Residuos citotóxicos' },
-      { codigo: 'MV1311', detalle: '3.8 L — Descarte de vidrios' },
+    presentaciones: [
+      {
+        medida: '5 MM',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material Componentes Trocar',
+          'Cánula con llave de paso:',
+          '- Cánula: Policarbonato (PC)',
+          '- Base de la cánula: Acrilonitrilo Butadieno Estireno (ABS)',
+          '- Tapa de ajuste: ABS',
+          '- Válvula de llenado: PC',
+          'Punzón u Obturador:',
+          '- Cuchilla: acero inoxidable 304',
+          '- Aguja de punción: ABS',
+          '- Barra de conexión tipo III: ABS',
+          '- Casquete tipo alfiler: PC',
+        ],
+      },
+      {
+        medida: '10 MM',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material Componentes Trocar',
+          'Cánula con llave de paso:',
+          '- Cánula: Policarbonato (PC)',
+          '- Base de la cánula: Acrilonitrilo Butadieno Estireno (ABS)',
+          '- Tapa de ajuste: ABS',
+          '- Válvula de llenado: PC',
+          'Punzón u Obturador:',
+          '- Cuchilla: acero inoxidable 304',
+          '- Aguja de punción: ABS',
+          '- Barra de conexión tipo III: ABS',
+          '- Casquete tipo alfiler: PC',
+        ],
+      },
+      {
+        medida: '12 MM',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material Componentes Trocar',
+          'Cánula con llave de paso:',
+          '- Cánula: Policarbonato (PC)',
+          '- Base de la cánula: Acrilonitrilo Butadieno Estireno (ABS)',
+          '- Tapa de ajuste: ABS',
+          '- Válvula de llenado: PC',
+          'Punzón u Obturador:',
+          '- Cuchilla: acero inoxidable 304',
+          '- Aguja de punción: ABS',
+          '- Barra de conexión tipo III: ABS',
+          '- Casquete tipo alfiler: PC',
+        ],
+      },
+      {
+        medida: 'KIT A',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          '- 2 piezas de cánula de 5 mm con llave de paso,',
+          '- 2 piezas de cánula de 10 mm con llave de paso,',
+          '- 1 pieza de obturador con punta dilatadora de 5 mm,',
+          '- 1 pieza de obturador con punta dilatadora de 10 mm,',
+          '- 1 pieza de aguja de Veress de 2.1 mm x 120 mm,',
+          '- 1 bolsa estándar de 250 mL.',
+        ],
+      },
+      {
+        medida: 'KIT B',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          '- 2 piezas de cánula de 5 mm con llave de paso,',
+          '- 1 piezas de cánula de 10 mm con llave de paso,',
+          '- 1 pieza de obturador con punta dilatadora de 5 mm,',
+          '- 1 pieza de obturador con punta dilatadora de 10 mm,',
+          '- 1 pieza de aguja de Veress de 2.1 mm x 120 mm,',
+          '- 1 bolsa estándar de 250 mL.',
+        ],
+      },
+      {
+        medida: 'KIT C',
+        marca: 'GEYI',
+        marcaSlug: 'geyi',
+        unidad: 'unidades',
+        caracteristicas: [
+          '- 3 piezas de cánula de 5 mm con llave de paso,',
+          '- 1 piezas de cánula de 10 mm con llave de paso,',
+          '- 1 pieza de obturador con punta dilatadora de 5 mm,',
+          '- 1 pieza de obturador con punta dilatadora de 10 mm,',
+          '- 1 pieza de aguja de Veress de 2.1 mm x 120 mm,',
+          '- 1 bolsa estándar de 250 mL.',
+        ],
+      },
     ],
   },
   {
-    slug: 'alfombra-descontaminante',
-    nombre: 'Tapete adhesivo descontaminante (Clean Mat)',
-    categoria: 'bioseguridad',
-    marca: 'q-medical',
-    resumen:
-      'Tapete multicapa de 30 hojas con adhesivo antibacteriano para el ingreso ' +
-      'a áreas controladas.',
-    descripcion: [
-      'Tapete adhesivo para sala limpia compuesto por 30 hojas de polietileno. ' +
-        'Cada hoja está recubierta con un adhesivo de alta tecnología que ' +
-        'contiene sustancias antibacterianas.',
-      'Captura la suciedad, los gérmenes y el polvo del tráfico peatonal y de ' +
-        'las ruedas de los equipos antes de que ingresen al entorno controlado. ' +
-        'Al saturarse una hoja, se desprende y queda lista la siguiente.',
-    ],
-    caracteristicas: [
-      'Adhesivo de base acuosa con biocida de amplio espectro',
-      '30 hojas numeradas por unidad',
-      'Termorresistente y resistente a sustancias oleosas, rayos UV y envejecimiento',
-      'Formato de 36 × 45 pulgadas',
-    ],
-    presentacion: 'Caja de cartón conteniendo cuatro tapetes de 30 hojas cada uno.',
-    usos: [
-      'Ingreso a quirófanos y salas limpias',
-      'Laboratorios y producción farmacéutica',
-      'Producción de alimentos y centros de datos',
+    slug: 'disector-monopolar-maryland',
+    nombre: 'Disector monopolar desechable - maryland',
+    linea: 'instrumental-para-cirugia-laparoscopica',
+    categoria: 'pinzas-para-cirugia-laparoscopica',
+    descripcion:
+      'El Dissector Maryland Monopolar es un instrumento quirúrgico diseñado para ' +
+      'efectuar disecciones en el tejido durante un procedimiento quirúrgico ' +
+      'laparoscópico.',
+    presentaciones: [
+      {
+        medida: '107Y.201',
+        marca: 'KANGJI',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material componentes:',
+          'Electrodo (punta Disector):',
+          '- Acero inoxidable 304 (Al 304)',
+          'Tubo de aislamiento:',
+          '- Polietileno de Alta Densidad (HDPE) y politetrafluoroetileno o teflón (PTFE).',
+          'Perilla de rotación',
+          '- Acrilonitrilo Butadieno Estireno (ABS) y Polifenilsulfona (PPSU).',
+          'Mango',
+          '- ABS',
+          'Conector de electrodo (pin)',
+          '- Al 304',
+          'Caja x 12 unidades',
+        ],
+      },
     ],
   },
-
-  /* ------------------------------------------------------------- Antisepsia */
   {
-    // Sin `marca`: la empresa todavia no ha confirmado de quien es.
-    slug: 'aplicador-clorhexidina-6ml',
-    nombre: 'Aplicador de clorhexidina 2 % en alcohol isopropílico 70 % — 6 mL',
-    categoria: 'antisepsia',
-    resumen:
-      'Aplicador de 6 mL con gluconato de clorhexidina al 2 % y alcohol ' +
-      'isopropílico al 70 %, para desinfección de la piel.',
-    descripcion: [
-      'Aplicador de desinfección con una formulación de gluconato de ' +
-        'clorhexidina al 2 % (CHG) y alcohol isopropílico al 70 % (IPA), que ' +
-        'cumple los requisitos clínicos de espectro de acción biocida contra ' +
-        'bacterias, hongos y virus.',
+    slug: 'pinza-agarre-clinch',
+    nombre: 'Pinza de agarre o tenaza monopolar desechable - clinch',
+    linea: 'instrumental-para-cirugia-laparoscopica',
+    categoria: 'pinzas-para-cirugia-laparoscopica',
+    descripcion:
+      'El Disposable Monopolar Grasper, es un instrumento quirúrgico que posee un ' +
+      'electrodo tipo Grasper (tenaza) necesaria para cuando se requiere sujetar ' +
+      'el tejido durante el procedimiento quirúrgico laparoscópico.',
+    presentaciones: [
+      {
+        medida: '108Y.201',
+        marca: 'KANGJI',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material componentes:',
+          'Electrodo (punta Disector):',
+          '- Acero inoxidable 304 (Al 304)',
+          'Tubo de aislamiento:',
+          '- Polietileno de Alta densidad (HDPE) y politetrafluoroetileno o teflón (PTFE).',
+          'Perilla de rotación',
+          '- Acrilonitrilo Butadieno Estireno (ABS) y Polifenilsulfona (PPSU).',
+          'Mango',
+          '- ABS',
+          'Conector de electrodo (pin)',
+          '- Al 304',
+          'Caja x 12 unidades',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Gluconato de clorhexidina al 2 % (CHG)',
-      'Alcohol isopropílico al 70 % (IPA)',
-      'Espectro de acción biocida contra bacterias, hongos y virus',
-      'Volumen de 6 mL',
-    ],
-    presentacion: 'Caja de 6 unidades.',
   },
   {
-    slug: 'aplicador-clorhexidina-2',
-    nombre: 'Aplicador estéril NEX CLOREX 2% PREP',
-    categoria: 'antisepsia',
-    marca: 'nex-medical',
+    slug: 'pinza-agarre-fenestrated-grasper',
+    nombre: 'Pinza de agarre o tenaza monopolar desechable - fenestrated grasper',
+    linea: 'instrumental-para-cirugia-laparoscopica',
+    categoria: 'pinzas-para-cirugia-laparoscopica',
+    descripcion:
+      'El Disposable Monopolar Grasper, es un instrumento quirúrgico que posee un ' +
+      'electrodo tipo Grasper (tenaza) necesaria para cuando se requiere sujetar ' +
+      'el tejido durante el procedimiento quirúrgico laparoscópico.',
+    presentaciones: [
+      {
+        medida: '108Y.202',
+        marca: 'KANGJI',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material componentes:',
+          'Electrodo (punta Disector):',
+          '- Acero inoxidable 304 (Al 304)',
+          'Tubo de aislamiento:',
+          '- Polietileno de Alta densidad (HDPE) y politetrafluoroetileno o teflón (PTFE).',
+          'Perilla de rotación',
+          '- Acrilonitrilo Butadieno Estireno (ABS) y Polifenilsulfona (PPSU).',
+          'Mango',
+          '- ABS',
+          'Conector de electrodo (pin)',
+          '- AI 304',
+          'Caja x 12 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'tijeras-monopolares-curved-scissor',
+    nombre: 'Tijeras monopolares desechables - curved scissor',
+    linea: 'instrumental-para-cirugia-laparoscopica',
+    categoria: 'pinzas-para-cirugia-laparoscopica',
+    descripcion:
+      'Las tijeras monopolares desechables son un tipo de instrumento quirúrgico ' +
+      'laparoscópico diseñado con un mecanismo de ranura de engranajes y un ' +
+      'aislamiento adicional para mayor seguridad, con el fin de reducir el ' +
+      'riesgo de quemaduras en el lugar de la acción durante la diatermia.',
+    presentaciones: [
+      {
+        medida: '106Y.201',
+        marca: 'KANGJI',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material componentes:',
+          'Electrodo (punta Disector):',
+          '- Acero inoxidable 304 (Al 304)',
+          'Tubo de aislamiento:',
+          '- Polietileno de Alta densidad (HDPE) y politetrafluoroetileno o teflón (PTFE).',
+          'Perilla de rotación',
+          '- Acrilonitrilo Butadieno Estireno (ABS) y Polifenilsulfona (PPSU).',
+          'Mango',
+          '- ABS',
+          'Conector de electrodo (pin)',
+          '- AI 304',
+          'Caja x 12 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'bolsa-aspiracion-secreciones',
+    nombre: 'Bolsa de aspiración de secreciones con válvula y filtro antibacteriano',
+    linea: 'aspiracion',
+    categoria: 'bolsas-de-aspiracion',
+    descripcion:
+      'En lo que respecta a las bolsas de succión, en particular, son ' +
+      'descartables y funcionan con un contenedor o canister reusable, el que es ' +
+      'colocado, a petición del usuario, en los diferentes ambientes ' +
+      'hospitalarios según sus necesidades. Todas las bolsas de succión, están ' +
+      'diseñadas para ser utilizados por un solo paciente.',
     destacado: true,
-    resumen:
-      'Aplicador desechable con gluconato de clorhexidina 2 % en alcohol ' +
-      'isopropílico 70 %, en tres volúmenes.',
-    descripcion: [
-      'NEX CLOREX 2% PREP es un aplicador desechable que contiene una avanzada ' +
-        'solución antiséptica compuesta por gluconato de clorhexidina al 2 % en ' +
-        'alcohol isopropílico al 70 %, con amplio espectro de acción biocida ' +
-        'contra bacterias, microbacterias, hongos y virus.',
-      'Su diseño permite desinfectar diversas zonas del paciente sin tocarlo ' +
-        'directamente, lo que reduce el riesgo de contaminación durante la ' +
-        'preparación del campo quirúrgico y la inserción de accesos vasculares.',
+    presentaciones: [
+      {
+        medida: '1 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales:',
+          '- Tapa: Polietileno (PE)',
+          '- Forro o bolsa: PE + Poliamida (PA)',
+          '- Filtro: Polietileno de Peso Molecular Ultra Alto (UHMWPE).',
+          '- Codo de unión: PE',
+          'Caja x 50 unidades',
+        ],
+      },
+      {
+        medida: '1.5 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales:',
+          '- Tapa: Polietileno (PE)',
+          '- Forro o bolsa: PE + Poliamida (PA)',
+          '- Filtro: Polietileno de Peso Molecular Ultra Alto (UHMWPE).',
+          '- Codo de unión: PE',
+          'Caja x 50 unidades',
+        ],
+      },
+      {
+        medida: '3 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales:',
+          '- Tapa: Polietileno (PE)',
+          '- Forro o bolsa: PE + Poliamida (PA)',
+          '- Filtro: Polietileno de Peso Molecular Ultra Alto (UHMWPE).',
+          '- Codo de unión: PE',
+          'Caja x 50 unidades',
+        ],
+      },
+      {
+        medida: '1.5 L',
+        marca: 'QUICK FIT - BEMIS',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales:',
+          '- Tapa: polietileno de baja densidad, color amarillo',
+          '- Forro o cuerpo de la bolsa: polietileno de baja densidad mas Nailon multicapa (PA)',
+          '- Válvula mecánica: Tereftalato de Polietileno.',
+          'Caja x 50 unidades',
+        ],
+        descripcion:
+          'Dispositivo Médico diseñado para succionar, transportar y eliminar ' +
+          'líquidos contaminantes, aspirados de las cavidades corporales de forma ' +
+          'eficiente y segura para el personal sanitario.',
+      },
+      {
+        medida: '3 L',
+        marca: 'QUICK FIT - BEMIS',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales:',
+          '- Tapa: polietileno de baja densidad, color rosado',
+          '- Forro o cuerpo de la bolsa: polietileno de baja densidad más Nailon multicapa (PA)',
+          '- Válvula mecánica: Tereftalato de Polietileno.',
+          'Caja x 50 unidades',
+        ],
+        descripcion:
+          'Dispositivo Médico diseñado para succionar, transportar y eliminar ' +
+          'líquidos contaminantes, aspirados de las cavidades corporales de forma ' +
+          'eficiente y segura para el personal sanitario.',
+      },
     ],
-    caracteristicas: [
-      'Gluconato de clorhexidina 2 % en alcohol isopropílico 70 %',
-      'Amplio espectro biocida: bacterias, microbacterias, hongos y virus',
-      'Aplicación sin contacto directo con la piel del operador',
-      'Blíster individual de polietileno grado médico y papel Tyvek',
-      'Apertura tipo peel open',
-      'Libre de látex',
+  },
+  {
+    slug: 'canister-rigido-reusable',
+    nombre: 'Cánister rígido reusable',
+    linea: 'aspiracion',
+    categoria: 'accesorios-para-aspiracion',
+    descripcion:
+      'Los canister, marca VIDE®, están destinados a ser utilizados como soporte ' +
+      'y contenedor de las bolsas de aspiración de la misma marca. Provistos de ' +
+      'una llave de paso y una manguera conectora que se adapta en la bolsa de ' +
+      'aspiración. Son totalmente transparentes y cilíndricas y presentan ' +
+      'graduación en mL y cc.',
+    presentaciones: [
+      {
+        medida: '1 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales',
+          '- Canister: Policarbonato (PC)',
+          '- Llave de paso: PC',
+          '- Manguera conectora: Policloruro de vinilo (PVC)',
+          'Presentaciones:',
+          '- 1 L y 1.5 L: caja x 20 unidades',
+          '- 3 L: caja x 12 unidades',
+        ],
+      },
+      {
+        medida: '1.5 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales',
+          '- Canister: Policarbonato (PC)',
+          '- Llave de paso: PC',
+          '- Manguera conectora: Policloruro de vinilo (PVC)',
+          'Presentaciones:',
+          '- 1 L y 1.5 L: caja x 20 unidades',
+          '- 3 L: caja x 12 unidades',
+        ],
+      },
+      {
+        medida: '3 L',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Materiales',
+          '- Canister: Policarbonato (PC)',
+          '- Llave de paso: PC',
+          '- Manguera conectora: Policloruro de vinilo (PVC)',
+          'Presentaciones:',
+          '- 1 L y 1.5 L: caja x 20 unidades',
+          '- 3 L: caja x 12 unidades',
+        ],
+      },
+      {
+        medida: '1.5 L',
+        marca: 'QUICK FIT - BEMIS',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Canister de policarbonato con tubo de vacío de vinil reforzado.',
+          'Caja x 10 unidades',
+        ],
+        descripcion:
+          'Canister con llave de paso para su uso con la bolsa de recolección de ' +
+          'secreciones y liquídos de 1.5L marca QuickFit®.',
+      },
+      {
+        medida: '3 L',
+        marca: 'QUICK FIT - BEMIS',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Canister de policarbonato con tubo de vacío de vinil reforzado.',
+          'Caja x 10 unidades',
+        ],
+        descripcion:
+          'Canister con llave de paso para su uso con la bolsa de recolección de ' +
+          'secreciones y liquídos de 3L marca QuickFit®.',
+      },
     ],
-    presentacion:
-      'Caja dispensadora de cartón grado médico con 10 u 11 blísteres según el ' +
-      'código; cada blíster contiene un aplicador.',
-    variantes: [
-      { codigo: '3 mL', codigoEsPresentacion: true, detalle: 'Accesos vasculares y procedimientos menores' },
-      { codigo: '10.5 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos medianos' },
-      { codigo: '26 mL', codigoEsPresentacion: true, detalle: 'Campos quirúrgicos amplios' },
+  },
+  {
+    slug: 'coches-rodables',
+    nombre: 'Coches rodables',
+    linea: 'aspiracion',
+    categoria: 'accesorios-para-aspiracion',
+    descripcion: '',
+    presentaciones: [
+      {
+        medida: '37 CM',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Fijos y rodantes de Policarbonato y PVC.',
+        ],
+      },
+      {
+        medida: '56 CM',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Fijos y rodantes de Policarbonato y PVC.',
+        ],
+      },
+      {
+        medida: '106 CM',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Fijos y rodantes de Policarbonato y PVC.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'placas-de-anclaje-para-pared',
+    nombre: 'Placas de anclaje para pared',
+    linea: 'aspiracion',
+    categoria: 'accesorios-para-aspiracion',
+    descripcion: '',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Hechos de un copolímero de Policarbonato y Siloxano.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'manifold',
+    nombre: 'Manifold',
+    linea: 'aspiracion',
+    categoria: 'accesorios-para-aspiracion',
+    descripcion: '',
+    presentaciones: [
+      {
+        medida: '2 VÍAS',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Manguera para el soporte sobre ruedas.',
+        ],
+      },
+      {
+        medida: '4 VÍAS',
+        marca: 'VIDE® - ALLEVA MEDICAL',
+        marcaSlug: 'alleva-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Manguera para el soporte sobre ruedas.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'tubo-succion-sin-yankauer',
+    nombre: 'Tubo de succión sin yankauer, con conectores y adaptador de 9/32” (7 MM)',
+    linea: 'aspiracion',
+    categoria: 'tubos-de-succion-esteril',
+    descripcion:
+      'Dispositivo Médico desechable. Constituido por 01 tubo de conexión, 02 ' +
+      'conectores y 01 adaptador. Especial para la conducción de fluidos ' +
+      'corporales aspirados como sangre y secreciones durante los procesos ' +
+      'quirúrgicos. Se puede utilizar también, para conducir otros líquidos y ' +
+      'gases medicinales.',
+    presentaciones: [
+      {
+        medida: '1.8 M',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Policloruro de vinilo.',
+        ],
+      },
+      {
+        medida: '3 M',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidades',
+        caracteristicas: [
+          'Material: Policloruro de vinilo.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'manguera-o-tubuladura-de-silicona',
+    nombre: 'Manguera o tubuladura de silicona',
+    linea: 'aspiracion',
+    categoria: 'manguera-o-tubuladura-de-silicona',
+    descripcion:
+      'Mangueras en rollo 100% silicona, insumo que puede ser acondicionado para ' +
+      'diversos usos . Cada rollo tiene una longitud de 25 m y diámetros ' +
+      'variables.',
+    presentaciones: [
+      {
+        medida: '6 MM X 9 MM',
+        marca: 'SILPAK',
+        marcaSlug: 'silpak',
+        unidad: 'rollo x 25 m',
+        caracteristicas: [
+          'Material: 100% silicona (Silbione MM 71160 U): comprende gomas de polimetil fenil siloxano y sílice.',
+        ],
+      },
+      {
+        medida: '7 MM X 10 MM',
+        marca: 'SILPAK',
+        marcaSlug: 'silpak',
+        unidad: 'rollo x 25 m',
+        caracteristicas: [
+          'Material: 100% silicona (Silbione MM 71160 U): comprende gomas de polimetil fenil siloxano y sílice.',
+        ],
+      },
+      {
+        medida: '7MM X 12 MM',
+        marca: 'SILPAK',
+        marcaSlug: 'silpak',
+        unidad: 'rollo x 25 m',
+        caracteristicas: [
+          'Material: 100% silicona (Silbione MM 71160 U): comprende gomas de polimetil fenil siloxano y sílice.',
+        ],
+      },
+      {
+        medida: '8MM X 12 MM',
+        marca: 'SILPAK',
+        marcaSlug: 'silpak',
+        unidad: 'rollo x 25 m',
+        caracteristicas: [
+          'Material: 100% silicona (Silbione MM 71160 U): comprende gomas de polimetil fenil siloxano y sílice.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'aplicadores-clorhexidina-2',
+    nombre: 'Aplicadores con gluconato de clorhexidina al 2% + alcohol isopropílico al 70%',
+    linea: 'antisepsia',
+    categoria: 'aplicadores-clorhexidina-2',
+    descripcion:
+      'Es un aplicador desechable, que contiene una avanzada solución antiséptica ' +
+      'compuesta de gluconato de clorhexidina al 2% en alcohol Isopropílico (IPA) ' +
+      'al 70%; con un amplio espectro de acción biocida contra bacterias, ' +
+      'microbacterias, hongos y virus. El diseño de ésta producto, se ha ' +
+      'desarrollado para satisfacer la necesidad de desinfectar diversas zonas ' +
+      'del paciente sin tocarlo directamente.',
+    destacado: true,
+    presentaciones: [
+      {
+        medida: '3 ML',
+        marca: 'NEX CLOREX',
+        marcaSlug: 'nex-medical',
+        unidad: 'caja x 10 und',
+        caracteristicas: [
+          'Composición: cada 100 g de producto contiene:',
+          '• Gluconato de clorhexidina 2.00 g',
+          '• Alcohol isopropílico 70% 62.00 g',
+          '• Coformulante* y agua c.s.p 100.00 g',
+        ],
+      },
+      {
+        medida: '10.5 ML',
+        marca: 'NEX CLOREX',
+        marcaSlug: 'nex-medical',
+        unidad: 'caja x 11 und',
+        caracteristicas: [
+          'Composición: cada 100 g de producto contiene:',
+          '• Gluconato de clorhexidina 2.00 g',
+          '• Alcohol isopropílico 70% 62.00 g',
+          '• Coformulante* y agua c.s.p 100.00 g',
+        ],
+      },
+      {
+        medida: '26 ML',
+        marca: 'NEX CLOREX',
+        marcaSlug: 'nex-medical',
+        unidad: 'caja x 11 und',
+        caracteristicas: [
+          'Composición: cada 100 g de producto contiene:',
+          '• Gluconato de clorhexidina 2.00 g',
+          '• Alcohol isopropílico 70% 62.00 g',
+          '• Coformulante* y agua c.s.p 100.00 g',
+        ],
+      },
+      {
+        medida: '3 ML',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 30 und',
+        caracteristicas: [
+          'COMPONENTES Y MATERIALES',
+          '- Esponja: Poliuretano grado médico.',
+          '- Cuerpo del mango: Acrilonitrilo Butadieno Estireno (ABS) blanco.',
+        ],
+      },
+      {
+        medida: '10.5 ML',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 25 und',
+        caracteristicas: [
+          'COMPONENTES Y MATERIALES',
+          '- Esponja: Poliuretano grado médico.',
+          '- Cuerpo del mango: Acrilonitrilo Butadieno Estireno (ABS) blanco.',
+        ],
+      },
+      {
+        medida: '26 ML',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 15 und',
+        caracteristicas: [
+          'COMPONENTES Y MATERIALES',
+          '- Esponja: Poliuretano grado médico.',
+          '- Cuerpo del mango: Acrilonitrilo Butadieno Estireno (ABS) blanco.',
+        ],
+      },
+      {
+        medida: '3 ML',
+        marca: 'PREP BIO CHX',
+        unidad: 'caja x 10 und',
+        caracteristicas: [
+          '• Esponja: Poliuretano de grado médico',
+          '• Cuerpo: Resina de polipropileno (HDPP)',
+          '• Émbolo: Resina de polipropileno (HDPP)',
+          '• Solución Antiséptica: Gluconato de clorhexidina al 2% y alcohol isopropílico al 70%',
+        ],
+      },
+      {
+        medida: '6 ML',
+        marca: 'PREP BIO CHX',
+        unidad: 'caja x 06 und',
+        caracteristicas: [
+          '• Esponja: Poliuretano de grado médico',
+          '• Cuerpo: Resina de polipropileno (HDPP)',
+          '• Émbolo: Resina de polipropileno (HDPP)',
+          '• Solución Antiséptica: Gluconato de clorhexidina al 2% y alcohol isopropílico al 70%',
+        ],
+      },
+      {
+        medida: '26 ML',
+        marca: 'PREP BIO CHX',
+        unidad: 'caja x 01 und',
+        caracteristicas: [
+          '• Esponja: Poliuretano de grado médico',
+          '• Cuerpo: Resina de polipropileno (HDPP)',
+          '• Émbolo: Resina de polipropileno (HDPP)',
+          '• Solución Antiséptica: Gluconato de clorhexidina al 2% y alcohol isopropílico al 70%',
+        ],
+      },
     ],
   },
   {
     slug: 'cepillo-esponja-clorhexidina-4',
-    nombre: 'Cepillo-esponja quirúrgico NEX CLOREX C2 CHG 4 %',
-    categoria: 'antisepsia',
-    marca: 'nex-medical',
-    resumen:
-      'Cepillo-esponja de un solo uso con limpiauñas, impregnado con ~20 mL de ' +
-      'digluconato de clorhexidina.',
-    descripcion: [
-      'Cepillo-esponja de limpieza quirúrgica de un solo uso, con limpiauñas ' +
-        'incluido, impregnado con aproximadamente 20 mL de solución antiséptica ' +
-        'de digluconato de clorhexidina al 4 %.',
-      'Está destinado al lavado de manos quirúrgico del equipo asistencial ' +
-        'antes de ingresar a sala de operaciones.',
+    nombre: 'Cepillo esponja con 20 ML de gluconato de clorhexidina al 4%',
+    linea: 'antisepsia',
+    categoria: 'aplicadores-clorhexidina-2',
+    descripcion:
+      'NEX CLOREX C2 Cepillo/Esponja CHG 4%, es un cepillo-esponja de limpieza ' +
+      'quirúrgico, de un solo uso, con limpia uñas; impregnado con ' +
+      'aproximadamente 20 mL de solución antiséptica de limpieza (Digluconato de ' +
+      'Clorhexidina).',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'NEX CLOREX C2',
+        marcaSlug: 'nex-medical',
+        unidad: 'caja x 40 und',
+        caracteristicas: [
+          '- Esponja: material de poliuretano de grado médico.',
+          '- Mango y cerdas: Polietileno de grado médico.',
+          '- Limpia-uñas: material de polipropileno.',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Digluconato de clorhexidina al 4 %, ~20 mL por unidad',
-      'Forma ergonómica que permite un agarre firme',
-      'Cepillo de alta flexibilidad para una limpieza precisa de manos',
-      'Limpiauñas incluido en el blíster',
-      'Un solo uso',
-    ],
-    presentacion:
-      'Caja dispensadora con 40 blísteres de polietileno de alta densidad; ' +
-      'caja exterior corrugada por 6 dispensadores.',
   },
   {
     slug: 'esponja-clorhexidina-2',
-    nombre: 'Esponja antiséptica NEX CLOREX C2 CHG 2 %',
-    categoria: 'antisepsia',
-    marca: 'nex-medical',
-    resumen:
-      'Esponja de poliuretano desechable con ~20 mL de gluconato de ' +
-      'clorhexidina al 2 % para el lavado antiséptico de piel sana.',
-    descripcion: [
-      'Esponja de poliuretano desechable para el lavado antiséptico de la piel, ' +
-        'impregnada con aproximadamente 20 mL de solución antiséptica de amplio ' +
-        'espectro. Biocida para la higiene humana sobre piel sana.',
-    ],
-    caracteristicas: [
-      'Gluconato de clorhexidina al 2 %, ~20 mL por unidad',
-      'Esponja de poliuretano de alta retención de solución',
-      'Blíster de polietileno de alta densidad con apertura peel open',
-      'Un solo uso',
-    ],
-    presentacion:
-      'Caja de cartón corrugado tipo dispensador con 80 blísteres individuales.',
-  },
-  {
-    slug: 'toallitas-limpieza-piel',
-    nombre: 'Toallitas para limpieza de piel Longood',
-    categoria: 'antisepsia',
-    marca: 'longood',
-    resumen:
-      'Sobres individuales con 1.5 mL de clorhexidina 2 % en alcohol ' +
-      'isopropílico 70 %, caja por 200 unidades.',
-    descripcion: [
-      'Toallita desechable impregnada con solución antiséptica de gluconato de ' +
-        'clorhexidina al 2 % en alcohol isopropílico al 70 %, para la limpieza ' +
-        'de piel sana antes de punciones, curaciones o colocación de apósitos.',
-    ],
-    caracteristicas: [
-      '1.5 mL de solución antiséptica por sobre',
-      'Sobre aluminizado hermético de fácil apertura',
-      'Uso externo, un solo uso',
-    ],
-    presentacion: 'Caja por 200 sobres individuales.',
-  },
-
-  /* ----------------------------------------------------------- Laparoscopía */
-  {
-    slug: 'trocares-desechables',
-    nombre: 'Trócares desechables GEYI',
-    categoria: 'laparoscopia',
-    marca: 'geyi',
-    destacado: true,
-    resumen:
-      'Trócar Tipo III con punta de seguridad y hoja blindada, para instrumentos ' +
-      'de 5 a 15 mm. Disponible en kits A, B y C.',
-    descripcion: [
-      'Dispositivo médico diseñado para crear un canal de trabajo hacia el medio ' +
-        'interno, permitiendo el ingreso de instrumentos quirúrgicos de 5 mm a ' +
-        '15 mm de diámetro durante procedimientos laparoscópicos.',
-      'Incorpora una punta de seguridad con hoja blindada, que ' +
-        'se retrae al atravesar la pared abdominal para reducir el riesgo de ' +
-        'lesión de estructuras internas.',
-    ],
-    caracteristicas: [
-      'Punta de seguridad con hoja blindada, que se retrae al atravesar la pared',
-      'Canal de trabajo para instrumentos de 5 mm a 15 mm',
-      'Doble seguro a prueba de aire',
-      'Cánula roscada que minimiza el trauma en la piel',
-      'Punta retráctil con cuchilla fina que reduce el tamaño de la herida',
-      'Estéril, hipoalergénico, atóxico y biocompatible',
-      'Blíster preformado de PET y papel Tyvek herméticamente sellado',
-      'Trocar desmontado en dos partes dentro del blíster',
-      'Apertura peel open',
-      'Estéril, un solo uso',
-    ],
-    presentacion:
-      'Caja de cartón grado médico con un blíster. Embalaje de cartón corrugado ' +
-      'conteniendo 20 cajas.',
-    variantes: [
-      { codigo: 'GYTR-III', detalle: 'Unidad individual — Trócar con punta de seguridad' },
+    nombre: 'Esponja con gluconato de clorhexidina al 2% (20 ML)',
+    linea: 'antisepsia',
+    categoria: 'aplicadores-clorhexidina-2',
+    descripcion:
+      'Esponja de Poliuretano desechable para lavado antiséptico de la piel, ' +
+      'impregnada con aproximadamente 20 mL de solución antiséptica de amplio ' +
+      'espectro. Es un antiséptico para piel sana. Biocida para la higiene ' +
+      'humana.',
+    presentaciones: [
       {
-        codigo: 'Kit A',
-        codigoEsPresentacion: true,
-        detalle:
-          '2 cánulas de 5 mm y 2 de 10 mm con llave de paso · obturadores con ' +
-          'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
-      },
-      {
-        codigo: 'Kit B',
-        codigoEsPresentacion: true,
-        detalle:
-          '2 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
-          'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
-      },
-      {
-        codigo: 'Kit C',
-        codigoEsPresentacion: true,
-        detalle:
-          '3 cánulas de 5 mm y 1 de 10 mm con llave de paso · obturadores con ' +
-          'punta dilatadora de 5 y 10 mm · aguja de Veress · bolsa de 250 mL',
+        medida: '',
+        marca: 'NEX CLOREX C2',
+        marcaSlug: 'nex-medical',
+        unidad: 'caja x 80 und',
+        caracteristicas: [
+          '- Esponja desechable de poliuretano de dimensiones (Largo: 12.00 cm; Ancho: 8.00 cm; Alto: 2.50 cm)',
+        ],
       },
     ],
   },
-
-  /* ------------------------------------------------------------- Aspiración */
   {
-    slug: 'bolsas-aspiracion',
-    nombre: 'Bolsas de aspiración de secreciones VIDE®',
-    categoria: 'aspiracion',
-    marca: 'alleva-medical',
-    destacado: true,
-    resumen:
-      'Bolsas descartables de 1000 a 3000 mL, identificadas por color de codo, ' +
-      'para uso con cánister rígido reusable.',
-    descripcion: [
-      'Los contenedores y bolsas de succión VIDE® están destinados a ser ' +
-        'utilizados como contenedor de almacenamiento temporal para las ' +
-        'secreciones o fluidos extraídos del cuerpo humano.',
-      'Las bolsas son descartables y funcionan dentro de un cánister rígido ' +
-        'reusable, que se instala en los distintos ambientes hospitalarios según ' +
-        'la necesidad del servicio. Cada bolsa está diseñada para un solo paciente.',
-      'El dispositivo no está destinado a canalizar o almacenar sangre, fluidos ' +
-        'corporales, tejidos, líquidos o gases con el propósito de infusiones, ' +
-        'administraciones o introducción en el cuerpo.',
-    ],
-    caracteristicas: [
-      'Bolsa de polietileno de baja densidad (LDPE) que garantiza hermeticidad',
-      'Codo de color identificador según capacidad',
-      'Exenta de rebabas y aristas cortantes',
-      'Libre de partículas extrañas',
-      'Tapa hermética sellada de fábrica',
-      'Un solo paciente',
-      'Compatible con la línea completa de soportes y accesorios VIDE®',
-      'Recomendada por el Colegio de Enfermeras del Perú',
-    ],
-    presentacion:
-      'Bolsa de succión en empaque individual. Caja de cartón conteniendo 50 ' +
-      'bolsas individuales.',
-    variantes: [
-      { codigo: 'MI285-0008', detalle: '1000 mL — Codo amarillo' },
-      { codigo: 'MI286-0008', detalle: '1500 mL — Codo morado' },
-      { codigo: 'MI287-0008', detalle: '2000 mL — Codo celeste' },
-      { codigo: 'MI288-0008', detalle: '3000 mL — Codo verde' },
+    slug: 'toallita-limpieza-piel-clorhexidina',
+    nombre: 'Toallita para limpieza de piel con clorhexidina al 2% + alcohol isopropílico al 70%',
+    linea: 'antisepsia',
+    categoria: 'aplicadores-clorhexidina-2',
+    descripcion:
+      'Toallita desechable impregnada con solución antiséptica (Gluconato de ' +
+      'Clorhexidina al 2% en Alcohol Isopropílico al 70%) para limpieza de piel ' +
+      'sana.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'LONGOOD',
+        marcaSlug: 'longood',
+        unidad: 'caja x 200 und',
+        caracteristicas: [
+          '- Toallita: elaborada con tela no tejida en base a fibras de poliéster de color blancas.',
+          '- Dimensiones de la toallita:',
+          '• Long. lado corto: 6.3 cm ± 0.1 cm',
+          '• Long. lado largo: 7.7 cm ± 0.1 cm',
+          '• Area: 48.51 cm2 aproximadamente.',
+        ],
+      },
     ],
   },
   {
-    slug: 'canister-reusable',
-    nombre: 'Cánister rígido reusable VIDE®',
-    categoria: 'aspiracion',
-    marca: 'alleva-medical',
-    resumen:
-      'Soporte cilíndrico transparente graduado con llave de paso y manguera ' +
-      'conectora de 28 cm.',
-    descripcion: [
-      'Los cánister VIDE® están destinados a ser utilizados únicamente como ' +
-        'soporte y contenedor de las bolsas de aspiración desechables de la ' +
-        'misma marca.',
-      'Están provistos de una llave de paso y de una manguera conectora que se ' +
-        'adapta a la bolsa de aspiración. Son totalmente transparentes y ' +
-        'cilíndricos, con graduación en mL y cc.',
-    ],
-    caracteristicas: [
-      'Forma cilíndrica totalmente transparente',
-      'Graduación en letras blancas cada 100 mL',
-      'Llave de paso incorporada',
-      'Manguera conectora flexible de 28 cm',
-      'Material resistente al impacto',
-      'Reusable',
-    ],
-    presentacion:
-      'Caja de cartón multiempaque con los cánister individualizados en bolsas ' +
-      'plásticas con burbujas.',
-    variantes: [
-      { codigo: 'MI129-0013', detalle: 'Para bolsa de 1000 mL — Marcado amarillo' },
-      { codigo: 'MI358-0013', detalle: 'Para bolsa de 1500 mL — Marcado morado' },
-      { codigo: 'MI301-0013', detalle: 'Para bolsa de 2000 mL — Marcado celeste' },
-      { codigo: 'MI302-0013', detalle: 'Para bolsa de 3000 mL — Marcado verde' },
-    ],
-  },
-  {
-    slug: 'accesorios-aspiracion',
-    nombre: 'Soportes y accesorios para aspiración VIDE®',
-    categoria: 'aspiracion',
-    marca: 'alleva-medical',
-    resumen:
-      'Pedestales rodables, placa para pared y manifold de 2 o 4 vías para ' +
-      'completar la instalación en cada ambiente.',
-    descripcion: [
-      'Línea de accesorios que permite montar el sistema de aspiración en el ' +
-        'punto de uso: pedestales rodables de distintas alturas, placa de ' +
-        'anclaje a pared y manifold para conectar varios cánister a una misma ' +
-        'toma de vacío.',
-    ],
-    caracteristicas: [
-      'Pedestales rodables de 37 cm, 56 cm y 106 cm',
-      'Placa de anclaje a pared',
-      'Manifold de 2 vías y de 4 vías',
-      'Compatibles con toda la línea de cánister y bolsas VIDE®',
-    ],
-  },
-  {
-    slug: 'tubuladura-succion-esteril',
-    nombre: 'Tubo de succión estéril sin cánula Yankauer',
-    categoria: 'aspiracion',
-    marca: 'q-medical',
-    resumen:
-      'Tubo de conexión de 3 m con dos conectores y adaptador, estéril y ' +
-      'desechable, en 1.8 mm y 3 mm.',
-    descripcion: [
-      'Dispositivo médico desechable constituido por un tubo de conexión, dos ' +
-        'conectores y un adaptador. Especial para la conducción de fluidos ' +
-        'corporales aspirados —sangre y secreciones— durante los procesos ' +
-        'quirúrgicos.',
-      'Puede utilizarse también para conducir otros líquidos y gases medicinales.',
-    ],
-    caracteristicas: [
-      'Longitud de 3 m con adaptador de 9/32" (7 mm)',
-      'Doble protección: sobre en manga mixta más bolsa interior',
-      'Film de polietileno de alta densidad de 45–47 µ y papel Tyvek de 70 g/m²',
-      'Apertura peel open',
-      'Estéril, un solo uso',
-    ],
-    presentacion: 'Caja conteniendo 50 unidades en sobres individuales.',
-    variantes: [
-      { codigo: 'F30A18', detalle: 'Diámetro interno 1.8 mm' },
-      { codigo: 'F30A30', detalle: 'Diámetro interno 3 mm' },
+    slug: 'bolsas-de-nutricion-enteral',
+    nombre: 'Bolsas de nutrición enteral',
+    linea: 'nutricion-enteral',
+    categoria: 'bolsas-de-nutricion-enteral',
+    descripcion:
+      'Dispositivo Médico destinado a usarse con fórmulas enterales y con ' +
+      'dispositivos de acceso enteral. No es para uso intravenoso.',
+    presentaciones: [
+      {
+        medida: '500 ML',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 30 und',
+        caracteristicas: [
+          'COMPOSICIÓN Y COLOR',
+          '- Puerto (boca) y tapón protector con asa de sujeción: PVC libre de DEHP, color violeta.',
+          '- Bolsa: Policloruro de Vinilo (PVC), libre de Di-etil-hexil-ftalato (DEHP); color transparente.',
+          '- Tubo conductor: PVC libre de DEHP, transparente',
+          '- Abrazadera de Rodillo: Acrilonitrilo Butadieno Estireno (ABS), color violeta.',
+          '- Cámara de goteo: PVC libre de DEHP, color transparente y flexible.',
+          '- Segmento de tubo conductor flexible: Silicona, incolora.',
+          '- Magneto: Magnetita, color negro',
+          '- Clamp o abrazadera de seguridad: Polipropileno (PP), color violeta',
+          '- Llave en “Y”: PVC libre de DEHP, cuerpo transparente; con tapa de cierre Luer Lock, color violeta.',
+          '- Etiqueta de precaución: papel',
+          '- Conector ENFit: ABS, color violeta',
+          '- Conector escalonado 5 en 1: PVC libre de DEHP, color violeta',
+          '- Tapa protectora del adaptador: Polipropileno (PP), color transparente.',
+        ],
+      },
+      {
+        medida: '1000 ML',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 30 und',
+        caracteristicas: [
+          'COMPOSICIÓN Y COLOR',
+          '- Puerto (boca) y tapón protector con asa de sujeción: PVC libre de DEHP, color violeta.',
+          '- Bolsa: Policloruro de Vinilo (PVC), libre de Di-etil-hexil-ftalato (DEHP); color transparente.',
+          '- Tubo conductor: PVC libre de DEHP, transparente',
+          '- Abrazadera de Rodillo: Acrilonitrilo Butadieno Estireno (ABS), color violeta.',
+          '- Cámara de goteo: PVC libre de DEHP, color transparente y flexible.',
+          '- Segmento de tubo conductor flexible: Silicona, incolora.',
+          '- Magneto: Magnetita, color negro',
+          '- Clamp o abrazadera de seguridad: Polipropileno (PP), color violeta',
+          '- Llave en “Y”: PVC libre de DEHP, cuerpo transparente; con tapa de cierre Luer Lock, color violeta.',
+          '- Etiqueta de precaución: papel',
+          '- Conector ENFit: ABS, color violeta',
+          '- Conector escalonado 5 en 1: PVC libre de DEHP, color violeta',
+          '- Tapa protectora del adaptador: Polipropileno (PP), color transparente.',
+        ],
+      },
     ],
   },
   {
-    slug: 'tubuladura-silicona',
-    nombre: 'Mangueras y tubuladuras de silicona SILPAK',
-    categoria: 'aspiracion',
-    marca: 'silpak',
-    resumen:
-      'Rollos de 25 m en 100 % silicona, estables de −50 °C a +250 °C, en ' +
-      'diámetros variables.',
-    descripcion: [
-      'Mangueras en rollo de 100 % silicona, insumo que puede ser acondicionado ' +
-        'para diversos usos hospitalarios. Cada rollo tiene una longitud de 25 m ' +
-        'y se ofrece en diámetros variables.',
-    ],
-    caracteristicas: [
-      'Textura suave y natural al tacto',
-      'Color blanco transparente que permite visualizar fluidos y burbujas',
-      'No colapsible: evita acodaduras',
-      'No permite alojamiento de coágulos ni adherencias',
-      'Completamente hidrófugo y atóxico',
-      'Evita el desarrollo de colonias bacterianas',
-      'Conserva sus propiedades de −50 °C a +250 °C',
-      'Esterilizable por cualquier método',
-      'Elaborado en ambiente aséptico',
-    ],
-    presentacion:
-      'Caja de cartón conteniendo 20 o 16 rollos según diámetro; cada rollo en ' +
-      'bolsa individual.',
-    usos: [
-      'Tubo de aspiración',
-      'Drenaje para máquina de anestesia',
-      'Circuitos de máquina de hemodiálisis',
-    ],
-    // Sin código: son medidas, no referencias internas.
-    variantes: [
-      { detalle: '4 mm × 7 mm' },
-      { detalle: '6 mm × 9 mm' },
-      { detalle: '7 mm × 10 mm' },
-      { detalle: '7 mm × 12 mm' },
-      { detalle: '8 mm × 12 mm' },
-    ],
-  },
-
-  /* -------------------------------------------------------- Nutrición enteral */
-  {
-    slug: 'bomba-nutricion-enteral',
-    nombre: 'Bomba de nutrición enteral MEDCAPTAIN EP-60',
-    categoria: 'nutricion-enteral',
-    marca: 'medcaptain',
-    destacado: true,
-    resumen:
-      'Pantalla táctil de 4", rango de 1 a 1200 mL/h, calentador opcional y ' +
-      'conexión al monitoreo central.',
-    descripcion: [
-      'La Enteral Feeding Pump EP-60 es una bomba de alimentación enteral fácil ' +
-        'de operar, diseñada con varios programas de seguridad y función ' +
-        'anti-oclusión automática. Está provista de pantalla táctil de cuatro ' +
-        'pulgadas, carcasa robusta y calentador opcional.',
-      'Administra soluciones nutritivas en el intestino o el estómago del ' +
-        'paciente. Puede usarse en adultos y niños —no en neonatos— en ' +
-        'hospitales, clínicas y centros geriátricos.',
-    ],
-    caracteristicas: [
-      'Rango de velocidad de alimentación de 1 a 1200 mL/h',
-      'Calentamiento de la solución con ajuste de temperatura',
-      'Pantalla táctil de 4" con modo nocturno',
-      'Función anti-oclusión automática',
-      'Red inalámbrica y cableada para conexión al monitoreo central de infusión',
-      'Función de llamada a enfermera',
-      'Triple fuente de alimentación: CA, batería interna y respaldo',
-    ],
-    variantes: [
-      { codigo: 'EP-60', detalle: 'Compatible con bolsas enterales de diversas marcas' },
-      { codigo: 'EP-60C', detalle: 'Compatible exclusivamente con bolsas de la misma marca' },
+    slug: 'set-de-nutricion-enteral',
+    nombre: 'Set de nutrición enteral',
+    linea: 'nutricion-enteral',
+    categoria: 'set-de-nutricion-enteral',
+    descripcion:
+      'El Enteral Feeding Bottle Set (Set de alimentación enteral con rosca para ' +
+      'frasco), es un tipo de dispositivo que se utiliza con una bolsa de ' +
+      'alimentación enteral y un tubo estomacal. Durante su uso está conectado al ' +
+      'tubo estomacal que se inserta en el estómago del paciente a través del ' +
+      'conector del tubo, de tal manera que logra proporcionar solución nutritiva ' +
+      'a los pacientes de forma directa.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 30 und',
+        caracteristicas: [
+          'COMPOSICIÓN Y COLOR',
+          '1. Tapa del conector: Cloruro de Polivinilo o Policloruro de Vinilo (PVC), color transparente.',
+          '2. Conector: PVC, color violeta',
+          '3. Señal de advertencia: Cartulina, color blanco',
+          '4. Llave en “Y” para limpieza de tubería: PVC, color del cuerpo transparente y tapa violeta.',
+          '5. Llave de control tipo carretilla: PVC, color violeta',
+          '6. Imán: Sustancia ferrosa, color negro',
+          '7. Porción elástica de tubo conductor: Silicona o Silicona, color transparente',
+          '8. Cámara de goteo flexible y transparente: PVC, color transparente',
+          '9. Clamp de seguridad: PVC, color violeta',
+          '10. Tubo conductor transparente: PVC, color transparente.',
+          '11. Punta de penetración tipo espiga en “X”, con rosca: PVC, color violeta',
+          '12. Tapa con rosca para frasco o contenedor de alimentación: PVC, color violeta',
+          '• Bolsa de soporte: Polietileno (PE), color transparente',
+        ],
+      },
     ],
   },
   {
-    slug: 'bolsa-nutricion-enteral',
-    nombre: 'Bolsa de alimentación enteral',
-    categoria: 'nutricion-enteral',
-    marca: 'q-medical',
-    resumen:
-      'Bolsas estériles de 500 mL y 1000 mL para uso con fórmulas y accesos ' +
-      'enterales. No es para uso intravenoso.',
-    descripcion: [
-      'Dispositivo médico destinado a usarse con fórmulas enterales y con ' +
-        'dispositivos de acceso enteral. No es para uso intravenoso.',
-      'El diseño del conector y del rotulado diferencia claramente la vía ' +
-        'enteral de la vía intravenosa, una medida de seguridad establecida para ' +
-        'prevenir errores de conexión.',
-    ],
-    caracteristicas: [
-      'Sobre individual de film de polietileno (45–47 µ) y papel Tyvek (70 g/m²)',
-      'Apertura peel open con borde de 1 a 2 cm',
-      'Rotulado totalmente en español conforme a la autoridad nacional',
-      'PVC libre de DEHP',
-      'Escala de medición exacta y etiqueta autoadhesiva para registrar el volumen',
-      'Llave en Y para la incorporación de sustancias complementarias',
-      'Compatible con bombas de nutrición enteral',
-      'Libre de partículas, rebabas y aristas cortantes',
-      'Estéril',
-    ],
-    presentacion: 'Caja de cartón conteniendo 30 sobres individuales.',
-    variantes: [
-      { codigo: 'B-500', detalle: '500 mL' },
-      { codigo: 'B-1000-SE2', detalle: '1000 mL' },
+    slug: 'bomba-de-nutricion-enteral',
+    nombre: 'Bomba de nutrición enteral',
+    linea: 'nutricion-enteral',
+    categoria: 'bomba-de-nutricion-enteral',
+    descripcion:
+      'La Enteral Feeding Pump, es una bomba de alimentación enteral fácil de ' +
+      'operar. Diseñada con varios programas de seguridad. Viene con una función ' +
+      'anti-oclusión automática. Asimismo, está provista de una pantalla táctil ' +
+      'de cuatro pulgadas, carcasa robusta y calentador opcional.',
+    presentaciones: [
+      {
+        medida: 'EP-60',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'Fabricado con diversos plásticos de alto impacto (Polioximetileno - POM, Acrilonitrilo butadieno estireno - ABS, Nailon y fibra de vidrio, Policarbonato - PC), Silicona, Acero inoxidable SUS303 y Aleación de aluminio.',
+        ],
+      },
     ],
   },
-  {
-    slug: 'set-alimentacion-enteral',
-    nombre: 'Set de alimentación enteral con rosca para frasco',
-    categoria: 'nutricion-enteral',
-    marca: 'q-medical',
-    resumen:
-      'Set estéril que conecta el frasco de fórmula al tubo estomacal del ' +
-      'paciente.',
-    descripcion: [
-      'El Enteral Feeding Bottle Set se utiliza junto con una bolsa de ' +
-        'alimentación enteral y un tubo estomacal. Durante su uso permanece ' +
-        'conectado al tubo que se inserta en el estómago del paciente, ' +
-        'proporcionando la solución nutritiva de forma directa.',
-      'Se recomienda su uso bajo la supervisión de un médico o personal ' +
-        'capacitado en técnica aséptica, gestión de medicamentos, terapia de ' +
-        'infusión y control de infecciones.',
-    ],
-    caracteristicas: [
-      'Rosca compatible con frascos de fórmula enteral',
-      'Sobre de polietileno y papel grado médico',
-      'Apertura peel open',
-      'Estéril, un solo uso',
-    ],
-    presentacion:
-      'Caja de cartón corrugado por 30 sobres individuales; cada sobre con un ' +
-      'dispositivo.',
-  },
-
-  /* ----------------------------------------------------------------- Vía aérea */
-  {
-    slug: 'videolaringoscopio',
-    nombre: 'Videolaringoscopio MEDCAPTAIN VS-10',
-    categoria: 'via-aerea',
-    marca: 'medcaptain',
-    destacado: true,
-    resumen:
-      'Pantalla táctil LCD a color de 3.5", grabación de foto y video, batería ' +
-      'de al menos 4 horas y salida HDMI.',
-    descripcion: [
-      'El videolaringoscopio MEDCAPTAIN utiliza tecnología de cámara para ' +
-        'visualizar la laringe y facilitar al médico la intubación endotraqueal ' +
-        'sin dificultad.',
-      'Está diseñado para que el personal médico levante la epiglotis del ' +
-        'paciente y exponga la glotis para una intubación traqueal precisa, ' +
-        'implementando anestesia o primeros auxilios. También se utiliza para ' +
-        'examen y tratamiento intraoral.',
-    ],
-    caracteristicas: [
-      'Compatible con hojas de distintos tamaños: recién nacido, bebé, niño, adulto y adulto mayor',
-      'Pantalla táctil LCD a color de 3.5 pulgadas con brillo ajustable',
-      'Fuente de luz LED de brillo regulable',
-      'Ajuste automático del balance de blancos y alta resolución',
-      'Recubrimiento antivaho sin necesidad de precalentar la hoja',
-      'Batería de litio recargable con autonomía no inferior a 4 horas',
-      'Captura de fotografías y grabación de video',
-      'Transmisión de archivos por cable e inalámbrica; puerto HDMI',
-      'Mango ergonómico',
-    ],
-    variantes: [
-      { codigo: 'VS-10S', detalle: 'Configuración estándar' },
-      { codigo: 'VS-10M', detalle: 'Configuración media' },
-      { codigo: 'VS-10H', detalle: 'Configuración alta' },
-    ],
-  },
-  {
-    slug: 'hojas-videolaringoscopio',
-    nombre: 'Hojas de videolaringoscopio desechables',
-    categoria: 'via-aerea',
-    marca: 'medcaptain',
-    resumen:
-      'Hojas de policarbonato en todas las tallas, incluida vía aérea difícil y ' +
-      'paciente obeso.',
-    descripcion: [
-      'La hoja de laringoscopio desechable está diseñada para usarse con el ' +
-        'videolaringoscopio. Está disponible en varias presentaciones conforme a ' +
-        'las necesidades del paciente: infante, niño, adulto, pacientes con ' +
-        'dificultades respiratorias y pacientes obesos. Fabricada en policarbonato.',
-    ],
-    caracteristicas: [
-      'Policarbonato de grado médico',
-      'Tallas para infante, niño, adulto, vía aérea difícil y paciente obeso',
-      'Sobre de papel grado médico y polietileno por unidad',
-      'Un solo uso: elimina el reprocesamiento y la contaminación cruzada',
-    ],
-    presentacion:
-      'Caja de cartón grado médico conteniendo 12 sobres; cada sobre con una unidad.',
-  },
-
-  /* ------------------------------------------------------ Higiene del paciente */
   {
     slug: 'pano-bano-facil',
-    nombre: 'Paños jabonosos Baño Fácil',
-    categoria: 'higiene-paciente',
-    marca: 'bano-facil',
+    nombre: 'Paño baño fácil',
+    linea: 'higiene-del-paciente',
+    categoria: 'pano-bano-facil',
+    descripcion:
+      'Paño de tela no tejida embebida con una sustancia jabonosa para higiene ' +
+      'personal.',
+    presentaciones: [
+      {
+        medida: 'MANZANILLA',
+        marca: 'BAÑO FÁCIL',
+        marcaSlug: 'bano-facil',
+        unidad: 'paq x 10 und',
+        caracteristicas: [
+          'COMPONENTES Y MATERIALES',
+          '- Paño: 100% Fibra de Poliéster virgen',
+          '- Solución jabonosa:',
+          '• Agua: 66.6992% (Solvente)',
+          '• Lauril Sulfato de Sodio Etoxilado: 30.0000% (Espumante, Surfactante, Limpiador)',
+          '• Extracto Glicólico de Manzanilla: 0.0250% (Acondicionante de la piel)',
+          '• Cocoamido Dea: 1.3000% (Emulsificante, Surfactante)',
+          '• Ácido Cítrico: 0.0340% (Tamponante)',
+          '• Benzoato de Sodio: 0.1000% (Preservante)',
+          '• Propilenglicol: 1.5000% (Acondicionante de la piel, humectante)',
+          '• Colorante C.I. 16255: 0.0018% (Aportante de color)',
+          '• Fragancia: 0.3400% (Perfumante)',
+        ],
+      },
+      {
+        medida: 'ALOE VERA',
+        marca: 'BAÑO FÁCIL',
+        marcaSlug: 'bano-facil',
+        unidad: 'paq x 10 und',
+        caracteristicas: [
+          'COMPONENTES Y MATERIALES',
+          '- Paño: 100% Fibra de Poliéster virgen',
+          '- Solución jabonosa:',
+          '• Agua: 66.6742% (Solvente)',
+          '• Lauril Sulfato de Sodio Etoxilado: 30.0000% (Espumante, Surfactante, Limpiador)',
+          '• Extracto Glicólico de Manzanilla: 0.0250% (Acondicionante de la piel)',
+          '• Extracto Glicólico de Aloe vera: 0.0250% (Acondicionante de la piel)',
+          '• Propilenglicol: 1.5000% (Acondicionante de la piel, humectante)',
+          '• Cocoamido Dea: 1.3000% (Emulsificante, Surfactante)',
+          '• Ácido Cítrico: 0.0340% (Tamponante)',
+          '• Benzoato de Sodio: 0.1000% (Preservante)',
+          '• Colorante C.I. 42090: 0.0018% (Aportante de color)',
+          '• Fragancia: 0.3400% (Perfumante)',
+        ],
+      },
+      {
+        medida: 'CLORHEXIDINA',
+        marca: 'BAÑO FÁCIL',
+        marcaSlug: 'bano-facil',
+        unidad: 'paq x 5 und',
+        caracteristicas: [
+          'COMPOSICIÓN Y MATERIALES',
+          '- Paño: 100% Fibra de Poliéster virgen',
+          '- Solución jabonosa:',
+          '• Agua: 85.723% (Solvente)',
+          '• Óxido de amina: 6.000% (Limpiador, Surfactante)',
+          '• Poliglucosa: 6.000% (Surfactante)',
+          '• Clorhexidina Digluconato (Sol. Acuosa al 20%): 2.000% (Preservante, Antimicótico)',
+          '• Ácido Cítrico: 0.025% (Tamponante)',
+          '• Fragancia: 0.250% (Perfumante)',
+          '• Colorante C.I. 19140: 0.002% (Aportante de color)',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'toalla-para-secado-corporal',
+    nombre: 'Toalla para secado corporal',
+    linea: 'higiene-del-paciente',
+    categoria: 'toalla-para-secado-corporal',
+    descripcion:
+      'Toalla para secado corporal color blanco, empaquetado individualmente en ' +
+      'bolsa plástica con asa en la parte superior y delineado para fácil ' +
+      'apertura. Suave al tacto, alta absorción y resistencia. Libre de ' +
+      'partículas, rebabas y aristas cortantes',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          'COMPOSICIÓN',
+          '- Viscosa (Celulosa): 80%',
+          '- Poliéster: 20%',
+          '(*Tolerancia: ± 2%)',
+          'Caja x 130 bolsas',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'pano-clinico-absorbente',
+    nombre: 'Paño clínico absorbente',
+    linea: 'higiene-del-paciente',
+    categoria: 'pano-clinico-absorbente',
+    descripcion:
+      'Paño clínico ideal para disminuir los riesgos de contaminación cruzada de ' +
+      'las instituciones de salud y laboratorios.',
+    presentaciones: [
+      {
+        medida: 'CELULOSA 80% - POLIPROPILENO 20%',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'paq x 50 und',
+        caracteristicas: [
+          'COMPOSICIÓN',
+          '- Celulosa 80%',
+          '- Polipropileno (PP) 20%',
+          'Caja x 12 paquetes',
+        ],
+      },
+      {
+        medida: 'CELULOSA 100%',
+        marca: 'HEFEI',
+        unidad: 'paq x 50 und',
+        caracteristicas: [
+          'COMPOSICIÓN',
+          '- Celulosa 100% (pulpa de madera reforzada)',
+          'Caja x 30 paquetes',
+        ],
+        descripcion:
+          'Paños clínicos ideales para disminuir los riesgos de contaminación cruzada ' +
+          'de las instituciones de salud y laboratorios. Su práctico empaque permite ' +
+          'retirar fácilmente los paños por el extremo y volver a taparlos para ' +
+          'conservarlos limpios todo el tiempo.',
+      },
+    ],
+  },
+  {
+    slug: 'bolsa-emesis',
+    nombre: 'Bolsa para emesis o bolsa para vómito',
+    linea: 'higiene-del-paciente',
+    categoria: 'bolsa-emesis',
+    descripcion:
+      'Denominada también como bolsa para mareo. Es un dispositivo pequeño, que ' +
+      'suele proporcionarse a los pacientes en hospitales o a los pasajeros a ' +
+      'bordo de aviones y barcos para recoger y contener el vómito en caso de ' +
+      'mareo o movimiento.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'paq x 25 und',
+        caracteristicas: [
+          'COMPOSICIÓN Y MATERIALES',
+          '- Cabeza: anillo ranurado, de Polipropileno (PP), color blanco.',
+          '- Cuerpo: Bolsa de polietileno (PE), colo azul.',
+          'Caja x 20 paquetes',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'manta-absorbente-de-fluidos-antideslizante',
+    nombre: 'Manta absorbente de fluidos - antideslizante',
+    linea: 'absorbente',
+    categoria: 'manta-absorbente-de-fluidos',
+    descripcion:
+      'Dispositivo Médico diseñado para mantener el piso del quirófano limpio y ' +
+      'seco, evitando los deslizamientos debido a aquellos procedimientos ' +
+      'quirúrgicos que provocan intensos fluidos.',
     destacado: true,
-    resumen:
-      'Baño en cama sin enjuague, en tres formulaciones: aloe vera, clorhexidina ' +
-      'y manzanilla.',
-    descripcion: [
-      'Paño de tela no tejida embebido con una sustancia jabonosa para la ' +
-        'higiene personal del paciente encamado. No necesita enjuague, lo que ' +
-        'reduce el tiempo de procedimiento y el consumo de agua en sala.',
-      'Cada paño mide 20 × 20 cm y contiene 1.5 g de agente de limpieza, con un ' +
-        'pH de 5.8 a 6.5 compatible con la piel.',
-    ],
-    caracteristicas: [
-      'Descartable y no necesita enjuague',
-      'Superficie de 400 cm² (20 × 20 cm) con 1.5 g de agente de limpieza',
-      'Gramaje de 100 g/m² (± 10 g/m²)',
-      'pH de 5.8 a 6.5 y densidad de 1.010 a 1.070 g/mL',
-      'Control de espuma de 8 a 12 mL',
-      'Libre de látex y metales pesados',
-      'No estéril, hipoalergénico y atóxico',
-    ],
-    presentacion:
-      'Caja conteniendo 100 bolsas de polipropileno biorientado (BOPP); cada ' +
-      'bolsa con 10 paños.',
-    variantes: [
-      { codigo: 'Aloe vera', codigoEsPresentacion: true, detalle: 'Color celeste' },
-      { codigo: 'Clorhexidina', codigoEsPresentacion: true, detalle: 'Color verde' },
-      { codigo: 'Manzanilla', codigoEsPresentacion: true, detalle: 'Color rosado' },
+    presentaciones: [
+      {
+        medida: 'ANTIDESLIZANTE - Q202',
+        marca: 'HUAXINHONG',
+        unidad: 'paq x 5 und',
+        caracteristicas: [
+          'MATERIALES',
+          'Constituido por tres capas de laminación:',
+          '- Superior: tela no tejida, Polipropileno (PP). Absorbente de agua. Color blanco. Peso 5 g (1%).',
+          '- Medio: Polipropileno (PP) fundido y soplado (absorbente de agua). Color Azul (Pantone 283U). Peso 400 g (88%)',
+          '- Inferior o Reverso: Película Transparente de Polietileno (PE). Impermeable. Peso 50 g (11%).',
+          'DIMENSIONES: 36 x 44 pulgadas (91.4 cm x 111.8 cm)',
+          'Caja x 6 paquetes',
+        ],
+      },
     ],
   },
   {
-    slug: 'toalla-secado-corporal',
-    nombre: 'Toalla para secado corporal Q-MEDICAL',
-    categoria: 'higiene-paciente',
-    marca: 'q-medical',
-    resumen:
-      'Toalla de un solo uso de 130 × 65 cm, absorción ≥ 5 mL/g y 80 % ' +
-      'biodegradable.',
-    descripcion: [
-      'Toalla para secado corporal de color blanco, empaquetada individualmente ' +
-        'en bolsa plástica con asa superior y delineado para fácil apertura. ' +
-        'Suave al tacto, de alta absorción y resistencia.',
-    ],
-    caracteristicas: [
-      'Tamaño de 130 cm × 65 cm (± 5 %)',
-      'Capacidad de absorción ≥ 5 mL/g y velocidad ≥ 55 mm/60 s',
-      'Peso base de 80 g',
-      'Biodegradable en un 80 %',
-      'Libre de metales pesados (As, Cd, Cr, Pb, Sb, Hg) y sin olor',
-      'pH cercano al neutro',
-      'No estéril (aséptico), un solo uso',
-    ],
-    presentacion: 'Caja de cartón conteniendo 130 bolsas; cada bolsa con una toalla.',
-    usos: [
-      'Secado corporal en hospitales y centros geriátricos',
-      'Cuidado del paciente en casa',
-      'Spa, gimnasios, hotelería y zonas húmedas',
+    slug: 'manta-absorbente-de-fluidos-precortada',
+    nombre: 'Manta absorbente de fluidos - precortada',
+    linea: 'absorbente',
+    categoria: 'manta-absorbente-de-fluidos',
+    descripcion:
+      'Dispositivo Médico diseñado para mantener secas las bandejas o superficies ' +
+      'donde se colocan los instrumentos quirúrgicos; asimismo, tienen el ' +
+      'propósito de amortigua los golpes y deslizamientos de los mismos, en el ' +
+      'momento de secarlos.',
+    presentaciones: [
+      {
+        medida: 'PRECORTADA - Q101',
+        marca: 'HUAXINHONG',
+        unidad: 'paq x 5 und',
+        caracteristicas: [
+          'MATERIALES',
+          'Tres placas de laminación:',
+          '• Cara superior: Tela no tejida, Polipropileno (PP): 5 g (1%)',
+          '• Medio: Polipropileno (PP) fundido y soplado (absorbente de agua): 400 g (98%)',
+          '• Cara inferior: Tela no tejida, Polipropileno (PP): 5 g (1%)',
+          'DIMENSIONES: 36 x 44 pulgadas (91.4 cm x 111.8 cm).',
+          'Caja x 6 paquetes',
+        ],
+      },
     ],
   },
   {
-    slug: 'pano-clinico-qmedical',
-    nombre: 'Paño clínico súper absorbente Q-MEDICAL',
-    categoria: 'higiene-paciente',
-    marca: 'q-medical',
-    resumen:
-      'Paño blanco de un solo uso con superficie en altorrelieve, en bolsa ' +
-      'dispensadora por 50 unidades.',
-    descripcion: [
-      'Paño clínico ideal para disminuir los riesgos de contaminación cruzada ' +
-        'en instituciones de salud y laboratorios. Su bolsa dispensadora permite ' +
-        'retirar los paños de uno en uno manteniendo limpio el resto del contenido.',
-    ],
-    caracteristicas: [
-      'Color blanco, suave al tacto',
-      'Superficie con altorrelieves para mayor capacidad de arrastre',
-      'Libre de rebabas, aristas cortantes, partículas extrañas y manchas',
-      'Composición: 80 % celulosa y 20 % emulsión',
-      'Resistente al rasgado y sin desprendimiento de partículas',
-      'No irrita la piel',
-      'Un solo uso',
-    ],
-    presentacion:
-      'Caja de cartón por 12 bolsas dispensadoras de LDPE; cada bolsa con 50 paños.',
-  },
-  {
-    slug: 'pano-clinico-telijie',
-    nombre: 'Paño clínico absorbente TELIJIE',
-    categoria: 'higiene-paciente',
-    marca: 'telijie',
-    resumen:
-      'Paño de 4 capas reforzado con malla de hilo de algodón, en bolsa ' +
-      'dispensadora recerrable.',
-    descripcion: [
-      'Paños clínicos ideales para disminuir los riesgos de contaminación ' +
-        'cruzada en instituciones de salud y laboratorios. Su práctico empaque ' +
-        'permite retirar los paños por el extremo y volver a taparlos para ' +
-        'conservarlos limpios todo el tiempo.',
-    ],
-    caracteristicas: [
-      'Cuatro capas reforzadas con malla de hilo de algodón en el interior',
-      'Bolsa dispensadora de LDPE recerrable',
-      'Un solo uso',
-    ],
-    presentacion:
-      'Caja de cartón conteniendo 30 bolsas; cada bolsa con 50 paños.',
-    usos: [
-      'Secado de manos quirúrgico',
-      'Baño de pacientes',
-      'Limpieza de instrumental quirúrgico y equipos médicos',
+    slug: 'mantas-super-absorbentes',
+    nombre: 'Mantas súper absorbentes impermeables y antideslizantes',
+    linea: 'absorbente',
+    categoria: 'manta-absorbente-de-fluidos',
+    descripcion:
+      'Dispositivo Médico diseñado para Ayudar a mantener el quirófano limpio, ' +
+      'seco y seguro de resbalones, caídas y los contaminantes.',
+    presentaciones: [
+      {
+        medida: 'Q303',
+        marca: 'COMFYCLOUD',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MATERIALES',
+          '- Capa superior: Polipropileno (PP) fundido y',
+          'soplado, color amarillo: 319.00 g/m2',
+          '(54.07%),',
+          '- Capa central: Película transparente de Polietileno (PE): 49.00 g/m2 (8.30%),',
+          '- Capa inferior: Lámina de Policloruro de Vinilo (PVC), color rosado a melón: 220.00 g/m2 (37.29%),',
+          '- Adhesivo sintético: 2.00 g/m2 (0.34%),',
+          'DIMENSIONES: 32” x 40” pulgadas (81.28 cm x 101.6 cm)',
+          'Caja x 30 unidades',
+        ],
+      },
     ],
   },
   {
-    slug: 'bolsa-vomito',
-    nombre: 'Bolsa para emesis',
-    categoria: 'higiene-paciente',
-    marca: 'q-medical',
-    resumen:
-      'Bolsa translúcida azul con aro rígido y graduación, 100 % reciclable. ' +
-      'Caja por 500 unidades.',
-    descripcion: [
-      'Dispositivo destinado a recoger y contener el vómito, tanto en el ámbito ' +
-        'hospitalario como en el transporte de pasajeros. Su aro rígido y el ' +
-        'cierre facilitan la manipulación y el descarte sin exposición.',
-    ],
-    caracteristicas: [
-      'Bolsa translúcida de color azul que permite visualizar el nivel de contenido',
-      'Elimina la exposición a la emesis del paciente y del personal asistencial',
-      '100 % reciclable',
-      'Libre de látex, metales pesados y ftalatos',
-      'No estéril',
-    ],
-    presentacion:
-      'Caja de cartón conteniendo 500 unidades distribuidas en 20 bolsas de 25 piezas.',
-  },
-
-  /* ------------------------------------------------------------- Absorbentes */
-  {
-    slug: 'manta-absorbente-jiehong',
-    nombre: 'Manta absorbente de fluidos JIEHONG',
-    categoria: 'absorbentes',
-    marca: 'jiehong',
-    resumen:
-      'Manta de piso impermeable y antideslizante, absorción > 3.0 L/m². ' +
-      'Disponible precortada.',
-    descripcion: [
-      'Dispositivo médico diseñado para mantener el piso del quirófano limpio y ' +
-        'seco, evitando los deslizamientos en aquellos procedimientos ' +
-        'quirúrgicos que provocan fluidos intensos.',
-      'La versión reversible precortada permite adaptar el tamaño de la manta a ' +
-        'la superficie a proteger sin herramientas.',
-    ],
-    caracteristicas: [
-      'Lámina inferior impermeable y antideslizante',
-      'Alta absorción de líquidos: > 3.0 L/m²',
-      'Absorción inmediata de soluciones salinas, sangre y fluidos corporales',
-      'Se adapta a diferentes superficies sin aglomerarse',
-      'Tres capas de laminación',
-      'Dimensiones de 36 × 44 pulgadas (91.4 × 111.8 cm), ~455 g',
-      'Descartable',
-    ],
-    presentacion: 'Empaque individual en bolsa de polietileno de baja densidad.',
-    variantes: [
-      { codigo: 'Q202', detalle: 'Manta continua para piso' },
-      { codigo: 'Reversible', detalle: 'Precortada de doble cara' },
+    slug: 'protector-tela-impermeable',
+    nombre: 'Protector de tela plástica impermeable',
+    linea: 'absorbente',
+    categoria: 'protector-tela-impermeable',
+    descripcion:
+      'Manta protectora impermeable, ideal para el recubrimiento y protección de ' +
+      'superficies difíciles de limpiar y secar; debido al derrame de fluidos ' +
+      'como agua, orina, etc.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'MEDISPO',
+        marcaSlug: 'medispo',
+        unidad: 'unidad',
+        caracteristicas: [
+          'COMPOSICIÓN',
+          '▪ Capa superior (color blanco)',
+          '- Polipropileno (PP) 14%',
+          '- Tejido de Papel Tisú: 6%',
+          '▪ Capa central',
+          '- Fibras de celulosa: 53%',
+          '- Polímero Súper Absorbente (SAP): 6%',
+          '▪ Capa inferior (celeste)',
+          '- Polietileno (PE), 19%',
+          '▪ Adhesivo de fusión en caliente: 2%',
+          'Caja x 60 unidades',
+        ],
+      },
     ],
   },
   {
-    slug: 'manta-absorbente-xodus',
-    nombre: 'Manta absorbente antideslizante The Camel — XODUS',
-    categoria: 'absorbentes',
-    marca: 'xodus',
-    resumen:
-      'Ultra absorbente con forro antideslizante e impermeable: 4.44 L por ' +
-      'manta, 5.53 L/m².',
-    descripcion: [
-      'Dispositivo médico diseñado para ayudar a mantener el quirófano limpio, ' +
-        'seco y seguro frente a resbalones, caídas y contaminantes.',
+    slug: 'guantes-nitrilo-sin-polvo',
+    nombre: 'Guantes para examen descartables de nitrilo sin polvo - 6.5 GR',
+    linea: 'proteccion-personal',
+    categoria: 'guantes-de-nitrilo-sin-polvo-6-5-gr',
+    descripcion:
+      'Guantes de uso médico. Elaborados para protegernos de riesgos químicos, ' +
+      'microbiológicos y citostáticos. Protege contra la contaminación en ' +
+      'procedimientos con pacientes de alto riesgo, manejo de drogas oncológicas, ' +
+      'tratamientos químicos, tratamiento de metales con disolventes.',
+    destacado: true,
+    presentaciones: [
+      {
+        medida: 'TALLA S',
+        marca: 'COMFORT',
+        marcaSlug: 'comfort-rubber-gloves',
+        unidad: 'caja x 100 und',
+        caracteristicas: [
+          '• Largo (mm): 300',
+          '• Ancho (mm): 85 ± 5',
+          '• Espesor (mm) – Palma: 0.10 ± 0.02',
+          '• Espesor (mm) – Puño: 0.07 ± 0.02',
+          '• Espesor (mm) – Dedos: 0.15 ± 0.02',
+          '• Peso (g): 6.0 ± 0.2',
+        ],
+      },
+      {
+        medida: 'TALLA M',
+        marca: 'COMFORT',
+        marcaSlug: 'comfort-rubber-gloves',
+        unidad: 'caja x 100 und',
+        caracteristicas: [
+          '• Largo (mm): 300',
+          '• Ancho (mm): 95 ± 5',
+          '• Espesor (mm) – Palma: 0.10 ± 0.02',
+          '• Espesor (mm) – Puño: 0.07 ± 0.02',
+          '• Espesor (mm) – Dedos: 0.15 ± 0.02',
+          '• Peso (g): 6.5 ± 0.2',
+        ],
+      },
+      {
+        medida: 'TALLA L',
+        marca: 'COMFORT',
+        marcaSlug: 'comfort-rubber-gloves',
+        unidad: 'caja x 100 und',
+        caracteristicas: [
+          '• Largo (mm): 300',
+          '• Ancho (mm): 105 ± 5',
+          '• Espesor (mm) – Palma: 0.10 ± 0.02',
+          '• Espesor (mm) – Puño: 0.07 ± 0.02',
+          '• Espesor (mm) – Dedos: 0.15 ± 0.02',
+          '• Peso (g): 7.0 ± 0.2',
+        ],
+      },
+      {
+        medida: 'TALLA XL',
+        marca: 'COMFORT',
+        marcaSlug: 'comfort-rubber-gloves',
+        unidad: 'caja x 100 und',
+        caracteristicas: [
+          '• Largo (mm): 300',
+          '• Ancho (mm): 115 ± 5',
+          '• Espesor (mm) – Palma: 0.10 ± 0.02',
+          '• Espesor (mm) – Puño: 0.07 ± 0.02',
+          '• Espesor (mm) – Dedos: 0.15 ± 0.02',
+          '• Peso (g): 7.5 ± 0.2',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Capacidad de absorción de 4.44 L por manta (5.53 L/m²)',
-      'Superficie lisa y compacta provista de poros para absorción inmediata',
-      'Absorbe sangre, fluidos corporales y agentes cáusticos',
-      'Impermeable: retiene los fluidos y evita la formación de lodo',
-      'Base antideslizante',
-      'Fácil de tender y retirar',
-    ],
-    presentacion: 'Caja por 12 unidades individuales.',
   },
-  {
-    slug: 'protector-impermeable',
-    nombre: 'Protector de tela plástica impermeable MEDISPO',
-    categoria: 'absorbentes',
-    marca: 'medispo',
-    resumen:
-      'Manta protectora de colchón con capa superior semipermeable y barrera ' +
-      'inferior impermeable.',
-    descripcion: [
-      'Manta protectora impermeable, ideal para el recubrimiento y protección ' +
-        'de superficies difíciles de limpiar y secar por el derrame de fluidos ' +
-        'como agua u orina.',
-    ],
-    caracteristicas: [
-      'Capa superior blanca semipermeable',
-      'Barrera inferior impermeable',
-      'Bolsa individual de PE que garantiza hermeticidad',
-      'Descartable',
-    ],
-    presentacion:
-      'Caja de cartón conteniendo 60 protectores, cada uno en bolsa individual.',
-  },
-
-  /* ------------------------------------------------------------ Instrumental */
   {
     slug: 'marcador-piel-esteril',
-    nombre: 'Marcador de piel estéril desechable Q-MEDICAL',
-    categoria: 'instrumental',
-    marca: 'q-medical',
-    resumen:
-      'Marcador estéril con regla quirúrgica incluida, en blíster individual.',
-    descripcion: [
-      'Marcadores estériles diseñados para facilitar la identificación y el ' +
-        'trazo del contorno del campo quirúrgico sobre la piel donde se ' +
-        'realizará la intervención, permitiendo localizar de forma segura y ' +
-        'confiable la zona exacta de la incisión. Incluyen regla.',
+    nombre: 'Marcador de piel estéril desechable',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'marcador-de-piel',
+    descripcion:
+      'Marcadores estériles diseñados para facilitar la identificación y trazo ' +
+      'del contorno del campo quirúrgico en la zona de la piel donde se va ' +
+      'producir la intervención quirúrgica; permitiendo en forma segura y ' +
+      'confiable localizar la zona exacta para la incisión. Incluyen regla',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 25 und',
+        caracteristicas: [
+          '- Tinta: Violeta de genciana (Cloruro de Metilrosanilina o Cristal violeta)',
+          '- Tapa: Polipropileno, color transparente.',
+          '- Cuerpo: Polipropileno, color blanco',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Regla quirúrgica incluida en cada blíster',
-      'Empaque primario de papel grado médico y film de polietileno',
-      'Apertura peel open',
-      'Hipoalergénico y libre de látex',
-      'Contribuye a evitar infecciones de sitio quirúrgico',
-      'Estéril, un solo uso',
-    ],
-    presentacion:
-      'Caja de cartulina con 25 blísteres; embalaje corrugado por 10 cajas.',
   },
   {
     slug: 'marcador-piel-no-esteril',
-    nombre: 'Marcador quirúrgico no estéril XODUS',
-    categoria: 'instrumental',
-    marca: 'xodus',
-    resumen:
-      'Marcador de trazo directo sobre la piel, en formato pequeño.',
-    descripcion: [
-      'Marcador quirúrgico no estéril para trazo directo sobre la piel, en ' +
-        'formato pequeño, indicado para marcaje preoperatorio fuera del campo ' +
-        'estéril.',
-    ],
-    caracteristicas: [
-      'Trazo directo sobre piel',
-      'Formato pequeño, de un solo uso',
-      'No estéril',
+    nombre: 'Marcador quirúrgico no estéril para piel',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'marcador-de-piel',
+    descripcion:
+      'Marcador pequeño no estéril, diseñado para proporcionar un medio seguro y ' +
+      'eficaz de marcado en la piel antes de una intervención quirúrgica, en el ' +
+      'mismo lugar de la operación.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'XODUS',
+        marcaSlug: 'xodus',
+        unidad: 'caja x 50 und',
+        caracteristicas: [
+          '- Cuerpo y tapa: polietileno de alta densidad',
+          '- Tinta: Violeta de genciana (Cloruro de Metilrosanilina o Cristal violeta)',
+        ],
+      },
     ],
   },
   {
-    slug: 'contador-agujas',
-    nombre: 'Contador de agujas de doble imán KANGBAO',
-    categoria: 'instrumental',
-    marca: 'kangbao',
-    resumen:
-      'Estuche con dos láminas imantadas para el recuento verificable de ' +
-      'agujas en sala de operaciones.',
-    descripcion: [
-      'Dispositivo médico diseñado para el reconteo de agujas durante el acto ' +
-        'quirúrgico y al cerrarlo. El estuche, de color rojo, aloja en su ' +
-        'interior dos láminas imantadas que retienen las agujas usadas.',
-      'Las posiciones van numeradas, de modo que el recuento queda a la vista ' +
-        'y puede verificarse sin manipular el material punzocortante.',
+    slug: 'contador-de-aguja-doble-iman',
+    nombre: 'Contador de aguja doble imán',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'contador-de-aguja',
+    descripcion:
+      'Dispositivo Médico diseñado para reconteo de agujas, con dos láminas de ' +
+      'imán. Son estuches de color rojo que en su interior se encuentran las ' +
+      'láminas imantadas.',
+    presentaciones: [
+      {
+        medida: 'DOBLE MAGNETO 30 RECUENTOS',
+        marca: 'KANGBAO',
+        marcaSlug: 'kangbao',
+        unidad: 'caja x 28 blísteres',
+        caracteristicas: [
+          '• Estuche de poliestireno de alto impacto (HIPS) y doble lámina imantada.',
+          '• Dimensiones: 11.3 cm × 5.4 cm × 1.5 cm',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Dos láminas imantadas que retienen las agujas usadas',
-      'Posiciones numeradas para verificar el recuento a simple vista',
-      'Estuche rígido con tapa abatible, en rojo de alta visibilidad',
-      'Permite contar sin manipular el material punzocortante',
-    ],
-    presentacion:
-      'Caja de 28 blísteres. El estuche mide 11.3 × 5.4 × 1.5 cm.',
   },
   {
-    slug: 'bolsa-conteo-gasas',
-    nombre: 'Bolsa para conteo de gasas y esponjas',
-    categoria: 'instrumental',
-    marca: 'q-medical',
-    resumen:
-      'Faja plástica de cinco bolsillos para el recuento verificable de gasas ' +
-      'durante la intervención.',
-    descripcion: [
-      'Dispositivo utilizado principalmente en quirófanos para facilitar, ' +
-        'organizar y verificar el recuento de gasas, torundas o esponjas ' +
-        'quirúrgicas empleadas durante una intervención.',
-      'Está diseñado para garantizar la seguridad del paciente y prevenir que ' +
-        'se dejen accidentalmente gasas dentro del cuerpo intervenido, situación ' +
-        'conocida como textiloma o gossypiboma.',
+    slug: 'bolsas-para-contar-gasas',
+    nombre: 'Bolsas para contar gasas',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'bolsas-para-contar-gasas',
+    descripcion:
+      'Dispositivo médico que se utilizan principalmente en quirófanos y entornos ' +
+      'médicos para facilitar, organizar y verificar el recuento de gasas, bolsa ' +
+      'de algodón o esponjas quirúrgicas utilizadas durante una intervención ' +
+      'quirúrgica. Diseñado para garantizar la seguridad del paciente y prevenir ' +
+      'que se dejen accidentalmente gasas, etc. dentro del cuerpo del ' +
+      'intervenido; después de una cirugía, el cual se conoce como textiloma o ' +
+      'gossypiboma. El dispositivo está constituido por una faja plástica ' +
+      'provista de cinco bolsillos, en donde se colocan las gazas o torundas ' +
+      'usadas.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'caja x 50 und',
+        caracteristicas: [
+          '• Polietileno (PE)',
+          '• Producto no estéril.',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Faja plástica provista de cinco bolsillos transparentes',
-      'Permite la verificación visual del recuento por el equipo quirúrgico',
-      'Caja dispensadora de cartulina grado médico',
-    ],
-    presentacion:
-      'Caja dispensadora con 50 bolsas; caja de cartón con 8 dispensadores ' +
-      '(400 unidades).',
   },
   {
     slug: 'limpiador-puntas-electrocauterio',
     nombre: 'Limpiador de puntas de electrocauterio',
-    categoria: 'instrumental',
-    marca: 'q-medical',
-    resumen:
-      'Almohadilla abrasiva desechable para retirar la escara del lápiz de ' +
-      'electrocirugía sin dañar la punta.',
-    descripcion: [
-      'Dispositivo médico diseñado para limpiar con seguridad y eficacia las ' +
-        'puntas de los lápices para electrocirugía, manteniendo la eficiencia ' +
-        'del corte y la coagulación durante toda la intervención.',
-    ],
-    caracteristicas: [
-      'Sobre individual en manga mixta de LDPE y papel grado médico',
-      'Apertura peel open',
-      'Un solo uso',
-    ],
-    presentacion:
-      'Caja por 200 sobres individuales; embalaje por 4 cajas (800 sobres).',
-  },
-  {
-    slug: 'cepillos-limpieza-instrumental',
-    nombre: 'Cepillos para limpieza de instrumental médico',
-    categoria: 'instrumental',
-    marca: 'q-medical',
-    resumen:
-      'Familia de cepillos con cerdas de nailon y de latón para la limpieza ' +
-      'manual en central de esterilización.',
-    descripcion: [
-      'Línea de cepillos para la limpieza manual de instrumental quirúrgico en ' +
-        'la central de esterilización. Incluye formatos de cerda fina para ' +
-        'lúmenes y articulaciones, y cerda de latón para depósitos resistentes.',
-      'Los mangos ergonómicos con orificio de colgado permiten mantener el ' +
-        'orden y el secado del cepillo entre usos.',
-    ],
-    caracteristicas: [
-      'Cerdas de nailon y de acero según formato',
-      'Mango ergonómico con orificio de colgado',
-      'Formatos de doble cabezal para limpieza de ranuras',
-      'Libres de látex',
-      'No estériles',
-    ],
-    variantes: [
-      { codigo: 'N-2100', detalle: 'Escobilla de nailon blanco · 17.78 cm · cerda de 3.6 cm' },
-      { codigo: 'S-2100', detalle: 'Escobilla con cerdas de acero · 17.78 cm' },
-      { codigo: 'D-2100', detalle: 'Escobilla de nailon blanco · 17.78 cm · cerda de 3.6 cm' },
-      { codigo: 'N-2121', detalle: 'Doble cabezal: nailon blanco y acero · 17.78 cm' },
-      { codigo: 'N-3000', detalle: 'Cerdas con sustancia antimicrobiana · mango de bloque · 17.78 cm' },
-      { codigo: 'N-4000', detalle: '16 filas de cerdas antimicrobianas · mango anatómico · 18 cm' },
+    linea: 'material-medico-no-instrumental',
+    categoria: 'limpiador-puntas-electrocauterio',
+    descripcion:
+      'Dispositivo Médico diseñado para limpiar con seguridad y eficacia las ' +
+      'puntas de los lápices para electrocirugía.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          '• Dimensión: 50*50 mm',
+          '• Tolerancia / Longitud: ± 5 mm',
+          '• Tolerancia / ancho: ± 5 mm',
+          '• Lámina abrasiva o pulidora: Material fino de Monóxido de Silicio (SiO) de grado médico. Color grafito.',
+          '• Capa base: Esponja de Poliuretano. Color celeste oscuro.',
+          '• Adhesivo: Sensible a la presión. Transparente',
+          '• Papel desprendible: Papel recubierto de silicona. Color blanco',
+        ],
+      },
     ],
   },
-
-  /* ------------------------------------------------------ Protección personal */
   {
-    slug: 'guantes-nitrilo',
-    nombre: 'Guantes de nitrilo 6.5 g COMFORT',
-    categoria: 'proteccion-personal',
-    marca: 'comfort-rubber-gloves',
-    destacado: true,
-    resumen:
-      'Guante de alto riesgo, libre de látex y de polvo, resistente a agentes ' +
-      'químicos y citostáticos.',
-    descripcion: [
-      'Guantes de uso médico elaborados para proteger frente a riesgos ' +
-        'químicos, microbiológicos y citostáticos. Protegen contra la ' +
-        'contaminación en procedimientos con pacientes de alto riesgo, manejo de ' +
-        'drogas oncológicas, tratamientos químicos y tratamiento de metales con ' +
-        'disolventes.',
+    slug: 'cepillo-limpieza-instrumental-dental',
+    nombre: 'Cepillo de limpieza de instrumental médico tipo cepillo dental',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'cepillos-para-limpieza-de-instrumental-medico',
+    descripcion:
+      'Cepillo dental de plástico, tipo cepillo dental para limpieza del ' +
+      'instrumental quirúrgico. Mango anatómico de polipropileno y cerdas de ' +
+      'Poliamida (Nylon).',
+    presentaciones: [
+      {
+        medida: 'PRCB-01',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          '- Mango anatómico de plástico resistente, color celeste.',
+          '- Longitud total: 18.5 cm',
+          '- Cerdas semirrígidas de 12 mm de longitud, transparentes, dispuestas un área de 32 mm x 7 mm (13 columnas x 3 filas).',
+        ],
+      },
+      {
+        medida: 'PRCB-04',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          'Diseñado con dos cabezas de tres (03 filas y 13 columnas) cada una. Una cabeza con cerdas de nailon de color blanco y la otra, con cerdas de acero inoxidable. Ambos tipos de cerdas son rectas, espesor uniforme, distribución simétrica y de fijación firme.',
+          '- Las cerdas de nailon son semirrígidas y 12 mm de longitud; mientras que las de acero inoxidable, son rígidas y 14 mm de longitud.',
+          '- Mango anatómico de plástico resistente, color celeste.',
+          '- Longitud total de 18.5 cm',
+        ],
+        descripcion:
+          'Cepillo dental de plástico, tipo cepillo dental de doble cabezal, para ' +
+          'limpieza del instrumental quirúrgico. Mango anatómico de polipropileno y ' +
+          'cerdas de Poliamida (Nylon) y Acero inoxidable.',
+      },
+      {
+        medida: 'ICB-3',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          '- Mango anatómico de plástico resistente, color azul.',
+          '- Longitud total: 17.5 cm',
+          '- Cerdas semirrígidas de 12 mm de longitud, transparentes, dispuestas un área de 38 mm x 7 mm (13 columnas x 3 filas).',
+        ],
+      },
     ],
-    caracteristicas: [
-      'Nitrilo de alto riesgo, no estéril y ambidiestro',
-      'Punta de dedo texturizada para mejor agarre; superficie interna lisa',
-      'Libre de polvo (residuos ≤ 2 mg por guante) y libre de látex',
-      'Clorinados para asegurar la eliminación de contaminación residual',
-      'Resistente a la penetración por aldehídos, álcalis, bencenos y otros agentes',
-      'Resistente a la permeabilidad de sustancias citotóxicas',
-      'Resistencia a la tracción ≥ 14 MPa antes y después del envejecimiento',
-      'Resistencia al estiramiento ≥ 500 % antes del envejecimiento',
-      'Hipoalergénico, color azul',
+  },
+  {
+    slug: 'escobilla-nailon-doble-cabeza',
+    nombre: 'Escobilla de nailon doble cabeza extremos',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'cepillos-para-limpieza-de-instrumental-medico',
+    descripcion:
+      'Cepillo tipo dental con doble cabeza, recto, para limpieza del ' +
+      'instrumental quirúrgico. Mango anatómico de polipropileno y cerdas de ' +
+      'Poliamida (Nylon).',
+    presentaciones: [
+      {
+        medida: 'PRCB-02',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          '- Mango anatómico de plástico resistente, drapeado en la parte central, color dorado oscuro.',
+          '- Longitud total: 18 cm.',
+          '- Doble cabeza con cerdas semirrígidas de distinta longitud.',
+          'La cabeza con el área más grande, está conformado por cerdas de 12 mm de longitud, transparentes, dispuestas en un área de 38 mm x',
+          '8 mm (12 columnas x 3 filas).',
+          'La cabeza con el área más pequeña, está constituido por cerdas de 6 mm de longitud, transparentes, dispuestas en un área de 23 mm x',
+          '2 mm (7 columnas x 1 fila).',
+        ],
+      },
     ],
-    presentacion: 'Caja de cartón multiempaque.',
-    variantes: [
-      { codigo: 'Talla S · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 85 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: 'Talla M · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 95 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: 'Talla L · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 105 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: 'Talla XL · 6.5 g', codigoEsPresentacion: true, detalle: 'Largo 300 mm · ancho 115 ± 5 mm · palma 0.10 mm · dedos 0.15 mm' },
-      { codigo: 'Tallas S, M y L · 3.5 g', codigoEsPresentacion: true, detalle: 'Largo 240 mm · palma 0.07 mm · dedos 0.10 mm — línea de examen' },
+  },
+  {
+    slug: 'cepillo-nailon-mango-ancho',
+    nombre: 'Cepillo de nailon blanco mango ancho blanco',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'cepillos-para-limpieza-de-instrumental-medico',
+    descripcion:
+      'Cepillo de limpieza de instrumentos en general. Diseñado con un mango ' +
+      'recto de fácil agarre y cerdas de Poliamida (Nylon).',
+    presentaciones: [
+      {
+        medida: 'PRCB-03',
+        marca: 'Q-MEDICAL',
+        marcaSlug: 'q-medical',
+        unidad: 'unidad',
+        caracteristicas: [
+          '- Mango anatómico y plano de plástico resistente, color blanco.',
+          '- Longitud total: 22.2 cm',
+          '- Cerdas semirrígidas de 15 mm de longitud, transparentes, dispuestas un área de 7.5 cm x 3 cm (19 columnas x 8 filas).',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'videolaringoscopio-vs-10h',
+    nombre: 'Videolaringoscopio VS-10H',
+    linea: 'via-aerea',
+    categoria: 'videolaringoscopio',
+    descripcion:
+      'El videolaringoscopio de Medcaptain utiliza una tecnología de cámara para ' +
+      'visualizar la laringe y facilitar a los médicos realizar la intubación ' +
+      'endotraqueal sin problemas.',
+    presentaciones: [
+      {
+        medida: '',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          '- Ángulo de rotación de la pantalla de visualización:',
+          '- Ángulo de rotación vertical máximo: 140° ± 10°',
+          '-Ángulo de rotación horizontal máximo: 270 ° ± 10 °',
+          '- Profundidad de campo: 10-80mm',
+          '- Pantalla: Táctil LCD, color, 3.5”',
+          '- Resolución: 640 x 960 pixeles',
+          '- Peso: 0.25 kg (incluida la batería)',
+          '- Potencia de entrada: 25VA.',
+          '- Voltaje de salida DC: 5V 2A.',
+          '- Batería incorporada: 3.6V 3400mAh.',
+          '- Tiempo de carga: no más de 4 horas (el dispositivo se apaga durante la carga)',
+          '- Dimensiones: 191 (H) x 92 (W) x 112 (D) mm',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'hojas-videolaringoscopio',
+    nombre: 'Hoja descartable para videolaringoscopio',
+    linea: 'via-aerea',
+    categoria: 'hojas-de-videolaringoscopio',
+    descripcion:
+      'El Disposable laryngoscope blade (Hoja de Laringoscopio desechable) está ' +
+      'diseñado para usarse con el videolaringoscopio. Disponible en varias ' +
+      'presentaciones conforme a las necesidades del paciente (infante, niño, ' +
+      'adulto, pacientes con dificultades respiratorias y obesas). Fabricado con ' +
+      'Policarbonato.',
+    presentaciones: [
+      {
+        medida: 'M1',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MEDIDAS',
+          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
+          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
+          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
+          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
+          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: 'M2',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MEDIDAS',
+          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
+          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
+          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
+          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
+          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: 'M3',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MEDIDAS',
+          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
+          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
+          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
+          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
+          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: 'M4',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MEDIDAS',
+          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
+          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
+          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
+          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
+          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Caja x 12 unidades',
+        ],
+      },
+      {
+        medida: 'M3D',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'MEDIDAS',
+          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
+          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
+          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
+          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
+          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Caja x 12 unidades',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'bomba-de-infusion-hp-60',
+    nombre: 'Bomba de infusión HP-60',
+    linea: 'nutricion-parenteral',
+    categoria: 'bomba-de-infusion',
+    descripcion:
+      'Basado en estudios clínicos en diferentes contextos, está diseñado para ' +
+      'satisfacer las necesidades de diferentes departamentos con un único ' +
+      'dispositivo. Un único dispositivo para todas las terapias con una amplia ' +
+      'gama de posibilidades de personalización, inluyendo varios opciones según ' +
+      'la necesidad del área.',
+    presentaciones: [
+      {
+        medida: 'HP-60',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'Pantalla:',
+          '- Pantalla táctil resistiva de 3 pulgadas',
+          'Resolución: 480×320',
+          'Ángulo de visión: 80°',
+          'Dimensiones: 214(A)×75(H)×142(P) mm',
+          'Peso: Sobre 1,4kg (incluyendo la batería)',
+          'Suministro eléctrico:',
+          '- Suministro eléctrico de CA: 100-240V, 50/60Hz',
+          '- Potencia consumida: 45 VA',
+          '- Suministro eléctrico CC externo: 12 V',
+          '- Corriente de entrada (CC):2,5 A',
+          '- Batería de litio incorporada: 11,34 V, 2900 mAh',
+          '- Tiempo de funcionamiento de la batería: ≥10 h Condiciones: Utilice un set IV a una velocidad de 25 ml/h.',
+          '- Tiempo de carga de batería: ≤ 6 h en estado apagado',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'bomba-de-jeringa-hp-30',
+    nombre: 'Bomba de jeringa HP-30',
+    linea: 'nutricion-parenteral',
+    categoria: 'bomba-de-jeringa',
+    descripcion:
+      'La bomba de jeringa HP-30 de MEDCAPTAIN es una bomba de micro-infusión ' +
+      'continua. Puede contener un ritmo de infusión constante y una dosis ' +
+      'precisa en la infusión a largo plazo. Esta bomba de jeringa está diseñada ' +
+      'para una micro-infusión continua clínica de líquido de poco volumen y de ' +
+      'alta concentración o medicamento líquido (como agente quimioterapéutico, ' +
+      'agente cardiovascular, agente anticancerígeno, ocitócico, anticoagulante, ' +
+      'anestésico, etc.) en el cuerpo del paciente bajo un control preciso.',
+    presentaciones: [
+      {
+        medida: 'HP-30',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'Dimensiones: 258(A)×75(H)×152(P)mm',
+          'Peso: Sobre 1,7 kg (incluyendo la batería)',
+          'Suministro eléctrico',
+          '- Corriente de entrada (CC):2,5',
+          '- A Batería de litio incorporada: 11,34 V, 2900 mAh',
+          '- Tiempo de funcionamiento de la batería: ≥10 h Condiciones: Utilice una jeringa de 50 ml a una velocidad de 5 ml/h.',
+          '- Tiempo de carga de batería: ≤ 6 h en estado apagado',
+          'Pantalla:',
+          '- Pantalla táctil resistiva de 3 pulgadas',
+          '- Resolución: 480×320',
+          '- Ángulo de visión: 80°',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'bomba-de-jeringa-hp-tci',
+    nombre: 'Bomba de jeringa HP TCI',
+    linea: 'nutricion-parenteral',
+    categoria: 'bomba-de-jeringa',
+    descripcion:
+      'La bomba de jeringa HP TCI es una bomba de micro-infusion continua. Puede ' +
+      'contener un ritmo de infusión constante y una dosis precisa en la Infusion ' +
+      'largo plazo.',
+    presentaciones: [
+      {
+        medida: 'TCI',
+        marca: 'MEDCAPTAIN',
+        marcaSlug: 'medcaptain',
+        unidad: 'unidad',
+        caracteristicas: [
+          'ESPECIFICACIONES',
+          '- Dimensiones: 258 (Ancho) x 75 (alto) x 152 (profundidad); unidades en milímetros (mm)',
+          '- Peso: Aproximadamente 1.7 kg (incluida la batería)',
+          '- Adaptador de corriente:',
+          '• Fuente de alimentación CA: 100-240 V CA, 50/60 Hz, 60 VA de potencia de entrada',
+          '• Potencia consumida :45 VA',
+          '• Fuente de alimentación de CC externa:',
+          '12 V',
+          '• Corriente de entrada (CC):2.5 A.',
+          '• Tiempo de carga de la batería: No más de 4 horas (la bomba está apagada para la carga)',
+          '• La bomba de jeringa se alimentará automáticamente con la batería incorporada una vez que la entrada CA/CC se corte.',
+          '• Modo de carga de la batería: Entrada de CA o carga de batería de entrada de CC',
+        ],
+      },
     ],
   },
 ];
 
 /* ------------------------------------------------------------------ helpers */
 
+import manifest from '../../public/img/manifest.json';
+
+/**
+ * Fotografías por producto, en el mismo orden que sus presentaciones: la
+ * posición i corresponde a la presentación i. Las presentaciones sin foto
+ * entregada guardan una cadena vacía para no descolocar ese emparejamiento.
+ */
 const imagenes = manifest.productos as Record<string, string[]>;
 
+export const lineaPorSlug = new Map(lineas.map((l) => [l.slug, l]));
 export const categoriaPorSlug = new Map(categorias.map((c) => [c.slug, c]));
 export const productoPorSlug = new Map(productos.map((p) => [p.slug, p]));
 
-export function imagenesDe(slug: string): string[] {
-  return imagenes[slug] ?? [];
+export function categoriasDeLinea(linea: string): Categoria[] {
+  return categorias.filter((c) => c.linea === linea);
 }
 
-/** Imagen principal del producto, en la variante de ancho indicada. */
-export function imagenPrincipal(slug: string, size: 900 | 480 = 900): string {
-  const first = imagenesDe(slug)[0];
-  if (!first) return '';
-  return '/img/' + (size === 900 ? first : first.replace('.webp', '-480.webp'));
+export function productosDeCategoria(categoria: string): Producto[] {
+  return productos.filter((p) => p.categoria === categoria);
 }
 
-export function productosDeCategoria(cat: string): Producto[] {
-  return productos.filter((p) => p.categoria === cat);
-}
-
-/** "1 producto" / "5 productos", como una sola cadena sin espacios sueltos. */
-export function conteoProductos(cat: string): string {
-  const n = productosDeCategoria(cat).length;
-  return `${n} producto${n === 1 ? '' : 's'}`;
+export function productosDeLinea(linea: string): Producto[] {
+  return productos.filter((p) => p.linea === linea);
 }
 
 export function productosDestacados(): Producto[] {
   return productos.filter((p) => p.destacado);
 }
 
+/** Todas las fotos de un producto, alineadas con sus presentaciones. */
+export function imagenesDe(slug: string): string[] {
+  return imagenes[slug] ?? [];
+}
+
+/** Ruta de una imagen del manifiesto en el ancho pedido. */
+function enAncho(rel: string, size: 900 | 480): string {
+  if (!rel) return '';
+  return '/img/' + (size === 900 ? rel : rel.replace('.webp', '-480.webp'));
+}
+
+/** Foto de una presentación concreta. Vacía si no se entregó. */
+export function imagenDePresentacion(slug: string, i: number, size: 900 | 480 = 900): string {
+  return enAncho(imagenesDe(slug)[i] ?? '', size);
+}
+
 /**
- * Cómo se muestra una variante en la web.
- *
- * La referencia del fabricante no se publica: es interna. Lo que se lee es la
- * presentación —la capacidad, la talla, la formulación—, que en la mayoría de
- * los productos vive en el detalle y en unos pocos es el rótulo mismo de la
- * variante. Devuelve el título y, si lo hay, la aclaración que va debajo.
+ * Foto que representa al producto: la primera que exista. No siempre es la
+ * de la primera presentación, porque puede faltar justo esa.
  */
-export function presentacionDe(v: Variante): { titulo: string; nota?: string } {
-  if (v.codigoEsPresentacion && v.codigo) {
-    return { titulo: v.codigo, nota: v.detalle };
+export function imagenPrincipal(slug: string, size: 900 | 480 = 900): string {
+  const primera = imagenesDe(slug).find(Boolean);
+  return enAncho(primera ?? '', size);
+}
+
+/** «1 producto» / «5 productos», como una sola cadena sin espacios sueltos. */
+export function conteoProductos(categoria: string): string {
+  const n = productosDeCategoria(categoria).length;
+  return `${n} producto${n === 1 ? '' : 's'}`;
+}
+
+/** Lo mismo para una línea entera. */
+export function conteoLinea(linea: string): string {
+  const n = productosDeLinea(linea).length;
+  return `${n} producto${n === 1 ? '' : 's'}`;
+}
+
+/**
+ * Marcas que aparecen en un conjunto de productos, sin repetir y en el orden
+ * en que se encuentran. Sirve para el crédito de una categoría o una línea.
+ */
+export function marcasDe(lista: Producto[]): string[] {
+  const vistas = new Set<string>();
+  for (const p of lista) {
+    for (const pr of p.presentaciones) {
+      if (pr.marca) vistas.add(pr.marca);
+    }
   }
-  const partes = v.detalle.split(' — ');
-  const titulo = partes.shift() ?? v.detalle;
-  const nota = partes.join(' — ');
-  return { titulo, nota: nota || undefined };
+  return [...vistas];
+}
+
+/**
+ * Resumen corto para tarjetas: la primera oración de la descripción, que es
+ * donde la empresa dice para qué sirve el producto.
+ */
+export function resumenDe(p: Producto, max = 150): string {
+  const texto = p.descripcion.trim();
+  if (texto.length <= max) return texto;
+  const corte = texto.slice(0, max);
+  const punto = corte.lastIndexOf('. ');
+  return punto > 60 ? corte.slice(0, punto + 1) : corte.replace(/\s+\S*$/, '') + '…';
 }

@@ -1,11 +1,11 @@
 ---
 import Icon from './Icon.astro';
 import { site, whatsapp, waMensajes } from '../data/site';
-import { categorias, productos, productosDeCategoria, imagenPrincipal, productoPorSlug } from '../data/catalogo';
+import { lineas as lineasCat, productos, productosDeLinea, imagenPrincipal, productosDestacados } from '../data/catalogo';
 import { marcas } from '../data/marcas';
 import { ruta as via, otroIdioma, NOMBRE_IDIOMA, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+import { lineaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -24,13 +24,14 @@ const inicio = via(lang, 'inicio');
 const activo = (href: string) =>
   href === inicio ? aqui === inicio : aqui === href || aqui.startsWith(href + '/');
 
-const lineas = categorias.map((c) => ({
-  ...categoriaEn(c, lang),
+const lineas = lineasCat.map((c) => ({
+  ...lineaEn(c, lang),
+  corto: lineaEn(c, lang).nombre,
   href: via(lang, 'categoria', c.slug),
-  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+  cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
 }));
 
-const destCatalogo = productoEn(productoPorSlug.get('videolaringoscopio')!, lang);
+const destCatalogo = productoEn(productosDestacados()[0] ?? productos[0], lang);
 
 const empresa = [
   { nombre: t.nav.marcas, href: via(lang, 'marcas'), nota: t.megaEmpresa.marcasNota(marcas.length), icono: 'reticula' },
@@ -159,7 +160,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
         </a>
 
         <div class="lamina-menu__lista">
-          <p class="ante mb-5">{t.megaCatalogo.lineas} · {categorias.length}</p>
+          <p class="ante mb-5">{t.megaCatalogo.lineas} · {lineasCat.length}</p>
           <ul class="rejilla-lineas">
             {lineas.map((c) => (
               <li>

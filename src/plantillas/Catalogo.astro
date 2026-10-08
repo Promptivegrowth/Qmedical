@@ -5,9 +5,10 @@ import Icon from '../components/Icon.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import {
-  categorias,
+  lineas as lineasCat,
   productos,
-  productosDeCategoria,
+  productosDeLinea,
+  resumenDe,
   imagenPrincipal,
 } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
@@ -29,11 +30,11 @@ const T = {
     meta: 'Catálogo de dispositivos médicos y bioseguridad',
     metaDesc:
       `Catálogo completo de Q-MEDICAL S.A.C.: ${productos.length} productos en ` +
-      `${categorias.length} líneas, con características técnicas y presentaciones.`,
+      `${lineasCat.length} líneas, con características técnicas y presentaciones.`,
     ante: 'Catálogo',
     titulo: 'Todo el catálogo, línea por línea',
     bajada:
-      `${productos.length} productos ordenados en ${categorias.length} líneas, ` +
+      `${productos.length} productos ordenados en ${lineasCat.length} líneas, ` +
       'agrupadas por la función que cumplen y no por el fabricante. Cada ficha ' +
       'publica sus características y las presentaciones disponibles.',
     dato: 'productos publicados',
@@ -62,11 +63,11 @@ const T = {
     meta: 'Catalogue of medical devices and biosafety products',
     metaDesc:
       `The full Q-MEDICAL S.A.C. catalogue: ${productos.length} products across ` +
-      `${categorias.length} lines, with technical features and presentations.`,
+      `${lineasCat.length} lines, with technical features and presentations.`,
     ante: 'Catalogue',
     titulo: 'The whole catalogue, line by line',
     bajada:
-      `${productos.length} products sorted into ${categorias.length} lines, ` +
+      `${productos.length} products sorted into ${lineasCat.length} lines, ` +
       'grouped by the job they do rather than by manufacturer. Every page ' +
       'publishes its features and the available presentations.',
     dato: 'products published',
@@ -93,12 +94,14 @@ const T = {
   },
 }[lang];
 
-const lineas = categorias.map((c, i) => ({
+const lineas = lineasCat.map((c, i) => ({
   ...categoriaEn(c, lang),
   n: String(i + 1).padStart(2, '0'),
   href: via(lang, 'categoria', c.slug),
-  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
-  foto: imagenPrincipal(productosDeCategoria(c.slug)[0]?.slug ?? '', 480),
+  corto: c.nombre,
+  sintesis: c.resumen,
+  cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
+  foto: imagenPrincipal(productosDeLinea(c.slug)[0]?.slug ?? '', 480),
 }));
 
 // Índice de búsqueda embebido: el filtrado ocurre en el navegador, y se
@@ -110,10 +113,11 @@ const indice = productos.map((base) => {
     slug: base.slug,
     buscar: [
       p.nombre,
-      p.resumen,
+      resumenDe(p),
       (base.marca ? marcaPorSlug.get(base.marca)?.nombre : '') ?? '',
-      ...(p.variantes?.map((v) => [v.codigo, v.detalle].filter(Boolean).join(' ')) ?? []),
-      ...p.caracteristicas,
+      // La presentacion es lo que distingue a una de otra: medida, marca y
+      // ficha entran al buscador para que «3 litros» o «Bemis» encuentren.
+      ...p.presentaciones.flatMap((pr) => [pr.medida, pr.marca, ...pr.caracteristicas]),
     ]
       .join(' ')
       .toLowerCase()

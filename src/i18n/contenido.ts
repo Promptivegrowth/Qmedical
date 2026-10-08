@@ -8,108 +8,14 @@
  * de modo que la página nunca se rompe por una omisión.
  */
 import type { Idioma } from './rutas';
-import { productosEn } from './productos-en';
-import type { Categoria, Producto, Variante } from '../data/catalogo';
+import { productosEn, lineasEn, categoriasEnCat } from './productos-en';
+import type { Categoria, Linea, Producto } from '../data/catalogo';
 import type { Marca } from '../data/marcas';
 import type { Especialidad } from '../data/especialidades';
 
 /* ═══════════════════════════════════════════════════ Líneas de producto */
 
-interface CategoriaEn {
-  nombre: string;
-  corto: string;
-  sintesis: string;
-  descripcion: string;
-}
 
-const categoriasEn: Record<string, CategoriaEn> = {
-  bioseguridad: {
-    nombre: 'Biosafety and waste management',
-    corto: 'Biosafety',
-    sintesis: 'Safe containment and disposal of waste',
-    descripcion:
-      'The set of principles, standards and technologies for avoiding the risk ' +
-      'that comes from exposure to biological agents. Puncture-resistant rigid ' +
-      'containers for every type of waste and every volume of service.',
-  },
-  antisepsia: {
-    nombre: 'Antisepsis and skin preparation',
-    corto: 'Antisepsis',
-    sintesis: 'Skin preparation and surgical scrub',
-    descripcion:
-      'The use of chemical substances to inhibit the growth of, or reduce the ' +
-      'number of, micro-organisms on the skin and mucous membranes. ' +
-      'Chlorhexidine formulations as applicator, sponge, brush and wipe.',
-  },
-  laparoscopia: {
-    nombre: 'Laparoscopic surgery',
-    corto: 'Laparoscopy',
-    sintesis: 'Minimally invasive access to the cavity',
-    descripcion:
-      'A surgical technique that allows the pelvic and abdominal cavity to be ' +
-      'seen with the help of an optical lens. Trocars with a safety tip and a ' +
-      'shielded blade, sold as units and as kits.',
-  },
-  aspiracion: {
-    nombre: 'Suction and aspiration',
-    corto: 'Suction',
-    sintesis: 'Closed handling of secretions and fluids',
-    descripcion:
-      'Closed systems for the temporary storage of secretions and fluids ' +
-      'removed from the body: disposable bags, reusable canisters, tubing and ' +
-      'the full range of stands.',
-  },
-  'nutricion-enteral': {
-    nombre: 'Enteral feeding',
-    corto: 'Enteral feeding',
-    sintesis: 'Nutritional support for the patient',
-    descripcion:
-      'A technique of artificial feeding that delivers the nutritional solution ' +
-      'directly into the stomach or the intestine. Pumps, bags and sets ' +
-      'compatible with hospital enteral access devices.',
-  },
-  'via-aerea': {
-    nombre: 'Airway and anaesthesia',
-    corto: 'Airway',
-    sintesis: 'Intubation and airway control',
-    descripcion:
-      'Video laryngoscopy for precise endotracheal intubation, with disposable ' +
-      'blades in every size, from the neonate to the difficult adult airway.',
-  },
-  'higiene-paciente': {
-    nombre: 'Patient hygiene and comfort',
-    corto: 'Patient hygiene',
-    sintesis: 'Hygiene and comfort of the bedridden patient',
-    descripcion:
-      'Rinse-free bed bathing, body drying and single-use clinical wipes, to ' +
-      'reduce cross-contamination and the time nursing care takes.',
-  },
-  absorbentes: {
-    nombre: 'Absorbents and surface protection',
-    corto: 'Absorbents',
-    sintesis: 'Surfaces kept clean, dry and slip-free',
-    descripcion:
-      'Non-slip absorbent mats and waterproof protectors that keep the ' +
-      'operating theatre clean, dry and free of slip hazards.',
-  },
-  instrumental: {
-    nombre: 'Surgical instruments and accessories',
-    corto: 'Instruments',
-    sintesis: 'Supplies for theatre and sterile processing',
-    descripcion:
-      'Supplies for the operating theatre and the sterile processing ' +
-      'department: skin markers, gauze counting, electrosurgical tip cleaning ' +
-      'and instrument brushes.',
-  },
-  'proteccion-personal': {
-    nombre: 'Personal protection',
-    corto: 'Personal protection',
-    sintesis: 'A barrier for the clinical team',
-    descripcion:
-      'A barrier for the healthcare team against chemical, microbiological and ' +
-      'cytostatic hazards.',
-  },
-};
 
 /* ═══════════════════════════════════════════════════════════════ Marcas */
 
@@ -411,37 +317,42 @@ export const waMensajesEn = {
 
 /* ═══════════════════════════════════════════════════════════ Accesores */
 
-/** Línea de producto en el idioma pedido. */
-export function categoriaEn(c: Categoria, idioma: Idioma): Categoria {
-  if (idioma === 'es') return c;
-  const t = categoriasEn[c.slug];
-  return t ? { ...c, ...t } : c;
+/** Línea del catálogo en el idioma pedido. */
+export function lineaEn(l: Linea, idioma: Idioma): Linea {
+  if (idioma === 'es') return l;
+  const t = lineasEn[l.slug];
+  return t ? { ...l, ...t } : l;
 }
 
-/** Producto en el idioma pedido, variantes incluidas. */
+/** Categoría en el idioma pedido. */
+export function categoriaEn(c: Categoria, idioma: Idioma): Categoria {
+  if (idioma === 'es') return c;
+  const nombre = categoriasEnCat[c.slug];
+  return nombre ? { ...c, nombre } : c;
+}
+
+/**
+ * Producto en el idioma pedido.
+ *
+ * Lo que no esté traducido se queda en castellano. En un catálogo de
+ * dispositivos médicos es preferible a improvisar: un nombre inventado puede
+ * no corresponder al producto que la institución está buscando.
+ */
 export function productoEn(p: Producto, idioma: Idioma): Producto {
   if (idioma === 'es') return p;
   const t = productosEn[p.slug];
   if (!t) return p;
 
-  const variantes: Variante[] | undefined = p.variantes?.map((v) => ({
-    ...v,
-    // Las traducciones de variantes se indexan por la referencia del
-    // fabricante. Sin referencia no hay nada que buscar: una medida se lee
-    // igual en los dos idiomas.
-    codigo: v.codigo ? (t.codigos?.[v.codigo] ?? v.codigo) : undefined,
-    detalle: (v.codigo ? t.variantes?.[v.codigo] : undefined) ?? v.detalle,
-  }));
-
   return {
     ...p,
-    nombre: t.nombre,
-    resumen: t.resumen,
-    descripcion: t.descripcion,
-    caracteristicas: t.caracteristicas,
-    presentacion: t.presentacion ?? p.presentacion,
-    usos: t.usos ?? p.usos,
-    variantes,
+    nombre: t.nombre ?? p.nombre,
+    descripcion: t.descripcion ?? p.descripcion,
+    presentaciones: p.presentaciones.map((pr, i) => ({
+      ...pr,
+      // Las medidas no se traducen; las características sí, y van alineadas
+      // por posición con las presentaciones en castellano.
+      caracteristicas: t.caracteristicas?.[i] ?? pr.caracteristicas,
+    })),
   };
 }
 

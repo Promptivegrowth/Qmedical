@@ -5,16 +5,18 @@ import Icon from '../components/Icon.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import {
-  categorias,
+  categoriasDeLinea,
   productosDeCategoria,
+  lineaPorSlug,
   imagenPrincipal,
+  marcasDe,
   type Categoria,
 } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
 import { site, waMensajes } from '../data/site';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, waMensajesEn } from '../i18n/contenido';
+import { categoriaEn, lineaEn, waMensajesEn } from '../i18n/contenido';
 
 /**
  * Una línea del catálogo. La lista de direcciones a generar la declara cada
@@ -31,13 +33,22 @@ const t = textos(lang);
 const wa = lang === 'en' ? waMensajesEn : waMensajes;
 const categoria = categoriaEn(base, lang);
 
+const linea = lineaEn(lineaPorSlug.get(base.linea)!, lang);
+
 const items = productosDeCategoria(base.slug);
-const otras = categorias.filter((c) => c.slug !== base.slug).map((c) => ({
-  ...categoriaEn(c, lang),
-  href: via(lang, 'categoria', c.slug),
-  cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
-}));
-const firmas = [...new Set(items.map((p) => (p.marca ? marcaPorSlug.get(p.marca)?.nombre : undefined)))].filter(Boolean) as string[];
+/* Las «otras» son ahora las hermanas dentro de la misma línea: moverse entre
+   las 28 categorías del catálogo entero no ayudaría a nadie. */
+const otras = categoriasDeLinea(base.linea)
+  .filter((c) => c.slug !== base.slug)
+  .map((c) => ({
+    ...categoriaEn(c, lang),
+    corto: categoriaEn(c, lang).nombre,
+    icono: linea.icono,
+    href: via(lang, 'categoria', `${base.linea}/${c.slug}`),
+    cuenta: t.productosCuenta(productosDeCategoria(c.slug).length),
+  }));
+/* La marca cuelga de la presentación, no del producto. */
+const firmas = marcasDe(items);
 
 const T = {
   es: {
@@ -92,7 +103,7 @@ const schema = {
     ante={T.ante}
     titulo={categoria.nombre}
     texto={categoria.descripcion}
-    migas={[{ nombre: T.catalogo, href: via(lang, 'catalogo') }, { nombre: categoria.corto }]}
+    migas={[{ nombre: T.catalogo, href: via(lang, 'catalogo') }, { nombre: categoria.nombre }]}
     foto={imagenPrincipal(items[0]?.slug ?? '', 900)}
     dato={{ valor: String(items.length), etiqueta: T.unidad(items.length) }}
   />
@@ -146,7 +157,7 @@ const schema = {
     </div>
   </section>
 
-  <CtaContacto lang={lang} titulo={T.cta(categoria.corto)} waMensaje={wa.linea(categoria.corto)} />
+  <CtaContacto lang={lang} titulo={T.cta(categoria.nombre)} waMensaje={wa.linea(categoria.nombre)} />
 </Base>
 
 <style>

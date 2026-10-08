@@ -36,6 +36,7 @@ OUT = os.path.join(ROOT, "public", "img")
 
 P = os.path.join
 CAT = P(SRC, "Fotos catálogo")
+CAT26 = P(SRC, "Catalogo 2026")
 FOT = P(SRC, "Fotos")
 RETOCADAS = P(SRC, "fotos retocadas", "Editadas")
 LOGOS = P(SRC, "Logos marcas asociadas")
@@ -206,157 +207,200 @@ def emit_logo(src_path, name, height=120, folder="marcas"):
 # --------------------------------------------------------------------------
 # mapeo producto -> imagenes de origen (la primera es la principal)
 # --------------------------------------------------------------------------
+# Fotografias del catalogo 2026, una por presentacion.
+#
+# El orden importa: manifest["productos"][slug][i] es la foto de la
+# presentacion i del producto, de modo que la galeria de la ficha y la
+# lista de presentaciones van siempre emparejadas.
+#
+# Las presentaciones sin foto llevan una cadena vacia para no descolocar
+# ese emparejamiento; el guion las salta y la ficha muestra el hueco.
 PRODUCTS = {
     "contenedores-punzocortantes": [
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA1212 - 4.7L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA1112 - 0.95L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA1122 - 1.89L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_1024 - 3L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_1033 - 7L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_ME1282 - 7.6L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA1331 - 11.4L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA 1341 - 22.7L.png"),
-        P(CAT, "Maxcon/Contenedor de bioseguridad_Maxcon/Productos Catálogo_MA1352 - 30.3L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA1112 - 0.95L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA1122 - 1.89L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA1212 - 4.7L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - ME1282 - 7.6L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA1331 - 11.4L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA 1341 - 22.7L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD PARA PUNZOCORTANTES - MA1352 - 30.3L.png"),
     ],
-    "contenedores-citotoxicos": [
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MC1321 - 7.6 L.png"),
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MC1311 3.8 L.png"),
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MC 1321 - 7.6L.png"),
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MC1351 - 30.3 L-37.png"),
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MC1351 - 30.3 L-40.png"),
-        P(CAT, "Maxcon/Contenedores de bioseguridad para desechos tóxicos y especiales_Maxcon/Productos Catálogo_MV1311 - 3.8 L.png"),
+    "contenedores-residuos-citotoxicos": [
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS CITOTÓXICOS  - MC1311 3.8 L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS CITOTÓXICOS  - MC 1321 - 7.6L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS CITOTÓXICOS  - MC1351 - 30.3 L-37.png"),
     ],
-    "alfombra-descontaminante": [
-        P(CAT, "Q-Medical/Productos Catálogo_Alfombra descontaminante.png"),
+    "contenedores-residuos-vidrio": [
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS DE VIDRIOS O ESPECIALES - MV1311 - 3.8 L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS DE VIDRIOS O ESPECIALES - MC1321 - 7.6 L.png"),
+        P(CAT26, "1. BIOSEGURIDAD/CONTENEDORES DE BIOSEGURIDAD/CONTENEDORES PARA RESIDUOS DE VIDRIOS O ESPECIALES - MC1351 - 30.3 L-40.png"),
     ],
-    # Sin marca asignada todavia: la carpeta lo dice, y hay que moverla
-    # cuando la empresa confirme de quien es el producto.
-    "aplicador-clorhexidina-6ml": [
-        P(CAT, "Por asignar/Productos Catálogo_Aplicador clorhexidina 2 6 ml.jpg"),
+    "tapete-adhesivo-descontaminante": [
+        P(CAT26, "1. BIOSEGURIDAD/TAPETE ADHESIVO DESCONTAMINANTE/TAPETE ADHESIVO DESCONTAMINANTE 36_ X 45_ - Q-MEDICAL.png"),
     ],
-    "aplicador-clorhexidina-2": [
-        P(FOT, "1_Mesa de trabajo 1 copia 13.png"),
-        P(CAT, "Nex Medical/Productos Catálogo sin fondo_Aplicador Nex Medical 3 mL.png"),
-        P(CAT, "Nex Medical/Productos Catálogo sin fondo_Aplicador Nex Medical 10.5 mL.png"),
-        P(CAT, "Nex Medical/Productos Catálogo_Aplicador Nex Medical 26 mL.png"),
+    "trocar-para-cirugia-laparoscopica": [
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA 5 MM - GEYI.png"),
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA 10 MM - GEYI.png"),
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA 12 MM - GEYI.png"),
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA KIT A - GEYI.png"),
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA KIT B - GEYI.png"),
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA/TROCAR PARA CIRUGÍA LAPAROSCÓPICA KIT C - GEYI.png"),
+    ],
+    "disector-monopolar-maryland": [
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/PINZAS PARA CIRUGÍA LAPAROSCÓPICA/DISECTOR MONOPOLAR DESECHABLE - GRASPER - KANGJI.png"),
+    ],
+    "pinza-agarre-clinch": [
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/PINZAS PARA CIRUGÍA LAPAROSCÓPICA/PINZA DE AGARRE O TENAZA MONOPOLAR DESECHABLE - CLINCH - KANGJI.png"),
+    ],
+    "pinza-agarre-fenestrated-grasper": [
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/PINZAS PARA CIRUGÍA LAPAROSCÓPICA/PINZA DE AGARRE O TENAZA MONOPOLAR DESECHABLE - FENESTRATED GRASPER - KANGJI.png"),
+    ],
+    "tijeras-monopolares-curved-scissor": [
+        P(CAT26, "2. INSTRUMENTAL PARA CIRUGÍA LAPAROSCÓPICA/PINZAS PARA CIRUGÍA LAPAROSCÓPICA/TIJERAS MONOPOLARES DESECHABLES - CURVED SCISSOR - KANGJI.png"),
+    ],
+    "bolsa-aspiracion-secreciones": [
+        P(CAT26, "3. ASPIRACIÓN/BOLSAS DE ASPIRACIÓN/BOLSA DE ASPIRACIÓN DE SECRECIONES CON VÁLVULA Y FILTRO ANTIBACTERIANO 1 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/BOLSAS DE ASPIRACIÓN/BOLSA DE ASPIRACIÓN DE SECRECIONES CON VÁLVULA Y FILTRO ANTIBACTERIANO 1.5 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/BOLSAS DE ASPIRACIÓN/BOLSA DE ASPIRACIÓN DE SECRECIONES CON VÁLVULA Y FILTRO ANTIBACTERIANO 3 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/BOLSAS DE ASPIRACIÓN/BOLSA DE ASPIRACIÓN DE SECRECIONES CON VÁLVULA Y FILTRO ANTIBACTERIANO 1.5 L - QUICK FIT_BEMIS.png"),
+        P(CAT26, "3. ASPIRACIÓN/BOLSAS DE ASPIRACIÓN/BOLSA DE ASPIRACIÓN DE SECRECIONES CON VÁLVULA Y FILTRO ANTIBACTERIANO 3 L - QUICK FIT_BEMIS.png"),
+    ],
+    "canister-rigido-reusable": [
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/CÁNISTER RÍGIDO REUSABLE/CÁNISTER RÍGIDO REUSABLE 1 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/CÁNISTER RÍGIDO REUSABLE/CÁNISTER RÍGIDO REUSABLE 1.5 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/CÁNISTER RÍGIDO REUSABLE/CÁNISTER RÍGIDO REUSABLE  3 L - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/CÁNISTER RÍGIDO REUSABLE/CÁNISTER RÍGIDO REUSABLE  1.5 L - QUICK FIT_BEMIS.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/CÁNISTER RÍGIDO REUSABLE/CÁNISTER RÍGIDO REUSABLE  3 L - QUICK FIT_BEMIS.png"),
+    ],
+    "coches-rodables": [
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/COCHES RODABLES/COCHE RODABLE  37 cm - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/COCHES RODABLES/COCHE RODABLE  56 cm - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/COCHES RODABLES/COCHE RODABLE  106 cm - Vide_Alleva Medical.png"),
+    ],
+    "placas-de-anclaje-para-pared": [
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/PLACA ANCLAJE PARA PARED/PLACAS DE ANCLAJE PARA PARED - Vide_Alleva Medical.png"),
+    ],
+    "manifold": [
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/MANIFOLD/MANIFOLD DE 2 VÍAS - Vide_Alleva Medical.png"),
+        P(CAT26, "3. ASPIRACIÓN/ACCESORIOS PARA ASPIRACIÓN/MANIFOLD/MANIFOLD DE 4 VÍAS - Vide_Alleva Medical.png"),
+    ],
+    "tubo-succion-sin-yankauer": [
+        P(CAT26, "3. ASPIRACIÓN/TUBOS DE SUCCIÓN ESTÉRIL/TUBO DE SUCCIÓN SIN YANKAUER CON CONECTORES Y ADAPTADOR DE 9-32_ (7 MM) - Q-MEDICAL.png"),
+        P(CAT26, "3. ASPIRACIÓN/TUBOS DE SUCCIÓN ESTÉRIL/TUBO DE SUCCIÓN SIN YANKAUER CON CONECTORES Y ADAPTADOR DE 9-32_ (7 MM) - Q-MEDICAL.png"),
+    ],
+    "manguera-o-tubuladura-de-silicona": [
+        P(CAT26, "3. ASPIRACIÓN/MANGUERA O TUBULADURA DE SILICONA/MANGUERA O TUBULADURA DE SILICONA 25 M - SILPAK.png"),
+        P(CAT26, "3. ASPIRACIÓN/MANGUERA O TUBULADURA DE SILICONA/MANGUERA O TUBULADURA DE SILICONA 25 M - SILPAK.png"),
+        P(CAT26, "3. ASPIRACIÓN/MANGUERA O TUBULADURA DE SILICONA/MANGUERA O TUBULADURA DE SILICONA 25 M - SILPAK.png"),
+        P(CAT26, "3. ASPIRACIÓN/MANGUERA O TUBULADURA DE SILICONA/MANGUERA O TUBULADURA DE SILICONA 25 M - SILPAK.png"),
+    ],
+    "aplicadores-clorhexidina-2": [
+        P(CAT26, "4. ANTISEPSIA/CEPILLO ESPONJA CON 20 ML DE GLUCONATO DE CLORHEXIDINA AL 4_/CEPILLO ESPONJA CON 20 ML GLUCONATO DE CLORHEXIDINA AL 4_ - NEX CLOREX C2.png"),
+        P(CAT26, "4. ANTISEPSIA/CEPILLO ESPONJA CON 20 ML DE GLUCONATO DE CLORHEXIDINA AL 4_/CEPILLO ESPONJA CON 20 ML GLUCONATO DE CLORHEXIDINA AL 4_ - NEX CLOREX C2.png"),
+        P(CAT26, "4. ANTISEPSIA/CEPILLO ESPONJA CON 20 ML DE GLUCONATO DE CLORHEXIDINA AL 4_/CEPILLO ESPONJA CON 20 ML GLUCONATO DE CLORHEXIDINA AL 4_ - NEX CLOREX C2.png"),
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
     ],
     "cepillo-esponja-clorhexidina-4": [
-        P(CAT, "Nex Medical/Productos Catálogo_Cepillo Esponja Clorhexidina 4%.png"),
-        P(FOT, "Cepillo esponja.png"),
+        P(CAT26, "4. ANTISEPSIA/CEPILLO ESPONJA CON 20 ML DE GLUCONATO DE CLORHEXIDINA AL 4_/CEPILLO ESPONJA CON 20 ML GLUCONATO DE CLORHEXIDINA AL 4_ - NEX CLOREX C2.png"),
     ],
     "esponja-clorhexidina-2": [
-        P(CAT, "Nex Medical/Productos Catálogo_Esponja Clorhexidina 2%.png"),
+        P(CAT26, "4. ANTISEPSIA/CEPILLO ESPONJA CON 20 ML DE GLUCONATO DE CLORHEXIDINA AL 4_/CEPILLO ESPONJA CON 20 ML GLUCONATO DE CLORHEXIDINA AL 4_ - NEX CLOREX C2.png"),
     ],
-    "toallitas-limpieza-piel": [
-        P(FOT, "Toallitas Longood.png"),
-        P(CAT, "Longood/Productos Catálogo_Toallitas Longood.png"),
+    "toallita-limpieza-piel-clorhexidina": [
+        "",
     ],
-    "trocares-desechables": [
-        P(CAT, "Geyi/Productos Catálogo_Trocar rectráctil.png"),
-        P(CAT, "Geyi/Productos Catálogo_Trocar retráctil - kit A-4.png"),
-        P(CAT, "Geyi/Productos Catálogo_Trocar retráctil - kit B.png"),
-        P(CAT, "Geyi/Productos Catálogo_Trocar retráctil - kit C.png"),
+    "bolsas-de-nutricion-enteral": [
+        P(CAT26, "5. NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL 500 ML - Q-MEDICAL.png"),
+        P(CAT26, "5. NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL 1000 ML - Q-MEDICAL.png"),
     ],
-    "bolsas-aspiracion": [
-        P(FOT, "1_Mesa de trabajo 1 copia 14.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo - Bolsa de aspiración 1000 cc.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo sin fondo_Aplicador Nex Medical 3 mL copia.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo sin fondo_Trocar rectráctil copia.png"),
+    "set-de-nutricion-enteral": [
+        P(CAT26, "5. NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL/BOLSA DE NUTRICIÓN ENTERAL 1000 ML - Q-MEDICAL.png"),
     ],
-    "canister-reusable": [
-        P(FOT, "1_Mesa de trabajo 1 copia 5.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo_Cánister 1000 ml.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo_Cánister 3000 mL.png"),
-        P(CAT, "Alleva Medical/Productos Catálogo_.png"),
-    ],
-    "accesorios-aspiracion": [
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Soporte 106 cm.png"),
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Soporte 56 cm.png"),
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Soporte 37 cm.png"),
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Placa para pared.png"),
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Manifol de 2.png"),
-        P(CAT, "Alleva Medical/Accesorios bolsa de aspiración/Productos Catálogo_Manifol de 4.png"),
-    ],
-    "tubuladura-succion-esteril": [
-        P(CAT, "Q-Medical/Productos Catálogo_Tubuladora de succión esteril.png"),
-    ],
-    "tubuladura-silicona": [
-        # La empresa entrego el mismo plano sobre fondo blanco. El original a
-        # fondo negro sigue en la carpeta, pero desentonaba: el resto del
-        # catalogo va sobre blanco.
-        P(CAT, "Silpak/Productos Catálogo_TUBULADORA DE SILICONA - fondo blanco.jpg"),
-        P(FOT, "1_Mesa de trabajo 1 copia 2.png"),
-    ],
-    "bomba-nutricion-enteral": [
-        P(CAT, "Medcaptain/Bomba de nutricion EP60.png"),
-    ],
-    "bolsa-nutricion-enteral": [
-        P(CAT, "Q-Medical/Productos Catálogo_Bolsa de nutrición.png"),
-    ],
-    "set-alimentacion-enteral": [
-        P(CAT, "Q-Medical/Productos Catálogo_Set de nutrición enteral.png"),
-    ],
-    "videolaringoscopio": [
-        P(CAT, "Medcaptain/Productos Catálogo Video Laringoscopio.png"),
-    ],
-    "hojas-videolaringoscopio": [
-        P(CAT, "Medcaptain/Productos Catálogo_Hojas Video Laringoscopio.png"),
+    "bomba-de-nutricion-enteral": [
+        P(CAT26, "5. NUTRICIÓN ENTERAL/BOMBA DE NUTRICIÓN ENTERAL/BOMBA DE NUTRICIÓN ENTERAL EP-60 - MEDCAPTAIN.png"),
     ],
     "pano-bano-facil": [
-        P(FOT, "Baño Fácil.png"),
-        P(CAT, "Baño Fácil/Productos Catálogo_BAÑO FÁCIL ALOE VERA.png"),
-        P(CAT, "Baño Fácil/Productos Catálogo_BAÑO FÁCIL CLORHEXIDINA.png"),
-        P(CAT, "Baño Fácil/Productos Catálogo_BAÑO FÁCIL MANZANILLA.png"),
+        P(CAT26, "6. HIGIENE DEL PACIENTE/PAÑO BAÑO FÁCIL/PAÑO BAÑO FÁCIL MANZANILLA.png"),
+        P(CAT26, "6. HIGIENE DEL PACIENTE/PAÑO BAÑO FÁCIL/PAÑO BAÑO FÁCIL ALOE VERA.png"),
+        P(CAT26, "6. HIGIENE DEL PACIENTE/PAÑO BAÑO FÁCIL/PAÑO BAÑO FÁCIL CLORHEXIDINA.png"),
     ],
-    "toalla-secado-corporal": [
-        P(CAT, "Q-Medical/Productos Catálogo_Toalla secado corporal.png"),
+    "toalla-para-secado-corporal": [
+        P(CAT26, "6. HIGIENE DEL PACIENTE/TOALLA SECADO CORPORAL/TOALLA SECADO CORPORAL - Q-MEDICAL.png"),
     ],
-    "pano-clinico-qmedical": [
-        P(CAT, "Q-Medical/Productos Catálogo_Paño Clínico super absorbente.png"),
+    "pano-clinico-absorbente": [
+        P(CAT26, "6. HIGIENE DEL PACIENTE/PAÑO CLÍNICO ABSORBENTE/PAÑO CLÍNICO ABSORBENTE - Q-MEDICAL.png"),
+        P(CAT26, "6. HIGIENE DEL PACIENTE/PAÑO CLÍNICO ABSORBENTE/PAÑO CLÍNICO ABSORBENTE - HEFEI.png"),
     ],
-    "pano-clinico-telijie": [
-        P(CAT, "Telijie/Productos Catálogo_PAÑO CLÍNICO TELIJIE.png"),
+    "bolsa-emesis": [
+        P(CAT26, "6. HIGIENE DEL PACIENTE/BOLSA PARA EMESIS O BOLSA PARA VÓMITO/BOLSA PARA EMESIS O VÓMITO - Q-MEDICAL.png"),
     ],
-    "bolsa-vomito": [
-        P(CAT, "Q-Medical/Productos Catálogo_Bolsa para vómito.png"),
+    "manta-absorbente-de-fluidos-antideslizante": [
+        P(CAT26, "7. ABSORBENTE/MANTAS ABSORBENTES DE FLUIDOS/MANTA ABSORBENTE DE FLUIDOS ANTIDESLIZANTE Q101 - HUAXINHONG.png"),
     ],
-    "manta-absorbente-jiehong": [
-        # La empresa pidio quitar la etiqueta del producto que asomaba en la
-        # foto; se usa la version sin ella. La original sigue en la carpeta.
-        P(CAT, "Jiehong/Productos Catálogo_Manta absorbente de fluidos - sin etiqueta.jpg"),
-        P(CAT, "Jiehong/Productos Catálogo_Manta absorbente de fluidos pre cortada.png"),
+    "manta-absorbente-de-fluidos-precortada": [
+        P(CAT26, "7. ABSORBENTE/MANTAS ABSORBENTES DE FLUIDOS/MANTA ABSORBENTE DE FLUIDOS PRECORTADA Q202 - HUAXINHONG.png"),
     ],
-    "manta-absorbente-xodus": [
-        P(CAT, "Xodus/Productos Catálogo_Mantas absorbentes de fluidos.png"),
+    "mantas-super-absorbentes": [
+        P(CAT26, "7. ABSORBENTE/MANTAS ABSORBENTES DE FLUIDOS/MANTAS SÚPER ABSORBENTES IMPERMEABLES Y ANTIDESLIZANTES Q303 - COMFYCLOUD.png"),
     ],
-    "protector-impermeable": [
-        P(CAT, "Medispo/Productos Catálogo_Protector impermeable descartable.png"),
+    "protector-tela-impermeable": [
+        P(CAT26, "7. ABSORBENTE/PROTECTOR DE TELA PLÁSTICA IMPERMEABLE/PROTECTOR DE TELA PLÁSTICA IMPERMEABLE - MEDISPO.png"),
+    ],
+    "guantes-nitrilo-sin-polvo": [
+        P(CAT26, "8. PROTECCIÓN PERSONAL/GUANTES DE NITRILO SIN POLVO 6.5 GR/GUANTES PARA EXAMEN DESCARTABLES DE NITRILO SIN POLVO 6.5 GR - COMFORT.png"),
+        P(CAT26, "8. PROTECCIÓN PERSONAL/GUANTES DE NITRILO SIN POLVO 6.5 GR/GUANTES PARA EXAMEN DESCARTABLES DE NITRILO SIN POLVO 6.5 GR - COMFORT.png"),
+        P(CAT26, "8. PROTECCIÓN PERSONAL/GUANTES DE NITRILO SIN POLVO 6.5 GR/GUANTES PARA EXAMEN DESCARTABLES DE NITRILO SIN POLVO 6.5 GR - COMFORT.png"),
+        P(CAT26, "8. PROTECCIÓN PERSONAL/GUANTES DE NITRILO SIN POLVO 6.5 GR/GUANTES PARA EXAMEN DESCARTABLES DE NITRILO SIN POLVO 6.5 GR - COMFORT.png"),
     ],
     "marcador-piel-esteril": [
-        P(CAT, "Q-Medical/Productos Catálogo_Lapiz Marcador de piel esteril.png"),
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/MARCADOR DE PIEL/MARCADOR DE PIEL ESTÉRIL DESECHABLE - Q-MEDICAL.png"),
     ],
     "marcador-piel-no-esteril": [
-        P(CAT, "Xodus/Productos Catálogo_Lápiz marcador de piel no estéril.png"),
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/MARCADOR DE PIEL/MARCADOR QUIRÚRGICO NO ESTÉRIL PARA PIEL - XODUS.png"),
+    ],
+    "contador-de-aguja-doble-iman": [
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CONTADOR DE AGUJA/CONTADOR DE AGUJA DOBLE IMAN 30 RECUENTOS - KANGBAO.png"),
+    ],
+    "bolsas-para-contar-gasas": [
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/BOLSAS PARA CONTAR GASAS/BOLSAS PARA CONTAR GASAS - Q-MEDICAL.png"),
     ],
     "limpiador-puntas-electrocauterio": [
-        P(CAT, "Q-Medical/Productos Catálogo_Limpiador de punta de electrocautil.png"),
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/LIMPIADOR DE PUNTAS DE ELECTROCAUTERIO/CONTADOR DE PUNTAS DE ELECTROCAUTERIO - Q-MEDICAL.png"),
     ],
-    "contador-agujas": [
-        P(CAT, "Kangbao/Productos Catálogo_Contador de agujas doble iman.jpg"),
+    "cepillo-limpieza-instrumental-dental": [
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CEPILLOS PARA LIMPIEZA DE INSTRUMENTAL MÉDICO/CEPILLO DE LIMPIEZA DE INSTRUMENTAL MÉDICO TIPO CEPILLO DENTAL - PRCB-01 - Q-MEDICAL.png"),
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CEPILLOS PARA LIMPIEZA DE INSTRUMENTAL MÉDICO/CEPILLO DE LIMPIEZA DE INSTRUMENTAL MÉDICO TIPO CEPILLO DENTAL DOBLE CABEZA - PRCB-04 - Q-MEDICAL.png"),
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CEPILLOS PARA LIMPIEZA DE INSTRUMENTAL MÉDICO/CEPILLO DE LIMPIEZA DE INSTRUMENTAL MÉDICO TIPO CEPILLO DENTAL - ICB-3 - Q-MEDICAL.png"),
     ],
-    "bolsa-conteo-gasas": [
-        P(CAT, "Q-Medical/Productos Catálogo_Bolsa contador de gasa.png"),
+    "escobilla-nailon-doble-cabeza": [
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CEPILLOS PARA LIMPIEZA DE INSTRUMENTAL MÉDICO/ESCOBILLA DE NAILON DOBLE CABEZA EXTREMOS - PRCB - 02 - Q-MEDICAL.png"),
     ],
-    "cepillos-limpieza-instrumental": [
-        P(FOT, "Cepillos limpieza instrumental médico.png"),
-        P(CAT, "Q-Medical/Productos Catálogo_PRCB-01.png"),
-        P(CAT, "Q-Medical/Productos Catálogo_PRCB - 02.png"),
-        P(CAT, "Q-Medical/Productos Catálogo_PRCB-03.png"),
-        P(CAT, "Q-Medical/Productos Catálogo_PRCB-04.png"),
-        P(CAT, "Q-Medical/Productos Catálogo_ICB-3.png"),
+    "cepillo-nailon-mango-ancho": [
+        P(CAT26, "9. MATERIAL MÉDICO NO INSTRUMENTAL/CEPILLOS PARA LIMPIEZA DE INSTRUMENTAL MÉDICO/CEPILLO DE NAILON MANGO ANCHO BLANCO - PRCB-03 - Q-MEDICAL.png"),
     ],
-    "guantes-nitrilo": [
-        P(CAT, "Comfort Rubber Gloves/Productos Catálogo_Guantes de nitrilo.png"),
+    "videolaringoscopio-vs-10h": [
+        "",
+    ],
+    "hojas-videolaringoscopio": [
+        P(CAT26, "10. VÍA AÉREA/HOJAS DE VIDEOLARINGOSCOPIO/HOJAS DESCARTABLES PARA VIDEOLARINGOSCOPIO.png"),
+        P(CAT26, "10. VÍA AÉREA/HOJAS DE VIDEOLARINGOSCOPIO/HOJAS DESCARTABLES PARA VIDEOLARINGOSCOPIO.png"),
+        P(CAT26, "10. VÍA AÉREA/HOJAS DE VIDEOLARINGOSCOPIO/HOJAS DESCARTABLES PARA VIDEOLARINGOSCOPIO.png"),
+        P(CAT26, "10. VÍA AÉREA/HOJAS DE VIDEOLARINGOSCOPIO/HOJAS DESCARTABLES PARA VIDEOLARINGOSCOPIO.png"),
+        P(CAT26, "10. VÍA AÉREA/HOJAS DE VIDEOLARINGOSCOPIO/HOJAS DESCARTABLES PARA VIDEOLARINGOSCOPIO.png"),
+    ],
+    "bomba-de-infusion-hp-60": [
+        P(CAT26, "11. NUTRICIÓN PARENTERAL/BOMBA DE INFUSIÓN/BOMBA DE INFUSIÓN HP-60 - MEDCAPTAIN.png"),
+    ],
+    "bomba-de-jeringa-hp-30": [
+        P(CAT26, "11. NUTRICIÓN PARENTERAL/BOMBA DE JERINGA/BOMBA DE JERINGA - HP-30 - MEDCAPTAIN.png"),
+    ],
+    "bomba-de-jeringa-hp-tci": [
+        P(CAT26, "11. NUTRICIÓN PARENTERAL/BOMBA DE JERINGA/BOMBA DE JERINGA HP TCI - MEDCAPTAIN.png"),
     ],
 }
 
@@ -434,6 +478,9 @@ def main():
     for slug, sources in PRODUCTS.items():
         rels = []
         for n, src in enumerate(sources, 1):
+            if not src:
+                rels.append("")          # presentacion sin foto entregada
+                continue
             if not os.path.exists(src):
                 print("  !! FALTA %s" % src)
                 continue
