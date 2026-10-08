@@ -109,9 +109,14 @@ export const navegacion = [
   { nombre: 'Contacto', href: '/contacto' },
 ];
 
+/**
+ * Acreditaciones de la empresa. `certificado` apunta al PDF entregado: es la
+ * prueba, y para un comite de compras vale mas que la declaracion.
+ */
 export const certificaciones = [
   {
     sigla: 'BPA',
+    certificado: '/certificados/bpa-digemid.pdf',
     icono: 'acreditacion',
     nombre: 'Buenas Prácticas de Almacenamiento',
     emisor: 'DIGEMID — Ministerio de Salud del Perú',
@@ -122,6 +127,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 37001',
+    certificado: '/certificados/iso-37001.pdf',
     icono: 'balanza',
     nombre: 'Sistema de gestión antisoborno',
     emisor: 'Norma internacional ISO',
@@ -131,6 +137,7 @@ export const certificaciones = [
   },
   {
     sigla: 'ISO 14001',
+    certificado: '/certificados/iso-14001.pdf',
     icono: 'hoja-ambiental',
     nombre: 'Sistema de gestión ambiental',
     emisor: 'Norma internacional ISO',

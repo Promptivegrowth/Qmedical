@@ -98,7 +98,12 @@ const rotuloEnlace = aTexto ?? T.ver;
         // todo el movimiento lo pone la propia placa al asentarse. Con las
         // dos cosas a la vez el conjunto se leia blando.
         <li data-anim style={`--filo-espera:${(i * 1.9).toFixed(1)}s`}>
-          <a href={destino} class="placa" data-placa>
+          <a
+            href={c.certificado ?? destino}
+            class="placa"
+            data-placa
+            {...c.certificado ? { target: '_blank', rel: 'noopener' } : {}}
+          >
             {/* Capa de efectos: se recorta a si misma, nunca al contenido.
                 Si el recorte viviera en la placa, aplanaria el relieve. */}
             <span class="placa__fx" aria-hidden="true">
@@ -128,7 +133,9 @@ const rotuloEnlace = aTexto ?? T.ver;
                 <span class="placa__rotulo">{T.emitidaPor}</span>
                 {c.emisor}
               </span>
-              <span class="placa__flecha"><Icon name="flecha" size={16} /></span>
+              <span class="placa__flecha">
+                <Icon name={c.certificado ? 'descarga' : 'flecha'} size={16} />
+              </span>
             </span>
           </a>
         </li>
