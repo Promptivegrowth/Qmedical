@@ -6,16 +6,14 @@
  * archivo es una capa que se superpone por slug. Si mañana falta una
  * traducción, el accesor devuelve el castellano en lugar de dejar un hueco,
  * de modo que la página nunca se rompe por una omisión.
+ *
+ * El catálogo es el caso aparte: desde que la empresa lo administra en el
+ * portal, cada entidad trae su propia traducción en `en`, y los accesores la
+ * leen de ahí. Los diccionarios de `productos-en.ts` siguen sirviendo a la
+ * copia local del repositorio, que es la que se compila si la base no
+ * responde.
  */
 import type { Idioma } from './rutas';
-import {
-  productosEn,
-  lineasEn,
-  categoriasEnCat,
-  medidasEn,
-  unidadesEn,
-  caracteristicasEn,
-} from './productos-en';
 import type { Categoria, Linea, Producto } from '../data/catalogo';
 import type { Marca } from '../data/marcas';
 import type { Especialidad } from '../data/especialidades';
@@ -327,15 +325,13 @@ export const waMensajesEn = {
 /** Línea del catálogo en el idioma pedido. */
 export function lineaEn(l: Linea, idioma: Idioma): Linea {
   if (idioma === 'es') return l;
-  const t = lineasEn[l.slug];
-  return t ? { ...l, ...t } : l;
+  return { ...l, nombre: l.en?.nombre ?? l.nombre, resumen: l.en?.resumen ?? l.resumen };
 }
 
 /** Categoría en el idioma pedido. */
 export function categoriaEn(c: Categoria, idioma: Idioma): Categoria {
   if (idioma === 'es') return c;
-  const nombre = categoriasEnCat[c.slug];
-  return nombre ? { ...c, nombre } : c;
+  return { ...c, nombre: c.en?.nombre ?? c.nombre };
 }
 
 /**
@@ -345,25 +341,31 @@ export function categoriaEn(c: Categoria, idioma: Idioma): Categoria {
  * dispositivos médicos es preferible a improvisar: un nombre inventado puede
  * no corresponder al producto que la institución está buscando.
  *
- * Las medidas, las unidades y las características se traducen por su texto,
- * no por su posición: la misma línea se repite en muchas presentaciones y así
- * una reordenación del catálogo no desalinea nada.
+ * Cada presentación trae su propia traducción, y las características van
+ * línea a línea en el mismo orden: si vinieran en otro número se mostrarían
+ * desemparejadas, así que en ese caso se prefiere el castellano completo.
  */
 export function productoEn(p: Producto, idioma: Idioma): Producto {
   if (idioma === 'es') return p;
-  const t = productosEn[p.slug];
 
   return {
     ...p,
-    nombre: t?.nombre ?? p.nombre,
-    descripcion: t?.descripcion ?? p.descripcion,
-    presentaciones: p.presentaciones.map((pr, i) => ({
-      ...pr,
-      medida: medidasEn[pr.medida] ?? pr.medida,
-      unidad: unidadesEn[pr.unidad] ?? pr.unidad,
-      caracteristicas: pr.caracteristicas.map((c) => caracteristicasEn[c] ?? c),
-      descripcion: t?.descripciones?.[i] ?? pr.descripcion,
-    })),
+    nombre: p.en?.nombre ?? p.nombre,
+    descripcion: p.en?.descripcion ?? p.descripcion,
+    presentaciones: p.presentaciones.map((pr) => {
+      const t = pr.en;
+      const cars =
+        t?.caracteristicas?.length === pr.caracteristicas.length
+          ? t.caracteristicas
+          : pr.caracteristicas;
+      return {
+        ...pr,
+        medida: t?.medida ?? pr.medida,
+        unidad: t?.unidad ?? pr.unidad,
+        caracteristicas: cars,
+        descripcion: t?.descripcion ?? pr.descripcion,
+      };
+    }),
   };
 }
 

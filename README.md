@@ -32,8 +32,9 @@ El sitio es bilingüe: cada página existe en castellano y en inglés.
 | Portada con preloader temático | `/` | `/en` |
 | Nosotros, certificaciones e infraestructura | `/nosotros` | `/en/about` |
 | Catálogo con buscador instantáneo | `/catalogo` | `/en/catalog` |
-| 10 líneas de producto | `/catalogo/<linea>` | `/en/catalog/<linea>` |
-| 32 fichas de producto | `/productos/<producto>` | `/en/products/<producto>` |
+| 11 líneas de producto | `/catalogo/<linea>` | `/en/catalog/<linea>` |
+| 28 categorías | `/catalogo/<linea>/<categoria>` | `/en/catalog/<linea>/<categoria>` |
+| 45 fichas de producto, con 96 presentaciones | `/productos/<producto>` | `/en/products/<producto>` |
 | 15 marcas asociadas | `/marcas` | `/en/brands` |
 | Contacto y solicitud de cotización | `/contacto` | `/en/contact` |
 | Libro de Reclamaciones (Ley N.° 29571) | `/libro-de-reclamaciones` | `/en/complaints-book` |
@@ -88,7 +89,7 @@ En total, 98 páginas estáticas —49 por idioma— más `sitemap-index.xml`,
   fondo real —con el texto oculto, en varios momentos del video y de 320 a 1920 px—
   y los valores se ajustaron hasta superar el mínimo AA en todos los casos.
 - **Catálogo sin referencias internas**: las referencias del fabricante (MA1112,
-  RIP-003…) no se publican. Se conservan en `src/data/catalogo.ts` porque emparejan
+  RIP-003…) no se publican. Se conservan en el catálogo porque emparejan
   cada variante con su presentación, pero lo que se lee es la presentación —la
   capacidad, la talla, la formulación—, que es por lo que se elige. Cada línea del
   catálogo lleva además una frase en lenguaje llano que dice para qué sirve, de modo
@@ -174,11 +175,40 @@ python scripts/make_favicons.py      # favicon, apple-touch-icon e íconos PWA
 transparencia, genera dos tamaños por imagen (900 px y 480 px) y extrae la previsualización
 JPEG embebida en los RAW `.RW2` de las fotos del almacén. **575 MB → 8,3 MB (−98,6 %).**
 
-Para añadir o cambiar un producto:
+Para añadir o cambiar un producto, lo habitual es hacerlo desde el portal (ver
+«El catálogo se administra en el portal», más abajo). La vía del repositorio sigue
+disponible para una carga grande:
 
 1. Coloque la foto en la carpeta de originales.
 2. Añada la ruta al diccionario `PRODUCTS` de `scripts/optimize_images.py` y ejecútelo.
-3. Añada la entrada correspondiente en `src/data/catalogo.ts`.
+3. Añada la entrada correspondiente en `src/data/catalogo-local.ts`.
+
+---
+
+## El catálogo se administra en el portal
+
+Q-MEDICAL edita su portafolio —líneas, categorías, productos, presentaciones y
+fotografías, en los dos idiomas— en el **portal del Grupo Pacheco**, sin tocar código.
+La web sigue siendo estática: `src/data/catalogo.ts` consulta la base **al compilar**,
+no en cada visita, así que el visitante recibe HTML ya armado como antes.
+
+- La lectura es anónima y la base solo devuelve lo marcado como visible, que es
+  exactamente lo que debe salir publicado.
+- Si la base no responde, se compila con la copia del repositorio
+  (`src/data/catalogo-local.ts`) y la consola lo dice. Preferimos publicar el catálogo
+  de la última generación antes que un sitio sin catálogo.
+- `QM_CATALOGO=local npm run build` fuerza esa copia: sirve para compilar sin red o
+  para comparar una publicación con lo que hay en el repositorio.
+- Las fotos llegan de dos formas y se distinguen solas: una dirección completa es una
+  foto subida desde el portal; cualquier otra cosa es una ruta bajo `/img/`, de las que
+  vienen con el repositorio y pasan por `scripts/optimize_images.py`.
+- Al guardar, el portal no publica solo: la empresa pulsa «Publicar los cambios», que
+  encola una compilación en Vercel. Una tarde de edición son decenas de cambios, y
+  publicar en cada uno encolaría decenas de compilaciones.
+
+La traducción vive con el dato: cada fila lleva sus columnas en inglés y, vacías, la
+web muestra el castellano. `src/i18n/productos-en.ts` conserva la traducción de la
+copia de respaldo.
 
 ---
 
@@ -257,14 +287,15 @@ qmedical-web/
 │   ├── data/                  Contenido original, en castellano
 │   │   ├── site.ts            Datos institucionales, contactos, certificaciones
 │   │   ├── marcas.ts          Las 15 marcas representadas
-│   │   ├── catalogo.ts        Categorías y productos (contenido técnico)
+│   │   ├── catalogo.ts        Lee el catálogo del portal al compilar
+│   │   ├── catalogo-local.ts  Copia de respaldo del catálogo, en el repositorio
 │   │   └── especialidades.ts  Las 6 especialidades clínicas que se abastecen
 │   ├── i18n/                  Capa bilingüe
 │   │   ├── mapa-rutas.mjs     Tabla de direcciones (la lee también astro.config)
 │   │   ├── rutas.ts           Ayudantes de enlace, idioma y alternativas
 │   │   ├── textos.ts          Textos que se repiten (cabecera, pie, formularios)
 │   │   ├── contenido.ts       Traducción de líneas, marcas, especialidades…
-│   │   └── productos-en.ts    Contenido de los 32 productos en inglés
+│   │   └── productos-en.ts    Traducción de la copia de respaldo del catálogo
 │   ├── plantillas/            Maqueta de cada página, parametrizada por idioma
 │   ├── icons/                 Iconos de Tabler (MIT), incrustados al compilar
 │   ├── layouts/Base.astro     Shell HTML, SEO, JSON-LD, hreflang
@@ -290,11 +321,12 @@ lo que se repite en varias páginas.
 
 - **RUC 20505719396**: obtenido del registro público para el Libro de Reclamaciones.
   Conviene verificarlo antes de publicar.
-- **Clave de Web3Forms** para activar el envío de formularios.
 - **Regiones atendidas (25)** y **años de operación**: la cifra de regiones es una
   estimación de «todas las regiones del país»; ajústela en `src/data/site.ts` si se
   prefiere otra redacción.
-- Seis productos del catálogo anterior (bomba de infusión, iluminador de venas, anillo
-  retractor, contador de agujas, pieza manual laparoscópica y organizador de cepillos)
-  no tenían foto en el material entregado y aparecen listados como «disponibles bajo
-  consulta» en `/catalogo`. Al recibir sus fotos pueden convertirse en fichas completas.
+- Cuatro productos (iluminador de venas, anillo retractor, pieza manual laparoscópica y
+  organizador de cepillos) no tenían ficha ni foto en el material entregado y aparecen
+  listados como «disponibles bajo consulta» en `/catalogo`. Al recibir su información
+  pueden convertirse en fichas completas.
+- **Ocho presentaciones sin fotografía**: la ficha las publica sin imagen. Están
+  marcadas como tales en la pantalla del catálogo del portal.
