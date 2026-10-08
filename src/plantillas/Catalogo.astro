@@ -15,7 +15,7 @@ import { marcaPorSlug } from '../data/marcas';
 import { waMensajes } from '../data/site';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+import { lineaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -94,15 +94,18 @@ const T = {
   },
 }[lang];
 
-const lineas = lineasCat.map((c, i) => ({
-  ...categoriaEn(c, lang),
-  n: String(i + 1).padStart(2, '0'),
-  href: via(lang, 'categoria', c.slug),
-  corto: c.nombre,
-  sintesis: c.resumen,
-  cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
-  foto: imagenPrincipal(productosDeLinea(c.slug)[0]?.slug ?? '', 480),
-}));
+const lineas = lineasCat.map((base, i) => {
+  const c = lineaEn(base, lang);
+  return {
+    ...c,
+    n: String(i + 1).padStart(2, '0'),
+    href: via(lang, 'categoria', base.slug),
+    corto: c.nombre,
+    sintesis: c.resumen,
+    cuenta: t.productosCuenta(productosDeLinea(base.slug).length),
+    foto: imagenPrincipal(productosDeLinea(base.slug)[0]?.slug ?? '', 480),
+  };
+});
 
 // Índice de búsqueda embebido: el filtrado ocurre en el navegador, y se
 // construye con el texto del idioma que se está viendo. Los códigos de

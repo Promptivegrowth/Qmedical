@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { lineas } from '../data/catalogo';
 import { ruta as via } from '../i18n/rutas';
-import { categoriaEn } from '../i18n/contenido';
+import { lineaEn } from '../i18n/contenido';
 
 /**
  * Página no encontrada.
@@ -19,7 +19,7 @@ import { categoriaEn } from '../i18n/contenido';
  */
 const atajos = lineas.map((c) => ({
   es: c,
-  en: categoriaEn(c, 'en'),
+  en: lineaEn(c, 'en'),
   href: via('es', 'categoria', c.slug),
   hrefEn: via('en', 'categoria', c.slug),
 }));

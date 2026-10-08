@@ -8,7 +8,14 @@
  * de modo que la página nunca se rompe por una omisión.
  */
 import type { Idioma } from './rutas';
-import { productosEn, lineasEn, categoriasEnCat } from './productos-en';
+import {
+  productosEn,
+  lineasEn,
+  categoriasEnCat,
+  medidasEn,
+  unidadesEn,
+  caracteristicasEn,
+} from './productos-en';
 import type { Categoria, Linea, Producto } from '../data/catalogo';
 import type { Marca } from '../data/marcas';
 import type { Especialidad } from '../data/especialidades';
@@ -337,21 +344,25 @@ export function categoriaEn(c: Categoria, idioma: Idioma): Categoria {
  * Lo que no esté traducido se queda en castellano. En un catálogo de
  * dispositivos médicos es preferible a improvisar: un nombre inventado puede
  * no corresponder al producto que la institución está buscando.
+ *
+ * Las medidas, las unidades y las características se traducen por su texto,
+ * no por su posición: la misma línea se repite en muchas presentaciones y así
+ * una reordenación del catálogo no desalinea nada.
  */
 export function productoEn(p: Producto, idioma: Idioma): Producto {
   if (idioma === 'es') return p;
   const t = productosEn[p.slug];
-  if (!t) return p;
 
   return {
     ...p,
-    nombre: t.nombre ?? p.nombre,
-    descripcion: t.descripcion ?? p.descripcion,
+    nombre: t?.nombre ?? p.nombre,
+    descripcion: t?.descripcion ?? p.descripcion,
     presentaciones: p.presentaciones.map((pr, i) => ({
       ...pr,
-      // Las medidas no se traducen; las características sí, y van alineadas
-      // por posición con las presentaciones en castellano.
-      caracteristicas: t.caracteristicas?.[i] ?? pr.caracteristicas,
+      medida: medidasEn[pr.medida] ?? pr.medida,
+      unidad: unidadesEn[pr.unidad] ?? pr.unidad,
+      caracteristicas: pr.caracteristicas.map((c) => caracteristicasEn[c] ?? c),
+      descripcion: t?.descripciones?.[i] ?? pr.descripcion,
     })),
   };
 }
