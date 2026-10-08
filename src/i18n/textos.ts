@@ -43,6 +43,8 @@ const es = {
   megaEmpresa: {
     titulo: 'La empresa',
     desde: (a: number) => `Desde ${a}`,
+    sobreNosotros: 'Sobre nosotros',
+    sobreNosotrosNota: 'Quiénes somos y cómo trabajamos',
     almacen: 'Nuestro almacén',
     marcasNota: (n: number) => `${n} fabricantes representados`,
     infraestructura: 'Infraestructura',
@@ -164,6 +166,8 @@ const en: typeof es = {
   megaEmpresa: {
     titulo: 'The company',
     desde: (a: number) => `Since ${a}`,
+    sobreNosotros: 'About us',
+    sobreNosotrosNota: 'Who we are and how we work',
     almacen: 'Our warehouse',
     marcasNota: (n: number) => `${n} manufacturers represented`,
     infraestructura: 'Facilities',

@@ -4,6 +4,7 @@ import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import Respaldo from '../components/Respaldo.astro';
+import Clientes from '../components/Clientes.astro';
 import { site, valores } from '../data/site';
 import { marcas } from '../data/marcas';
 import { categorias, productos } from '../data/catalogo';
@@ -276,6 +277,8 @@ const principios = valores.map((v, i) => ({
     a={via(lang, 'contacto', undefined, 'cotizar')}
     aTexto={T.verDocs}
   />
+
+  <Clientes lang={lang} claro />
 
   <CtaContacto lang={lang} />
 </Base>

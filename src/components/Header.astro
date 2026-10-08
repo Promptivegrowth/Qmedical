@@ -34,6 +34,7 @@ const lineas = lineasCat.map((c) => ({
 const destCatalogo = productoEn(productosDestacados()[0] ?? productos[0], lang);
 
 const empresa = [
+  { nombre: t.megaEmpresa.sobreNosotros, href: via(lang, 'nosotros'), nota: t.megaEmpresa.sobreNosotrosNota, icono: 'equipo' },
   { nombre: t.nav.marcas, href: via(lang, 'marcas'), nota: t.megaEmpresa.marcasNota(marcas.length), icono: 'reticula' },
   { nombre: t.megaEmpresa.infraestructura, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.infraestructuraNota, icono: 'almacen' },
   { nombre: t.megaEmpresa.certificaciones, href: via(lang, 'nosotros', undefined, 'certificaciones'), nota: t.megaEmpresa.certificacionesNota, icono: 'certificado' },
@@ -91,20 +92,20 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
         </a>
 
         <nav class="nav" aria-label={t.navPrincipal}>
-          <a
-            href={via(lang, 'nosotros')}
-            class:list={['nav__enlace', activo(via(lang, 'nosotros')) && 'es-activo']}
-          >{t.nav.nosotros}</a>
+          <!-- Nosotros y Empresa eran dos entradas para la misma sección:
+               todo lo de «Empresa» ya vivía dentro de /nosotros. Ahora es una
+               sola, y el desplegable lleva a sus apartados. -->
+          <div class="nav__item" data-menu="empresa">
+            <button type="button"
+              class:list={['nav__enlace', (activo(via(lang, 'nosotros')) || activo(via(lang, 'marcas'))) && 'es-activo']}
+              aria-expanded="false" aria-controls="lamina-empresa">
+              {t.nav.nosotros}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
+            </button>
+          </div>
           <div class="nav__item" data-menu="catalogo">
             <button type="button" class:list={['nav__enlace', activo(via(lang, 'catalogo')) && 'es-activo']}
               aria-expanded="false" aria-controls="lamina-catalogo">
               {t.nav.catalogo}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
-            </button>
-          </div>
-          <div class="nav__item" data-menu="empresa">
-            <button type="button" class:list={['nav__enlace', activo(via(lang, 'marcas')) && 'es-activo']}
-              aria-expanded="false" aria-controls="lamina-empresa">
-              {t.nav.empresa}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
           <a

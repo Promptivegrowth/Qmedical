@@ -40,6 +40,7 @@ CAT26 = P(SRC, "Catalogo 2026")
 FOT = P(SRC, "Fotos")
 RETOCADAS = P(SRC, "fotos retocadas", "Editadas")
 LOGOS = P(SRC, "Logos marcas asociadas")
+INSTITUCIONES = P(SRC, "Logos instituciones")
 QLOGO = P(SRC, "Logo Q-Medical")
 
 
@@ -471,7 +472,7 @@ def main():
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
 
-    manifest = {"productos": {}, "fotos": {}, "marcas": {}}
+    manifest = {"productos": {}, "fotos": {}, "marcas": {}, "clientes": {}}
     total_in = total_out = 0
 
     print("== Productos ==")
@@ -508,6 +509,22 @@ def main():
         manifest["fotos"][key] = rels[0]
         print("  %-22s <- %-34s %6.1f KB -> %5.1f KB"
               % (key, archivo, os.path.getsize(src) / 1024, peso / 1024))
+
+    print("== Instituciones atendidas ==")
+    if os.path.isdir(INSTITUCIONES):
+        manifest["clientes"] = {}
+        for f in sorted(os.listdir(INSTITUCIONES)):
+            if not f.lower().endswith(".png"):
+                continue
+            src = P(INSTITUCIONES, f)
+            total_in += os.path.getsize(src)
+            name = os.path.splitext(f)[0]
+            # Mas bajos que los de marca: son muchos y van en una retícula.
+            rel = emit_logo(src, name, height=88, folder="clientes")
+            total_out += sum(os.path.getsize(P(OUT, r)) for r in
+                             (rel, rel.replace(".webp", "-1x.webp")))
+            manifest["clientes"][name] = rel
+        print("  %d logotipos" % len(manifest["clientes"]))
 
     print("== Marcas ==")
     for f in sorted(os.listdir(LOGOS)):

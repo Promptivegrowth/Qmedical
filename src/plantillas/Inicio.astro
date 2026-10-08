@@ -4,6 +4,7 @@ import Icon from '../components/Icon.astro';
 import Hero from '../components/Hero.astro';
 import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
+import Clientes from '../components/Clientes.astro';
 import Especialidades from '../components/Especialidades.astro';
 import Respaldo from '../components/Respaldo.astro';
 import { site } from '../data/site';
@@ -278,7 +279,10 @@ const matriz = lineasCat.map((c, i) => ({
   <!-- ══════════════════════════════ 04 · Respaldo -->
   <Respaldo lang={lang} />
 
-  <!-- ══════════════════════════════ 05 · Marcas (anillo, intacto) -->
+  <!-- ══════════════════════════════ 05 · Clientes -->
+  <Clientes lang={lang} />
+
+  <!-- ══════════════════════════════ 06 · Marcas (anillo, intacto) -->
   <MarcasConstelacion lang={lang} />
 </Base>
 

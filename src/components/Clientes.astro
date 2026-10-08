@@ -1,0 +1,162 @@
+---
+import manifest from '../../public/img/manifest.json';
+import { clientes } from '../data/clientes';
+import type { Idioma } from '../i18n/rutas';
+
+/**
+ * Instituciones a las que Q-MEDICAL abastece.
+ *
+ * Es la prueba más directa de que la empresa trabaja con el sector: un
+ * hospital que entra a cotizar reconoce a sus pares antes que a cualquier
+ * declaración de principios.
+ *
+ * Los logotipos vienen en colores y formas muy distintos, así que se publican
+ * en gris y recuperan su color al pasar el puntero. Sin eso la retícula se
+ * convierte en un mosaico de 26 marcas compitiendo entre sí.
+ */
+interface Props {
+  lang?: Idioma;
+  /** Sobre papel, para alternar con la banda que la precede. */
+  claro?: boolean;
+}
+const { lang = 'es', claro = false } = Astro.props;
+
+const logos = manifest.clientes as Record<string, string>;
+const lista = clientes.filter((c) => logos[c.slug]);
+
+const T = {
+  es: {
+    ante: 'Clientes',
+    titulo: 'Construimos relaciones que generan confianza',
+    texto:
+      'Trabajamos junto a hospitales, clínicas, laboratorios, centros médicos ' +
+      'e instituciones públicas y privadas del sector salud, brindando ' +
+      'productos y soluciones que responden a sus necesidades operativas y ' +
+      'asistenciales.',
+    cuenta: (n: number) => `${n} instituciones atendidas`,
+  },
+  en: {
+    ante: 'Clients',
+    titulo: 'We build relationships that earn trust',
+    texto:
+      'We work alongside hospitals, clinics, laboratories, medical centres and ' +
+      'public and private institutions in the health sector, supplying products ' +
+      'and solutions that match their operational and clinical needs.',
+    cuenta: (n: number) => `${n} institutions served`,
+  },
+}[lang];
+---
+
+{lista.length > 0 && (
+  <section class:list={['clientes', claro && 'es-clara']}>
+    <div class="caja">
+      <div class="clientes__alto" data-anim-grupo="90">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.ante}</p>
+          <h2 class="display-lg mt-5 max-w-[20ch]" data-anim="sube">{T.titulo}</h2>
+        </div>
+        <div class="clientes__nota" data-anim="sube">
+          <p>{T.texto}</p>
+          <p class="clientes__cuenta">{T.cuenta(lista.length)}</p>
+        </div>
+      </div>
+
+      <ul class="clientes__rejilla" data-anim-grupo="25">
+        {lista.map((c) => (
+          <li data-anim class:list={[c.claro && 'es-oscura']}>
+            <img
+              src={`/img/${logos[c.slug]}`}
+              srcset={`/img/${logos[c.slug].replace('.webp', '-1x.webp')} 1x, /img/${logos[c.slug]} 2x`}
+              alt={c.nombre}
+              height="44"
+              loading="lazy"
+              decoding="async"
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .clientes {
+    padding-block: 5rem;
+    background: var(--color-papel-2);
+  }
+  .clientes.es-clara { background: var(--color-papel); }
+  @media (min-width: 1024px) { .clientes { padding-block: 7rem; } }
+
+  .clientes__alto { display: grid; gap: 2rem; }
+  @media (min-width: 900px) {
+    .clientes__alto {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 2rem var(--medianil);
+      align-items: end;
+    }
+    .clientes__alto > div:first-child { grid-column: 1 / span 7; }
+    .clientes__nota { grid-column: 9 / span 4; }
+  }
+
+  .clientes__nota {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-tinta-70);
+  }
+  .clientes__cuenta {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+
+  /* Los filetes los dibuja cada celda con su propia sombra, no el hueco de la
+     retícula: con `gap` sobre un fondo de color, la última fila incompleta
+     dejaba media franja gris a la vista. */
+  .clientes__rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 3.5rem;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+  }
+  @media (min-width: 540px) { .clientes__rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 900px) { .clientes__rejilla { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .clientes__rejilla { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+  .clientes__rejilla > li {
+    display: grid;
+    place-items: center;
+    min-height: 7rem;
+    padding: 1.5rem 1.25rem;
+    background: #fff;
+    box-shadow: 0 0 0 0.5px var(--color-linea);
+  }
+
+  /* Los logotipos dibujados en blanco van sobre fondo oscuro, que es para lo
+     que fueron hechos. */
+  .clientes__rejilla > li.es-oscura { background: var(--color-brand-700); }
+  .clientes__rejilla > li.es-oscura img { filter: none; opacity: 0.85; }
+  .clientes__rejilla > li.es-oscura:hover img { opacity: 1; }
+
+  /* En gris por defecto: veintiséis logotipos a todo color convierten la
+     retícula en un mosaico donde no se distingue ninguno. El color vuelve al
+     pasar el puntero, que es cuando alguien se detiene en uno. */
+  .clientes__rejilla img {
+    max-width: 100%;
+    max-height: 2.75rem;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.55;
+    transition: filter 0.45s var(--ease-editorial), opacity 0.45s var(--ease-editorial);
+  }
+  .clientes__rejilla > li:hover img { filter: grayscale(0); opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clientes__rejilla img { transition: none; }
+  }
+</style>
