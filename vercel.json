@@ -157,36 +157,6 @@
       "permanent": true
     },
     {
-      "source": "/catalogo/antisepsia",
-      "destination": "/catalogo/antisepsia",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/antisepsia",
-      "destination": "/en/catalog/antisepsia",
-      "permanent": true
-    },
-    {
-      "source": "/catalogo/aspiracion",
-      "destination": "/catalogo/aspiracion",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/aspiracion",
-      "destination": "/en/catalog/aspiracion",
-      "permanent": true
-    },
-    {
-      "source": "/catalogo/bioseguridad",
-      "destination": "/catalogo/bioseguridad",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/bioseguridad",
-      "destination": "/en/catalog/bioseguridad",
-      "permanent": true
-    },
-    {
       "source": "/catalogo/higiene-paciente",
       "destination": "/catalogo/higiene-del-paciente",
       "permanent": true
@@ -214,36 +184,6 @@
     {
       "source": "/en/catalog/laparoscopia",
       "destination": "/en/catalog/instrumental-para-cirugia-laparoscopica",
-      "permanent": true
-    },
-    {
-      "source": "/catalogo/nutricion-enteral",
-      "destination": "/catalogo/nutricion-enteral",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/nutricion-enteral",
-      "destination": "/en/catalog/nutricion-enteral",
-      "permanent": true
-    },
-    {
-      "source": "/catalogo/proteccion-personal",
-      "destination": "/catalogo/proteccion-personal",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/proteccion-personal",
-      "destination": "/en/catalog/proteccion-personal",
-      "permanent": true
-    },
-    {
-      "source": "/catalogo/via-aerea",
-      "destination": "/catalogo/via-aerea",
-      "permanent": true
-    },
-    {
-      "source": "/en/catalog/via-aerea",
-      "destination": "/en/catalog/via-aerea",
       "permanent": true
     },
     {

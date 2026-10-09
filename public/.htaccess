@@ -113,24 +113,12 @@ Options -Indexes
 # El catalogo cambio de estructura; lo indexado antes sigue llegando.
 Redirect 301 /catalogo/absorbentes /catalogo/absorbente
 Redirect 301 /en/catalog/absorbentes /en/catalog/absorbente
-Redirect 301 /catalogo/antisepsia /catalogo/antisepsia
-Redirect 301 /en/catalog/antisepsia /en/catalog/antisepsia
-Redirect 301 /catalogo/aspiracion /catalogo/aspiracion
-Redirect 301 /en/catalog/aspiracion /en/catalog/aspiracion
-Redirect 301 /catalogo/bioseguridad /catalogo/bioseguridad
-Redirect 301 /en/catalog/bioseguridad /en/catalog/bioseguridad
 Redirect 301 /catalogo/higiene-paciente /catalogo/higiene-del-paciente
 Redirect 301 /en/catalog/higiene-paciente /en/catalog/higiene-del-paciente
 Redirect 301 /catalogo/instrumental /catalogo/material-medico-no-instrumental
 Redirect 301 /en/catalog/instrumental /en/catalog/material-medico-no-instrumental
 Redirect 301 /catalogo/laparoscopia /catalogo/instrumental-para-cirugia-laparoscopica
 Redirect 301 /en/catalog/laparoscopia /en/catalog/instrumental-para-cirugia-laparoscopica
-Redirect 301 /catalogo/nutricion-enteral /catalogo/nutricion-enteral
-Redirect 301 /en/catalog/nutricion-enteral /en/catalog/nutricion-enteral
-Redirect 301 /catalogo/proteccion-personal /catalogo/proteccion-personal
-Redirect 301 /en/catalog/proteccion-personal /en/catalog/proteccion-personal
-Redirect 301 /catalogo/via-aerea /catalogo/via-aerea
-Redirect 301 /en/catalog/via-aerea /en/catalog/via-aerea
 Redirect 301 /catalogo/accesorios-aspiracion /catalogo/aspiracion/accesorios-para-aspiracion
 Redirect 301 /en/catalog/accesorios-aspiracion /en/catalog/aspiracion/accesorios-para-aspiracion
 Redirect 301 /productos/alfombra-descontaminante /productos/tapete-adhesivo-descontaminante
