@@ -41,7 +41,10 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 DESTINO_VIDEO = os.path.join(RAIZ, 'public', 'video')
-DESTINO_POSTER = os.path.join(RAIZ, 'public', 'img', 'fotos')
+# El poster vive junto al video y no en public/img: optimize_images.py vacia
+# esa carpeta cada vez que se ejecuta, y se llevaba por delante un archivo
+# que no es suyo.
+DESTINO_POSTER = DESTINO_VIDEO
 MANIFIESTO = os.path.join(DESTINO_VIDEO, 'manifest.json')
 
 # Segundo del que se toma el fotograma. No se usa 0: muchos videos abren con
@@ -168,13 +171,12 @@ def main():
         nombre = 'hero-poster-%s-%d.webp' % (h, ancho)
         salida = os.path.join(DESTINO_POSTER, nombre)
         copia.save(salida, 'WEBP', quality=82, method=6)
-        posters[str(ancho)] = 'fotos/' + nombre
+        posters[str(ancho)] = nombre
         print('  %-28s %4d x %4d  %5.1f KB'
               % (nombre, ancho, alto, os.path.getsize(salida) / 1024))
 
     limpiar(DESTINO_VIDEO, 'hero', '.mp4', {nombre_video})
-    limpiar(DESTINO_POSTER, 'hero-poster', '.webp',
-            {os.path.basename(p) for p in posters.values()})
+    limpiar(DESTINO_POSTER, 'hero-poster', '.webp', set(posters.values()))
 
     with open(MANIFIESTO, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({'video': 'video/' + nombre_video, 'poster': posters},

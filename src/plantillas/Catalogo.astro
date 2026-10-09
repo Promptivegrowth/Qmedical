@@ -244,6 +244,18 @@ const schema = {
 
       <!-- ── Resultados ───────────────────────────────────────────────── -->
       <div class="resultados">
+        <!-- Dónde se está parado. El árbol de la izquierda es un filtro de
+             dos niveles, pero el catálogo tiene cuatro —línea, categoría,
+             producto, presentación—, y sin esta línea no se ve en cuál se
+             está sin mirar la barra. -->
+        <nav class="migas" aria-label={T.filtrosTitulo}>
+          <button type="button" class="migas__paso" data-filtro="">{T.todos}</button>
+          <span class="migas__sep" data-miga="sep-linea" hidden aria-hidden="true">›</span>
+          <button type="button" class="migas__paso" data-miga="linea" hidden></button>
+          <span class="migas__sep" data-miga="sep-categoria" hidden aria-hidden="true">›</span>
+          <span class="migas__paso es-actual" data-miga="categoria" hidden></span>
+        </nav>
+
         <div class="resultados__alto">
           <p id="conteo" class="resultados__cuenta" aria-live="polite">
             {t.productosCuenta(productos.length)}
@@ -463,6 +475,30 @@ const schema = {
     .ramita.es-activa { border-style: solid; border-color: var(--color-brand-300); }
   }
 
+  /* ── Migas ────────────────────────────────────────────────────────── */
+  .migas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    color: var(--color-tinta-45);
+  }
+  .migas__paso {
+    padding: 0;
+    background: none;
+    color: inherit;
+    text-align: left;
+  }
+  button.migas__paso { cursor: pointer; border-bottom: 1px solid transparent; }
+  button.migas__paso:hover {
+    color: var(--color-brand-700);
+    border-bottom-color: currentColor;
+  }
+  .migas__paso.es-actual { color: var(--color-tinta); font-weight: 600; }
+  .migas__sep { color: var(--color-tinta-45); }
+
   /* ── Resultados ───────────────────────────────────────────────────── */
   .resultados__alto {
     display: flex;
@@ -565,6 +601,41 @@ const schema = {
     var fichas = Array.prototype.slice.call(rejilla.children);
     var ramas = Array.prototype.slice.call(document.querySelectorAll('[data-filtro]'));
 
+    /* Las migas: dónde se está parado. La del medio es un botón, porque
+       desde una categoría lo natural es querer subir a su línea. */
+    var miga = {
+      linea: document.querySelector('[data-miga="linea"]'),
+      categoria: document.querySelector('[data-miga="categoria"]'),
+      sepLinea: document.querySelector('[data-miga="sep-linea"]'),
+      sepCategoria: document.querySelector('[data-miga="sep-categoria"]'),
+    };
+
+    /* El nombre que se ve en el árbol es el que va en las migas: así no hay
+       dos listas de nombres que puedan discrepar al traducirse. */
+    function nombreDe(clave) {
+      var b = ramas.filter(function (x) { return x.dataset.filtro === clave; })[0];
+      if (!b) return '';
+      var n = b.querySelector('.rama__nombre, .ramita__nombre');
+      return n ? n.textContent.trim() : '';
+    }
+
+    function pintarMigas() {
+      if (!miga.linea) return;
+      var hayLinea = Boolean(estado.linea);
+      var hayCategoria = Boolean(estado.categoria);
+
+      miga.sepLinea.hidden = !hayLinea;
+      miga.linea.hidden = !hayLinea;
+      if (hayLinea) {
+        miga.linea.textContent = nombreDe('linea:' + estado.linea);
+        miga.linea.classList.toggle('es-actual', !hayCategoria);
+      }
+
+      miga.sepCategoria.hidden = !hayCategoria;
+      miga.categoria.hidden = !hayCategoria;
+      if (hayCategoria) miga.categoria.textContent = nombreDe('categoria:' + estado.categoria);
+    }
+
     var normalizar = function (s) {
       return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     };
@@ -623,6 +694,8 @@ const schema = {
         b.classList.toggle('es-activa', activa);
         b.setAttribute('aria-pressed', activa ? 'true' : 'false');
       });
+
+      pintarMigas();
 
       var filtrando = Boolean(estado.linea || estado.categoria || estado.q);
       if (limpiar) limpiar.hidden = !filtrando;
@@ -688,6 +761,14 @@ const schema = {
         pintar(true);
       });
     });
+
+    if (miga.linea) {
+      miga.linea.addEventListener('click', function () {
+        estado.categoria = '';
+        escribirDireccion(true);
+        pintar(true);
+      });
+    }
 
     var reloj;
     input.addEventListener('input', function () {

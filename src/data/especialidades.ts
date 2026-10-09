@@ -19,7 +19,12 @@ export interface Especialidad {
   definicion: string;
   /** Qué aporta Q-MEDICAL a ese servicio. */
   aporte: string;
-  /** Slugs de las líneas del catálogo que la abastecen. */
+  /**
+   * Slugs de las líneas del catálogo que la abastecen. Son líneas, no
+   * categorías: la reestructuración de 2026 convirtió en líneas varios
+   * slugs que antes eran categorías, y quien los busque en el sitio
+   * equivocado no encuentra nada.
+   */
   lineas: string[];
 }
 
@@ -36,7 +41,7 @@ export const especialidades: Especialidad[] = [
       'Abastecemos el acceso a la cavidad y el material de sala: trócares con ' +
       'punta de seguridad y hoja blindada, en unidades y en kits preconfigurados, ' +
       'además del instrumental de apoyo del acto quirúrgico.',
-    lineas: ['laparoscopia', 'instrumental'],
+    lineas: ['instrumental-para-cirugia-laparoscopica'],
   },
   {
     slug: 'bioseguridad',
@@ -81,7 +86,7 @@ export const especialidades: Especialidad[] = [
       'La línea completa del soporte nutricional: bomba con conexión al ' +
       'monitoreo central, bolsas estériles de 500 y 1000 mL, y sets de ' +
       'administración con rosca para frasco.',
-    lineas: ['nutricion-enteral'],
+    lineas: ['nutricion-enteral', 'nutricion-parenteral'],
   },
   {
     slug: 'anestesiologia',
@@ -111,6 +116,6 @@ export const especialidades: Especialidad[] = [
       'Baño en cama sin enjuague en tres formulaciones, secado corporal, paños ' +
       'clínicos de un solo uso y la protección absorbente de camas y ' +
       'superficies.',
-    lineas: ['higiene-paciente', 'absorbentes'],
+    lineas: ['higiene-del-paciente', 'absorbente', 'material-medico-no-instrumental'],
   },
 ];

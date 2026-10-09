@@ -33,6 +33,7 @@ const T = {
       'proveedor que los fabrica. Así el área usuaria encuentra lo que busca ' +
       'por donde lo busca.',
     verCatalogo: 'Ver el catálogo completo',
+    lineasCierre: 'Las once líneas, con el buscador y los filtros por categoría.',
     selloBpa: 'Almacén certificado BPA',
     compromisoAnte: 'El compromiso es de nosotros',
     compromisoTitulo: 'Cada entrega sostiene el trabajo de un equipo de salud',
@@ -64,12 +65,13 @@ const T = {
     meta: 'Q-MEDICAL S.A.C. — Medical devices and biosafety in Peru',
     metaDesc: empresaEn.descripcion,
     lineasAnte: 'Product lines',
-    lineasTitulo: 'The catalogue, ordered into ten lines',
+    lineasTitulo: 'The catalogue, ordered into eleven lines',
     lineasTexto:
       'Each line groups products by the function they perform, not by the ' +
       'supplier who makes them. That way the end user finds what they are ' +
       'looking for where they look for it.',
     verCatalogo: 'See the full catalogue',
+    lineasCierre: 'All eleven lines, with the search box and the category filters.',
     selloBpa: 'BPA-certified warehouse',
     compromisoAnte: 'The commitment is ours',
     compromisoTitulo: 'Every delivery sustains the work of a healthcare team',
@@ -174,6 +176,28 @@ const matriz = lineasCat.map((c, i) => ({
             </a>
           </li>
         ))}
+
+        <!-- Celda doce. Once líneas nunca llenan una rejilla, y como los
+             filetes son el fondo del contenedor asomando entre celdas, el
+             hueco se veía como un rectángulo plomo. En vez de rellenarlo
+             con nada, lo ocupa la llamada que a la sección le faltaba al
+             pie: con doce celdas, 2, 3 y 4 columnas cierran exactas. -->
+        <li data-anim="escala">
+          <a href={via(lang, 'catalogo')} class="celda celda--cierre">
+            <span class="celda__alto">
+              <span class="folio celda__folio">{String(matriz.length + 1).padStart(2, '0')}</span>
+              <span class="celda__cuenta">{t.productosCuenta(productos.length)}</span>
+            </span>
+            <span class="celda__ic">
+              <Icon name="reticula" size={52} stroke={0.9} anim />
+            </span>
+            <span class="celda__pie">
+              <span class="celda__nombre">{T.verCatalogo}</span>
+              <span class="celda__sintesis">{T.lineasCierre}</span>
+            </span>
+            <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
+          </a>
+        </li>
       </ol>
     </div>
   </section>
@@ -304,8 +328,10 @@ const matriz = lineasCat.map((c, i) => ({
     background: var(--color-linea);
     border: 1px solid var(--color-linea);
   }
+  /* Dos, tres y cuatro columnas dividen a doce sin resto. Cinco no, y por
+     eso la última fila quedaba a medias. */
   @media (min-width: 768px) { .matriz { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   .celda {
     position: relative;
@@ -322,6 +348,12 @@ const matriz = lineasCat.map((c, i) => ({
   }
   @media (min-width: 768px) { .celda { min-height: 16.5rem; padding: 1.6rem; } }
   .celda:hover { background: var(--color-brand-700); color: #fff; }
+
+  /* La celda de cierre va ya vestida de llamada: se distingue de las once
+     líneas sin romper la retícula. */
+  .celda--cierre { background: var(--color-papel-2); }
+  .celda--cierre .celda__nombre { color: var(--color-brand-700); }
+  .celda--cierre:hover .celda__nombre { color: #fff; }
 
   .celda__alto { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
   .celda__folio { transition: color 0.5s var(--ease-editorial); }

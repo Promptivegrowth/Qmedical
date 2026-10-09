@@ -1,7 +1,7 @@
 {
   "video": "video/hero-425f5900.mp4",
   "poster": {
-    "1280": "fotos/hero-poster-425f5900-1280.webp",
-    "800": "fotos/hero-poster-425f5900-800.webp"
+    "1280": "hero-poster-425f5900-1280.webp",
+    "800": "hero-poster-425f5900-800.webp"
   }
 }

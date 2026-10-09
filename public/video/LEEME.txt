@@ -6,7 +6,7 @@ tambien los comprime y les pone la huella del contenido en el nombre:
 
     python scripts/video_portada.py "ruta/al/video original.mp4"
 
-Eso deja en public/video/ el mp4 comprimido, en public/img/fotos/ el poster
+Eso deja en public/video/ el mp4 comprimido y el poster
 en dos anchos, y en public/video/manifest.json los tres nombres, que es de
 donde los lee la portada. Las versiones anteriores se retiran solas.
 
@@ -26,3 +26,7 @@ Recomendaciones para el video de origen:
   · La pagina no lo descarga cuando el visitante tiene el ahorro de datos
     activado, va por 2G o 3G, o ha pedido menos movimiento en su sistema: en
     esos casos se queda el poster.
+
+El poster vive aqui, junto al video, y no en public/img/: el guion de
+imagenes vacia esa carpeta cada vez que se ejecuta, y se llevaba por delante
+un archivo que no es suyo.

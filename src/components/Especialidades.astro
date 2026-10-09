@@ -1,11 +1,11 @@
 ---
 import Icon from './Icon.astro';
 import { especialidades } from '../data/especialidades';
-import { categoriaPorSlug, productosDeCategoria } from '../data/catalogo';
+import { lineaPorSlug, productosDeLinea } from '../data/catalogo';
 // La direccion de una categoria lleva su linea delante.
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { categoriaEn, especialidadEn } from '../i18n/contenido';
+import { lineaEn, especialidadEn } from '../i18n/contenido';
 
 /**
  * Especialidades clínicas, en panel interactivo.
@@ -33,6 +33,11 @@ const T = {
       'su propia lógica de consumo, y de ahí sale el orden de nuestras líneas.',
     abastecemos: 'Qué abastecemos',
     lineasQue: 'Líneas que la abastecen',
+    notaAnte: 'Su especialidad no está en la lista',
+    nota:
+      'Atendemos requerimientos fuera del catálogo publicado. Cuéntenos qué ' +
+      'necesita y le confirmamos disponibilidad y documentación.',
+    notaEnlace: 'Escríbanos',
   },
   en: {
     ante: 'Clinical specialties',
@@ -43,18 +48,26 @@ const T = {
       'comes from.',
     abastecemos: 'What we supply',
     lineasQue: 'Lines that supply it',
+    notaAnte: 'Your specialty is not on the list',
+    nota:
+      'We handle requirements beyond the published catalogue. Tell us what ' +
+      'you need and we will confirm availability and documentation.',
+    notaEnlace: 'Write to us',
   },
 }[lang];
 
 const fichas = especialidades.map((base, i) => {
   const e = especialidadEn(base, lang);
+  /* Son líneas del catálogo, no categorías. Se buscaban entre las
+     categorías y ninguna aparecía: la reestructuración de 2026 convirtió
+     esos slugs en líneas, y la sección quedó anunciando «0 productos». */
   const lineas = e.lineas
-    .map((slug) => categoriaPorSlug.get(slug))
+    .map((slug) => lineaPorSlug.get(slug))
     .filter(Boolean)
-    .map((c) => ({
-      ...categoriaEn(c!, lang),
-      href: via(lang, 'categoria', `${c!.linea}/${c!.slug}`),
-      total: productosDeCategoria(c!.slug).length,
+    .map((l) => ({
+      ...lineaEn(l!, lang),
+      href: via(lang, 'categoria', l!.slug),
+      total: productosDeLinea(l!.slug).length,
     }));
   return {
     ...e,
@@ -97,6 +110,18 @@ const fichas = especialidades.map((base, i) => {
             <span class="esp__tab-flecha"><Icon name="flecha" size={15} /></span>
           </button>
         ))}
+
+        <!-- La columna de la izquierda son seis renglones y el panel de la
+             derecha es más alto, así que debajo quedaba un bloque azul
+             vacío de media pantalla. Lo ocupa la pregunta que de verdad se
+             hace quien no encuentra su especialidad en la lista. -->
+        <div class="esp__nota">
+          <p class="ante ante-claro">{T.notaAnte}</p>
+          <p class="esp__nota-txt">{T.nota}</p>
+          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="esp__nota-ir">
+            {T.notaEnlace}<Icon name="flecha" size={14} />
+          </a>
+        </div>
       </div>
 
       <!-- Paneles -->
@@ -132,7 +157,7 @@ const fichas = especialidades.map((base, i) => {
                   <li>
                     <a href={l.href} class="esp__chip">
                       <Icon name={l.icono} size={16} />
-                      <span>{l.corto}</span>
+                      <span>{l.nombre}</span>
                       <span class="esp__chip-n">{l.total}</span>
                     </a>
                   </li>
@@ -206,7 +231,7 @@ const fichas = especialidades.map((base, i) => {
     transition: background-color 0.45s var(--ease-editorial),
       color 0.45s var(--ease-editorial), padding-left 0.45s var(--ease-salida);
   }
-  .esp__lista > :last-child { border-bottom: 0; }
+  .esp__lista > .esp__tab:last-of-type { border-bottom: 0; }
   .esp__tab:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
   .esp__tab.es-activo {
     background: rgba(255, 255, 255, 0.1);
@@ -230,6 +255,35 @@ const fichas = especialidades.map((base, i) => {
     transition: opacity 0.4s var(--ease-editorial), transform 0.4s var(--ease-salida);
   }
   .esp__tab.es-activo .esp__tab-flecha { opacity: 0.8; transform: none; }
+
+  .esp__nota {
+    display: none;
+    padding: 1.75rem 1.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  /* Solo donde hay dos columnas: en el móvil van una tras otra y no sobra
+     ningún hueco que llenar. */
+  @media (min-width: 900px) {
+    .esp__nota { display: block; margin-top: auto; }
+  }
+  .esp__nota-txt {
+    margin-top: 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .esp__nota-ir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1.1rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.85rem;
+    color: #fff;
+    transition: gap 0.35s var(--ease-salida), border-color 0.3s;
+  }
+  .esp__nota-ir:hover { gap: 0.8rem; border-bottom-color: #fff; }
 
   /* ── Panel ────────────────────────────────────────────────────────── */
   .esp__paneles { position: relative; }

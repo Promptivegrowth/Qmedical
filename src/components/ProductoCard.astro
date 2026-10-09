@@ -61,7 +61,12 @@ const href = ruta(lang, 'producto', p.slug);
   <div class="entrada__pie">
     <p class="entrada__credito">
       {marca && <span class="text-[var(--color-brand-700)]">{marca.nombre}</span>}
-      {mostrarCategoria && cat && <span class="opacity-45">· {cat.nombre}</span>}
+      {/* El punto separa marca y categoría; sin marca no separa nada, y
+          quedaba un «·» suelto al principio del renglón. Pasa en los
+          productos que se venden bajo más de una marca. */}
+      {mostrarCategoria && cat && (
+        <span class="opacity-45">{marca ? '· ' : ''}{cat.nombre}</span>
+      )}
     </p>
 
     <h3 class="entrada__titulo">
