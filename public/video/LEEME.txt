@@ -1,27 +1,28 @@
 Video de la portada
 ===================
 
-hero.mp4 es el video que se reproduce en bucle detras del titular de la
-portada. Lo entrego la empresa: 1280x720, 8 segundos, 2,4 MB.
+El video de fondo de la portada y su poster los prepara un solo guion, que
+tambien los comprime y les pone la huella del contenido en el nombre:
 
-Si se reemplaza por otro:
+    python scripts/video_portada.py "ruta/al/video original.mp4"
 
-  1. Guardelo aqui con el mismo nombre, hero.mp4.
-  2. Vuelva a generar el poster:
+Eso deja en public/video/ el mp4 comprimido, en public/img/fotos/ el poster
+en dos anchos, y en public/video/manifest.json los tres nombres, que es de
+donde los lee la portada. Las versiones anteriores se retiran solas.
 
-         python scripts/poster_video.py
+Por que el nombre lleva una huella: /video/ y /img/ se sirven con cache
+`immutable`, de modo que un archivo que conserva su nombre no se vuelve a
+pedir nunca. Reemplazar hero.mp4 dejaria viendo el video viejo a todo el que
+ya hubiera entrado al sitio.
 
-     Ese guion saca el primer fotograma del video y lo publica como
-     hero-poster-1280.webp y hero-poster-800.webp en public/img/fotos/. El
-     poster es lo que se ve mientras el video carga, asi que tiene que salir
-     del video nuevo; si no, se notaria el relevo.
+Recomendaciones para el video de origen:
 
-Recomendaciones para el video:
-
-  · 1280x720 o 1920x1080, sin audio (se reproduce silenciado de todos modos,
-    y la pista de sonido solo suma peso).
+  · 1280x720 o 1920x1080. El guion lo reescala a 1280 de ancho.
   · Entre 6 y 12 segundos, con un corte que enlace bien consigo mismo: se
     reproduce en bucle infinito.
-  · Por debajo de 3 MB. La pagina no lo descarga cuando el visitante tiene el
-    ahorro de datos activado, va por 2G o 3G, o ha pedido menos movimiento en
-    su sistema: en esos casos se queda el poster.
+  · No hace falta cuidar el peso ni quitar el audio: el guion lo recomprime y
+    descarta la pista de sonido. El ultimo original pesaba 7,0 MB y quedo en
+    2,4 MB.
+  · La pagina no lo descarga cuando el visitante tiene el ahorro de datos
+    activado, va por 2G o 3G, o ha pedido menos movimiento en su sistema: en
+    esos casos se queda el poster.

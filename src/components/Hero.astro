@@ -3,12 +3,12 @@ import Icon from './Icon.astro';
 import { site } from '../data/site';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
+import medios from '../../public/video/manifest.json' with { type: 'json' };
 
 /**
  * Portada con video en bucle.
  *
- * El video (public/video/hero.mp4) se reproduce en bucle infinito, silenciado
- * y en línea. El póster es su primer fotograma, de modo que la portada se ve
+ * El video se reproduce en bucle infinito, silenciado y en línea. El póster es su primer fotograma, de modo que la portada se ve
  * llena desde el primer pintado y el video entra encima cuando está listo:
  * nunca hay un rectángulo negro ni un salto de imagen.
  *
@@ -27,8 +27,14 @@ interface Props {
 const { lang = 'es' } = Astro.props;
 const t = textos(lang);
 
-// Primer fotograma del video, extraido por scripts/poster_video.py.
-const poster = '/img/fotos/hero-poster-1280.webp';
+/* El video y su póster los prepara scripts/video_portada.py, que les pone la
+   huella del contenido en el nombre y los anota aquí. Hace falta porque
+   /video/ y /img/ se sirven con caché `immutable`: un archivo que conserva su
+   nombre no vuelve a pedirse, de modo que un video nuevo tiene que llegar con
+   una dirección nueva. */
+const video = '/' + medios.video;
+const poster = '/img/' + medios.poster['1280'];
+const posterChico = '/img/' + medios.poster['800'];
 
 // El titular entra renglon a renglon, asi que se guarda partido: cada idioma
 // decide donde corta su propia frase.
@@ -66,7 +72,7 @@ const T = {
     <img
       class="hero__poster"
       src={poster}
-      srcset="/img/fotos/hero-poster-800.webp 800w, /img/fotos/hero-poster-1280.webp 1280w"
+      srcset={`${posterChico} 800w, ${poster} 1280w`}
       sizes="100vw"
       width="1280"
       height="720"
@@ -85,7 +91,7 @@ const T = {
       aria-hidden="true"
       tabindex="-1"
       data-video-hero
-      data-src="/video/hero.mp4"
+      data-src={video}
     ></video>
     <div class="hero__velo"></div>
     <div class="hero__trama trama"></div>
