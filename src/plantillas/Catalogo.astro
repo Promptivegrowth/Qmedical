@@ -8,14 +8,15 @@ import {
   lineas as lineasCat,
   productos,
   productosDeLinea,
+  productosDeCategoria,
+  categoriasDeLinea,
   resumenDe,
-  imagenPrincipal,
 } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
 import { waMensajes } from '../data/site';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { lineaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+import { lineaEn, categoriaEn, productoEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -43,6 +44,13 @@ const T = {
     buscarPista: 'Buscar producto, marca o código…',
     sinResultados: 'No encontramos productos con ese término.',
     escribanos: 'Escríbanos y le confirmamos disponibilidad',
+    todos: 'Todo el catálogo',
+    filtrosTitulo: 'Filtrar',
+    verLinea: 'Ver la página de la línea',
+    verCategoria: 'Ver la página de la categoría',
+    limpiar: 'Quitar filtros',
+    sinFiltro: 'sin filtros',
+    abrirFiltros: 'Filtrar',
     consultaAnte: 'Bajo consulta',
     consultaTitulo: 'Otras líneas que gestionamos con el fabricante',
     consultaTexto:
@@ -76,6 +84,13 @@ const T = {
     buscarPista: 'Search by product, brand or code…',
     sinResultados: 'We found no products matching that term.',
     escribanos: 'Write to us and we will confirm availability',
+    todos: 'The whole catalogue',
+    filtrosTitulo: 'Filter',
+    verLinea: 'Go to the line page',
+    verCategoria: 'Go to the category page',
+    limpiar: 'Clear filters',
+    sinFiltro: 'no filters',
+    abrirFiltros: 'Filter',
     consultaAnte: 'On request',
     consultaTitulo: 'Other lines we source directly from the manufacturer',
     consultaTexto:
@@ -92,16 +107,25 @@ const T = {
   },
 }[lang];
 
+/* Las líneas con sus categorías: es el árbol que ordena la barra lateral.
+   Cada rama lleva su cuenta, que es lo que permite decidir dónde mirar sin
+   abrir nada. */
 const lineas = lineasCat.map((base, i) => {
   const c = lineaEn(base, lang);
   return {
-    ...c,
+    slug: base.slug,
+    icono: base.icono,
     n: String(i + 1).padStart(2, '0'),
     href: via(lang, 'categoria', base.slug),
-    corto: c.nombre,
+    nombre: c.nombre,
     sintesis: c.resumen,
-    cuenta: t.productosCuenta(productosDeLinea(base.slug).length),
-    foto: imagenPrincipal(productosDeLinea(base.slug)[0]?.slug ?? '', 480),
+    total: productosDeLinea(base.slug).length,
+    cats: categoriasDeLinea(base.slug).map((cat) => ({
+      slug: cat.slug,
+      nombre: categoriaEn(cat, lang).nombre,
+      href: via(lang, 'categoria', `${base.slug}/${cat.slug}`),
+      total: productosDeCategoria(cat.slug).length,
+    })),
   };
 });
 
@@ -130,6 +154,10 @@ const indice = productos.map((base) => {
 // Singular y plural para el contador vivo del buscador.
 const unidades = { uno: t.productosCuenta(1), varios: t.productosCuenta(2).replace('2 ', '') };
 
+// Lo que el guion necesita escribir: va aquí y no en el guion para que el
+// inglés salga del mismo sitio que el resto de la página.
+const rotulos = { verLinea: T.verLinea, verCategoria: T.verCategoria };
+
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -148,63 +176,108 @@ const schema = {
     dato={{ valor: String(productos.length), etiqueta: T.dato }}
   />
 
-  <!-- ── Índice de líneas, en mosaico ─────────────────────────────────── -->
-  <section class="aire-sm bg-[var(--color-papel)]">
-    <div class="caja">
-      <p class="ante ante-brand">{T.indice}</p>
-      <ul class="mosaico" data-anim-grupo="55">
-        {lineas.map((c) => (
-          <li data-anim="sube">
-            <a href={c.href} class="tesela">
-              <span class="tesela__alto">
-                <span class="folio">{c.n}</span>
-                <span class="tesela__ic"><Icon name={c.icono} size={22} /></span>
-              </span>
-              <img
-                src={c.foto}
-                width="480" height="480" alt="" loading="lazy" decoding="async" class="tesela__img"
-              />
-              <span class="tesela__pie">
-                <span class="tesela__nombre">{c.corto}</span>
-                <!-- Para qué sirve la línea: sin esto el índice es una lista
-                     de nombres que solo entiende quien ya conoce el sector. -->
-                <span class="tesela__sintesis">{c.sintesis}</span>
-                <span class="tesela__cuenta">{c.cuenta}</span>
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  <!-- ── Navegador del catálogo ───────────────────────────────────────
+       Barra lateral y rejilla, en la misma pantalla. El visitante casi nunca
+       sabe en qué línea cae lo que busca —«contenedor de punzocortantes» no
+       dice «bioseguridad»—, así que el árbol se ve entero, con su cuenta al
+       lado, y el filtro ocurre sin recargar.
 
-  <!-- ── Buscador y rejilla ───────────────────────────────────────────── -->
-  <section class="aire bg-[var(--color-papel-2)]">
-    <div class="caja">
-      <div class="barra-busqueda">
-        <label class="relative block w-full sm:max-w-md">
+       El servidor entrega las 45 fichas: sin JavaScript se ven todas, que es
+       un catálogo completo y navegable. El guion solo las esconde. -->
+  <section class="aire bg-[var(--color-papel)]" id="explorar">
+    <div class="caja navegador">
+      <!-- ── Filtros ──────────────────────────────────────────────────── -->
+      <aside class="filtros" aria-labelledby="filtros-rotulo">
+        <p class="ante ante-brand" id="filtros-rotulo">{T.filtrosTitulo}</p>
+
+        <label class="buscador">
           <span class="solo-lector">{T.buscarRotulo}</span>
-          <span class="lupa"><Icon name="buscar" size={17} /></span>
+          <span class="buscador__lupa"><Icon name="buscar" size={17} /></span>
           <input
-            id="buscador" type="search" class="campo !pl-11" autocomplete="off"
+            id="buscador" type="search" class="campo buscador__campo" autocomplete="off"
             placeholder={T.buscarPista}
           />
         </label>
-        <p id="conteo" class="text-[0.85rem] text-[var(--color-tinta-45)]" aria-live="polite">
-          {t.productosCuenta(productos.length)}
+
+        <nav class="arbol" aria-label={T.indice}>
+          <button type="button" class="rama rama--todas es-activa" data-filtro="" aria-pressed="true">
+            <span class="rama__ic"><Icon name="reticula" size={18} /></span>
+            <span class="rama__nombre">{T.todos}</span>
+            <span class="rama__cuenta">{productos.length}</span>
+          </button>
+
+          {lineas.map((l) => (
+            <div class="arbol__grupo">
+              <button
+                type="button"
+                class="rama"
+                data-filtro={`linea:${l.slug}`}
+                data-ir={l.href}
+                aria-pressed="false"
+              >
+                <span class="rama__ic"><Icon name={l.icono} size={18} /></span>
+                <span class="rama__nombre">{l.nombre}</span>
+                <span class="rama__cuenta">{l.total}</span>
+              </button>
+
+              <!-- Las categorías solo se despliegan con su línea elegida: a la
+                   vista todas serían 39 renglones y el árbol dejaría de
+                   leerse de un vistazo. -->
+              <div class="ramitas" data-de={l.slug} hidden>
+                {l.cats.map((c) => (
+                  <button
+                    type="button"
+                    class="ramita"
+                    data-filtro={`categoria:${c.slug}`}
+                    data-ir={c.href}
+                    aria-pressed="false"
+                  >
+                    <span class="ramita__nombre">{c.nombre}</span>
+                    <span class="rama__cuenta">{c.total}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+      </aside>
+
+      <!-- ── Resultados ───────────────────────────────────────────────── -->
+      <div class="resultados">
+        <div class="resultados__alto">
+          <p id="conteo" class="resultados__cuenta" aria-live="polite">
+            {t.productosCuenta(productos.length)}
+          </p>
+          <div class="resultados__acciones">
+            <a id="ir-a-pagina" class="enlace-sutil" href="#" hidden></a>
+            <button type="button" id="limpiar" class="enlace-sutil" hidden>
+              {T.limpiar}
+            </button>
+          </div>
+        </div>
+
+        <!-- Sin `data-anim`: el revelado por scroll y el filtrado se
+             disputaban la misma ficha —uno la quería invisible hasta
+             aparecer en pantalla, el otro visible al filtrar— y ganaba el
+             que escribiera último. Aquí manda el filtro. -->
+        <div id="rejilla" class="rejilla-catalogo">
+          {productos.map((p, i) => (
+            <div
+              class="ficha"
+              data-slug={p.slug}
+              data-linea={p.linea}
+              data-categoria={p.categoria}
+            >
+              <ProductoCard lang={lang} producto={p} eager={i < 4} />
+            </div>
+          ))}
+        </div>
+
+        <p id="vacio" class="hidden py-20 text-center text-[var(--color-tinta-45)]">
+          {T.sinResultados}<br />
+          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="enlace mt-4">{T.escribanos}</a>
         </p>
       </div>
-
-      <div id="rejilla" class="rejilla-catalogo mt-10" data-anim-grupo="45">
-        {productos.map((p, i) => (
-          <div data-slug={p.slug} data-anim="sube"><ProductoCard lang={lang} producto={p} eager={i < 4} /></div>
-        ))}
-      </div>
-
-      <p id="vacio" class="hidden py-20 text-center text-[var(--color-tinta-45)]">
-        {T.sinResultados}<br />
-        <a href={via(lang, 'contacto', undefined, 'cotizar')} class="enlace mt-4">{T.escribanos}</a>
-      </p>
     </div>
   </section>
 
@@ -233,108 +306,214 @@ const schema = {
 </Base>
 
 <style>
-  /* ── Mosaico de líneas ────────────────────────────────────────────── */
-  .mosaico {
+  /* ── Navegador: barra lateral y rejilla ───────────────────────────── */
+  .navegador {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem;
-    margin-top: 2rem;
+    gap: 2.5rem;
   }
-  @media (min-width: 768px) { .mosaico { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 1100px) { .mosaico { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-
-  .tesela {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 1.1rem;
-    background: #fff;
-    border: 1px solid var(--color-linea);
-    border-radius: var(--r-md);
-    overflow: hidden;
-    transition: border-color 0.35s, transform 0.45s var(--ease-salida);
-  }
-  .tesela:hover { border-color: var(--color-brand-300); transform: translateY(-3px); }
-
-  .tesela__alto { display: flex; align-items: center; justify-content: space-between; }
-  .tesela__ic {
-    color: var(--color-brand-700);
-    opacity: 0.35;
-    transition: opacity 0.35s;
-  }
-  .tesela:hover .tesela__ic { opacity: 1; }
-
-  .tesela__img {
-    width: 100%;
-    flex: none;
-    aspect-ratio: 1;
-    object-fit: contain;
-    padding: 12%;
-    transition: transform 0.6s var(--ease-salida);
-  }
-  .tesela:hover .tesela__img { transform: scale(1.07); }
-
-  /* El pie ocupa lo que sobra de la tarjeta en vez de pegarse abajo.
-
-     Con `margin-top: auto` el bloque entero se iba al fondo, y como las
-     teselas de una fila miden todas lo mismo pero sus sintesis no ocupan las
-     mismas lineas, el titulo de las de una sola linea bajaba respecto al de
-     sus vecinas. Anclando el pie arriba, los nombres de toda la fila salen a
-     la misma altura; el recuento se descuelga solo al fondo, de modo que
-     tambien queda alineado entre si. */
-  .tesela__pie {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .tesela__sintesis {
-    margin-top: 0.3rem;
-    font-size: 0.78rem;
-    line-height: 1.4;
-    color: var(--color-tinta-70);
-  }
-  .tesela__nombre {
-    display: block;
-    font-family: var(--font-display);
-    font-size: 1.02rem;
-    line-height: 1.2;
-  }
-  .tesela__cuenta {
-    display: block;
-    margin-top: auto;
-    padding-top: 0.55rem;
-    font-size: 0.75rem;
-    color: var(--color-tinta-45);
+  /* Las dos columnas pueden encoger. Sin esto, el carrusel de filtros del
+     móvil —que es más ancho que la pantalla a propósito— ensancha su celda
+     de la rejilla en vez de desplazarse dentro de ella, y la página entera
+     se va de lado. */
+  .filtros,
+  .resultados { min-width: 0; }
+  @media (min-width: 1024px) {
+    .navegador {
+      grid-template-columns: 17rem minmax(0, 1fr);
+      gap: 3.5rem;
+      align-items: start;
+    }
   }
 
-  /* ── Buscador ─────────────────────────────────────────────────────── */
-  .barra-busqueda {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  /* La barra se queda a la vista mientras se recorre la rejilla: con 45
+     fichas, perder los filtros al bajar obliga a subir por cada cambio. */
+  @media (min-width: 1024px) {
+    .filtros {
+      position: sticky;
+      top: 6.5rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      padding-right: 0.35rem;
+    }
   }
-  @media (min-width: 640px) {
-    .barra-busqueda { flex-direction: row; align-items: center; justify-content: space-between; }
-  }
-  .lupa {
-    display: inline-flex;
+
+  .buscador { position: relative; display: block; margin-top: 1.25rem; }
+  .buscador__lupa {
     position: absolute;
-    left: 0.9rem;
+    left: 1rem;
     top: 50%;
-    transform: translateY(-50%);
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
     color: var(--color-tinta-45);
     pointer-events: none;
   }
+  .buscador__campo { padding-left: 2.75rem !important; border-radius: 999px; }
+
+  .arbol { margin-top: 1.5rem; display: grid; gap: 0.15rem; }
+
+  .rama,
+  .ramita {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    padding: 0.62rem 0.8rem;
+    border-radius: var(--r-sm);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    text-align: left;
+    color: var(--color-tinta-70);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-editorial),
+      color 0.25s var(--ease-editorial);
+  }
+  .rama:hover,
+  .ramita:hover { background: var(--color-papel-2); color: var(--color-tinta); }
+
+  .rama.es-activa,
+  .ramita.es-activa {
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    font-weight: 600;
+  }
+
+  .rama__ic { display: grid; place-items: center; flex: none; opacity: 0.75; }
+  .rama.es-activa .rama__ic { opacity: 1; }
+  .rama__nombre,
+  .ramita__nombre { flex: 1; min-width: 0; }
+  .rama__cuenta {
+    flex: none;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-tinta-45);
+  }
+  .rama.es-activa .rama__cuenta,
+  .ramita.es-activa .rama__cuenta { color: var(--color-brand-700); }
+
+  .rama--todas { margin-bottom: 0.35rem; }
+
+  .ramitas {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0.15rem 0 0.5rem;
+    padding-left: 1.1rem;
+    border-left: 1px solid var(--color-linea);
+    margin-left: 1.4rem;
+  }
+  .ramita { padding-block: 0.5rem; font-size: 0.85rem; }
+
+  /* Despliegue de las categorías: sin esto el salto es brusco justo donde el
+     visitante está mirando. */
+  .js .ramitas:not([hidden]) { animation: ramas-abren 0.35s var(--ease-salida) both; }
+  @keyframes ramas-abren {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* En el móvil el árbol no cabe de pie: se tumba y se recorre de lado. */
+  @media (max-width: 1023px) {
+    .arbol {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-inline: calc(var(--borde) * -1);
+      padding-inline: var(--borde);
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+    }
+    .arbol::-webkit-scrollbar { display: none; }
+    /* El grupo desaparece como caja: así la línea y sus categorías son
+       fichas hermanas del mismo carrusel, y las categorías de la línea
+       elegida aparecen justo detrás de ella. */
+    .arbol__grupo { display: contents; }
+    .rama {
+      white-space: nowrap;
+      width: auto;
+      padding-inline: 1rem 1.1rem;
+      border: 1px solid var(--color-linea);
+      border-radius: 999px;
+      scroll-snap-align: start;
+    }
+    /* En la pastilla el nombre manda y la cuenta va detrás; estirar el
+       nombre dejaría la cifra pegada al borde. */
+    .rama__nombre,
+    .ramita__nombre { flex: none; }
+    .rama.es-activa { border-color: var(--color-brand-300); }
+    .ramitas {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .ramita {
+      flex: none;
+      white-space: nowrap;
+      width: auto;
+      padding-inline: 0.95rem 1.05rem;
+      border: 1px dashed var(--color-linea-2);
+      border-radius: 999px;
+    }
+    .ramita.es-activa { border-style: solid; border-color: var(--color-brand-300); }
+  }
+
+  /* ── Resultados ───────────────────────────────────────────────────── */
+  .resultados__alto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--color-linea);
+  }
+  .resultados__cuenta { font-size: 0.85rem; color: var(--color-tinta-45); }
+  .resultados__acciones { display: flex; flex-wrap: wrap; gap: 0.6rem 1.25rem; }
+
+  .enlace-sutil {
+    font-size: 0.85rem;
+    color: var(--color-brand-700);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.25s var(--ease-editorial);
+    cursor: pointer;
+  }
+  .enlace-sutil:hover { border-bottom-color: currentColor; }
 
   .rejilla-catalogo {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 2.5rem 1.75rem;
+    margin-top: 2.25rem;
   }
-  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 1400px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (min-width: 560px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .rejilla-catalogo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  /* Entrada escalonada al cambiar de filtro.
+     Con transición y no con fotogramas: el guion solo pone y quita un
+     atributo, y el retraso de cada ficha se corta a las doce primeras —más
+     allá nadie percibe el escalón y solo retrasa la última—. */
+  .ficha {
+    transition:
+      opacity 0.42s var(--ease-editorial) var(--retraso, 0ms),
+      transform 0.42s var(--ease-salida) var(--retraso, 0ms);
+  }
+  .ficha[data-entrando] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ficha { transition: none; }
+    .ficha[data-entrando] { opacity: 1; transform: none; }
+    .js .ramitas:not([hidden]) { animation: none; }
+  }
 
   /* ── Bajo consulta ────────────────────────────────────────────────── */
   .consulta {
@@ -358,43 +537,180 @@ const schema = {
   }
 </style>
 
-<script is:inline define:vars={{ indice, unidades }}>
+<script is:inline define:vars={{ indice, unidades, rotulos }}>
+  /*
+   * Navegador del catálogo: filtra por línea, por categoría y por texto, los
+   * tres a la vez y sin recargar.
+   *
+   * Las fichas ya están en la página —las entregó el servidor—, así que esto
+   * solo las esconde. Sin JavaScript se ven las 45, que sigue siendo un
+   * catálogo navegable; con él, filtrar no cuesta una petición.
+   *
+   * El estado vive en la dirección (?linea=, ?categoria=, ?q=). Así un filtro
+   * se puede compartir por WhatsApp, y el botón de atrás del navegador
+   * deshace el último paso en vez de sacar al visitante del catálogo.
+   */
   (function () {
     var input = document.getElementById('buscador');
     var rejilla = document.getElementById('rejilla');
     var conteo = document.getElementById('conteo');
     var vacio = document.getElementById('vacio');
+    var limpiar = document.getElementById('limpiar');
+    var irA = document.getElementById('ir-a-pagina');
     if (!input || !rejilla || !conteo || !vacio) return;
 
-    var mapa = {};
-    for (var i = 0; i < indice.length; i++) mapa[indice[i].slug] = indice[i].buscar;
-    var tarjetas = Array.prototype.slice.call(rejilla.children);
+    var texto = {};
+    for (var i = 0; i < indice.length; i++) texto[indice[i].slug] = indice[i].buscar;
+
+    var fichas = Array.prototype.slice.call(rejilla.children);
+    var ramas = Array.prototype.slice.call(document.querySelectorAll('[data-filtro]'));
 
     var normalizar = function (s) {
-      return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     };
 
-    var filtrar = function () {
-      var q = normalizar(input.value);
-      var terminos = q ? q.split(/\s+/) : [];
+    var estado = { linea: '', categoria: '', q: '' };
+
+    /* ── Pintar ─────────────────────────────────────────────────────── */
+    function pintar(animar) {
+      var terminos = estado.q ? normalizar(estado.q).split(/\s+/) : [];
       var visibles = 0;
-      tarjetas.forEach(function (el) {
-        var texto = mapa[el.dataset.slug] || '';
-        var ok = terminos.every(function (t) { return texto.indexOf(t) !== -1; });
+      var entrantes = [];
+
+      fichas.forEach(function (el) {
+        var ok = true;
+        if (estado.categoria) ok = el.dataset.categoria === estado.categoria;
+        else if (estado.linea) ok = el.dataset.linea === estado.linea;
+        if (ok && terminos.length) {
+          var hay = texto[el.dataset.slug] || '';
+          ok = terminos.every(function (t) { return hay.indexOf(t) !== -1; });
+        }
         el.hidden = !ok;
-        if (ok) visibles++;
+        if (ok) {
+          if (animar) {
+            el.style.setProperty('--retraso', Math.min(visibles, 11) * 30 + 'ms');
+            el.setAttribute('data-entrando', '');
+            entrantes.push(el);
+          }
+          visibles++;
+        }
       });
+
+      /* El atributo se pone en un fotograma y se quita en el siguiente: es
+         lo que hace que la transición arranque desde el estado de entrada en
+         vez de saltar al final. */
+      if (entrantes.length) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            entrantes.forEach(function (el) { el.removeAttribute('data-entrando'); });
+          });
+        });
+      }
+
       conteo.textContent = visibles === 1 ? unidades.uno : visibles + ' ' + unidades.varios;
       vacio.classList.toggle('hidden', visibles > 0);
-    };
 
-    var t;
-    input.addEventListener('input', function () {
-      clearTimeout(t);
-      t = setTimeout(filtrar, 120);
+      // Las categorías visibles son las de la línea elegida
+      Array.prototype.forEach.call(document.querySelectorAll('.ramitas'), function (g) {
+        g.hidden = g.dataset.de !== estado.linea;
+      });
+
+      var clave = estado.categoria
+        ? 'categoria:' + estado.categoria
+        : estado.linea ? 'linea:' + estado.linea : '';
+      ramas.forEach(function (b) {
+        var activa = b.dataset.filtro === clave;
+        b.classList.toggle('es-activa', activa);
+        b.setAttribute('aria-pressed', activa ? 'true' : 'false');
+      });
+
+      var filtrando = Boolean(estado.linea || estado.categoria || estado.q);
+      if (limpiar) limpiar.hidden = !filtrando;
+
+      /* Enlace a la página propia de lo elegido: el filtro es cómodo para
+         comparar, pero la página de la línea tiene su texto y su contexto, y
+         es la que se indexa. */
+      if (irA) {
+        var elegida = ramas.filter(function (b) { return b.dataset.filtro === clave; })[0];
+        var destino = elegida && elegida.dataset.ir;
+        irA.hidden = !destino;
+        if (destino) {
+          irA.href = destino;
+          irA.textContent = estado.categoria ? rotulos.verCategoria : rotulos.verLinea;
+        }
+      }
+    }
+
+    /* ── Dirección ──────────────────────────────────────────────────── */
+    function leerDireccion() {
+      var p = new URLSearchParams(location.search);
+      estado.linea = p.get('linea') || '';
+      estado.categoria = p.get('categoria') || '';
+      estado.q = p.get('q') || '';
+      input.value = estado.q;
+
+      /* Un enlace con solo ?categoria= es legítimo —es lo que se comparte
+         desde la ficha o desde el menú—, pero el árbol necesita saber de qué
+         línea cuelga para abrirla y marcarla. Se deduce del propio árbol. */
+      if (estado.categoria && !estado.linea) {
+        var boton = document.querySelector(
+          '[data-filtro="categoria:' + estado.categoria.replace(/"/g, '') + '"]');
+        var grupo = boton && boton.closest('.ramitas');
+        if (grupo) estado.linea = grupo.dataset.de;
+      }
+    }
+
+    function escribirDireccion(nuevaEntrada) {
+      var p = new URLSearchParams();
+      if (estado.categoria) p.set('categoria', estado.categoria);
+      else if (estado.linea) p.set('linea', estado.linea);
+      if (estado.q) p.set('q', estado.q);
+      var cadena = p.toString();
+      var url = location.pathname + (cadena ? '?' + cadena : '');
+      history[nuevaEntrada ? 'pushState' : 'replaceState'](null, '', url);
+    }
+
+    /* ── Sucesos ────────────────────────────────────────────────────── */
+    ramas.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.dataset.filtro;
+        if (!f) { estado.linea = ''; estado.categoria = ''; }
+        else if (f.indexOf('linea:') === 0) {
+          var l = f.slice(6);
+          // Volver a pulsar la línea elegida la suelta
+          estado.linea = estado.linea === l && !estado.categoria ? '' : l;
+          estado.categoria = '';
+        } else {
+          var c = f.slice(10);
+          estado.categoria = estado.categoria === c ? '' : c;
+        }
+        escribirDireccion(true);
+        pintar(true);
+      });
     });
 
-    var q = new URLSearchParams(location.search).get('q');
-    if (q) { input.value = q; filtrar(); }
+    var reloj;
+    input.addEventListener('input', function () {
+      clearTimeout(reloj);
+      reloj = setTimeout(function () {
+        estado.q = input.value.trim();
+        escribirDireccion(false);
+        pintar(true);
+      }, 140);
+    });
+
+    if (limpiar) {
+      limpiar.addEventListener('click', function () {
+        estado.linea = ''; estado.categoria = ''; estado.q = '';
+        input.value = '';
+        escribirDireccion(true);
+        pintar(true);
+      });
+    }
+
+    window.addEventListener('popstate', function () { leerDireccion(); pintar(true); });
+
+    leerDireccion();
+    pintar(false);
   })();
 </script>

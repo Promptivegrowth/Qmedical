@@ -493,3 +493,43 @@
     border: 0;
   }
 }
+
+/* ── Transiciones entre páginas ──────────────────────────────────────
+   Al pasar de una página a otra, el navegador funde la salida con la
+   entrada en vez de parpadear en blanco, y la ficha de producto entra
+   deslizándose desde donde estaba su tarjeta.
+
+   Son transiciones *entre documentos*: no hay enrutador de cliente ni
+   nada que rehidratar. La navegación sigue siendo una navegación de
+   verdad, con su barra de progreso y su botón de atrás; el navegador
+   solo se encarga de que el relevo no sea un corte seco. Donde no está
+   implementado —Firefox y Safari, a día de hoy— no pasa nada: se navega
+   como siempre.
+
+   Se respeta `prefers-reduced-motion`: quien pidió menos movimiento no
+   recibe ninguno.                                                      */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  ::view-transition-old(root) {
+    animation: vt-sale 0.22s var(--ease-editorial) both;
+  }
+  ::view-transition-new(root) {
+    animation: vt-entra 0.34s var(--ease-salida) both;
+  }
+
+  @keyframes vt-sale {
+    to { opacity: 0; transform: translateY(-6px); }
+  }
+  @keyframes vt-entra {
+    from { opacity: 0; transform: translateY(10px); }
+  }
+
+  /* La cabecera no participa del fundido: es el único elemento que sigue
+     igual en las dos páginas, y verla desvanecerse y volver delata el
+     relevo justo donde el visitante está mirando. */
+  .cabecera { view-transition-name: cabecera; }
+  ::view-transition-group(cabecera) { animation-duration: 0.01s; }
+  ::view-transition-old(cabecera),
+  ::view-transition-new(cabecera) { animation: none; opacity: 1; }
+}
