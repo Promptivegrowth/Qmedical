@@ -2,13 +2,10 @@
 // Product page, in English. The slug is shared with the Spanish site so that
 // every page has an exact twin and the language switch is a pure prefix.
 import FichaProducto from '../../../plantillas/FichaProducto.astro';
-import { productos } from '../../../data/catalogo';
+import { productoPorSlug } from '../../../data/catalogo';
 
-export function getStaticPaths() {
-  return productos.map((p) => ({ params: { slug: p.slug }, props: { producto: p } }));
-}
-
-const { producto } = Astro.props;
+const producto = productoPorSlug.get(Astro.params.slug!);
+if (!producto) return Astro.rewrite('/404');
 ---
 
 <FichaProducto lang="en" producto={producto} />

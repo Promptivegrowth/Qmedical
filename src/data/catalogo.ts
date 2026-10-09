@@ -233,22 +233,74 @@ async function cargar(): Promise<Catalogo> {
   }
 }
 
-const catalogo = await cargar();
+/* ───────────────────────────────────── El catálogo vivo ─────────────────
+ *
+ * El sitio se arma en el servidor, así que el módulo no se carga una vez por
+ * publicación sino una vez por arranque de la función, y esa función puede
+ * seguir viva horas. Sin refrescar, una edición hecha en el portal no se
+ * vería hasta que Vercel levantara una función nueva.
+ *
+ * De ahí que lo que se exporta sean enlaces vivos (`let`): el módulo los
+ * reemplaza al refrescar y quien importó ve el valor nuevo, sin que nadie
+ * tenga que pedir el catálogo por parámetro.
+ *
+ * El relevo se hace de una vez y sin `await` en medio. JavaScript no
+ * interrumpe una secuencia así, de modo que ninguna página puede quedarse a
+ * medias entre el catálogo viejo y el nuevo.
+ */
+const VIGENCIA = 60_000;
 
-export const lineas = catalogo.lineas;
-export const categorias = catalogo.categorias;
-export const productos = catalogo.productos;
+const inicial = await cargar();
+let cargadoEn = Date.now();
+let enVuelo: Promise<Catalogo | null> | null = null;
+
+export let lineas = inicial.lineas;
+export let categorias = inicial.categorias;
+export let productos = inicial.productos;
 
 /**
  * Fotografías por producto, en el mismo orden que sus presentaciones: la
  * posición i corresponde a la presentación i. Las presentaciones sin foto
  * entregada guardan una cadena vacía para no descolocar ese emparejamiento.
  */
-const imagenes = catalogo.imagenes;
+let imagenes = inicial.imagenes;
 
-export const lineaPorSlug = new Map(lineas.map((l) => [l.slug, l]));
-export const categoriaPorSlug = new Map(categorias.map((c) => [c.slug, c]));
-export const productoPorSlug = new Map(productos.map((p) => [p.slug, p]));
+export let lineaPorSlug = new Map(lineas.map((l) => [l.slug, l]));
+export let categoriaPorSlug = new Map(categorias.map((c) => [c.slug, c]));
+export let productoPorSlug = new Map(productos.map((p) => [p.slug, p]));
+
+/**
+ * Vuelve a pedir el catálogo si el que hay en memoria ya cumplió su minuto.
+ * Lo llama el middleware antes de armar cada página.
+ *
+ * Si la consulta falla, se conserva el catálogo anterior: una página con el
+ * portafolio de hace un minuto es mejor que una página sin portafolio. Y se
+ * marca la hora igualmente, para no reintentar en cada visita mientras la
+ * base esté caída.
+ */
+export async function refrescar(): Promise<void> {
+  if (process.env.QM_CATALOGO === 'local') return;
+  if (Date.now() - cargadoEn < VIGENCIA) return;
+  if (!enVuelo) {
+    enVuelo = deLaBase().catch((err) => {
+      console.warn('[catálogo] no se pudo refrescar: %s', err instanceof Error ? err.message : err);
+      return null;
+    });
+  }
+  const nuevo = await enVuelo;
+  enVuelo = null;
+  cargadoEn = Date.now();
+  if (!nuevo) return;
+
+  // El relevo, de una vez. Sin `await` entre estas líneas.
+  lineas = nuevo.lineas;
+  categorias = nuevo.categorias;
+  productos = nuevo.productos;
+  imagenes = nuevo.imagenes;
+  lineaPorSlug = new Map(lineas.map((l) => [l.slug, l]));
+  categoriaPorSlug = new Map(categorias.map((c) => [c.slug, c]));
+  productoPorSlug = new Map(productos.map((p) => [p.slug, p]));
+}
 
 export function categoriasDeLinea(linea: string): Categoria[] {
   return categorias.filter((c) => c.linea === linea);

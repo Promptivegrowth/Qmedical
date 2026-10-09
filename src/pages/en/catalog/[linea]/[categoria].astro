@@ -1,16 +1,13 @@
 ---
 // Una categoría del catálogo, dentro de su línea. In English.
 import LineaCatalogo from '../../../../plantillas/LineaCatalogo.astro';
-import { categorias } from '../../../../data/catalogo';
+import { categoriaPorSlug } from '../../../../data/catalogo';
 
-export function getStaticPaths() {
-  return categorias.map((c) => ({
-    params: { linea: c.linea, categoria: c.slug },
-    props: { categoria: c },
-  }));
-}
-
-const { categoria } = Astro.props;
+/* La direccion lleva la linea y la categoria. Se comprueban las dos: una
+   categoria pedida bajo una linea que no es la suya es una direccion que no
+   existe, no una pagina valida con una miga de pan equivocada. */
+const categoria = categoriaPorSlug.get(Astro.params.categoria!);
+if (!categoria || categoria.linea !== Astro.params.linea) return Astro.rewrite('/404');
 ---
 
 <LineaCatalogo lang="en" categoria={categoria} />

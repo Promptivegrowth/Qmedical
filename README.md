@@ -4,9 +4,10 @@ Rediseño completo del sitio de [qmedicalsac.com](https://qmedicalsac.com): drog
 peruana de dispositivos médicos y bioseguridad, certificada en Buenas Prácticas de
 Almacenamiento por DIGEMID.
 
-Construido con **Astro 5** y **Tailwind CSS 4**, con salida **100 % estática**: el
-mismo `dist/` funciona en Vercel (vía GitHub) y en un hosting compartido de cPanel
-sin ningún cambio.
+Construido con **Astro 5** y **Tailwind CSS 4**, servido desde **Vercel**. Las
+páginas se arman al pedirlas y se guardan en la caché del CDN, de modo que la
+empresa edita su catálogo en el portal y el cambio aparece solo, sin recompilar
+el sitio.
 
 ---
 
@@ -116,8 +117,7 @@ En total, 98 páginas estáticas —49 por idioma— más `sitemap-index.xml`,
   detiene mientras se hace scroll.
 - **Sin fichas técnicas descargables**: la empresa decidió retirarlas del sitio y
   entregarlas a petición, así que no hay biblioteca de PDF ni enlaces de descarga.
-  `/fichas-tecnicas` y `/en/datasheets` redirigen con 301 al catálogo, en Vercel y en
-  cPanel. Todo lo retirado —los 49 PDF, su índice, la correspondencia producto↔ficha y
+  `/fichas-tecnicas` y `/en/datasheets` redirigen con 301 al catálogo. Todo lo retirado —los 49 PDF, su índice, la correspondencia producto↔ficha y
   el guion que los preparaba— está en el historial del repositorio, en el commit que
   las quitó, por si algún día se quisieran volver a publicar.
 - **Búsqueda**: índice embebido en la página, filtrado en el navegador. Sin peticiones
@@ -217,7 +217,7 @@ copia de respaldo.
 Los formularios de cotización y del Libro de Reclamaciones se envían al **portal del
 Grupo Pacheco** (`public/js/portal.js`), que guarda cada registro, numera las hojas de
 reclamación, genera su PDF y envía los correos (los avisos del libro van a Dirección
-Técnica). Funciona igual en Vercel y en cPanel, sin claves ni servidor propio.
+Técnica). No necesita claves ni servidor propio en la web.
 
 - La cotización lleva a la página de gracias; el libro muestra en la misma página la
   constancia con el número de la hoja y la fecha límite de respuesta.
@@ -253,24 +253,11 @@ trae las cabeceras de caché y seguridad y las redirecciones desde las URL antig
 1. *Add New → Project* e importe el repositorio.
 2. Apunte el dominio `qmedicalsac.com` a Vercel.
 
-Cada `git push` a `main` publica una nueva versión.
+Cada `git push` a `main` publica una nueva versión. Los cambios del catálogo no
+necesitan publicación: se leen de la base en la siguiente visita.
 
-### cPanel de Namecheap
-
-```bash
-npm run build
-```
-
-Suba **el contenido de `dist/`** (no la carpeta) a `public_html` por FTP o por el
-Administrador de archivos de cPanel. Incluya el archivo `.htaccess`, que va dentro de
-`dist/` y activa compresión, caché, cabeceras de seguridad, URL limpias, HTTPS
-forzado y las redirecciones 301 desde la web anterior.
-
-> En el Administrador de archivos active **Configuración → Mostrar archivos ocultos**
-> para ver `.htaccess`.
-
-Si el dominio debe servirse **con** `www`, ajuste esa regla de `.htaccess`; por
-defecto está configurado sin `www`.
+El sitio necesita Vercel (o cualquier servidor con Node): desde que las páginas se
+arman al pedirlas, ya no hay una carpeta de archivos que se pueda subir por FTP.
 
 ---
 
@@ -279,7 +266,6 @@ defecto está configurado sin `www`.
 ```
 qmedical-web/
 ├── public/
-│   ├── .htaccess              Configuración de Apache para cPanel
 │   ├── img/                   Imágenes optimizadas (generadas)
 ├── scripts/                   Utilidades Python de preparación de recursos
 ├── src/

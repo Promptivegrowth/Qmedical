@@ -1,13 +1,10 @@
 ---
 // Ficha de producto, en castellano.
 import FichaProducto from '../../plantillas/FichaProducto.astro';
-import { productos } from '../../data/catalogo';
+import { productoPorSlug } from '../../data/catalogo';
 
-export function getStaticPaths() {
-  return productos.map((p) => ({ params: { slug: p.slug }, props: { producto: p } }));
-}
-
-const { producto } = Astro.props;
+const producto = productoPorSlug.get(Astro.params.slug!);
+if (!producto) return Astro.rewrite('/404');
 ---
 
 <FichaProducto lang="es" producto={producto} />

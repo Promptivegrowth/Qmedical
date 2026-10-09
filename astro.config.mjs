@@ -1,14 +1,24 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
-import { gemelas } from './src/i18n/mapa-rutas.mjs';
 
-// Salida 100 % estatica: el resultado de `npm run build` (carpeta dist/) se
-// publica igual en Vercel que subiendolo por FTP al public_html de cPanel.
+/**
+ * El sitio se arma en el servidor, en Vercel.
+ *
+ * El catalogo lo administra la empresa en el portal del Grupo Pacheco, y con
+ * salida estatica cada cambio obligaba a recompilar el sitio entero. Armando
+ * cada pagina al pedirla, el cambio se ve solo.
+ *
+ * Que no sea estatico no significa que sea lento: el middleware marca cada
+ * pagina para que la cache de Vercel la guarde, de modo que la funcion se
+ * ejecuta una vez por minuto y no una vez por visita. El visitante recibe un
+ * archivo del CDN, igual que antes.
+ */
 export default defineConfig({
   site: 'https://qmedicalsac.com',
-  output: 'static',
+  output: 'server',
+  adapter: vercel(),
   trailingSlash: 'ignore',
 
   // Sitio bilingue. El castellano es el idioma de la empresa y no lleva
@@ -22,32 +32,12 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false, redirectToDefaultLocale: false },
   },
 
-  build: {
-    // Genera /nosotros/index.html en lugar de /nosotros.html para que Apache
-    // (cPanel) sirva las URL limpias sin necesidad de reescrituras.
-    format: 'directory',
-    inlineStylesheets: 'auto',
-  },
-  integrations: [
-    sitemap({
-      // No se usa la opcion i18n de la integracion: empareja las paginas por
-      // coincidencia de ruta, y aqui el tramo esta traducido (/nosotros frente
-      // a /en/about), de modo que solo habria acertado con la portada. Las
-      // parejas se declaran con la misma tabla de la que salen los enlaces del
-      // sitio, asi que sitemap y hreflang no pueden discrepar.
-      serialize(item) {
-        const par = gemelas(new URL(item.url).pathname);
-        if (!par) return item;
-        const base = new URL(item.url).origin;
-        item.links = [
-          { lang: 'es', url: base + par.es },
-          { lang: 'en', url: base + par.en },
-          { lang: 'x-default', url: base + par.es },
-        ];
-        return item;
-      },
-    }),
-  ],
+  build: { inlineStylesheets: 'auto' },
+  // El sitemap ya no lo genera la integracion: recorre las rutas compiladas, y
+  // armando las paginas al pedirlas no hay ninguna que recorrer. Lo arma
+  // src/pages/sitemap.xml.ts a partir de la misma tabla de rutas y del mismo
+  // catalogo, que es lo que evita que sitemap y sitio discrepen.
+  integrations: [],
   vite: {
     plugins: [tailwindcss()],
     build: { assetsInlineLimit: 2048 },
