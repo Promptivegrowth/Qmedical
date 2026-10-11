@@ -143,6 +143,7 @@ export const unidadesEn: Record<string, string> = {
   'caja x 10 und': 'box of 10 units',
   'caja x 11 und': 'box of 11 units',
   'caja x 15 und': 'box of 15 units',
+  'caja x 12 und': 'box of 12 units',
   'caja x 20 und': 'box of 20 units',
   'caja x 25 und': 'box of 25 units',
   'caja x 30 und': 'box of 30 units',

@@ -341,7 +341,7 @@ export const productos: Producto[] = [
     categoria: 'contenedores-de-bioseguridad',
     descripcion:
       'Diseñado para evitar accidentes con artículos punzocortantes y facilitar ' +
-      'la manipulación y desecho de residuos especiales de vidrio de las unidades ' +
+      'la manipulación y desecho de residuos de vidrio de las unidades ' +
       'especializadas de los centros sanitarios.',
     presentaciones: [
       {
@@ -668,7 +668,7 @@ export const productos: Producto[] = [
         medida: '1 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'caja x 20 und',
+        unidad: 'unidades',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -682,7 +682,7 @@ export const productos: Producto[] = [
         medida: '1.5 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'caja x 20 und',
+        unidad: 'unidades',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -696,7 +696,7 @@ export const productos: Producto[] = [
         medida: '3 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'caja x 12 und',
+        unidad: 'unidades',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -758,7 +758,7 @@ export const productos: Producto[] = [
         medida: '1 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 20 und',
         caracteristicas: [
           'Materiales',
           '- Canister: Policarbonato (PC)',
@@ -770,7 +770,7 @@ export const productos: Producto[] = [
         medida: '1.5 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 20 und',
         caracteristicas: [
           'Materiales',
           '- Canister: Policarbonato (PC)',
@@ -782,7 +782,7 @@ export const productos: Producto[] = [
         medida: '3 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 12 und',
         caracteristicas: [
           'Materiales',
           '- Canister: Policarbonato (PC)',
