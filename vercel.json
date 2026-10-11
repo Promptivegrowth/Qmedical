@@ -453,6 +453,16 @@
       "source": "/en/catalog/antisepsia/aplicadores-clorhexidina-2",
       "destination": "/en/catalog/antisepsia/antisepticos-con-clorhexidina",
       "permanent": true
+    },
+    {
+      "source": "/productos/cepillo-limpieza-instrumental-dental",
+      "destination": "/productos/cepillo-instrumental-dental-prcb-01",
+      "permanent": true
+    },
+    {
+      "source": "/en/products/cepillo-limpieza-instrumental-dental",
+      "destination": "/en/products/cepillo-instrumental-dental-prcb-01",
+      "permanent": true
     }
   ]
 }

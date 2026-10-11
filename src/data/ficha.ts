@@ -46,6 +46,11 @@ function comparable(s: string): string {
     .trim();
 }
 
+/** Quita la viñeta con la que viene escrita la línea en la hoja. */
+function sinVineta(s: string): string {
+  return s.replace(/^[\s•▪·*-]+/, '').trim();
+}
+
 /** Mayúscula inicial, sin tocar el resto. */
 export function enMayuscula(s: string): string {
   const t = s.trim();
@@ -68,10 +73,20 @@ export function fichaDe(
   const unidadComp = pr.unidad ? comparable(pr.unidad) : '';
   const medidaComp = pr.medida ? comparable(pr.medida) : '';
 
+  /* Las líneas sin rótulo se juntan en una sola fila. Son frases sueltas
+     —«Producto no estéril», «Caja x 12 unidades»— y cada una en su propio
+     renglón repetía la palabra «Detalle» cuatro veces seguidas. */
+  let sueltas: string[] = [];
+  const volcar = () => {
+    if (!sueltas.length) return;
+    filas.push({ rotulo: rotulos.detalle, valor: sueltas.join('\n') });
+    sueltas = [];
+  };
+
   for (const c of pr.caracteristicas) {
     const corte = c.indexOf(':');
-    const rotulo = corte > 0 ? c.slice(0, corte).trim() : '';
-    const valor = (corte > 0 ? c.slice(corte + 1) : c).trim();
+    const rotulo = corte > 0 ? sinVineta(c.slice(0, corte)) : '';
+    const valor = sinVineta(corte > 0 ? c.slice(corte + 1) : c);
     if (!valor) continue;
 
     const valorComp = comparable(valor);
@@ -85,11 +100,14 @@ export function fichaDe(
       continue;
     }
 
-    filas.push({
-      rotulo: rotulo ? enMayuscula(rotulo) : rotulos.detalle,
-      valor: enMayuscula(valor),
-    });
+    if (!rotulo) {
+      sueltas.push(enMayuscula(valor));
+      continue;
+    }
+    volcar();
+    filas.push({ rotulo: enMayuscula(rotulo), valor: enMayuscula(valor) });
   }
+  volcar();
 
   /* La descripción propia entra como una fila más y no como un párrafo
      suelto: solo ocho de las noventa y seis la tienen, y colgando bajo el

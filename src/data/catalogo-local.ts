@@ -1753,8 +1753,11 @@ export const productos: Producto[] = [
     ],
   },
   {
-    slug: 'cepillo-limpieza-instrumental-dental',
-    nombre: 'Cepillo de limpieza de instrumental médico tipo cepillo dental',
+    /* 9.5.1 de la hoja. Comparte nombre con 9.5.5 y la empresa los
+       distingue por su código, así que el código va en el nombre: sin él, la
+       rejilla de la categoría mostraría dos fichas con el mismo título. */
+    slug: 'cepillo-instrumental-dental-prcb-01',
+    nombre: 'Cepillo de limpieza de instrumental médico tipo cepillo dental PRCB-01',
     linea: 'material-medico-no-instrumental',
     categoria: 'cepillos-para-limpieza-de-instrumental-medico',
     descripcion:
@@ -1773,6 +1776,21 @@ export const productos: Producto[] = [
           '- Cerdas semirrígidas de 12 mm de longitud, transparentes, dispuestas un área de 32 mm x 7 mm (13 columnas x 3 filas).',
         ],
       },
+    ],
+  },
+  {
+    /* 9.5.4 de la hoja. Se publicaba como una presentación del anterior. */
+    slug: 'cepillo-instrumental-dental-doble-cabeza',
+    nombre:
+      'Cepillo de limpieza de instrumental médico tipo cepillo dental con ' +
+      'doble cabeza',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'cepillos-para-limpieza-de-instrumental-medico',
+    descripcion:
+      'Cepillo dental de plástico, tipo cepillo dental de doble cabezal, para ' +
+      'limpieza del instrumental quirúrgico. Mango anatómico de polipropileno y ' +
+      'cerdas de Poliamida (Nylon) y Acero inoxidable.',
+    presentaciones: [
       {
         medida: 'PRCB-04',
         marca: 'Q-MEDICAL',
@@ -1784,11 +1802,21 @@ export const productos: Producto[] = [
           '- Mango anatómico de plástico resistente, color celeste.',
           '- Longitud total de 18.5 cm',
         ],
-        descripcion:
-          'Cepillo dental de plástico, tipo cepillo dental de doble cabezal, para ' +
-          'limpieza del instrumental quirúrgico. Mango anatómico de polipropileno y ' +
-          'cerdas de Poliamida (Nylon) y Acero inoxidable.',
       },
+    ],
+  },
+  {
+    /* 9.5.5 de la hoja. Mismo nombre que 9.5.1, distinto código y distinto
+       cepillo: mango azul, 17.5 cm y las cerdas en otra disposición. */
+    slug: 'cepillo-instrumental-dental-icb-3',
+    nombre: 'Cepillo de limpieza de instrumental médico tipo cepillo dental ICB-3',
+    linea: 'material-medico-no-instrumental',
+    categoria: 'cepillos-para-limpieza-de-instrumental-medico',
+    descripcion:
+      'Cepillo dental de plástico, tipo cepillo dental para limpieza del ' +
+      'instrumental quirúrgico. Mango anatómico de polipropileno y cerdas de ' +
+      'Poliamida (Nylon).',
+    presentaciones: [
       {
         medida: 'ICB-3',
         marca: 'Q-MEDICAL',

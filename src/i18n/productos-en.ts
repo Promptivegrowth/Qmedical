@@ -879,17 +879,24 @@ export const productosEn: Record<string, ProductoEn> = {
       'Medical device designed to clean the tips of electrosurgical pencils safely ' +
       'and effectively.',
   },
-  'cepillo-limpieza-instrumental-dental': {
-    nombre: 'Instrument cleaning brush, toothbrush style',
+  'cepillo-instrumental-dental-prcb-01': {
+    nombre: 'Instrument cleaning brush, toothbrush style PRCB-01',
     descripcion:
       'Plastic toothbrush-style brush for cleaning surgical instruments. Anatomical ' +
       'polypropylene handle and polyamide (nylon) bristles.',
-    descripciones: {
-      1:
-        'Plastic double-headed toothbrush-style brush for cleaning surgical ' +
-        'instruments. Anatomical polypropylene handle with polyamide (nylon) and ' +
-        'stainless steel bristles.',
-    },
+  },
+  'cepillo-instrumental-dental-doble-cabeza': {
+    nombre: 'Double-headed instrument cleaning brush, toothbrush style',
+    descripcion:
+      'Plastic double-headed toothbrush-style brush for cleaning surgical ' +
+      'instruments. Anatomical polypropylene handle with polyamide (nylon) and ' +
+      'stainless steel bristles.',
+  },
+  'cepillo-instrumental-dental-icb-3': {
+    nombre: 'Instrument cleaning brush, toothbrush style ICB-3',
+    descripcion:
+      'Plastic toothbrush-style brush for cleaning surgical instruments. Anatomical ' +
+      'polypropylene handle and polyamide (nylon) bristles.',
   },
   'escobilla-nailon-doble-cabeza': {
     nombre: 'Double-ended nylon brush',
