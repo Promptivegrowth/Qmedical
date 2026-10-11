@@ -443,6 +443,16 @@
       "source": "/en/products/videolaringoscopio",
       "destination": "/en/products/videolaringoscopio-vs-10h",
       "permanent": true
+    },
+    {
+      "source": "/catalogo/antisepsia/aplicadores-clorhexidina-2",
+      "destination": "/catalogo/antisepsia/antisepticos-con-clorhexidina",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalog/antisepsia/aplicadores-clorhexidina-2",
+      "destination": "/en/catalog/antisepsia/antisepticos-con-clorhexidina",
+      "permanent": true
     }
   ]
 }

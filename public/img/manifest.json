@@ -79,15 +79,15 @@
    "productos/manguera-o-tubuladura-de-silicona-4-bb23e790.webp"
   ],
   "aplicadores-clorhexidina-2": [
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   "",
-   ""
+   "productos/aplicadores-clorhexidina-2-1-96445f07.webp",
+   "productos/aplicadores-clorhexidina-2-2-a0cab6a4.webp",
+   "productos/aplicadores-clorhexidina-2-3-326254f7.webp",
+   "productos/aplicadores-clorhexidina-2-4-d3e685e0.webp",
+   "productos/aplicadores-clorhexidina-2-5-d20680d1.webp",
+   "productos/aplicadores-clorhexidina-2-6-ab3e1061.webp",
+   "productos/aplicadores-clorhexidina-2-7-f8381d29.webp",
+   "productos/aplicadores-clorhexidina-2-8-27c9dfaf.webp",
+   "productos/aplicadores-clorhexidina-2-9-46f5f936.webp"
   ],
   "cepillo-esponja-clorhexidina-4": [
    "productos/cepillo-esponja-clorhexidina-4-1-6ae7d4ea.webp"
@@ -96,7 +96,7 @@
    "productos/esponja-clorhexidina-2-1-b6912812.webp"
   ],
   "toallita-limpieza-piel-clorhexidina": [
-   ""
+   "productos/toallita-limpieza-piel-clorhexidina-1-0e6d4424.webp"
   ],
   "bolsas-de-nutricion-enteral": [
    "productos/bolsas-de-nutricion-enteral-1-e2db7fb4.webp",
@@ -172,10 +172,10 @@
   ],
   "hojas-videolaringoscopio": [
    "productos/hojas-videolaringoscopio-1-da14f565.webp",
-   "productos/hojas-videolaringoscopio-2-da14f565.webp",
-   "productos/hojas-videolaringoscopio-3-da14f565.webp",
-   "productos/hojas-videolaringoscopio-4-da14f565.webp",
-   "productos/hojas-videolaringoscopio-5-da14f565.webp"
+   "",
+   "",
+   "",
+   ""
   ],
   "bomba-de-infusion-hp-60": [
    "productos/bomba-de-infusion-hp-60-1-d050882f.webp"
@@ -203,16 +203,22 @@
  "marcas": {
   "alleva-medical": "marcas/alleva-medical.webp",
   "bano-facil": "marcas/bano-facil.webp",
+  "comfycloud": "marcas/comfycloud.webp",
   "comfort-rubber-gloves": "marcas/comfort-rubber-gloves.webp",
   "geyi": "marcas/geyi.webp",
+  "hefei": "marcas/hefei.webp",
+  "huaxinhong": "marcas/huaxinhong.webp",
   "jiehong": "marcas/jiehong.webp",
+  "kangji-medical": "marcas/kangji-medical.webp",
   "kangbao": "marcas/kangbao.webp",
   "longood": "marcas/longood.webp",
   "maxcon": "marcas/maxcon.webp",
   "medcaptain": "marcas/medcaptain.webp",
   "medispo": "marcas/medispo.webp",
   "nex-medical": "marcas/nex-medical.webp",
+  "prep-bio-chx": "marcas/prep-bio-chx.webp",
   "q-medical": "marcas/q-medical.webp",
+  "quick-fit-bemis": "marcas/quick-fit-bemis.webp",
   "silpak": "marcas/silpak.webp",
   "telijie": "marcas/telijie.webp",
   "xodus": "marcas/xodus.webp"

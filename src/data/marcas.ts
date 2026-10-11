@@ -6,10 +6,22 @@
 export interface Marca {
   slug: string;
   nombre: string;
+  /**
+   * Qué fabrica y para qué sirve. Vacío mientras la empresa no lo entregue:
+   * una marca sin descripción se publica igual, con su logotipo y los
+   * productos que la llevan, antes que con una descripción inventada.
+   */
   resumen: string;
   linea: string;
-  productos: string[]; // slugs de producto
 }
+
+/*
+ * Qué productos lleva cada marca ya no se guarda aquí: se deduce del
+ * catálogo, que es donde cada presentación declara la suya. La lista a mano
+ * se quedó atrás en la reestructuración de 2026 —veinticinco de sus treinta
+ * y tres referencias apuntaban a productos que habían cambiado de nombre— y
+ * las fichas de marca aparecían casi vacías sin que nada fallara.
+ */
 
 export const marcas: Marca[] = [
   {
@@ -20,19 +32,6 @@ export const marcas: Marca[] = [
       'acondicionamos con fabricantes seleccionados bajo nuestras propias ' +
       'especificaciones técnicas.',
     linea: 'Marca propia · línea general',
-    productos: [
-      'pano-clinico-qmedical',
-      'toalla-secado-corporal',
-      'bolsa-vomito',
-      'bolsa-conteo-gasas',
-      'marcador-piel-esteril',
-      'limpiador-puntas-electrocauterio',
-      'cepillos-limpieza-instrumental',
-      'alfombra-descontaminante',
-      'bolsa-nutricion-enteral',
-      'set-alimentacion-enteral',
-      'tubuladura-succion-esteril',
-    ],
   },
   {
     slug: 'medcaptain',
@@ -41,7 +40,6 @@ export const marcas: Marca[] = [
       'Equipamiento médico electrónico para infusión, nutrición enteral y ' +
       'manejo de vía aérea, con plataformas conectables al monitoreo central.',
     linea: 'Equipamiento · vía aérea y nutrición',
-    productos: ['videolaringoscopio', 'hojas-videolaringoscopio', 'bomba-nutricion-enteral'],
   },
   {
     slug: 'maxcon',
@@ -50,7 +48,6 @@ export const marcas: Marca[] = [
       'Contenedores rígidos de bioseguridad para residuos punzocortantes, ' +
       'citotóxicos, especiales y vidrios, en todo el rango de capacidades.',
     linea: 'Bioseguridad · manejo de residuos',
-    productos: ['contenedores-punzocortantes', 'contenedores-citotoxicos'],
   },
   {
     slug: 'nex-medical',
@@ -59,11 +56,6 @@ export const marcas: Marca[] = [
       'Antisépticos de preparación prequirúrgica de la piel a base de ' +
       'gluconato de clorhexidina, en formatos aplicador, esponja y cepillo.',
     linea: 'Antisepsia · preparación de piel',
-    productos: [
-      'aplicador-clorhexidina-2',
-      'cepillo-esponja-clorhexidina-4',
-      'esponja-clorhexidina-2',
-    ],
   },
   {
     slug: 'alleva-medical',
@@ -72,7 +64,6 @@ export const marcas: Marca[] = [
       'Sistemas de aspiración de secreciones marca VIDE®: bolsas descartables, ' +
       'cánister rígidos reusables y toda su línea de soportes y accesorios.',
     linea: 'Aspiración y succión',
-    productos: ['bolsas-aspiracion', 'canister-reusable', 'accesorios-aspiracion'],
   },
   {
     slug: 'geyi',
@@ -81,7 +72,6 @@ export const marcas: Marca[] = [
       'Trócares desechables con punta de seguridad y hoja blindada para ' +
       'cirugía laparoscópica, disponibles en kits preconfigurados.',
     linea: 'Cirugía laparoscópica',
-    productos: ['trocares-desechables'],
   },
   {
     slug: 'bano-facil',
@@ -90,7 +80,6 @@ export const marcas: Marca[] = [
       'Paños jabonosos descartables para la higiene del paciente encamado. ' +
       'No requieren enjuague y están disponibles en tres formulaciones.',
     linea: 'Higiene y confort del paciente',
-    productos: ['pano-bano-facil'],
   },
   {
     slug: 'comfort-rubber-gloves',
@@ -99,7 +88,6 @@ export const marcas: Marca[] = [
       'Guantes de nitrilo de alto riesgo, libres de látex y polvo, con ' +
       'resistencia comprobada a agentes químicos y citostáticos.',
     linea: 'Protección personal',
-    productos: ['guantes-nitrilo'],
   },
   {
     slug: 'silpak',
@@ -108,7 +96,6 @@ export const marcas: Marca[] = [
       'Manufactura de silicona: mangueras y tubuladuras 100 % silicona en ' +
       'rollos de 25 m y diámetros variables, estables de −50 °C a +250 °C.',
     linea: 'Tubuladuras de silicona',
-    productos: ['tubuladura-silicona'],
   },
   {
     slug: 'xodus',
@@ -117,7 +104,6 @@ export const marcas: Marca[] = [
       'Soluciones para el quirófano: marcadores quirúrgicos de piel y mantas ' +
       'absorbentes de fluidos con forro antideslizante.',
     linea: 'Quirófano · absorbentes y marcadores',
-    productos: ['marcador-piel-no-esteril', 'manta-absorbente-xodus'],
   },
   {
     slug: 'jiehong',
@@ -126,7 +112,6 @@ export const marcas: Marca[] = [
       'Mantas absorbentes de fluidos para piso, impermeables y reversibles, ' +
       'en presentación continua o precortada.',
     linea: 'Absorbentes de superficie',
-    productos: ['manta-absorbente-jiehong'],
   },
   {
     slug: 'longood',
@@ -135,7 +120,6 @@ export const marcas: Marca[] = [
       'Toallitas individuales impregnadas con clorhexidina al 2 % en alcohol ' +
       'isopropílico al 70 % para la limpieza y antisepsia de la piel.',
     linea: 'Antisepsia · toallitas',
-    productos: ['toallitas-limpieza-piel'],
   },
   {
     slug: 'telijie',
@@ -144,7 +128,6 @@ export const marcas: Marca[] = [
       'Paños clínicos absorbentes de un solo uso para secado de manos ' +
       'quirúrgico, baño del paciente y limpieza de instrumental.',
     linea: 'Paños clínicos',
-    productos: ['pano-clinico-telijie'],
   },
   {
     slug: 'medispo',
@@ -153,7 +136,6 @@ export const marcas: Marca[] = [
       'Protectores de tela plástica impermeable para colchón, descartables y ' +
       'de barrera continua.',
     linea: 'Protección de superficies',
-    productos: ['protector-impermeable'],
   },
   {
     slug: 'kangbao',
@@ -162,7 +144,48 @@ export const marcas: Marca[] = [
       'Contadores de agujas de doble imán para el recuento seguro de material ' +
       'punzocortante en sala de operaciones.',
     linea: 'Seguridad quirúrgica',
-    productos: ['contador-agujas'],
+  },
+  /*
+   * Las seis siguientes llegaron con su logotipo en octubre de 2026, sin la
+   * descripción que las acompaña. Se publican igual: su ficha muestra el
+   * logotipo y los productos que la llevan, que es información cierta. El
+   * resumen se completa cuando la empresa lo entregue.
+   */
+  {
+    slug: 'kangji-medical',
+    nombre: 'Kangji Medical',
+    resumen: '',
+    linea: 'Instrumental laparoscópico',
+  },
+  {
+    slug: 'quick-fit-bemis',
+    nombre: 'Quick Fit · Bemis',
+    resumen: '',
+    linea: 'Aspiración de secreciones',
+  },
+  {
+    slug: 'prep-bio-chx',
+    nombre: 'Prep Bio CHX',
+    resumen: '',
+    linea: 'Antisepsia de la piel',
+  },
+  {
+    slug: 'hefei',
+    nombre: 'Hefei',
+    resumen: '',
+    linea: 'Higiene del paciente',
+  },
+  {
+    slug: 'huaxinhong',
+    nombre: 'Huaxinhong',
+    resumen: '',
+    linea: 'Mantas absorbentes',
+  },
+  {
+    slug: 'comfycloud',
+    nombre: 'ComfyCloud',
+    resumen: '',
+    linea: 'Mantas absorbentes',
   },
 ];
 

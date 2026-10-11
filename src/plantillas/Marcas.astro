@@ -4,7 +4,7 @@ import Icon from '../components/Icon.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import { marcas } from '../data/marcas';
-import { productoPorSlug, imagenPrincipal, type Producto } from '../data/catalogo';
+import { productos, imagenPrincipal, type Producto } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { marcaEn, productoEn } from '../i18n/contenido';
@@ -64,13 +64,23 @@ const T = {
   },
 }[lang];
 
+/* Qué productos lleva cada marca se deduce del catálogo: cada presentación
+   declara la suya. Antes era una lista a mano en marcas.ts, y se quedó atrás
+   en la reestructuración —veinticinco de sus treinta y tres referencias
+   apuntaban a productos renombrados— sin que nada fallara: las fichas
+   simplemente salían vacías. */
+const porMarca = new Map<string, Producto[]>();
+for (const p of productos) {
+  for (const slug of new Set(p.presentaciones.map((pr) => pr.marcaSlug).filter(Boolean))) {
+    if (!porMarca.has(slug!)) porMarca.set(slug!, []);
+    porMarca.get(slug!)!.push(p);
+  }
+}
+
 const fichas = marcas.map((base, i) => ({
   marca: marcaEn(base, lang),
   n: String(i + 1).padStart(2, '0'),
-  items: base.productos
-    .map((slug) => productoPorSlug.get(slug))
-    .filter(Boolean)
-    .map((p) => productoEn(p as Producto, lang)),
+  items: (porMarca.get(base.slug) ?? []).map((p) => productoEn(p, lang)),
 }));
 ---
 
@@ -106,7 +116,9 @@ const fichas = marcas.map((base, i) => ({
               </div>
 
               <h3 class="marca-ficha__nombre">{m.nombre}</h3>
-              <p class="marca-ficha__texto">{m.resumen}</p>
+              {/* Sin resumen no se deja el hueco: la ficha pasa directamente
+                  a los productos, que es lo que el visitante vino a ver. */}
+              {m.resumen && <p class="marca-ficha__texto">{m.resumen}</p>}
 
               {items.length > 0 ? (
                 <ul class="marca-ficha__lista">

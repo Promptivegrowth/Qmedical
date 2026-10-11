@@ -89,7 +89,7 @@ export const categoriasEnCat: Record<string, string> = {
   'accesorios-para-aspiracion': 'Suction accessories',
   'tubos-de-succion-esteril': 'Sterile suction tubing',
   'manguera-o-tubuladura-de-silicona': 'Silicone hose and tubing',
-  'aplicadores-clorhexidina-2': 'Chlorhexidine 2% + isopropyl alcohol 70% applicators',
+  'antisepticos-con-clorhexidina': 'Chlorhexidine antiseptics',
   'bolsas-de-nutricion-enteral': 'Enteral nutrition bags',
   'set-de-nutricion-enteral': 'Enteral nutrition sets',
   'bomba-de-nutricion-enteral': 'Enteral feeding pumps',
@@ -143,6 +143,7 @@ export const unidadesEn: Record<string, string> = {
   'caja x 10 und': 'box of 10 units',
   'caja x 11 und': 'box of 11 units',
   'caja x 15 und': 'box of 15 units',
+  'caja x 20 und': 'box of 20 units',
   'caja x 25 und': 'box of 25 units',
   'caja x 30 und': 'box of 30 units',
   'caja x 40 und': 'box of 40 units',
@@ -178,9 +179,6 @@ export const caracteristicasEn: Record<string, string> = {
   'Caja x 50 unidades': 'Box of 50 units',
   'Caja x 60 unidades': 'Box of 60 units',
   'Caja x 130 bolsas': 'Box of 130 bags',
-  'Presentaciones:': 'Pack sizes:',
-  '- 1 L y 1.5 L: caja x 20 unidades': '- 1 L and 1.5 L: box of 20 units',
-  '- 3 L: caja x 12 unidades': '- 3 L: box of 12 units',
 
   /* ── Encabezados ────────────────────────────────────────────────────── */
   'Materiales:': 'Materials:',
@@ -192,7 +190,6 @@ export const caracteristicasEn: Record<string, string> = {
   COMPOSICIÓN: 'COMPOSITION',
   'COMPOSICIÓN Y COLOR': 'COMPOSITION AND COLOUR',
   'COMPOSICIÓN Y MATERIALES': 'COMPOSITION AND MATERIALS',
-  MEDIDAS: 'SIZES',
   ESPECIFICACIONES: 'SPECIFICATIONS',
 
   /* ── Contenedores de bioseguridad ───────────────────────────────────── */
@@ -536,16 +533,22 @@ export const caracteristicasEn: Record<string, string> = {
     '- Charging time: no more than 4 hours (the device is switched off while charging)',
   '- Dimensiones: 191 (H) x 92 (W) x 112 (D) mm':
     '- Dimensions: 191 (H) x 92 (W) x 112 (D) mm',
-  '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).':
-    '- M1: 106±5 mm (length); 18±3 mm (width); 30±3 mm (height); 3.5–10 kg (patient weight).',
-  '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).':
-    '- M2: 115±5 mm (length); 22±3 mm (width); 33±3 mm (height); >10–40 kg (patient weight).',
-  '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).':
-    '- M3: 126±5 mm (length); 27±3 mm (width); 38±3 mm (height); >40–70 kg (patient weight).',
-  '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).':
-    '- M4: 140±5 mm (length); 29±3 mm (width); 41±3 mm (height); >70 kg (patient weight).',
-  'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).':
-    'M3D: 126±5 mm (length); 24±3 mm (width); 42±3 mm (height); >40–70 kg (patient weight).',
+
+  /* Hojas de videolaringoscopio: cada medida lleva ahora solo la suya. */
+  'Medidas: 106±5 mm (largo); 18±3 mm (ancho); 30±3 mm (alto)':
+    'Dimensions: 106±5 mm (length); 18±3 mm (width); 30±3 mm (height)',
+  'Medidas: 115±5 mm (largo); 22±3 mm (ancho); 33±3 mm (alto)':
+    'Dimensions: 115±5 mm (length); 22±3 mm (width); 33±3 mm (height)',
+  'Medidas: 126±5 mm (largo); 27±3 mm (ancho); 38±3 mm (alto)':
+    'Dimensions: 126±5 mm (length); 27±3 mm (width); 38±3 mm (height)',
+  'Medidas: 140±5 mm (largo); 29±3 mm (ancho); 41±3 mm (alto)':
+    'Dimensions: 140±5 mm (length); 29±3 mm (width); 41±3 mm (height)',
+  'Medidas: 126±5 mm (largo); 24±3 mm (ancho); 42±3 mm (alto)':
+    'Dimensions: 126±5 mm (length); 24±3 mm (width); 42±3 mm (height)',
+  'Peso del paciente: 3.5–10 kg': 'Patient weight: 3.5–10 kg',
+  'Peso del paciente: Más de 10 y hasta 40 kg': 'Patient weight: over 10 and up to 40 kg',
+  'Peso del paciente: Más de 40 y hasta 70 kg': 'Patient weight: over 40 and up to 70 kg',
+  'Peso del paciente: Más de 70 kg': 'Patient weight: over 70 kg',
 
   /* ── Bombas ─────────────────────────────────────────────────────────── */
   'Pantalla:': 'Display:',

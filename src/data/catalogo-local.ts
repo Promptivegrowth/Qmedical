@@ -167,7 +167,11 @@ export const categorias: Categoria[] = [
   { slug: 'accesorios-para-aspiracion', nombre: 'Accesorios para aspiración', linea: 'aspiracion' },
   { slug: 'tubos-de-succion-esteril', nombre: 'Tubos de succión estéril', linea: 'aspiracion' },
   { slug: 'manguera-o-tubuladura-de-silicona', nombre: 'Manguera o tubuladura de silicona', linea: 'aspiracion' },
-  { slug: 'aplicadores-clorhexidina-2', nombre: 'Aplicadores con gluconato de clorhexidina al 2% + alcohol isopropílico al 70%', linea: 'antisepsia' },
+  /* El resumen de productos titula este grupo «4.1 APLICADORES CON GLUCONATO…»,
+     que es el nombre del primero de sus cuatro productos; en la web ese rótulo
+     acompañaba también al cepillo, a la esponja y a la toallita, que no son
+     aplicadores. El nombre describe ahora al grupo. */
+  { slug: 'antisepticos-con-clorhexidina', nombre: 'Antisépticos con clorhexidina', linea: 'antisepsia' },
   { slug: 'bolsas-de-nutricion-enteral', nombre: 'Bolsas de nutrición enteral', linea: 'nutricion-enteral' },
   { slug: 'set-de-nutricion-enteral', nombre: 'Set de nutrición enteral', linea: 'nutricion-enteral' },
   { slug: 'bomba-de-nutricion-enteral', nombre: 'Bomba de nutrición enteral', linea: 'nutricion-enteral' },
@@ -531,6 +535,7 @@ export const productos: Producto[] = [
       {
         medida: '107Y.201',
         marca: 'KANGJI',
+        marcaSlug: 'kangji-medical',
         unidad: 'unidades',
         caracteristicas: [
           'Material componentes:',
@@ -562,6 +567,7 @@ export const productos: Producto[] = [
       {
         medida: '108Y.201',
         marca: 'KANGJI',
+        marcaSlug: 'kangji-medical',
         unidad: 'unidades',
         caracteristicas: [
           'Material componentes:',
@@ -593,6 +599,7 @@ export const productos: Producto[] = [
       {
         medida: '108Y.202',
         marca: 'KANGJI',
+        marcaSlug: 'kangji-medical',
         unidad: 'unidades',
         caracteristicas: [
           'Material componentes:',
@@ -625,6 +632,7 @@ export const productos: Producto[] = [
       {
         medida: '106Y.201',
         marca: 'KANGJI',
+        marcaSlug: 'kangji-medical',
         unidad: 'unidades',
         caracteristicas: [
           'Material componentes:',
@@ -660,7 +668,7 @@ export const productos: Producto[] = [
         medida: '1 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 20 und',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -674,7 +682,7 @@ export const productos: Producto[] = [
         medida: '1.5 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 20 und',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -688,7 +696,7 @@ export const productos: Producto[] = [
         medida: '3 L',
         marca: 'VIDE® - ALLEVA MEDICAL',
         marcaSlug: 'alleva-medical',
-        unidad: 'unidades',
+        unidad: 'caja x 12 und',
         caracteristicas: [
           'Materiales:',
           '- Tapa: Polietileno (PE)',
@@ -701,6 +709,7 @@ export const productos: Producto[] = [
       {
         medida: '1.5 L',
         marca: 'QUICK FIT - BEMIS',
+        marcaSlug: 'quick-fit-bemis',
         unidad: 'unidades',
         caracteristicas: [
           'Materiales:',
@@ -717,6 +726,7 @@ export const productos: Producto[] = [
       {
         medida: '3 L',
         marca: 'QUICK FIT - BEMIS',
+        marcaSlug: 'quick-fit-bemis',
         unidad: 'unidades',
         caracteristicas: [
           'Materiales:',
@@ -754,9 +764,6 @@ export const productos: Producto[] = [
           '- Canister: Policarbonato (PC)',
           '- Llave de paso: PC',
           '- Manguera conectora: Policloruro de vinilo (PVC)',
-          'Presentaciones:',
-          '- 1 L y 1.5 L: caja x 20 unidades',
-          '- 3 L: caja x 12 unidades',
         ],
       },
       {
@@ -769,9 +776,6 @@ export const productos: Producto[] = [
           '- Canister: Policarbonato (PC)',
           '- Llave de paso: PC',
           '- Manguera conectora: Policloruro de vinilo (PVC)',
-          'Presentaciones:',
-          '- 1 L y 1.5 L: caja x 20 unidades',
-          '- 3 L: caja x 12 unidades',
         ],
       },
       {
@@ -784,14 +788,12 @@ export const productos: Producto[] = [
           '- Canister: Policarbonato (PC)',
           '- Llave de paso: PC',
           '- Manguera conectora: Policloruro de vinilo (PVC)',
-          'Presentaciones:',
-          '- 1 L y 1.5 L: caja x 20 unidades',
-          '- 3 L: caja x 12 unidades',
         ],
       },
       {
         medida: '1.5 L',
         marca: 'QUICK FIT - BEMIS',
+        marcaSlug: 'quick-fit-bemis',
         unidad: 'unidades',
         caracteristicas: [
           'Material: Canister de policarbonato con tubo de vacío de vinil reforzado.',
@@ -804,6 +806,7 @@ export const productos: Producto[] = [
       {
         medida: '3 L',
         marca: 'QUICK FIT - BEMIS',
+        marcaSlug: 'quick-fit-bemis',
         unidad: 'unidades',
         caracteristicas: [
           'Material: Canister de policarbonato con tubo de vacío de vinil reforzado.',
@@ -980,7 +983,7 @@ export const productos: Producto[] = [
     slug: 'aplicadores-clorhexidina-2',
     nombre: 'Aplicadores con gluconato de clorhexidina al 2% + alcohol isopropílico al 70%',
     linea: 'antisepsia',
-    categoria: 'aplicadores-clorhexidina-2',
+    categoria: 'antisepticos-con-clorhexidina',
     descripcion:
       'Es un aplicador desechable, que contiene una avanzada solución antiséptica ' +
       'compuesta de gluconato de clorhexidina al 2% en alcohol Isopropílico (IPA) ' +
@@ -1062,6 +1065,7 @@ export const productos: Producto[] = [
       {
         medida: '3 ML',
         marca: 'PREP BIO CHX',
+        marcaSlug: 'prep-bio-chx',
         unidad: 'caja x 10 und',
         caracteristicas: [
           '• Esponja: Poliuretano de grado médico',
@@ -1073,6 +1077,7 @@ export const productos: Producto[] = [
       {
         medida: '6 ML',
         marca: 'PREP BIO CHX',
+        marcaSlug: 'prep-bio-chx',
         unidad: 'caja x 06 und',
         caracteristicas: [
           '• Esponja: Poliuretano de grado médico',
@@ -1084,6 +1089,7 @@ export const productos: Producto[] = [
       {
         medida: '26 ML',
         marca: 'PREP BIO CHX',
+        marcaSlug: 'prep-bio-chx',
         unidad: 'caja x 01 und',
         caracteristicas: [
           '• Esponja: Poliuretano de grado médico',
@@ -1098,7 +1104,7 @@ export const productos: Producto[] = [
     slug: 'cepillo-esponja-clorhexidina-4',
     nombre: 'Cepillo esponja con 20 ML de gluconato de clorhexidina al 4%',
     linea: 'antisepsia',
-    categoria: 'aplicadores-clorhexidina-2',
+    categoria: 'antisepticos-con-clorhexidina',
     descripcion:
       'NEX CLOREX C2 Cepillo/Esponja CHG 4%, es un cepillo-esponja de limpieza ' +
       'quirúrgico, de un solo uso, con limpia uñas; impregnado con ' +
@@ -1122,7 +1128,7 @@ export const productos: Producto[] = [
     slug: 'esponja-clorhexidina-2',
     nombre: 'Esponja con gluconato de clorhexidina al 2% (20 ML)',
     linea: 'antisepsia',
-    categoria: 'aplicadores-clorhexidina-2',
+    categoria: 'antisepticos-con-clorhexidina',
     descripcion:
       'Esponja de Poliuretano desechable para lavado antiséptico de la piel, ' +
       'impregnada con aproximadamente 20 mL de solución antiséptica de amplio ' +
@@ -1144,7 +1150,7 @@ export const productos: Producto[] = [
     slug: 'toallita-limpieza-piel-clorhexidina',
     nombre: 'Toallita para limpieza de piel con clorhexidina al 2% + alcohol isopropílico al 70%',
     linea: 'antisepsia',
-    categoria: 'aplicadores-clorhexidina-2',
+    categoria: 'antisepticos-con-clorhexidina',
     descripcion:
       'Toallita desechable impregnada con solución antiséptica (Gluconato de ' +
       'Clorhexidina al 2% en Alcohol Isopropílico al 70%) para limpieza de piel ' +
@@ -1399,6 +1405,7 @@ export const productos: Producto[] = [
       {
         medida: 'CELULOSA 100%',
         marca: 'HEFEI',
+        marcaSlug: 'hefei',
         unidad: 'paq x 50 und',
         caracteristicas: [
           'COMPOSICIÓN',
@@ -1452,6 +1459,7 @@ export const productos: Producto[] = [
       {
         medida: 'ANTIDESLIZANTE - Q202',
         marca: 'HUAXINHONG',
+        marcaSlug: 'huaxinhong',
         unidad: 'paq x 5 und',
         caracteristicas: [
           'MATERIALES',
@@ -1479,6 +1487,7 @@ export const productos: Producto[] = [
       {
         medida: 'PRECORTADA - Q101',
         marca: 'HUAXINHONG',
+        marcaSlug: 'huaxinhong',
         unidad: 'paq x 5 und',
         caracteristicas: [
           'MATERIALES',
@@ -1504,6 +1513,7 @@ export const productos: Producto[] = [
       {
         medida: 'Q303',
         marca: 'COMFYCLOUD',
+        marcaSlug: 'comfycloud',
         unidad: 'unidad',
         caracteristicas: [
           'MATERIALES',
@@ -1891,12 +1901,8 @@ export const productos: Producto[] = [
         marcaSlug: 'medcaptain',
         unidad: 'unidad',
         caracteristicas: [
-          'MEDIDAS',
-          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
-          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
-          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
-          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
-          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Medidas: 106±5 mm (largo); 18±3 mm (ancho); 30±3 mm (alto)',
+          'Peso del paciente: 3.5–10 kg',
           'Caja x 12 unidades',
         ],
       },
@@ -1906,12 +1912,8 @@ export const productos: Producto[] = [
         marcaSlug: 'medcaptain',
         unidad: 'unidad',
         caracteristicas: [
-          'MEDIDAS',
-          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
-          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
-          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
-          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
-          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Medidas: 115±5 mm (largo); 22±3 mm (ancho); 33±3 mm (alto)',
+          'Peso del paciente: Más de 10 y hasta 40 kg',
           'Caja x 12 unidades',
         ],
       },
@@ -1921,12 +1923,8 @@ export const productos: Producto[] = [
         marcaSlug: 'medcaptain',
         unidad: 'unidad',
         caracteristicas: [
-          'MEDIDAS',
-          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
-          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
-          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
-          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
-          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Medidas: 126±5 mm (largo); 27±3 mm (ancho); 38±3 mm (alto)',
+          'Peso del paciente: Más de 40 y hasta 70 kg',
           'Caja x 12 unidades',
         ],
       },
@@ -1936,12 +1934,8 @@ export const productos: Producto[] = [
         marcaSlug: 'medcaptain',
         unidad: 'unidad',
         caracteristicas: [
-          'MEDIDAS',
-          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
-          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
-          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
-          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
-          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Medidas: 140±5 mm (largo); 29±3 mm (ancho); 41±3 mm (alto)',
+          'Peso del paciente: Más de 70 kg',
           'Caja x 12 unidades',
         ],
       },
@@ -1951,12 +1945,8 @@ export const productos: Producto[] = [
         marcaSlug: 'medcaptain',
         unidad: 'unidad',
         caracteristicas: [
-          'MEDIDAS',
-          '- M1: 106±5mm (largo); 18±3mm (ancho); 30±3mm (alto); 3.5–10 kg (peso).',
-          '- M2: 115±5mm (largo) ; 22±3mm (ancho); 33±3mm (alto); >10–40 kg (peso).',
-          '- M3: 126±5mm (largo); 27±3mm (ancho); 38±3mm (alto); >40–70 kg (peso).',
-          '-M4: 140±5mm (largo); 29±3mm (ancho); 41±3mm (alto); >70 kg (peso).',
-          'M3D: 126±5mm (largo); 24±3mm (ancho); 42±3mm (alto); >40–70 kg (peso).',
+          'Medidas: 126±5 mm (largo); 24±3 mm (ancho); 42±3 mm (alto)',
+          'Peso del paciente: Más de 40 y hasta 70 kg',
           'Caja x 12 unidades',
         ],
       },

@@ -5,6 +5,7 @@ import ProductoCard from '../components/ProductoCard.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import { site, waMensajes } from '../data/site';
 import { marcaPorSlug } from '../data/marcas';
+import { fichaDe } from '../data/ficha';
 import {
   productos,
   categoriaPorSlug,
@@ -51,7 +52,11 @@ const marca = marcas.length === 1 && marcas[0].slug
 
 /* Las fotos vienen alineadas con las presentaciones; se filtran los huecos
    para la galería, conservando a qué presentación pertenece cada una. */
-const imgs = imagenesDe(origen.slug).filter(Boolean);
+/* Sin repetir: cuando una foto sirve a varias presentaciones —las cinco
+   hojas de videolaringoscopio comparten la única que entregó la empresa— la
+   tira salía con cinco miniaturas idénticas y pulsar cualquiera no cambiaba
+   nada. Las medidas de cada una están abajo, en su lámina. */
+const imgs = [...new Set(imagenesDe(origen.slug).filter(Boolean))];
 const galeria = origen.presentaciones
   .map((pr, i) => ({ pr, src: imagenDePresentacion(origen.slug, i) }))
   .filter((x) => x.src);
@@ -92,6 +97,9 @@ const T = {
     esMarca: 'Marca',
     esUnidad: 'Unidad de venta',
     esDetalle: 'Detalle',
+    esDescripcion: 'Descripción',
+    ampliar: 'Ampliar la imagen',
+    cerrar: 'Cerrar',
     tambienEn: (c: string) => `También en ${c.toLowerCase()}`,
     verLinea: 'Ver la línea completa',
     cta: (n: string) => `¿Necesita cotizar ${n}?`,
@@ -124,6 +132,9 @@ const T = {
     esMarca: 'Brand',
     esUnidad: 'Sold by',
     esDetalle: 'Detail',
+    esDescripcion: 'Description',
+    ampliar: 'Enlarge the image',
+    cerrar: 'Close',
     tambienEn: (c: string) => `More in ${c.toLowerCase()}`,
     verLinea: 'See the whole line',
     cta: (n: string) => `Do you need a quotation for ${n}?`,
@@ -202,12 +213,22 @@ const schema = [
   <section class="apertura">
     <div class="caja apertura__cuerpo">
       <div class="apertura__galeria min-w-0">
-        <div class="visor">
+        <!-- El visor amplía: en un contenedor de bioseguridad lo que se
+             mira es la etiqueta, y a 900 px no se lee. -->
+        <button type="button" id="visor" class="visor" aria-label={T.ampliar}>
           <img
             id="img-principal" src={`/img/${imgs[0]}`} width="900" height="900"
             alt={p.nombre} fetchpriority="high" decoding="async" class="visor__img"
           />
-        </div>
+          <span class="visor__lupa" aria-hidden="true"><Icon name="buscar" size={16} /></span>
+        </button>
+
+        <dialog id="lupa" class="lupa" aria-label={T.ampliar}>
+          <button type="button" class="lupa__cerrar" data-cerrar aria-label={T.cerrar}>
+            <Icon name="cerrar" size={20} />
+          </button>
+          <img id="lupa-img" src={`/img/${imgs[0]}`} alt={p.nombre} class="lupa__img" />
+        </dialog>
 
         {imgs.length > 1 && (
           <ul id="miniaturas" class="no-barra tiras" role="listbox"
@@ -291,6 +312,10 @@ const schema = [
       <ul class="presentaciones" data-anim-grupo="70">
         {p.presentaciones.map((pr, i) => {
           const foto = imagenDePresentacion(origen.slug, i, 480);
+          const ficha = fichaDe(pr, {
+            marca: T.esMarca, unidad: T.esUnidad,
+            detalle: T.esDetalle, descripcion: T.esDescripcion,
+          });
           return (
             <li class="presentacion" data-anim>
               <div class="presentacion__foto">
@@ -301,22 +326,12 @@ const schema = [
               </div>
 
               <div class="presentacion__ficha">
-                {pr.medida && <p class="presentacion__medida">{pr.medida}</p>}
+                {ficha.medida && <p class="presentacion__medida">{ficha.medida}</p>}
                 <dl class="especificaciones">
-                  {pr.marca && (
-                    <div><dt>{T.esMarca}</dt><dd>{pr.marca}</dd></div>
-                  )}
-                  {pr.unidad && (
-                    <div><dt>{T.esUnidad}</dt><dd>{pr.unidad}</dd></div>
-                  )}
-                  {pr.caracteristicas.map((c) => {
-                    const corte = c.indexOf(':');
-                    return corte > 0
-                      ? <div><dt>{c.slice(0, corte)}</dt><dd>{c.slice(corte + 1).trim()}</dd></div>
-                      : <div><dt>{T.esDetalle}</dt><dd>{c}</dd></div>;
-                  })}
+                  {ficha.filas.map((f) => (
+                    <div><dt>{f.rotulo}</dt><dd>{f.valor}</dd></div>
+                  ))}
                 </dl>
-                {pr.descripcion && <p class="presentacion__nota">{pr.descripcion}</p>}
               </div>
             </li>
           );
@@ -377,12 +392,95 @@ const schema = [
   }
 
   .visor {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
     overflow: hidden;
     background: #fff;
     border: 1px solid var(--color-linea);
     border-radius: var(--r-lg);
+    cursor: zoom-in;
   }
-  .visor__img { aspect-ratio: 1; width: 100%; object-fit: contain; padding: 10%; }
+  .visor__img {
+    aspect-ratio: 1;
+    width: 100%;
+    object-fit: contain;
+    padding: 10%;
+    transition: transform 0.6s var(--ease-salida);
+  }
+  .visor:hover .visor__img { transform: scale(1.04); }
+
+  .visor__lupa {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 0.9rem;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    color: var(--color-tinta-70);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s var(--ease-editorial), transform 0.3s var(--ease-salida);
+  }
+  .visor:is(:hover, :focus-visible) .visor__lupa { opacity: 1; transform: none; }
+  /* Donde no hay puntero el aviso se queda a la vista: si no, nada sugiere
+     que la imagen se pueda ampliar. */
+  @media (hover: none) {
+    .visor__lupa { opacity: 1; transform: none; }
+  }
+
+  /* ── La imagen ampliada ───────────────────────────────────────────── */
+  .lupa {
+    width: min(94vw, 1100px);
+    max-width: none;
+    max-height: 92vh;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-lg);
+    background: #fff;
+    overflow: hidden;
+  }
+  .lupa::backdrop { background: rgb(8 12 28 / 0.72); backdrop-filter: blur(2px); }
+  .lupa[open] { animation: lupa-entra 0.3s var(--ease-salida); }
+  .lupa[open]::backdrop { animation: lupa-vela 0.3s var(--ease-editorial); }
+  @keyframes lupa-entra {
+    from { opacity: 0; transform: scale(0.97); }
+  }
+  @keyframes lupa-vela { from { opacity: 0; } }
+
+  .lupa__img {
+    display: block;
+    width: 100%;
+    max-height: 92vh;
+    object-fit: contain;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+  .lupa__cerrar {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    color: var(--color-tinta);
+    cursor: pointer;
+    transition: background-color 0.25s;
+  }
+  .lupa__cerrar:hover { background: var(--color-linea); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .visor__img, .visor__lupa { transition: none; }
+    .visor:hover .visor__img { transform: none; }
+    .lupa[open], .lupa[open]::backdrop { animation: none; }
+  }
 
   .tiras { display: flex; gap: 0.7rem; margin-top: 0.9rem; overflow-x: auto; padding-bottom: 0.25rem; }
   .tira {
@@ -602,5 +700,24 @@ const schema = [
       b.classList.toggle('es-activa', activo);
       b.setAttribute('aria-selected', String(activo));
     });
+  });
+
+  /* Ampliar la imagen. Va en un <dialog>, que trae puesto lo que en una
+     ventana hecha a mano hay que escribir: el fondo inerte, el foco
+     atrapado dentro y la tecla Escape. */
+  const visor = document.getElementById('visor');
+  const lupa = document.getElementById('lupa') as HTMLDialogElement | null;
+  const lupaImg = document.getElementById('lupa-img') as HTMLImageElement | null;
+
+  visor?.addEventListener('click', () => {
+    if (!lupa || !lupaImg || !principal) return;
+    lupaImg.src = principal.src;
+    lupa.showModal();
+  });
+
+  lupa?.addEventListener('click', (ev) => {
+    // Pulsar fuera de la imagen cierra; el <dialog> ocupa toda la pantalla
+    const dentro = (ev.target as HTMLElement).closest('.lupa__img');
+    if (!dentro || (ev.target as HTMLElement).closest('[data-cerrar]')) lupa.close();
   });
 </script>
