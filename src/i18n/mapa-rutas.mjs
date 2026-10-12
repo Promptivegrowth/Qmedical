@@ -15,6 +15,7 @@ export const MAPA = {
   categoria: { es: '/catalogo', en: '/en/catalog' },
   producto: { es: '/productos', en: '/en/products' },
   marcas: { es: '/marcas', en: '/en/brands' },
+  empleos: { es: '/trabaja-con-nosotros', en: '/en/careers' },
   contacto: { es: '/contacto', en: '/en/contact' },
   reclamos: { es: '/libro-de-reclamaciones', en: '/en/complaints-book' },
   gracias: { es: '/gracias', en: '/en/thank-you' },

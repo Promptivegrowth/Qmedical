@@ -1,0 +1,748 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import type { Idioma } from '../i18n/rutas';
+
+/**
+ * Formulario de postulación, en un modal.
+ *
+ * Lo abren todos los botones `[data-postular]` de la página: el de cada
+ * vacante, que trae su identificador, y el de «envíenos su CV», que no lo
+ * trae y abre la postulación espontánea. Uno solo para todos, porque es el
+ * mismo formulario con el puesto cambiado.
+ *
+ * Se envía al portal del Grupo Pacheco, que guarda la postulación con el CV,
+ * avisa por correo al área y responde al postulante. El portal valida otra
+ * vez todo lo que aquí se valida: esto es para no hacerle perder el viaje a
+ * quien escribe mal un correo, no la última palabra.
+ *
+ * Va en un <dialog>, que trae puesto lo que en una ventana hecha a mano hay
+ * que escribir: el fondo inerte, el foco atrapado dentro y la tecla Escape.
+ */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+/* Los valores que espera el portal, literales: los valida contra su propia
+   lista y rechaza cualquier otro. En inglés solo cambia lo que se lee. */
+const ESTUDIOS = [
+  'Secundaria completa',
+  'Técnico',
+  'Universitario en curso',
+  'Bachiller',
+  'Titulado',
+  'Titulado y colegiado',
+];
+const EXPERIENCIA = ['Sin experiencia', 'Menos de 1 año', 'De 1 a 2 años', 'De 3 a 5 años', 'Más de 5 años'];
+const DISPONIBILIDAD = ['Inmediata', 'En 15 días', 'En 30 días', 'Más de 30 días'];
+
+const T = {
+  es: {
+    rotuloVacante: 'Postular al puesto',
+    rotuloEspontanea: 'Envíenos su CV',
+    tituloEspontanea: 'Postulación espontánea',
+    cerrar: 'Cerrar',
+    puesto: 'Puesto al que postula',
+    opcionEspontanea: 'Postulación espontánea (otra área)',
+    areaInteres: 'Área de interés',
+    areaPista: 'Por ejemplo: almacén, comercial, dirección técnica.',
+    datos: 'Sus datos',
+    nombre: 'Nombres y apellidos',
+    tipoDoc: 'Tipo de documento',
+    numDoc: 'Número de documento',
+    correo: 'Correo electrónico',
+    telefono: 'Teléfono',
+    donde: 'Dónde vive',
+    departamento: 'Departamento',
+    provincia: 'Provincia',
+    distrito: 'Distrito',
+    ubSeleccione: 'Seleccione',
+    ubElijaDep: 'Elija el departamento',
+    ubElijaProv: 'Elija la provincia',
+    perfil: 'Su perfil',
+    estudios: 'Nivel de estudios',
+    carrera: 'Carrera o especialidad',
+    carreraPista: 'Opcional',
+    experiencia: 'Años de experiencia',
+    bpa: 'Tengo experiencia trabajando bajo Buenas Prácticas (BPA, BPM o BPD)',
+    disponibilidad: 'Disponibilidad para incorporarse',
+    pretension: 'Pretensión salarial (S/)',
+    pretensionPista: 'Opcional',
+    linkedin: 'Perfil de LinkedIn',
+    linkedinPista: 'Opcional',
+    presentacion: 'Cuéntenos por qué le interesa el puesto',
+    presentacionPista: 'Opcional, hasta 1500 caracteres',
+    cv: 'Adjuntar CV',
+    cvPista: 'PDF o Word, hasta 4 MB',
+    cvCambiar: 'clic para cambiarlo',
+    acepta:
+      'Autorizo a Q-MEDICAL S.A.C. a tratar mis datos personales con la ' +
+      'finalidad de evaluar mi postulación.',
+    enviar: 'Enviar postulación',
+    enviando: 'Enviando…',
+    graciasTitulo: 'Postulación recibida',
+    graciasTexto:
+      'Gracias por postular. Revisamos las postulaciones una por una; si su ' +
+      'perfil calza con la convocatoria nos comunicaremos con usted.',
+    graciasCerrar: 'Cerrar',
+    errorEnvio:
+      'No pudimos enviar su postulación. Inténtelo nuevamente en unos minutos.',
+    errorRed:
+      'No hay conexión con el servidor. Revise su conexión e inténtelo nuevamente.',
+    errorUbigeo: 'Seleccione departamento, provincia y distrito donde vive.',
+    errorCvTipo: 'El CV debe ser PDF o Word (.doc, .docx).',
+    errorCvPeso: (p: string) => `El CV pesa ${p}: el máximo es 4 MB.`,
+    estudiosOpciones: ESTUDIOS,
+    experienciaOpciones: EXPERIENCIA,
+    disponibilidadOpciones: DISPONIBILIDAD,
+  },
+  en: {
+    rotuloVacante: 'Apply for this role',
+    rotuloEspontanea: 'Send us your CV',
+    tituloEspontanea: 'Open application',
+    cerrar: 'Close',
+    puesto: 'Role you are applying for',
+    opcionEspontanea: 'Open application (another area)',
+    areaInteres: 'Area of interest',
+    areaPista: 'For example: warehouse, sales, technical management.',
+    datos: 'Your details',
+    nombre: 'Full name',
+    tipoDoc: 'Type of document',
+    numDoc: 'Document number',
+    correo: 'Email address',
+    telefono: 'Phone',
+    donde: 'Where you live',
+    departamento: 'Region',
+    provincia: 'Province',
+    distrito: 'District',
+    ubSeleccione: 'Select',
+    ubElijaDep: 'Choose the region',
+    ubElijaProv: 'Choose the province',
+    perfil: 'Your profile',
+    estudios: 'Level of studies',
+    carrera: 'Degree or specialty',
+    carreraPista: 'Optional',
+    experiencia: 'Years of experience',
+    bpa: 'I have experience working under Good Practices (GSP, GMP or GDP)',
+    disponibilidad: 'Availability to start',
+    pretension: 'Salary expectation (S/)',
+    pretensionPista: 'Optional',
+    linkedin: 'LinkedIn profile',
+    linkedinPista: 'Optional',
+    presentacion: 'Tell us why the role interests you',
+    presentacionPista: 'Optional, up to 1500 characters',
+    cv: 'Attach your CV',
+    cvPista: 'PDF or Word, up to 4 MB',
+    cvCambiar: 'click to change it',
+    acepta:
+      'I authorise Q-MEDICAL S.A.C. to process my personal data for the purpose ' +
+      'of assessing my application.',
+    enviar: 'Send application',
+    enviando: 'Sending…',
+    graciasTitulo: 'Application received',
+    graciasTexto:
+      'Thank you for applying. We review applications one by one; if your profile ' +
+      'matches the opening we will get in touch.',
+    graciasCerrar: 'Close',
+    errorEnvio: 'We could not send your application. Please try again in a few minutes.',
+    errorRed: 'There is no connection to the server. Check your connection and try again.',
+    errorUbigeo: 'Select the region, province and district where you live.',
+    errorCvTipo: 'The CV must be a PDF or Word file (.doc, .docx).',
+    errorCvPeso: (p: string) => `The CV is ${p}: the maximum is 4 MB.`,
+    estudiosOpciones: [
+      'Secondary school',
+      'Technical',
+      'University (in progress)',
+      'Bachelor',
+      'Degree holder',
+      'Degree holder and licensed',
+    ],
+    experienciaOpciones: ['No experience', 'Under 1 year', '1 to 2 years', '3 to 5 years', 'Over 5 years'],
+    disponibilidadOpciones: ['Immediate', 'In 15 days', 'In 30 days', 'Over 30 days'],
+  },
+}[lang];
+
+const textos = {
+  errorEnvio: T.errorEnvio,
+  errorRed: T.errorRed,
+  errorUbigeo: T.errorUbigeo,
+  errorCvTipo: T.errorCvTipo,
+  errorCvPeso: lang === 'en' ? 'The CV is {peso}: the maximum is 4 MB.' : 'El CV pesa {peso}: el máximo es 4 MB.',
+  enviando: T.enviando,
+  cv: T.cv,
+  cvPista: T.cvPista,
+  cvCambiar: T.cvCambiar,
+  rotuloVacante: T.rotuloVacante,
+  rotuloEspontanea: T.rotuloEspontanea,
+  tituloEspontanea: T.tituloEspontanea,
+  opcionEspontanea: T.opcionEspontanea,
+};
+---
+
+<dialog id="postular" class="postular" aria-labelledby="postular-titulo">
+  <div class="postular__marco">
+    <header class="postular__alto">
+      <div class="min-w-0">
+        <p class="ante ante-brand" data-postular-rotulo>{T.rotuloEspontanea}</p>
+        <h2 id="postular-titulo" class="postular__titulo" data-postular-puesto>
+          {T.tituloEspontanea}
+        </h2>
+        <p class="postular__meta" data-postular-meta hidden></p>
+      </div>
+      <button type="button" class="postular__cerrar" data-postular-cerrar aria-label={T.cerrar}>
+        <Icon name="cerrar" size={20} />
+      </button>
+    </header>
+
+    <form class="postular__form" novalidate>
+      <!-- Lo que identifica la vacante; lo rellena el guion al abrir. -->
+      <input type="hidden" name="empleo_id" value="" />
+      <input type="hidden" name="puesto" value="" />
+      <!-- Trampa para robots: una persona no ve este campo. -->
+      <input
+        type="text" name="sitio_web" tabindex="-1" autocomplete="off"
+        class="trampa" aria-hidden="true"
+      />
+
+      <label class="campo-bloque campo-ancho">
+        <span class="rotulo">{T.puesto}</span>
+        <select class="campo" id="p-puesto"></select>
+      </label>
+
+      <label class="campo-bloque campo-ancho" data-postular-area hidden>
+        <span class="rotulo">{T.areaInteres}</span>
+        <input type="text" name="area_interes" class="campo" maxlength="150" placeholder={T.areaPista} />
+      </label>
+
+      <p class="postular__seccion">{T.datos}</p>
+
+      <label class="campo-bloque campo-ancho">
+        <span class="rotulo">{T.nombre}</span>
+        <input type="text" name="nombre" class="campo" required minlength="3" maxlength="150" autocomplete="name" />
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.tipoDoc}</span>
+        <select name="tipo_documento" class="campo" id="p-tipo-doc" required>
+          <option value="DNI">DNI</option>
+          <option value="CE">Carné de extranjería</option>
+          <option value="Pasaporte">{lang === 'en' ? 'Passport' : 'Pasaporte'}</option>
+        </select>
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.numDoc}</span>
+        <input type="text" name="numero_documento" class="campo" id="p-num-doc" required />
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.correo}</span>
+        <input type="email" name="correo" class="campo" required maxlength="150" autocomplete="email" />
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.telefono}</span>
+        <input type="tel" name="telefono" class="campo" required autocomplete="tel" placeholder="+51 999 999 999" />
+      </label>
+
+      <p class="postular__seccion">{T.donde}</p>
+
+      <div
+        class="postular__ubigeo campo-ancho"
+        data-ubigeo
+        data-txt-seleccione={T.ubSeleccione}
+        data-txt-elija-departamento={T.ubElijaDep}
+        data-txt-elija-provincia={T.ubElijaProv}
+      >
+        <label class="campo-bloque">
+          <span class="rotulo">{T.departamento}</span>
+          <select class="campo" data-ubigeo-nivel="departamento" required><option value="">…</option></select>
+        </label>
+        <label class="campo-bloque">
+          <span class="rotulo">{T.provincia}</span>
+          <select class="campo" data-ubigeo-nivel="provincia" required disabled>
+            <option value="">{T.ubElijaDep}</option>
+          </select>
+        </label>
+        <label class="campo-bloque">
+          <span class="rotulo">{T.distrito}</span>
+          <select class="campo" name="ubigeo" data-ubigeo-nivel="distrito" required disabled>
+            <option value="">{T.ubElijaProv}</option>
+          </select>
+        </label>
+      </div>
+
+      <p class="postular__seccion">{T.perfil}</p>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.estudios}</span>
+        <select name="estudios" class="campo" required>
+          <option value="">{T.ubSeleccione}</option>
+          {ESTUDIOS.map((v, i) => <option value={v}>{T.estudiosOpciones[i]}</option>)}
+        </select>
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.carrera} <em>{T.carreraPista}</em></span>
+        <input type="text" name="carrera" class="campo" maxlength="150" />
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.experiencia}</span>
+        <select name="experiencia" class="campo" required>
+          <option value="">{T.ubSeleccione}</option>
+          {EXPERIENCIA.map((v, i) => <option value={v}>{T.experienciaOpciones[i]}</option>)}
+        </select>
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.disponibilidad}</span>
+        <select name="disponibilidad" class="campo" required>
+          <option value="">{T.ubSeleccione}</option>
+          {DISPONIBILIDAD.map((v, i) => <option value={v}>{T.disponibilidadOpciones[i]}</option>)}
+        </select>
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.pretension} <em>{T.pretensionPista}</em></span>
+        <input type="number" name="pretension" class="campo" min="0" step="50" inputmode="numeric" />
+      </label>
+
+      <label class="campo-bloque">
+        <span class="rotulo">{T.linkedin} <em>{T.linkedinPista}</em></span>
+        <input type="url" name="linkedin" class="campo" maxlength="300" placeholder="https://www.linkedin.com/in/…" />
+      </label>
+
+      <label class="campo-bloque campo-ancho">
+        <span class="rotulo">{T.presentacion} <em>{T.presentacionPista}</em></span>
+        <textarea name="presentacion" class="campo" rows="4" maxlength="1500"></textarea>
+      </label>
+
+      <label class="postular__casilla campo-ancho">
+        <input type="checkbox" name="experiencia_bpm" value="si" />
+        <span>{T.bpa}</span>
+      </label>
+
+      <label class="postular__archivo campo-ancho" data-postular-archivo>
+        <input type="file" name="cv" id="p-cv" accept=".pdf,.doc,.docx" required />
+        <span class="postular__archivo-ic"><Icon name="documento" size={20} /></span>
+        <span class="min-w-0">
+          <strong data-postular-archivo-nombre>{T.cv}</strong>
+          <small data-postular-archivo-detalle>{T.cvPista}</small>
+        </span>
+      </label>
+
+      <label class="postular__casilla campo-ancho">
+        <input type="checkbox" name="acepta" value="si" id="p-acepta" required />
+        <span>{T.acepta}</span>
+      </label>
+
+      <p class="postular__aviso campo-ancho" data-postular-aviso hidden role="alert"></p>
+
+      <div class="postular__pie campo-ancho">
+        <button type="submit" class="pill pill-marca">
+          {T.enviar}<Icon name="flecha" size={15} />
+        </button>
+      </div>
+    </form>
+
+    <div class="postular__gracias" data-postular-gracias tabindex="-1" hidden>
+      <span class="postular__gracias-ic"><Icon name="visto" size={26} /></span>
+      <h3>{T.graciasTitulo}</h3>
+      <p>{T.graciasTexto}</p>
+      <p class="postular__gracias-nota" data-postular-nota></p>
+      <button type="button" class="pill pill-tinta" data-postular-cerrar>{T.graciasCerrar}</button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .postular {
+    width: min(94vw, 54rem);
+    max-width: none;
+    max-height: 92vh;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-lg);
+    background: var(--color-papel);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .postular::backdrop { background: rgb(8 12 28 / 0.68); backdrop-filter: blur(2px); }
+  .postular[open] { animation: postular-entra 0.32s var(--ease-salida); }
+  @keyframes postular-entra { from { opacity: 0; transform: translateY(14px) scale(0.985); } }
+
+  .postular__marco { padding: 1.75rem 1.4rem 2rem; }
+  @media (min-width: 768px) { .postular__marco { padding: 2.5rem 2.75rem 3rem; } }
+
+  .postular__alto {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-linea);
+  }
+  .postular__titulo {
+    margin-top: 0.6rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    line-height: 1.2;
+  }
+  .postular__meta { margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-tinta-45); }
+  .postular__cerrar {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    color: var(--color-tinta);
+    cursor: pointer;
+    transition: background-color 0.25s;
+  }
+  .postular__cerrar:hover { background: var(--color-linea); }
+
+  .postular__form {
+    display: grid;
+    gap: 1.1rem 1.5rem;
+    margin-top: 1.75rem;
+  }
+  @media (min-width: 640px) { .postular__form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .campo-ancho { grid-column: 1 / -1; }
+  .campo-bloque { display: grid; gap: 0.4rem; min-width: 0; }
+
+  .postular__seccion {
+    grid-column: 1 / -1;
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .rotulo em { font-style: normal; color: var(--color-tinta-45); }
+
+  .postular__ubigeo { display: grid; gap: 1.1rem 1.5rem; }
+  @media (min-width: 640px) { .postular__ubigeo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .postular__casilla {
+    display: flex;
+    align-items: start;
+    gap: 0.65rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--color-tinta-70);
+    cursor: pointer;
+  }
+  .postular__casilla input {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.15rem;
+    flex: none;
+    accent-color: var(--color-brand-700);
+  }
+
+  /* ── El CV ────────────────────────────────────────────────────────── */
+  .postular__archivo {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border: 1px dashed var(--color-linea-2);
+    border-radius: var(--r-md);
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.25s, background-color 0.25s;
+  }
+  .postular__archivo:hover { border-color: var(--color-brand-300); }
+  .postular__archivo input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .postular__archivo-ic {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    color: var(--color-brand-700);
+  }
+  .postular__archivo strong { display: block; font-size: 0.92rem; }
+  .postular__archivo small { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--color-tinta-45); }
+  .postular__archivo.tiene-archivo { border-style: solid; border-color: var(--color-brand-300); }
+  .postular__archivo.con-error { border-color: var(--color-peligro, #b42318); }
+  .postular__archivo.con-error small { color: var(--color-peligro, #b42318); }
+
+  .postular__aviso {
+    padding: 0.85rem 1rem;
+    border-radius: var(--r-sm);
+    background: #fdf1f0;
+    border: 1px solid rgb(180 35 24 / 0.25);
+    font-size: 0.88rem;
+    color: #b42318;
+  }
+
+  .postular__pie { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
+
+  /* ── Acuse ────────────────────────────────────────────────────────── */
+  .postular__gracias { padding: 3rem 0 1rem; text-align: center; }
+  .postular__gracias-ic {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0 auto 1.5rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+  }
+  .postular__gracias h3 { font-family: var(--font-display); font-size: 1.5rem; }
+  .postular__gracias p {
+    margin: 0.9rem auto 0;
+    max-width: 44ch;
+    line-height: 1.65;
+    color: var(--color-tinta-70);
+  }
+  .postular__gracias-nota { font-size: 0.88rem; }
+  .postular__gracias .pill { margin-top: 2rem; }
+
+  .trampa { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  /* Con el modal abierto la página de detrás no se desplaza: si no, al
+     hacer scroll dentro del formulario arrastra también al fondo. */
+  :global(html.modal-abierto) { overflow: hidden; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .postular[open] { animation: none; }
+  }
+</style>
+
+<!-- Ubigeo INEI en cascada: el mismo que usa el Libro de Reclamaciones. -->
+<script src="/js/ubigeo.js" defer is:inline></script>
+
+<script is:inline define:vars={{ textos }}>
+  /*
+   * El modal de postulación.
+   *
+   * Un solo formulario para todas las vacantes y para la postulación
+   * espontánea: lo que cambia es el puesto, y eso se elige en un desplegable
+   * que se arma con las vacantes que la propia página está mostrando.
+   */
+  (function () {
+    var modal = document.getElementById('postular');
+    if (!modal) return;
+
+    var form = modal.querySelector('form');
+    var gracias = modal.querySelector('[data-postular-gracias]');
+    var aviso = modal.querySelector('[data-postular-aviso]');
+    var boton = form.querySelector('button[type="submit"]');
+    var textoBoton = boton.innerHTML;
+    var bloqueArea = modal.querySelector('[data-postular-area]');
+    var campoArea = bloqueArea.querySelector('input');
+    var selectPuesto = document.getElementById('p-puesto');
+    var ESPONTANEA = 'espontanea';
+    var vacantes = [];
+    var origen = null;
+
+    var CV_MAXIMO = 4 * 1024 * 1024;
+    var EXTENSIONES = /\.(pdf|docx?)$/i;
+
+    function peso(bytes) {
+      return bytes < 1048576
+        ? Math.max(1, Math.round(bytes / 1024)) + ' KB'
+        : (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    /* ── El puesto ──────────────────────────────────────────────────── */
+    function llenarPuestos() {
+      var vistos = {};
+      vacantes = [];
+      Array.prototype.forEach.call(
+        document.querySelectorAll('[data-postular][data-empleo-id]'),
+        function (b) {
+          var id = b.getAttribute('data-empleo-id');
+          if (!id || vistos[id]) return;
+          vistos[id] = true;
+          vacantes.push({
+            id: id,
+            puesto: b.getAttribute('data-puesto') || '',
+            meta: b.getAttribute('data-meta') || '',
+          });
+        }
+      );
+      selectPuesto.innerHTML = '';
+      vacantes.forEach(function (v) { selectPuesto.appendChild(new Option(v.puesto, v.id)); });
+      selectPuesto.appendChild(new Option(textos.opcionEspontanea, ESPONTANEA));
+    }
+
+    function aplicarPuesto(id) {
+      var v = null;
+      for (var i = 0; i < vacantes.length; i++) if (vacantes[i].id === id) v = vacantes[i];
+      var espontanea = !v;
+      selectPuesto.value = v ? v.id : ESPONTANEA;
+
+      modal.querySelector('[data-postular-rotulo]').textContent =
+        espontanea ? textos.rotuloEspontanea : textos.rotuloVacante;
+      modal.querySelector('[data-postular-puesto]').textContent =
+        espontanea ? textos.tituloEspontanea : v.puesto;
+
+      var meta = modal.querySelector('[data-postular-meta]');
+      meta.textContent = v ? v.meta : '';
+      meta.hidden = !(v && v.meta);
+
+      form.elements.empleo_id.value = v ? v.id : '';
+      form.elements.puesto.value = v ? v.puesto : '';
+      bloqueArea.hidden = !espontanea;
+      campoArea.required = espontanea;
+    }
+    selectPuesto.addEventListener('change', function () { aplicarPuesto(selectPuesto.value); });
+
+    /* ── Abrir y cerrar ─────────────────────────────────────────────── */
+    function abrir(disparador) {
+      origen = disparador;
+      if (!gracias.hidden) reiniciar();
+      llenarPuestos();
+      aplicarPuesto(disparador.getAttribute('data-empleo-id') || '');
+      document.documentElement.classList.add('modal-abierto');
+      modal.showModal();
+      modal.scrollTop = 0;
+      form.elements.nombre.focus();
+    }
+
+    document.addEventListener('click', function (e) {
+      var d = e.target.closest ? e.target.closest('[data-postular]') : null;
+      if (!d) return;
+      e.preventDefault();
+      abrir(d);
+    });
+
+    Array.prototype.forEach.call(
+      modal.querySelectorAll('[data-postular-cerrar]'),
+      function (b) { b.addEventListener('click', function () { modal.close(); }); }
+    );
+    // Pulsar el fondo cierra; el <dialog> ocupa toda la pantalla.
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) modal.close();
+    });
+    modal.addEventListener('close', function () {
+      document.documentElement.classList.remove('modal-abierto');
+      if (origen && origen.focus) origen.focus();
+    });
+
+    /* ── El documento ───────────────────────────────────────────────── */
+    var tipoDoc = document.getElementById('p-tipo-doc');
+    var numDoc = document.getElementById('p-num-doc');
+    function ajustarDocumento() {
+      var dni = tipoDoc.value === 'DNI';
+      numDoc.pattern = dni ? '\\d{8}' : '[A-Za-z0-9\\-]{6,15}';
+      numDoc.inputMode = dni ? 'numeric' : 'text';
+      numDoc.maxLength = dni ? 8 : 15;
+    }
+    tipoDoc.addEventListener('change', ajustarDocumento);
+    ajustarDocumento();
+
+    /* ── El CV ──────────────────────────────────────────────────────── */
+    var archivo = document.getElementById('p-cv');
+    var caja = modal.querySelector('[data-postular-archivo]');
+    var nombreArchivo = modal.querySelector('[data-postular-archivo-nombre]');
+    var detalleArchivo = modal.querySelector('[data-postular-archivo-detalle]');
+
+    function mostrarArchivo() {
+      var f = archivo.files[0];
+      var error = '';
+      if (f && !EXTENSIONES.test(f.name)) error = textos.errorCvTipo;
+      else if (f && f.size > CV_MAXIMO) error = textos.errorCvPeso.replace('{peso}', peso(f.size));
+      archivo.setCustomValidity(error);
+      caja.classList.toggle('tiene-archivo', Boolean(f) && !error);
+      caja.classList.toggle('con-error', Boolean(error));
+      nombreArchivo.textContent = f ? f.name : textos.cv;
+      detalleArchivo.textContent = error || (f ? peso(f.size) + ' · ' + textos.cvCambiar : textos.cvPista);
+    }
+    archivo.addEventListener('change', function () {
+      aviso.hidden = true;
+      mostrarArchivo();
+    });
+
+    /* ── Envío ──────────────────────────────────────────────────────── */
+    function decir(mensaje) {
+      aviso.textContent = mensaje;
+      aviso.hidden = false;
+      aviso.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    function reiniciar() {
+      form.reset();
+      var bloque = form.querySelector('[data-ubigeo]');
+      if (bloque && bloque.reiniciarUbigeo) bloque.reiniciarUbigeo();
+      ajustarDocumento();
+      mostrarArchivo();
+      aviso.hidden = true;
+      gracias.hidden = true;
+      form.hidden = false;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      aviso.hidden = true;
+
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
+      // Los select deshabilitados no pasan por la validación del navegador.
+      var falta = null;
+      ['departamento', 'provincia', 'distrito'].forEach(function (n) {
+        var s = form.querySelector('[data-ubigeo-nivel="' + n + '"]');
+        if (!falta && s && !s.value) falta = s;
+      });
+      if (falta) {
+        decir(textos.errorUbigeo);
+        var dep = form.querySelector('[data-ubigeo-nivel="departamento"]');
+        (falta.disabled ? dep : falta).focus();
+        return;
+      }
+
+      var datos = new FormData(form);
+      datos.set('acepta', document.getElementById('p-acepta').checked ? 'si' : 'no');
+      if (bloqueArea.hidden) datos.delete('area_interes');
+
+      boton.disabled = true;
+      boton.textContent = textos.enviando;
+
+      var gp = window.GrupoPacheco;
+      var destino = gp ? gp.endpoint('postulacion') : null;
+      if (!destino) { decir(textos.errorRed); boton.disabled = false; boton.innerHTML = textoBoton; return; }
+
+      fetch(destino, { method: 'POST', headers: { Accept: 'application/json' }, body: datos })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; }); })
+        .then(function (res) {
+          if (!res.r.ok || !res.j.ok) {
+            decir(res.j.error || textos.errorEnvio);
+            if (res.j.campo) {
+              var sel = res.j.campo === 'ubigeo'
+                ? '[data-ubigeo-nivel="departamento"]'
+                : '[name="' + res.j.campo + '"]';
+              var campo = form.querySelector(sel);
+              if (campo) campo.focus();
+            }
+            return;
+          }
+          modal.querySelector('[data-postular-nota]').textContent = res.j.correoEnviado
+            ? (document.documentElement.lang === 'en'
+                ? 'We sent a confirmation to ' + datos.get('correo') + '.'
+                : 'Le enviamos una confirmación a ' + datos.get('correo') + '.')
+            : '';
+          form.hidden = true;
+          gracias.hidden = false;
+          modal.scrollTop = 0;
+          gracias.focus();
+        })
+        .catch(function () { decir(textos.errorRed); })
+        .finally(function () {
+          boton.disabled = false;
+          boton.innerHTML = textoBoton;
+        });
+    });
+
+    mostrarArchivo();
+  })();
+</script>

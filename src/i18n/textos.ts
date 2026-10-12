@@ -53,6 +53,8 @@ const es = {
     certificacionesNota: 'BPA · ISO 37001 · ISO 14001',
     entregas: 'Entregas',
     entregasNota: 'Cobertura en todas las regiones',
+    empleos: 'Trabaja con nosotros',
+    empleosNota: 'Convocatorias vigentes',
     reclamos: 'Libro de Reclamaciones',
   },
 
@@ -90,6 +92,7 @@ const es = {
     nosotros: 'Nosotros',
     catalogo: 'Catálogo',
     marcas: 'Marcas asociadas',
+    empleos: 'Trabaja con nosotros',
     reclamos: 'Libro de reclamaciones',
     horario: 'Horario de atención',
     // El nombre ya trae su punto final: «Q-MEDICAL S.A.C.».
@@ -176,6 +179,8 @@ const en: typeof es = {
     certificacionesNota: 'BPA · ISO 37001 · ISO 14001',
     entregas: 'Deliveries',
     entregasNota: 'Coverage across every region',
+    empleos: 'Careers',
+    empleosNota: 'Current openings',
     reclamos: 'Complaints Book',
   },
 
@@ -211,6 +216,7 @@ const en: typeof es = {
     nosotros: 'About us',
     catalogo: 'Catalogue',
     marcas: 'Partner brands',
+    empleos: 'Careers',
     reclamos: 'Complaints Book',
     horario: 'Opening hours',
     derechos: (a: number, n: string) => `© ${a} ${n} All rights reserved.`,

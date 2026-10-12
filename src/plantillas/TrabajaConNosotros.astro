@@ -1,0 +1,544 @@
+---
+import Base from '../layouts/Base.astro';
+import Portada from '../components/Portada.astro';
+import Icon from '../components/Icon.astro';
+import CtaContacto from '../components/CtaContacto.astro';
+import Postular from '../components/Postular.astro';
+import { vacantes, fecha, lugarDe, metaDe } from '../data/empleos';
+import { site } from '../data/site';
+import { ruta as via, type Idioma } from '../i18n/rutas';
+
+/**
+ * Trabaja con nosotros.
+ *
+ * Las vacantes se leen del portal del Grupo Pacheco al armar la página, de
+ * modo que la empresa las publica, edita y retira desde su panel sin tocar
+ * el sitio. Van en el HTML y no pintadas después por el navegador: una
+ * oferta de empleo conviene que se indexe y que se vea sin JavaScript.
+ *
+ * El formulario de postulación vive en un solo modal (components/Postular),
+ * compartido por el botón de cada vacante y por el de «envíenos su CV».
+ */
+interface Props {
+  lang?: Idioma;
+}
+const { lang = 'es' } = Astro.props;
+
+const lista = await vacantes();
+
+const T = {
+  es: {
+    meta: 'Trabaja con nosotros',
+    metaDesc:
+      'Vacantes vigentes en Q-MEDICAL S.A.C. Postule en línea adjuntando su CV ' +
+      'o envíenos su hoja de vida para futuras convocatorias.',
+    ante: 'Trabaja con nosotros',
+    titulo: 'Abastecer salud se hace entre personas',
+    bajada:
+      'Somos una droguería pequeña en número y exigente en método: lo que entra ' +
+      'al almacén sale con su documentación en regla. Buscamos gente que entienda ' +
+      'que detrás de cada entrega hay un paciente esperando.',
+    dato: 'años en el mercado',
+    porqueAnte: 'Por qué aquí',
+    porqueTitulo: 'Lo que ofrecemos a quien se suma',
+    razones: [
+      {
+        icono: 'certificado',
+        titulo: 'Un oficio con norma',
+        texto:
+          'Trabajamos bajo Buenas Prácticas de Almacenamiento certificadas por ' +
+          'DIGEMID. Aquí se aprende a hacer las cosas como deben hacerse, y eso ' +
+          'vale en cualquier empresa del sector.',
+      },
+      {
+        icono: 'equipo',
+        titulo: 'Un equipo que se ve',
+        texto:
+          'Somos un equipo donde cada uno sabe lo que hace el de al lado. Lo que ' +
+          'usted proponga lo escucha quien decide, sin pasar por cinco escalones.',
+      },
+      {
+        icono: 'escudo',
+        titulo: 'Planilla desde el primer día',
+        texto:
+          'Contrato en planilla con todos los beneficios de ley, capacitación ' +
+          'continua en normativa sanitaria y estabilidad en una empresa con ' +
+          'veintitrés años de operación.',
+      },
+    ],
+    vacantesAnte: 'Convocatorias',
+    vacantesTitulo: 'Puestos disponibles',
+    vacantesPie: (n: number) =>
+      n === 1 ? '1 vacante vigente' : `${n} vacantes vigentes`,
+    vacio: 'No hay convocatorias abiertas en este momento.',
+    vacioPie:
+      'Puede dejarnos su CV de todos modos: lo revisamos cuando se abra una ' +
+      'convocatoria de su área.',
+    verDetalle: 'Ver responsabilidades y requisitos',
+    verRequisitos: 'Ver requisitos',
+    responsabilidades: 'Responsabilidades',
+    requisitos: 'Requisitos',
+    beneficios: 'Beneficios',
+    reportaA: 'Reporta a',
+    lugar: 'Lugar de trabajo',
+    publicada: (f: string) => `Publicada el ${f}`,
+    hasta: (f: string) => `Postule hasta el ${f}`,
+    postular: 'Postular',
+    cvAnte: 'Postulación espontánea',
+    cvTitulo: '¿No encuentra un puesto para usted?',
+    cvTexto:
+      'Déjenos su hoja de vida. La guardamos y la revisamos cuando se abra una ' +
+      'convocatoria del área que le interesa.',
+    cvBoton: 'Enviar mi CV',
+  },
+  en: {
+    meta: 'Careers',
+    metaDesc:
+      'Current openings at Q-MEDICAL S.A.C. Apply online with your CV, or send ' +
+      'us your résumé for future openings.',
+    ante: 'Careers',
+    titulo: 'Supplying healthcare is done between people',
+    bajada:
+      'We are a small drugstore with demanding methods: whatever enters the ' +
+      'warehouse leaves with its paperwork in order. We look for people who ' +
+      'understand that behind every delivery there is a patient waiting.',
+    dato: 'years in the market',
+    porqueAnte: 'Why here',
+    porqueTitulo: 'What we offer whoever joins',
+    razones: [
+      {
+        icono: 'certificado',
+        titulo: 'A trade with a standard',
+        texto:
+          'We work under Good Storage Practices certified by DIGEMID. Here you ' +
+          'learn to do things the way they should be done, and that counts in ' +
+          'any company in the sector.',
+      },
+      {
+        icono: 'equipo',
+        titulo: 'A team you can see',
+        texto:
+          'We are a team where everyone knows what the person next to them does. ' +
+          'Whatever you propose is heard by whoever decides, without going ' +
+          'through five layers.',
+      },
+      {
+        icono: 'escudo',
+        titulo: 'On the payroll from day one',
+        texto:
+          'A payroll contract with every statutory benefit, continuous training ' +
+          'in health regulations and stability in a company with twenty-three ' +
+          'years of operation.',
+      },
+    ],
+    vacantesAnte: 'Openings',
+    vacantesTitulo: 'Current openings',
+    vacantesPie: (n: number) => (n === 1 ? '1 current opening' : `${n} current openings`),
+    vacio: 'There are no open positions at the moment.',
+    vacioPie:
+      'You can still leave us your CV: we review it when an opening comes up in ' +
+      'your field.',
+    verDetalle: 'See responsibilities and requirements',
+    verRequisitos: 'See requirements',
+    responsabilidades: 'Responsibilities',
+    requisitos: 'Requirements',
+    beneficios: 'Benefits',
+    reportaA: 'Reports to',
+    lugar: 'Place of work',
+    publicada: (f: string) => `Published on ${f}`,
+    hasta: (f: string) => `Apply before ${f}`,
+    postular: 'Apply',
+    cvAnte: 'Open application',
+    cvTitulo: 'Cannot find a role for you?',
+    cvTexto:
+      'Leave us your résumé. We keep it and review it when an opening comes up in ' +
+      'the area you are interested in.',
+    cvBoton: 'Send my CV',
+  },
+}[lang];
+
+const anios = new Date().getFullYear() - site.fundacion;
+
+/* Lo que necesita el buscador de empleo de Google: una oferta por vacante. */
+const schema = lista.map((v) => ({
+  '@context': 'https://schema.org',
+  '@type': 'JobPosting',
+  title: v.titulo,
+  description: [v.resumen, ...v.funciones, ...v.requisitos].filter(Boolean).join(' '),
+  datePosted: v.fecha_publicacion,
+  ...(v.fecha_cierre ? { validThrough: v.fecha_cierre } : {}),
+  employmentType: v.jornada === 'Medio tiempo' ? 'PART_TIME' : 'FULL_TIME',
+  hiringOrganization: {
+    '@type': 'Organization',
+    name: site.nombre,
+    sameAs: 'https://qmedicalsac.com',
+  },
+  jobLocation: {
+    '@type': 'Place',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: v.ubicacion ?? 'Lima',
+      addressCountry: 'PE',
+    },
+  },
+}));
+---
+
+<Base
+  lang={lang}
+  clave="empleos"
+  title={T.meta}
+  description={T.metaDesc}
+  schema={schema.length ? schema : undefined}
+>
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    migas={[{ nombre: T.ante }]}
+    dato={{ valor: String(anios), etiqueta: T.dato }}
+  />
+
+  <!-- ── Por qué aquí ─────────────────────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <p class="ante ante-brand" data-anim="sube">{T.porqueAnte}</p>
+      <h2 class="display-md mt-4 max-w-[20ch]" data-anim="sube">{T.porqueTitulo}</h2>
+
+      <ul class="razones" data-anim-grupo="70">
+        {T.razones.map((r) => (
+          <li class="razon" data-anim="sube">
+            <span class="razon__ic"><Icon name={r.icono} size={24} /></span>
+            <h3 class="razon__titulo">{r.titulo}</h3>
+            <p class="razon__texto">{r.texto}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Vacantes ─────────────────────────────────────────────────────── -->
+  <section class="aire bg-[var(--color-papel-2)]" id="vacantes">
+    <div class="caja">
+      <div class="vacantes__alto">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.vacantesAnte}</p>
+          <h2 class="display-md mt-4" data-anim="sube">{T.vacantesTitulo}</h2>
+        </div>
+        {lista.length > 0 && (
+          <p class="vacantes__cuenta" data-anim="sube">{T.vacantesPie(lista.length)}</p>
+        )}
+      </div>
+
+      {lista.length > 0 ? (
+        <ul class="vacantes" data-anim-grupo="80">
+          {lista.map((v) => {
+            const meta = metaDe(v, lang);
+            const bloques = [
+              { titulo: T.responsabilidades, items: v.funciones },
+              { titulo: T.requisitos, items: v.requisitos },
+              { titulo: T.beneficios, items: v.beneficios },
+            ].filter((b) => b.items.length > 0);
+            const datos = [
+              v.reporta_a ? { dt: T.reportaA, dd: v.reporta_a } : null,
+              { dt: T.lugar, dd: lugarDe(v, lang) },
+            ].filter(Boolean) as { dt: string; dd: string }[];
+
+            return (
+              <li class="vacante" data-anim="sube">
+                <div class="vacante__alto">
+                  {v.area && <span class="vacante__area">{v.area}</span>}
+                  <span class="vacante__fecha">
+                    {v.fecha_cierre
+                      ? T.hasta(fecha(v.fecha_cierre, lang))
+                      : T.publicada(fecha(v.fecha_publicacion, lang))}
+                  </span>
+                </div>
+
+                <h3 class="vacante__titulo">{v.titulo}</h3>
+
+                {meta.length > 0 && (
+                  <ul class="vacante__meta">
+                    {meta.map((m) => <li>{m}</li>)}
+                  </ul>
+                )}
+
+                <p class="vacante__resumen">{v.resumen}</p>
+
+                {(bloques.length > 0 || datos.length > 0) && (
+                  <details class="vacante__detalle">
+                    <summary>
+                      {v.funciones.length ? T.verDetalle : T.verRequisitos}
+                      <span class="vacante__chevron"><Icon name="chevron" size={14} /></span>
+                    </summary>
+                    <div class="vacante__cuerpo">
+                      {bloques.map((b) => (
+                        <div>
+                          <h4>{b.titulo}</h4>
+                          <ul>{b.items.map((t) => <li>{t}</li>)}</ul>
+                        </div>
+                      ))}
+                    </div>
+                    {datos.length > 0 && (
+                      <dl class="vacante__datos">
+                        {datos.map((d) => (
+                          <div><dt>{d.dt}:</dt><dd>{d.dd}</dd></div>
+                        ))}
+                      </dl>
+                    )}
+                  </details>
+                )}
+
+                <button
+                  type="button"
+                  class="pill pill-tinta vacante__postular"
+                  data-postular
+                  data-empleo-id={v.id}
+                  data-puesto={v.titulo}
+                  data-meta={meta.join(' · ')}
+                >
+                  {T.postular}<Icon name="flecha" size={15} />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div class="vacantes__vacio" data-anim="sube">
+          <p class="vacantes__vacio-titulo">{T.vacio}</p>
+          <p class="vacantes__vacio-pie">{T.vacioPie}</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ── Postulación espontánea ───────────────────────────────────────── -->
+  <section class="aire-sm bg-[var(--color-papel)]">
+    <div class="caja">
+      <div class="espontanea" data-anim="sube">
+        <div>
+          <p class="ante ante-brand">{T.cvAnte}</p>
+          <h2 class="display-md mt-4 max-w-[18ch]">{T.cvTitulo}</h2>
+          <p class="cuerpo mt-5 max-w-2xl">{T.cvTexto}</p>
+        </div>
+        <button type="button" class="pill pill-marca espontanea__boton" data-postular>
+          {T.cvBoton}<Icon name="flecha" size={16} />
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <Postular lang={lang} />
+
+  <CtaContacto lang={lang} />
+</Base>
+
+<style>
+  /* ── Por qué aquí ─────────────────────────────────────────────────── */
+  .razones {
+    display: grid;
+    gap: var(--medianil);
+    margin-top: 3rem;
+  }
+  @media (min-width: 768px) { .razones { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .razon {
+    padding: 2rem 1.75rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-md);
+  }
+  .razon__ic {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-brand-700);
+  }
+  .razon__titulo { margin-top: 1.5rem; font-size: 1.08rem; font-weight: 600; }
+  .razon__texto {
+    margin-top: 0.75rem;
+    font-size: 0.93rem;
+    line-height: 1.65;
+    color: var(--color-tinta-70);
+  }
+
+  /* ── Vacantes ─────────────────────────────────────────────────────── */
+  .vacantes__alto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .vacantes__cuenta { font-size: 0.85rem; color: var(--color-tinta-45); }
+
+  .vacantes { display: grid; gap: 1.1rem; margin-top: 3rem; }
+
+  .vacante {
+    padding: 1.9rem 1.6rem;
+    background: #fff;
+    border: 1px solid var(--color-linea);
+    border-radius: var(--r-md);
+    transition: border-color 0.35s var(--ease-editorial), box-shadow 0.35s var(--ease-editorial);
+  }
+  @media (min-width: 768px) { .vacante { padding: 2.4rem 2.2rem; } }
+  .vacante:hover {
+    border-color: var(--color-brand-300);
+    box-shadow: 0 18px 40px -30px rgb(21 46 127 / 0.35);
+  }
+
+  .vacante__alto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .vacante__area {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-700);
+  }
+  .vacante__fecha { font-size: 0.78rem; color: var(--color-tinta-45); }
+
+  .vacante__titulo {
+    margin-top: 1.1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    line-height: 1.22;
+  }
+
+  .vacante__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--color-tinta-70);
+  }
+  /* Un punto entre uno y otro, sin ponerlo en el marcado. */
+  .vacante__meta > li + li { position: relative; }
+  .vacante__meta > li + li::before {
+    content: '·';
+    position: absolute;
+    left: -0.85rem;
+    color: var(--color-tinta-45);
+  }
+
+  .vacante__resumen {
+    margin-top: 1.1rem;
+    max-width: 62ch;
+    line-height: 1.7;
+    color: var(--color-tinta-70);
+  }
+
+  .vacante__detalle { margin-top: 1.4rem; border-top: 1px solid var(--color-linea); }
+  .vacante__detalle > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-brand-700);
+    cursor: pointer;
+    list-style: none;
+  }
+  .vacante__detalle > summary::-webkit-details-marker { display: none; }
+  .vacante__chevron {
+    display: inline-flex;
+    transition: transform 0.35s var(--ease-salida);
+  }
+  .vacante__detalle[open] > summary .vacante__chevron { transform: rotate(180deg); }
+
+  .vacante__cuerpo {
+    display: grid;
+    gap: 2rem;
+    margin-top: 1.6rem;
+  }
+  @media (min-width: 900px) {
+    .vacante__cuerpo { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; }
+  }
+  .vacante__cuerpo h4 {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .vacante__cuerpo ul { display: grid; gap: 0.6rem; margin-top: 0.9rem; }
+  .vacante__cuerpo li {
+    position: relative;
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-tinta-70);
+  }
+  .vacante__cuerpo li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 999px;
+    background: var(--color-brand-300);
+  }
+
+  .vacante__datos {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--color-linea);
+    font-size: 0.85rem;
+  }
+  @media (min-width: 640px) { .vacante__datos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .vacante__datos > div { display: flex; gap: 0.45rem; }
+  .vacante__datos dt { color: var(--color-tinta-45); }
+  .vacante__datos dd { margin: 0; color: var(--color-tinta); }
+
+  .vacante__postular { margin-top: 1.8rem; }
+
+  /* ── Sin convocatorias ────────────────────────────────────────────── */
+  .vacantes__vacio {
+    margin-top: 3rem;
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background: #fff;
+    border: 1px dashed var(--color-linea-2);
+    border-radius: var(--r-md);
+  }
+  .vacantes__vacio-titulo { font-size: 1.05rem; font-weight: 600; }
+  .vacantes__vacio-pie {
+    margin: 0.75rem auto 0;
+    max-width: 42ch;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--color-tinta-70);
+  }
+
+  /* ── Postulación espontánea ───────────────────────────────────────── */
+  .espontanea {
+    display: grid;
+    gap: 2rem;
+    padding: 2.5rem;
+    background: var(--color-papel-2);
+    border-radius: var(--r-lg);
+  }
+  @media (min-width: 900px) {
+    .espontanea {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 3.5rem;
+      padding: 3.5rem;
+    }
+  }
+  .espontanea__boton { justify-self: start; }
+</style>
