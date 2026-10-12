@@ -22,6 +22,7 @@ const FIJAS = [
   '/nosotros',
   '/catalogo',
   '/marcas',
+  '/trabaja-con-nosotros',
   '/contacto',
   '/libro-de-reclamaciones',
 ];
