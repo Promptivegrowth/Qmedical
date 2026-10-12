@@ -39,7 +39,6 @@ const empresa = [
   { nombre: t.megaEmpresa.infraestructura, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.infraestructuraNota, icono: 'almacen' },
   { nombre: t.megaEmpresa.certificaciones, href: via(lang, 'nosotros', undefined, 'certificaciones'), nota: t.megaEmpresa.certificacionesNota, icono: 'certificado' },
   { nombre: t.megaEmpresa.entregas, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.entregasNota, icono: 'entrega' },
-  { nombre: t.megaEmpresa.empleos, href: via(lang, 'empleos'), nota: t.megaEmpresa.empleosNota, icono: 'equipo' },
 ];
 
 // El conmutador necesita saber a dónde ir. Si la página no declara sus
@@ -109,6 +108,13 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
               {t.nav.catalogo}<span class="nav__punta"><Icon name="chevron" size={11} /></span>
             </button>
           </div>
+          <!-- De primer nivel y no dentro del desplegable: una convocatoria
+               de empleo la busca quien no conoce el sitio, y escondida bajo
+               «Nosotros» no la encuentra. -->
+          <a
+            href={via(lang, 'empleos')}
+            class:list={['nav__enlace', activo(via(lang, 'empleos')) && 'es-activo']}
+          >{t.nav.empleos}</a>
           <a
             href={via(lang, 'contacto')}
             class:list={['nav__enlace', activo(via(lang, 'contacto')) && 'es-activo']}
@@ -241,6 +247,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
           { n: t.nav.nosotros, h: via(lang, 'nosotros') },
           { n: t.nav.catalogo, h: via(lang, 'catalogo') },
           { n: t.nav.marcas, h: via(lang, 'marcas') },
+          { n: t.nav.empleos, h: via(lang, 'empleos') },
           { n: t.nav.contacto, h: via(lang, 'contacto') },
         ].map((i) => (
           <li>
