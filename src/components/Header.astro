@@ -277,7 +277,17 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 </header>
 
 <style>
-  .cabecera { position: sticky; top: 0; z-index: 60; }
+  /* La cabecera se recoge al hacer scroll, y el recogido no puede cambiar
+     lo que ocupa: va en el flujo, así que si encoge, la página entera sube
+     detrás de ella —ese era el temblor al volver arriba—.
+
+     Por eso no se encoge nada: se pega 2.25rem más arriba, justo lo que
+     mide el cintillo. Hasta ahí la cabecera sube con la página como
+     cualquier otra cosa; a partir de ahí se queda clavada con el cintillo
+     escondido bajo el borde de la pantalla y la barra al tope. No hay
+     animación que ajustar ni umbral que cruzar: es el propio scroll, y el
+     contenido nunca se mueve. */
+  .cabecera { position: sticky; top: -2.25rem; z-index: 60; }
 
   /* Conmutador de idioma.
      Comparte el lenguaje del botón de cotización que tiene al lado —mismo
@@ -296,9 +306,8 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
     font-size: 0.78rem;
     font-weight: 500;
     letter-spacing: 0.04em;
-    transition: height 0.4s var(--ease-editorial), border-color 0.4s var(--ease-editorial);
+    transition: border-color 0.4s var(--ease-editorial);
   }
-  :global(.cabecera.compacta) .idioma { height: 2.4rem; }
 
   .idioma__actual,
   .idioma__otro {
@@ -345,11 +354,8 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
       color 0.45s var(--ease-editorial), border-radius 0.7s var(--ease-salida),
       box-shadow 0.6s var(--ease-editorial);
   }
-  :global(.cabecera.abierta) .cabecera__lamina {
-    border-bottom-left-radius: var(--r-lamina);
-    border-bottom-right-radius: var(--r-lamina);
-    box-shadow: 0 30px 60px -40px rgba(20, 22, 28, 0.4);
-  }
+  /* El redondeo y la sombra de abrir viven ahora en la propia lámina del
+     menú, que es la que termina la superficie por abajo. */
   :global(.cabecera.compacta) .cabecera__lamina { box-shadow: 0 1px 0 var(--color-linea); }
 
   /* Sobre un hero oscuro la cabecera es transparente y clara; recupera el
@@ -362,9 +368,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
   .cintillo {
     border-bottom: 1px solid;
     border-color: color-mix(in srgb, currentColor 12%, transparent);
-    transition: margin-top 0.45s var(--ease-editorial), opacity 0.3s;
   }
-  :global(.cabecera.compacta:not(.abierta)) .cintillo { margin-top: -2.25rem; opacity: 0; }
   /* Sin `display`: lo deciden las utilidades del marcado, que es donde se
      dice en que anchos aparece cada enlace. Declararlo aqui ganaria a
      `hidden` por especificidad y el telefono se colaria en el movil,
@@ -377,8 +381,10 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
   }
   .cintillo__enlace:hover { opacity: 1; }
 
-  .barra > .caja { padding-block: 1.1rem; transition: padding-block 0.4s var(--ease-editorial); }
-  :global(.cabecera.compacta) .barra > .caja { padding-block: 0.7rem; }
+  /* Sin cambio de relleno: mandaría en el alto de la barra y volvería a
+     mover la página. Lo que estiliza el estado compacto es la sombra de la
+     lámina y el cintillo escondido. */
+  .barra > .caja { padding-block: 1.1rem; }
 
   /* ── Logotipo ─────────────────────────────────────────────────────── */
   .marca { position: relative; display: block; flex: none; }
@@ -460,7 +466,25 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
   /* ── Lámina del mega-menú ─────────────────────────────────────────── */
   /* La lámina abre despacio: primero cede la altura y luego asoma el
      contenido, escalonado. Nada de saltos. */
-  .lamina-menu { overflow: hidden; animation: abre-lamina 0.72s var(--ease-salida); }
+  /* Cuelga de la barra en vez de ir detrás de ella en el flujo: así abrir
+     el menú no estira la cabecera ni empuja la página hacia abajo. Lleva
+     encima su propio papel, su redondeo y su sombra, que es lo que antes le
+     prestaba la lámina de la cabecera. */
+  .lamina-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-papel);
+    color: var(--color-tinta);
+    border-bottom-left-radius: var(--r-lamina);
+    border-bottom-right-radius: var(--r-lamina);
+    box-shadow: 0 30px 60px -40px rgba(20, 22, 28, 0.4);
+    max-height: calc(100dvh - 7.5rem);
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    animation: abre-lamina 0.72s var(--ease-salida);
+  }
   @keyframes abre-lamina {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: none; }
@@ -581,13 +605,17 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 
   /* ── Menú móvil ───────────────────────────────────────────────────── */
   .movil {
-    position: relative;
+    /* Igual que la lámina del mega-menú: cuelga de la barra, no empuja. */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     z-index: 2;
     background: var(--color-papel);
     border-bottom-left-radius: var(--r-lamina);
     border-bottom-right-radius: var(--r-lamina);
     box-shadow: 0 30px 60px -40px rgba(20, 22, 28, 0.4);
-    max-height: calc(100dvh - 6rem);
+    max-height: calc(100dvh - 7.5rem);
     overflow-y: auto;
     overscroll-behavior: contain;
     animation: baja-lamina 0.42s var(--ease-salida);
