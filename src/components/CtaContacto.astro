@@ -26,7 +26,8 @@ const mensaje = waMensaje ?? wa.cotizacion;
 ---
 
 <section class="cierre">
-  <div class="caja">
+  <div class="cierre__trama trama" aria-hidden="true"></div>
+  <div class="caja relative">
     <div class="cierre__cuerpo" data-anim-grupo="90">
       <div class="cierre__texto">
         <p class="ante ante-brand" data-anim="sube">{t.cierre.ante}</p>
@@ -35,10 +36,10 @@ const mensaje = waMensaje ?? wa.cotizacion;
       </div>
 
       <div class="cierre__acciones" data-anim="sube">
-        <a href={ruta(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta">
+        <a href={ruta(lang, 'contacto', undefined, 'cotizar')} class="pill pill-papel">
           {t.cotizar}<Icon name="flecha" size={16} />
         </a>
-        <a href={whatsapp(mensaje)} target="_blank" rel="noopener" class="pill pill-linea">
+        <a href={whatsapp(mensaje)} target="_blank" rel="noopener" class="pill cierre__wa">
           <Icon name="whatsapp" size={17} />WhatsApp
         </a>
         <p class="cierre__nota">
@@ -53,10 +54,31 @@ const mensaje = waMensaje ?? wa.cotizacion;
 </section>
 
 <style>
+  /* Cierra la página, así que tiene que leerse como un cierre. En gris era
+     una caja más; en el azul corporativo la última llamada se ve desde el
+     otro extremo de la pantalla. La trama es la misma del hero, de modo que
+     principio y final de página se reconocen como la misma superficie. */
   .cierre {
-    background: var(--color-papel-2);
-    border-top: 1px solid var(--color-linea);
+    position: relative;
+    overflow: hidden;
+    background: var(--color-brand-700);
+    color: #fff;
   }
+  .cierre__trama {
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .cierre .ante-brand { color: var(--color-brand-200); }
+  .cierre .cuerpo { color: rgba(255, 255, 255, 0.8); }
+
+  /* WhatsApp: hueco sobre el azul, relleno al apuntarlo. */
+  .cierre__wa {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #fff;
+  }
+  .cierre__wa:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
   .cierre__cuerpo {
     display: grid;
     gap: 2.5rem;
@@ -74,6 +96,7 @@ const mensaje = waMensaje ?? wa.cotizacion;
   .cierre__nota {
     width: 100%;
     font-size: 0.82rem;
-    color: var(--color-tinta-45);
+    color: rgba(255, 255, 255, 0.6);
   }
+  .cierre__nota a { color: #fff; }
 </style>

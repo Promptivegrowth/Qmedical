@@ -40,6 +40,11 @@ const T = {
     horario: 'Horario',
     formAnte: 'Solicitud de cotización',
     formTitulo: 'Envíenos su requerimiento',
+    pasoDatos: 'Sus datos',
+    pasoDatosNota: 'Para saber a quién responder.',
+    pasoPedido: 'Su requerimiento',
+    pasoPedidoNota: 'Cuanto más concreto, más exacta la cotización.',
+    respuesta: 'Respuesta dentro del siguiente día hábil',
     formTexto:
       'Complete el formulario y nuestro equipo comercial le responderá con precios, ' +
       'disponibilidad, tiempo de entrega y la documentación técnica que necesite.',
@@ -60,8 +65,7 @@ const T = {
       `Autorizo a ${site.nombre} a utilizar mis datos para atender esta solicitud, ` +
       'conforme a la Ley N.° 29733 de Protección de Datos Personales. *',
     enviar: 'Enviar solicitud',
-    obligatorios:
-      'Los campos con * son obligatorios. Le responderemos dentro del siguiente día hábil.',
+    obligatorios: 'Los campos con * son obligatorios.',
     oficinas: 'Nuestras oficinas',
     verMapa: 'Ver mapa interactivo',
     abrirMaps: 'Abrir en Google Maps',
@@ -94,6 +98,11 @@ const T = {
     horario: 'Opening hours',
     formAnte: 'Quotation request',
     formTitulo: 'Send us your requirement',
+    pasoDatos: 'Your details',
+    pasoDatosNota: 'So we know who to reply to.',
+    pasoPedido: 'Your requirement',
+    pasoPedidoNota: 'The more specific, the more accurate the quotation.',
+    respuesta: 'We reply within the next working day',
     formTexto:
       'Fill in the form and our sales team will reply with prices, availability, ' +
       'lead time and whatever technical documentation you need.',
@@ -114,8 +123,7 @@ const T = {
       `I authorise ${site.nombre} to use my details to answer this enquiry, in ` +
       'accordance with Peruvian Personal Data Protection Law No. 29733. *',
     enviar: 'Send request',
-    obligatorios:
-      'Fields marked * are required. We will reply by the next working day.',
+    obligatorios: 'Fields marked * are required.',
     oficinas: 'Our offices',
     verMapa: 'Load interactive map',
     abrirMaps: 'Open in Google Maps',
@@ -168,15 +176,18 @@ const schema = {
     texto={T.bajada}
     remate={T.remate}
     migas={[{ nombre: T.ante }]}
+    foto="/img/fotos/operario-almacen-1600.webp"
+    cine
   />
 
-  <!-- Vías de contacto -->
-  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+  <!-- Vías de contacto. Entran escalonadas justo después de la cabecera:
+       son lo primero que se busca al llegar a esta página. -->
+  <section class="vias__banda bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
     <div class="caja">
-      <ul class="vias" data-anim-grupo="70">
+      <ul class="vias" data-anim-grupo="140">
         {vias.map((v) => (
-          <li data-anim="sube">
-            <p class="via__ic"><Icon name={v.ic} size={20} /></p>
+          <li class="via" data-anim="sube">
+            <p class="via__ic"><Icon name={v.ic} size={22} stroke={1.1} anim /></p>
             <p class="ante mt-4">{v.t}</p>
             <div class="via__valor">
               {v.l.map((x) =>
@@ -204,51 +215,87 @@ const schema = {
              a propósito, para que el equipo comercial reciba siempre los correos
              con los mismos campos, venga la consulta en el idioma que venga. -->
         <FormularioBase lang={lang} id="form-cotizacion" asunto={T.asunto} class="formulario">
-          <div class="grid gap-5 sm:grid-cols-2">
-            <label>
-              <span class="rotulo">{T.lNombre}</span>
-              <input id="c-nombre" type="text" name="Nombre" class="campo" required
-                autocomplete="name" placeholder={T.pNombre} />
-            </label>
-            <label>
-              <span class="rotulo">{T.lInstitucion}</span>
-              <input id="c-institucion" type="text" name="Institución" class="campo"
-                autocomplete="organization" placeholder={T.pInstitucion} />
-            </label>
-            <label>
-              <span class="rotulo">{T.lCorreo}</span>
-              <input id="c-correo" type="email" name="Correo" class="campo" required
-                autocomplete="email" placeholder={T.pCorreo} />
-            </label>
-            <label>
-              <span class="rotulo">{T.lTelefono}</span>
-              <input id="c-telefono" type="tel" name="Teléfono" class="campo" required
-                autocomplete="tel" placeholder="+51 9XX XXX XXX" />
-            </label>
-            <label class="sm:col-span-2">
-              <span class="rotulo">{T.lLinea}</span>
-              <select id="c-linea" name="Línea de interés" class="campo">
-                <option value="">{T.pLinea}</option>
-                {lineas.map((c) => <option value={c.nombre}>{c.nombre}</option>)}
-                <option value="Otra / varias líneas">{T.otraLinea}</option>
-              </select>
-            </label>
-            <label class="sm:col-span-2">
-              <span class="rotulo">{T.lMensaje}</span>
-              <textarea id="c-mensaje" name="Mensaje" rows="6" class="campo resize-y" required
-                placeholder={T.pMensaje}></textarea>
-            </label>
-            <label class="sm:col-span-2 flex items-start gap-3">
+          <!-- Dos bloques, no una lista de diez campos: primero quién es y
+               después qué necesita. Cada uno con su folio y su filete, que es
+               lo que convierte un formulario largo en dos pasos cortos. -->
+          <fieldset class="bloque">
+            <legend class="bloque__rotulo">
+              <span class="bloque__folio">01</span>
+              <span>
+                <span class="bloque__titulo">{T.pasoDatos}</span>
+                <span class="bloque__nota">{T.pasoDatosNota}</span>
+              </span>
+            </legend>
+
+            <div class="rejilla-campos">
+              <label>
+                <span class="rotulo">{T.lNombre}</span>
+                <input id="c-nombre" type="text" name="Nombre" class="campo" required
+                  autocomplete="name" placeholder={T.pNombre} />
+              </label>
+              <label>
+                <span class="rotulo">{T.lInstitucion}</span>
+                <input id="c-institucion" type="text" name="Institución" class="campo"
+                  autocomplete="organization" placeholder={T.pInstitucion} />
+              </label>
+              <label>
+                <span class="rotulo">{T.lCorreo}</span>
+                <input id="c-correo" type="email" name="Correo" class="campo" required
+                  autocomplete="email" placeholder={T.pCorreo} />
+              </label>
+              <label>
+                <span class="rotulo">{T.lTelefono}</span>
+                <input id="c-telefono" type="tel" name="Teléfono" class="campo" required
+                  autocomplete="tel" placeholder="+51 9XX XXX XXX" />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend class="bloque__rotulo">
+              <span class="bloque__folio">02</span>
+              <span>
+                <span class="bloque__titulo">{T.pasoPedido}</span>
+                <span class="bloque__nota">{T.pasoPedidoNota}</span>
+              </span>
+            </legend>
+
+            <div class="rejilla-campos">
+              <label class="campo-ancho">
+                <span class="rotulo">{T.lLinea}</span>
+                <select id="c-linea" name="Línea de interés" class="campo">
+                  <option value="">{T.pLinea}</option>
+                  {lineas.map((c) => <option value={c.nombre}>{c.nombre}</option>)}
+                  <option value="Otra / varias líneas">{T.otraLinea}</option>
+                </select>
+              </label>
+              <label class="campo-ancho">
+                <span class="rotulo">{T.lMensaje}</span>
+                <textarea id="c-mensaje" name="Mensaje" rows="6" class="campo resize-y" required
+                  placeholder={T.pMensaje}></textarea>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Pie del formulario: el consentimiento, el envío y lo que pasa
+               después, juntos y sobre su propia superficie. -->
+          <div class="formulario__pie">
+            <label class="consentimiento">
               <input type="checkbox" name="Autoriza el tratamiento de datos" value="Sí" required
                 class="mt-1 h-4 w-4 shrink-0 accent-[var(--color-brand-700)]" />
-              <span class="text-[0.83rem] leading-relaxed text-[var(--color-tinta-70)]">{T.consentimiento}</span>
+              <span>{T.consentimiento}</span>
             </label>
-          </div>
 
-          <button type="submit" class="pill pill-tinta mt-8 w-full sm:w-auto">
-            {T.enviar}<Icon name="flecha" size={16} />
-          </button>
-          <p class="mt-4 text-[0.79rem] text-[var(--color-tinta-45)]">{T.obligatorios}</p>
+            <div class="formulario__accion">
+              <button type="submit" class="pill pill-brand w-full sm:w-auto">
+                {T.enviar}<Icon name="flecha" size={16} />
+              </button>
+              <p class="formulario__respuesta">
+                <Icon name="reloj" size={15} />{T.respuesta}
+              </p>
+            </div>
+            <p class="formulario__nota">{T.obligatorios}</p>
+          </div>
         </FormularioBase>
       </div>
 
@@ -329,27 +376,138 @@ const schema = {
   .vias { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
   @media (min-width: 640px) { .vias { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .vias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  .vias > li { padding: 2.25rem 1.5rem 2.25rem 0; border-top: 1px solid var(--color-linea); }
-  @media (min-width: 1024px) {
-    .vias > li { border-top: 0; }
-    .vias > li + li { border-left: 1px solid var(--color-linea); padding-left: 2.25rem; }
+
+  /* Cada vía es una teja: el icono dentro de un disco que se viste de azul
+     al apuntarla, y la teja entera se levanta un poco. Antes eran cuatro
+     columnas separadas por un filete, sin nada que las distinguiera. */
+  .via {
+    position: relative;
+    padding: 2.25rem 1.5rem 2.25rem 0;
+    border-top: 1px solid var(--color-linea);
+    transition: transform 0.45s var(--ease-salida);
   }
-  .via__ic { color: var(--color-brand-700); }
+  @media (min-width: 1024px) {
+    .via { border-top: 0; padding: 2.75rem 1.5rem; }
+    .via + .via { border-left: 1px solid var(--color-linea); }
+  }
+  .via:hover { transform: translateY(-4px); }
+
+  .via__ic {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    transition: background-color 0.4s var(--ease-editorial),
+      color 0.4s var(--ease-editorial);
+  }
+  .via:hover .via__ic { background: var(--color-brand-700); color: #fff; }
   .via__valor { margin-top: 0.5rem; font-size: 0.93rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .via, .via__ic { transition: none; }
+    .via:hover { transform: none; }
+  }
 
   .contacto { display: grid; gap: 3rem; }
   @media (min-width: 1024px) {
     .contacto { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 4rem; align-items: start; }
   }
 
-  .formulario {
+  /* ── Formulario de cotización ──────────────────────────────────────
+     Era una rejilla de campos sueltos dentro de una caja. Ahora es una
+     lámina con relieve, dividida en dos bloques numerados, y con un pie
+     propio donde viven el permiso, el envío y la promesa de respuesta. */
+  /* Va en :global porque el <form> lo pinta FormularioBase: el elemento
+     lleva el ámbito de aquel componente, no el de esta página, así que la
+     regla con ámbito nunca llegaba a alcanzarlo y la lámina no se veía. Lo
+     de dentro sí se escribe aquí, y por eso no necesita :global. */
+  :global(.formulario) {
     margin-top: 2.5rem;
     padding: 1.75rem;
-    background: #fff;
+    background: var(--color-papel);
     border: 1px solid var(--color-linea);
     border-radius: var(--r-lg);
+    box-shadow: 0 36px 70px -56px rgba(21, 46, 127, 0.45);
   }
-  @media (min-width: 640px) { .formulario { padding: 2.25rem; } }
+  @media (min-width: 640px) { :global(.formulario) { padding: 2.75rem; } }
+
+  .bloque { border: 0; padding: 0; }
+  .bloque + .bloque { margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--color-linea); }
+
+  .bloque__rotulo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 1.6rem;
+  }
+  .bloque__folio {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .bloque__titulo {
+    display: block;
+    font-family: var(--font-display-texto);
+    font-size: 1.12rem;
+    line-height: 1.2;
+  }
+  .bloque__nota {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.85rem;
+    color: var(--color-tinta-45);
+  }
+
+  .rejilla-campos { display: grid; gap: 1.25rem; }
+  @media (min-width: 640px) { .rejilla-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .campo-ancho { grid-column: 1 / -1; }
+
+  .formulario__pie {
+    margin-top: 2.5rem;
+    padding: 1.6rem;
+    border-radius: var(--r-md);
+    background: var(--color-papel-2);
+  }
+  .consentimiento {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.83rem;
+    line-height: 1.6;
+    color: var(--color-tinta-70);
+  }
+  .formulario__accion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 1.4rem;
+  }
+  .formulario__respuesta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-brand-700);
+  }
+  .formulario__nota {
+    margin-top: 1rem;
+    font-size: 0.79rem;
+    color: var(--color-tinta-45);
+  }
 
   .tarjeta {
     padding: 1.75rem;

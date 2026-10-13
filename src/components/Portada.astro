@@ -20,15 +20,22 @@ interface Props {
   dato?: { valor: string; etiqueta: string };
   /** Llamada corta que cierra la bajada. */
   remate?: string;
+  /** Acercamiento lento y continuo sobre la fotografía. */
+  cine?: boolean;
 }
-const { lang = 'es', ante, titulo, texto, migas = [], foto, dato, remate } = Astro.props;
+const { lang = 'es', ante, titulo, texto, migas = [], foto, dato, remate, cine = false } = Astro.props;
 const t = textos(lang);
 ---
 
-<section class="portada">
+<section class:list={['portada', cine && 'portada--cine']}>
   {foto && (
     <div class="portada__fondo">
-      <img src={foto} alt="" aria-hidden="true" class="portada__img parallax" data-parallax="0.12" />
+      {/* El paralaje y el acercamiento son dos transformaciones distintas y
+          una pisaría a la otra en el mismo elemento: el plano se desplaza,
+          la imagen se acerca. */}
+      <span class="portada__plano parallax" data-parallax="0.12">
+        <img src={foto} alt="" aria-hidden="true" class="portada__img" />
+      </span>
       <div class="portada__velo"></div>
     </div>
   )}
@@ -82,7 +89,22 @@ const t = textos(lang);
     border-bottom-right-radius: var(--r-lamina);
   }
   .portada__fondo { position: absolute; inset: 0; }
+  .portada__plano { position: absolute; inset: 0; display: block; }
   .portada__img { width: 100%; height: 118%; object-fit: cover; }
+
+  /* Acercamiento de ida y vuelta, muy lento: a treinta y seis segundos por
+     tramo no se percibe como animación sino como que la escena respira. */
+  .portada--cine .portada__img {
+    transform-origin: 50% 45%;
+    animation: portada-cine 36s ease-in-out infinite alternate;
+  }
+  @keyframes portada-cine {
+    from { transform: scale(1); }
+    to { transform: scale(1.14); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portada--cine .portada__img { animation: none; }
+  }
   .portada__velo {
     position: absolute;
     inset: 0;
