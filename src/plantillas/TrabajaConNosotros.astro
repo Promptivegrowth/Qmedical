@@ -314,8 +314,12 @@ const schema = lista.map((v) => ({
         <span class="espontanea__fondo" aria-hidden="true">
           <!-- No puede ser la del pie: el pie va unos centímetros más abajo
                y se veían las dos a la vez. -->
-          <img src="/img/fotos/almacen-nave-2-1600.webp" width="1600" height="1067" alt=""
-            loading="lazy" decoding="async" />
+          <img
+            src="/img/fotos/almacen-nave-2-1600.webp"
+            srcset="/img/fotos/almacen-nave-2-1000.webp 1000w, /img/fotos/almacen-nave-2-1600.webp 1600w, /img/fotos/almacen-nave-2-2400.webp 2400w, /img/fotos/almacen-nave-2-3200.webp 3200w"
+            sizes="(min-width: 1280px) 1200px, 94vw"
+            width="1600" height="1067" alt="" loading="lazy" decoding="async"
+          />
         </span>
         <div>
           <p class="ante ante-brand">{T.cvAnte}</p>

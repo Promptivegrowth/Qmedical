@@ -40,9 +40,9 @@ const T = {
     miga: 'Nosotros',
     dato: 'años de operación',
     cifras: [
-      { v: String(site.fundacion), e: 'Año de fundación', n: 'Más de dos décadas en el sector' },
-      { v: String(marcas.length), e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
-      { v: String(productos.length), e: 'Productos en catálogo', n: `En ${lineas.length} líneas` },
+      { v: site.fundacion, e: 'Año de fundación', n: 'Más de dos décadas en el sector', anio: true },
+      { v: marcas.length, e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
+      { v: productos.length, e: 'Productos en catálogo', n: `En ${lineas.length} líneas` },
     ],
     quienesAnte: 'Quiénes somos',
     quienesTitulo: 'Su aliado estratégico en insumos y dispositivos médicos',
@@ -122,9 +122,9 @@ const T = {
     miga: 'About us',
     dato: 'years in operation',
     cifras: [
-      { v: String(site.fundacion), e: 'Year founded', n: 'More than two decades in the sector' },
-      { v: String(marcas.length), e: 'Brands represented', n: 'Manufacturers worldwide' },
-      { v: String(productos.length), e: 'Products in the catalogue', n: `Across ${lineas.length} lines` },
+      { v: site.fundacion, e: 'Year founded', n: 'More than two decades in the sector', anio: true },
+      { v: marcas.length, e: 'Brands represented', n: 'Manufacturers worldwide' },
+      { v: productos.length, e: 'Products in the catalogue', n: `Across ${lineas.length} lines` },
     ],
     quienesAnte: 'Who we are',
     quienesTitulo: 'Your strategic partner in medical supplies and devices',
@@ -225,9 +225,14 @@ const principios = valores.map((v, i) => ({
   <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
     <div class="caja">
       <dl class="cifras" data-anim-grupo="80">
-        {T.cifras.map((c) => (
+        {T.cifras.map((c, i) => (
           <div data-anim="sube">
-            <dd class="cifras__valor">{c.v}</dd>
+            <dd
+              class="cifras__valor cuenta"
+              data-conteo={c.v}
+              data-duracion={1500 + i * 200}
+              {...c.anio ? { 'data-agrupar': 'no', 'data-desde': '1980' } : {}}
+            >{c.v}</dd>
             <dt class="cifras__etiqueta">{c.e}</dt>
             <p class="cifras__nota">{c.n}</p>
           </div>

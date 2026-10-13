@@ -336,7 +336,7 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
         if (quieto) {
           cifras.forEach((el) => pintarCifra(el, Number(el.dataset.conteo)));
         } else {
-          cifras.forEach((el) => pintarCifra(el, 0));
+          cifras.forEach((el) => pintarCifra(el, Number(el.dataset.desde ?? 0)));
           const ioC = new IntersectionObserver(
             (entradas) => {
               for (const e of entradas) {
@@ -344,13 +344,18 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
                 const el = e.target as HTMLElement;
                 ioC.unobserve(el);
                 const meta = Number(el.dataset.conteo);
+                /* De dónde arranca. Por defecto de cero, pero un año no:
+                   contar desde cero hasta 2003 es un chorro de dígitos sin
+                   significado. Con `data-desde` el dial sale de una cifra
+                   plausible y se nota que se detiene, no que se enciende. */
+                const desde = Number(el.dataset.desde ?? 0);
                 const dur = Number(el.dataset.duracion ?? 1600);
                 const t0 = performance.now();
                 const paso = (ahora: number) => {
                   const p = Math.min(1, (ahora - t0) / dur);
                   // Desaceleración: la cifra frena al acercarse al valor
                   const e2 = 1 - Math.pow(1 - p, 3);
-                  pintarCifra(el, meta * e2);
+                  pintarCifra(el, desde + (meta - desde) * e2);
                   if (p < 1) requestAnimationFrame(paso);
                   else pintarCifra(el, meta);
                 };

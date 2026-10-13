@@ -34,7 +34,14 @@ const t = textos(lang);
           una pisaría a la otra en el mismo elemento: el plano se desplaza,
           la imagen se acerca. */}
       <span class="portada__plano parallax" data-parallax="0.12">
-        <img src={foto} alt="" aria-hidden="true" class="portada__img" />
+        <img
+          src={foto}
+          srcset={foto.replace('-1600.webp', '-1000.webp') + ' 1000w, ' + foto + ' 1600w, ' +
+            foto.replace('-1600.webp', '-2400.webp') + ' 2400w, ' +
+            foto.replace('-1600.webp', '-3200.webp') + ' 3200w'}
+          sizes="100vw"
+          alt="" aria-hidden="true" class="portada__img"
+        />
       </span>
       <div class="portada__velo"></div>
     </div>
@@ -65,7 +72,12 @@ const t = textos(lang);
 
     {dato && (
       <div class="portada__dato">
-        <span class="cifra block">{dato.valor}</span>
+        {/* Si el valor es un número redondo, cuenta al entrar; si no —una
+            medida, un código—, se imprime tal cual. */}
+        <span
+          class:list={['cifra block', /^\d+$/.test(dato.valor) && 'cuenta']}
+          {...(/^\d+$/.test(dato.valor) ? { 'data-conteo': dato.valor, 'data-duracion': '1600' } : {})}
+        >{dato.valor}</span>
         <span class="mt-2 block text-[0.82rem] text-white/50">{dato.etiqueta}</span>
       </div>
     )}
@@ -98,9 +110,11 @@ const t = textos(lang);
     transform-origin: 50% 45%;
     animation: portada-cine 36s ease-in-out infinite alternate;
   }
+  /* Un ocho por ciento, no un catorce: el acercamiento se nota igual y la
+     imagen no tiene que estirarse para sostenerlo. */
   @keyframes portada-cine {
     from { transform: scale(1); }
-    to { transform: scale(1.14); }
+    to { transform: scale(1.08); }
   }
   @media (prefers-reduced-motion: reduce) {
     .portada--cine .portada__img { animation: none; }
