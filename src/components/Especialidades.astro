@@ -105,7 +105,10 @@ const fichas = especialidades.map((base, i) => {
             data-tab={f.slug}
           >
             <span class="esp__tab-n">{f.n}</span>
-            <span class="esp__tab-ic"><Icon name={f.icono} size={22} stroke={1.1} /></span>
+            <span class="esp__tab-ic">
+              <img src={`/img/especialidades/${f.slug}-160.webp`} width="160" height="160"
+                alt="" loading="lazy" decoding="async" />
+            </span>
             <span class="esp__tab-txt">{f.corto}</span>
             <span class="esp__tab-flecha"><Icon name="flecha" size={15} /></span>
           </button>
@@ -135,13 +138,18 @@ const fichas = especialidades.map((base, i) => {
             data-panel={f.slug}
             hidden={i !== 0}
           >
-            <div class="esp__panel-alto">
-              <span class="esp__emblema"><Icon name={f.icono} size={64} stroke={0.85} anim /></span>
-              <span class="esp__panel-n">{f.n} / {String(fichas.length).padStart(2, '0')}</span>
-            </div>
+            <div class="esp__panel-cab">
+              <figure class="esp__foto">
+                <img src={`/img/especialidades/${f.slug}-480.webp`} width="480" height="480"
+                  alt={f.nombre} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+              </figure>
 
-            <h3 class="esp__panel-titulo">{f.nombre}</h3>
-            <p class="esp__definicion">{f.definicion}</p>
+              <div class="esp__panel-texto">
+                <span class="esp__panel-n">{f.n} / {String(fichas.length).padStart(2, '0')}</span>
+                <h3 class="esp__panel-titulo">{f.nombre}</h3>
+                <p class="esp__definicion">{f.definicion}</p>
+              </div>
+            </div>
 
             <div class="esp__aporte">
               <p class="ante ante-claro">{T.abastecemos}</p>
@@ -245,8 +253,29 @@ const fichas = especialidades.map((base, i) => {
     letter-spacing: 0.04em;
     opacity: 0.5;
   }
-  .esp__tab-ic { display: inline-flex; opacity: 0.55; transition: opacity 0.4s; }
-  .esp__tab.es-activo .esp__tab-ic { opacity: 1; }
+  /* La miniatura de la especialidad. Apagada mientras no está elegida:
+     seis fotografías a plena viveza en una columna estrecha compiten entre
+     sí y ninguna se lee. */
+  .esp__tab-ic {
+    display: block;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    overflow: hidden;
+    border-radius: var(--r-sm);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    filter: saturate(0.35);
+    opacity: 0.6;
+    transition: filter 0.45s var(--ease-editorial), opacity 0.45s var(--ease-editorial),
+      transform 0.45s var(--ease-salida);
+  }
+  .esp__tab-ic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .esp__tab:hover .esp__tab-ic { opacity: 0.85; }
+  .esp__tab.es-activo .esp__tab-ic {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.04);
+  }
   .esp__tab-txt { min-width: 0; }
   .esp__tab-flecha {
     display: inline-flex;
@@ -300,14 +329,82 @@ const fichas = especialidades.map((base, i) => {
     to { opacity: 1; transform: none; }
   }
 
-  .esp__panel-alto {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1.5rem;
+  /* Al cambiar de especialidad, el panel no se limita a aparecer: la
+     fotografía entra desde su propio recorte y el texto la sigue
+     escalonado. Así se entiende que lo que ha cambiado es el servicio, no
+     que la página ha dado un salto.
+
+     La clase la pone y la quita el guion, para poder reiniciar la
+     animación cada vez que se elige otra; con solo `.es-activo` el
+     navegador no vuelve a dispararla. */
+  :global(html.js) .esp__panel.es-entrando .esp__foto img {
+    animation: esp-foto 0.85s var(--ease-salida) both;
   }
-  .esp__emblema { display: inline-flex; color: #fff; }
+  @keyframes esp-foto {
+    from { opacity: 0; transform: scale(1.1); }
+    to { opacity: 1; transform: none; }
+  }
+
+  :global(html.js) .esp__panel.es-entrando .esp__panel-texto > *,
+  :global(html.js) .esp__panel.es-entrando .esp__aporte,
+  :global(html.js) .esp__panel.es-entrando .esp__lineas {
+    animation: esp-sube 0.6s var(--ease-salida) both;
+  }
+  :global(html.js) .esp__panel.es-entrando .esp__panel-texto > :nth-child(1) { animation-delay: 0.06s; }
+  :global(html.js) .esp__panel.es-entrando .esp__panel-texto > :nth-child(2) { animation-delay: 0.12s; }
+  :global(html.js) .esp__panel.es-entrando .esp__panel-texto > :nth-child(3) { animation-delay: 0.18s; }
+  :global(html.js) .esp__panel.es-entrando .esp__aporte { animation-delay: 0.24s; }
+  :global(html.js) .esp__panel.es-entrando .esp__lineas { animation-delay: 0.3s; }
+  @keyframes esp-sube {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ── Encabezado del panel: fotografía y nombre ────────────────────
+     La fotografía manda. Antes aquí había un pictograma de trazo: dice lo
+     mismo de cualquier empresa, mientras que una sala de operaciones o un
+     contenedor de bioseguridad se reconocen al instante.
+
+     Va a 300 px y no más: los archivos entregados miden 500, y estirarlos
+     se nota. Si llegan mayores, sube el tamaño aquí y en el guion. */
+  .esp__panel-cab {
+    display: grid;
+    gap: 1.75rem;
+    align-items: center;
+  }
+  @media (min-width: 760px) {
+    .esp__panel-cab { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: 2.5rem; }
+  }
+  @media (min-width: 1280px) {
+    .esp__panel-cab { grid-template-columns: minmax(0, 19rem) minmax(0, 1fr); gap: 3rem; }
+  }
+
+  .esp__foto {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 1;
+    max-width: 19rem;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 30px 60px -40px rgba(0, 0, 0, 0.75);
+  }
+  .esp__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Un filo claro por dentro: separa la fotografía del azul sin ponerle
+     un borde que compita con ella. */
+  .esp__foto::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    pointer-events: none;
+  }
+
+  .esp__panel-texto { min-width: 0; }
   .esp__panel-n {
+    display: block;
     font-family: var(--font-display-texto);
     font-size: 0.82rem;
     letter-spacing: 0.06em;
@@ -315,7 +412,7 @@ const fichas = especialidades.map((base, i) => {
   }
 
   .esp__panel-titulo {
-    margin-top: 2rem;
+    margin-top: 0.9rem;
     font-family: var(--font-display);
     font-size: clamp(1.7rem, 3vw, 2.6rem);
     line-height: 1.08;
@@ -372,32 +469,16 @@ const fichas = especialidades.map((base, i) => {
   if (seccion) {
     const tabs = Array.from(seccion.querySelectorAll<HTMLButtonElement>('[data-tab]'));
     const paneles = Array.from(seccion.querySelectorAll<HTMLElement>('[data-panel]'));
-    const formas = 'path, circle, rect, line, polyline, polygon';
 
-    // Redibuja el emblema del panel: el cambio de especialidad se percibe
-    // aunque el usuario no mueva el ratón.
-    const redibujar = (panel: HTMLElement) => {
+    /* Reinicia la entrada del panel: la fotografía se abre desde su recorte
+       y el texto la sigue escalonado. Hay que quitar la clase, forzar al
+       navegador a recalcular y volver a ponerla; si no, al elegir otra
+       especialidad la animación no se dispara de nuevo. */
+    const reanimar = (panel: HTMLElement) => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const svg = panel.querySelector('.esp__emblema .ico-trazo');
-      if (!svg) return;
-      svg.querySelectorAll<SVGGeometryElement>(formas).forEach((el, i) => {
-        if (typeof el.getTotalLength !== 'function') return;
-        let largo = 0;
-        try { largo = el.getTotalLength(); } catch { return; }
-        if (!largo) return;
-        el.style.transition = 'none';
-        el.style.strokeDasharray = `${largo}`;
-        el.style.strokeDashoffset = `${largo}`;
-        requestAnimationFrame(() => {
-          el.style.transition = `stroke-dashoffset 0.75s var(--ease-editorial) ${i * 70}ms`;
-          el.style.strokeDashoffset = '0';
-        });
-        window.setTimeout(() => {
-          el.style.transition = '';
-          el.style.strokeDasharray = '';
-          el.style.strokeDashoffset = '';
-        }, 850 + i * 70);
-      });
+      panel.classList.remove('es-entrando');
+      void panel.offsetWidth;
+      panel.classList.add('es-entrando');
     };
 
     const activar = (clave: string, mover = true) => {
@@ -412,7 +493,7 @@ const fichas = especialidades.map((base, i) => {
         const suyo = p.dataset.panel === clave;
         p.hidden = !suyo;
         p.classList.toggle('es-activo', suyo);
-        if (suyo) redibujar(p);
+        if (suyo) reanimar(p);
       });
     };
 
@@ -442,7 +523,7 @@ const fichas = especialidades.map((base, i) => {
         if (!e.isIntersecting) return;
         io.disconnect();
         const activo = paneles.find((p) => !p.hidden);
-        if (activo) redibujar(activo);
+        if (activo) reanimar(activo);
       },
       { threshold: 0.2 }
     );

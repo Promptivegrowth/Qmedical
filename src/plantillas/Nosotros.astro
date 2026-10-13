@@ -57,12 +57,12 @@ const T = {
       'en todo el país.',
     portafolioRotulo: 'Ofrecemos un portafolio integral de soluciones para:',
     portafolio: [
-      { i: 'bioseguridad', t: 'Bioseguridad y protección personal' },
-      { i: 'laparoscopia', t: 'Cirugía laparoscópica' },
-      { i: 'aspiracion', t: 'Aspiración y manejo de la vía aérea' },
-      { i: 'antisepsia', t: 'Antisepsia e higiene del paciente' },
-      { i: 'nutricion', t: 'Nutrición enteral y parenteral' },
-      { i: 'instrumental', t: 'Material médico no instrumental' },
+      { i: 'bioseguridad', f: 'bioseguridad', t: 'Bioseguridad y protección personal' },
+      { i: 'laparoscopia', f: 'cirugia-laparoscopica', t: 'Cirugía laparoscópica' },
+      { i: 'aspiracion', f: 'anestesiologia', t: 'Aspiración y manejo de la vía aérea' },
+      { i: 'antisepsia', f: 'antisepsia', t: 'Antisepsia e higiene del paciente' },
+      { i: 'nutricion', f: 'nutricion-enteral', t: 'Nutrición enteral y parenteral' },
+      { i: 'instrumental', f: 'enfermeria', t: 'Material médico no instrumental' },
     ],
     quienesCierre: [
       'Más que productos, entregamos confianza, respaldo y trazabilidad. Cada ' +
@@ -137,12 +137,12 @@ const T = {
       'hospitals, clinics, laboratories and health institutions across the country.',
     portafolioRotulo: 'A complete portfolio of solutions for:',
     portafolio: [
-      { i: 'bioseguridad', t: 'Biosafety and personal protection' },
-      { i: 'laparoscopia', t: 'Laparoscopic surgery' },
-      { i: 'aspiracion', t: 'Suction and airway management' },
-      { i: 'antisepsia', t: 'Antisepsis and patient hygiene' },
-      { i: 'nutricion', t: 'Enteral and parenteral nutrition' },
-      { i: 'instrumental', t: 'Non-instrumental medical supplies' },
+      { i: 'bioseguridad', f: 'bioseguridad', t: 'Biosafety and personal protection' },
+      { i: 'laparoscopia', f: 'cirugia-laparoscopica', t: 'Laparoscopic surgery' },
+      { i: 'aspiracion', f: 'anestesiologia', t: 'Suction and airway management' },
+      { i: 'antisepsia', f: 'antisepsia', t: 'Antisepsis and patient hygiene' },
+      { i: 'nutricion', f: 'nutricion-enteral', t: 'Enteral and parenteral nutrition' },
+      { i: 'instrumental', f: 'enfermeria', t: 'Non-instrumental medical supplies' },
     ],
     quienesCierre: [
       'More than products, we deliver trust, backing and traceability. Every ' +
@@ -260,10 +260,15 @@ const principios = valores.map((v, i) => ({
       </div>
 
       <p class="portafolio__rotulo" data-anim="sube">{T.portafolioRotulo}</p>
-      <ul class="portafolio" data-anim-grupo="60">
+      <ul class="portafolio" data-anim-grupo="110">
         {T.portafolio.map((p) => (
           <li class="area" data-anim="sube">
-            <span class="area__ic"><Icon name={p.i} size={26} stroke={1.1} /></span>
+            <span class="area__foto">
+              <img src={`/img/especialidades/${p.f}-480.webp`} width="480" height="480"
+                alt="" loading="lazy" decoding="async" />
+              <span class="area__velo" aria-hidden="true"></span>
+            </span>
+            <span class="area__ic"><Icon name={p.i} size={24} stroke={1.15} /></span>
             <span class="area__t">{p.t}</span>
           </li>
         ))}
@@ -415,28 +420,90 @@ const principios = valores.map((v, i) => ({
   @media (min-width: 640px) { .portafolio { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .portafolio { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
+  /* Fotografía arriba, pictograma montado a caballo sobre su borde y
+     nombre debajo. La fotografía dice de qué servicio se trata; el
+     pictograma es la marca de la casa y da el punto de orden que seis
+     fotografías seguidas, cada una con su luz, no tienen por sí solas.
+
+     La tarjeta entera responde: la imagen se acerca, el disco se viste del
+     azul corporativo y el conjunto se levanta. */
   .area {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
     min-width: 0;
-    padding: 1.2rem 1.35rem;
+    overflow: hidden;
     border-radius: var(--r-md);
     background: var(--color-brand-50);
-    transition: background-color 0.35s var(--ease-editorial);
+    transition: background-color 0.45s var(--ease-editorial),
+      transform 0.5s var(--ease-salida), box-shadow 0.5s var(--ease-editorial);
   }
-  .area:hover { background: var(--color-brand-100); }
+  .area:hover {
+    background: var(--color-brand-100);
+    transform: translateY(-5px);
+    box-shadow: 0 30px 55px -38px rgba(21, 46, 127, 0.6);
+  }
+
+  .area__foto {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-brand-100);
+  }
+  .area__foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.8s var(--ease-salida);
+  }
+  .area:hover .area__foto img { transform: scale(1.06); }
+
+  /* El velo asienta la fotografía sobre el papel de la tarjeta y le da al
+     disco un fondo donde apoyarse. */
+  .area__velo {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 45%,
+      color-mix(in srgb, var(--color-brand-900) 22%, transparent) 100%
+    );
+  }
+
   .area__ic {
+    position: relative;
+    z-index: 1;
     display: grid;
     place-items: center;
-    flex: none;
-    width: 3rem;
-    height: 3rem;
+    width: 3.1rem;
+    height: 3.1rem;
+    margin: -1.55rem 0 0 1.25rem;
     border-radius: 999px;
     background: var(--color-papel);
     color: var(--color-brand-700);
+    box-shadow: 0 10px 22px -12px rgba(21, 46, 127, 0.55);
+    transition: background-color 0.45s var(--ease-editorial),
+      color 0.45s var(--ease-editorial), transform 0.5s var(--ease-salida);
   }
-  .area__t { font-size: 1rem; line-height: 1.35; }
+  .area:hover .area__ic {
+    background: var(--color-brand-700);
+    color: #fff;
+    transform: scale(1.06) rotate(-4deg);
+  }
+
+  .area__t {
+    padding: 0.9rem 1.35rem 1.4rem;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .area, .area__foto img, .area__ic { transition: none; }
+    .area:hover { transform: none; }
+    .area:hover .area__foto img, .area:hover .area__ic { transform: none; }
+  }
 
   .quienes__cierre {
     display: grid;
