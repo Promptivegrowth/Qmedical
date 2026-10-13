@@ -187,6 +187,7 @@ const schema = lista.map((v) => ({
     remate={T.remate}
     migas={[{ nombre: T.ante }]}
     foto="/img/fotos/operario-almacen-1600.webp"
+    cine
   />
 
   <!-- ── Por qué aquí ─────────────────────────────────────────────────── -->
@@ -311,7 +312,9 @@ const schema = lista.map((v) => ({
     <div class="caja">
       <div class="espontanea" data-anim="sube" data-espera-foto>
         <span class="espontanea__fondo" aria-hidden="true">
-          <img src="/img/fotos/almacen-pasillo-1-1600.webp" width="1600" height="1067" alt=""
+          <!-- No puede ser la del pie: el pie va unos centímetros más abajo
+               y se veían las dos a la vez. -->
+          <img src="/img/fotos/almacen-nave-2-1600.webp" width="1600" height="1067" alt=""
             loading="lazy" decoding="async" />
         </span>
         <div>
