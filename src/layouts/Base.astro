@@ -258,6 +258,47 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
           });
         });
 
+        /* ── Fotografías que esperan a su imagen ──────────────────────
+           Un marco con `data-espera-foto` no levanta la cortina hasta que
+           la imagen ha llegado; así se descubre la fotografía y no un hueco
+           que se rellena medio segundo después.
+
+           La imagen no se puede esconder para conseguirlo. Una imagen con
+           carga diferida que no se ve no se descarga, y si la cortina espera
+           a que se descargue, ninguna de las dos se mueve: se quedan
+           trabadas. Por eso quien manda aquí es este observador, que al
+           acercarse el marco pasa la imagen a carga inmediata; el navegador
+           la pide, avisa al terminar y entonces sube el telón. Esconderla la
+           esconde la propia cortina, que recorta el marco, no la imagen. */
+        const listo = (marco: HTMLElement) => marco.classList.add('lista');
+        const marcos = document.querySelectorAll<HTMLElement>('[data-espera-foto]');
+
+        if (marcos.length) {
+          const pedir = (marco: HTMLElement) => {
+            const img = marco.querySelector('img');
+            if (!img) return listo(marco);
+            if (img.complete && img.naturalWidth > 0) return listo(marco);
+            img.addEventListener('load', () => listo(marco), { once: true });
+            // Si falla, la cortina no puede quedarse abajo para siempre.
+            img.addEventListener('error', () => listo(marco), { once: true });
+            img.loading = 'eager';
+          };
+
+          const ioF = new IntersectionObserver(
+            (entradas) => {
+              for (const e of entradas) {
+                if (!e.isIntersecting) continue;
+                ioF.unobserve(e.target);
+                pedir(e.target as HTMLElement);
+              }
+            },
+            // Con margen: se pide antes de que el marco entre en pantalla,
+            // de modo que al llegar la cortina la imagen ya está.
+            { rootMargin: '600px 0px' }
+          );
+          marcos.forEach((m) => ioF.observe(m));
+        }
+
         const io = new IntersectionObserver(
           (entradas) => {
             for (const e of entradas) {

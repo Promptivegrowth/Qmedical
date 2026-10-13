@@ -436,6 +436,18 @@
     transition: clip-path 1.1s var(--ease-salida) var(--retraso, 0ms);
   }
   .js [data-anim='cortina'].visible > :first-child { clip-path: inset(0 0 0 0); }
+
+  /* Fotografías: la cortina espera a que la imagen esté.
+     Con carga diferida, la cortina se abría sobre un hueco y la fotografía
+     aparecía de golpe un instante después: dos movimientos que no se
+     entienden como uno. Con `data-espera-foto` el telón no sube hasta que el
+     archivo ha llegado, así que lo que se descubre ya es la imagen.
+
+     La imagen no se oculta nunca: la esconde la cortina, que recorta el
+     marco. Ocultarla a ella la dejaría sin descargarse —una imagen diferida
+     que no se ve no se pide— y entonces cortina e imagen se esperarían
+     mutuamente para siempre. */
+  .js [data-espera-foto].visible:not(.lista) > :first-child { clip-path: inset(100% 0 0 0); }
   .js [data-anim='lineas'] { transform: translateY(22px); }
 
   /* Al terminar se retira el recorte del todo. Con `inset(0)` la caja

@@ -8,10 +8,10 @@ import Especialidades from '../components/Especialidades.astro';
 import Respaldo from '../components/Respaldo.astro';
 import { site } from '../data/site';
 import { marcas } from '../data/marcas';
-import { lineas as lineasCat, productos, productosDeLinea } from '../data/catalogo';
+import { lineas as lineasCat, productos, productosDeLinea, imagenPrincipal } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { lineaEn, categoriaEn, empresaEn } from '../i18n/contenido';
+import { lineaEn, categoriaEn, productoEn, empresaEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -99,14 +99,20 @@ const ARCHIVOS_FOTOS = [
 ];
 const galeria = ARCHIVOS_FOTOS.map((src, i) => ({ src, alt: T.fotos[i] }));
 
-const matriz = lineasCat.map((c, i) => ({
-  ...lineaEn(c, lang),
-  corto: lineaEn(c, lang).nombre,
-  sintesis: lineaEn(c, lang).resumen,
-  n: String(i + 1).padStart(2, '0'),
-  href: via(lang, 'categoria', c.slug),
-  cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
-}));
+const matriz = lineasCat.map((c, i) => {
+  /* Una pieza que represente la línea: la primera suya que tenga foto. Un
+     contenedor rojo o un tapete azul dicen más de la línea que un trazo. */
+  const muestra = productosDeLinea(c.slug).find((p) => imagenPrincipal(p.slug, 480));
+  return {
+    ...lineaEn(c, lang),
+    corto: lineaEn(c, lang).nombre,
+    n: String(i + 1).padStart(2, '0'),
+    href: via(lang, 'categoria', c.slug),
+    cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
+    foto: muestra ? imagenPrincipal(muestra.slug, 480) : '',
+    fotoAlt: muestra ? productoEn(muestra, lang).nombre : '',
+  };
+});
 
 ---
 
@@ -150,13 +156,18 @@ const matriz = lineasCat.map((c, i) => ({
                 <span class="celda__cuenta">{c.cuenta}</span>
               </span>
 
-              <span class="celda__ic">
-                <Icon name={c.icono} size={40} stroke={1} anim />
-              </span>
+              {c.foto
+                ? (
+                  <span class="celda__foto">
+                    <img src={c.foto} width="480" height="480" alt={c.fotoAlt} loading="lazy" decoding="async" />
+                  </span>
+                )
+                : (
+                  <span class="celda__ic"><Icon name={c.icono} size={40} stroke={1} anim /></span>
+                )}
 
               <span class="celda__pie">
                 <span class="celda__nombre">{c.corto}</span>
-                <span class="celda__sintesis">{c.sintesis}</span>
               </span>
 
               <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
@@ -210,7 +221,7 @@ const matriz = lineasCat.map((c, i) => ({
            pantalla, y su imagen suelta el acercamiento con el que llega. -->
       <div class="compromiso__fotos" data-anim-grupo="120">
         {galeria.map((f, i) => (
-          <figure class="foto" data-anim="cortina">
+          <figure class="foto" data-anim="cortina" data-espera-foto>
             <span class="foto__lente">
               <span class="foto__plano parallax" data-parallax={0.03 + i * 0.008}>
               <img
@@ -298,7 +309,7 @@ const matriz = lineasCat.map((c, i) => ({
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 15rem;
+    min-height: 12rem;
     padding: 1.35rem;
     background: var(--color-papel);
     color: var(--color-tinta);
@@ -306,7 +317,7 @@ const matriz = lineasCat.map((c, i) => ({
     transition: background-color 0.5s var(--ease-editorial),
       color 0.5s var(--ease-editorial);
   }
-  @media (min-width: 768px) { .celda { min-height: 16.5rem; padding: 1.6rem; } }
+  @media (min-width: 768px) { .celda { min-height: 13.5rem; padding: 1.6rem; } }
   .celda:hover { background: var(--color-brand-700); color: #fff; }
 
   /* La celda de cierre va ya vestida de llamada: se distingue de las once
@@ -332,7 +343,7 @@ const matriz = lineasCat.map((c, i) => ({
     place-items: center;
     width: 4.75rem;
     height: 4.75rem;
-    margin-top: 1.9rem;
+    margin-top: 1.5rem;
     border-radius: 999px;
     background: var(--color-brand-50);
     color: var(--color-brand-700);
@@ -346,7 +357,31 @@ const matriz = lineasCat.map((c, i) => ({
   }
   .celda--cierre .celda__ic { background: var(--color-papel); }
 
-  .celda__pie { margin-top: 1.9rem; }
+  /* La fotografía vive en su propia teja blanca: la celda se vuelve azul al
+     pasar el puntero y un producto recortado sobre blanco necesita su
+     superficie para no quedar flotando sobre el azul. */
+  .celda__foto {
+    display: grid;
+    place-items: center;
+    margin-top: 1.2rem;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-sm);
+    background: var(--color-papel);
+    overflow: hidden;
+  }
+  .celda__foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8%;
+    transition: transform 0.7s var(--ease-salida);
+  }
+  .celda:hover .celda__foto img { transform: scale(1.06); }
+  @media (prefers-reduced-motion: reduce) {
+    .celda__foto img { transition: none; }
+  }
+
+  .celda__pie { margin-top: auto; padding-top: 1.4rem; }
   .celda__nombre {
     display: block;
     font-family: var(--font-display-texto);
@@ -422,7 +457,7 @@ const matriz = lineasCat.map((c, i) => ({
     overflow: hidden;
     aspect-ratio: 3 / 2;
     border-radius: var(--r-md);
-    background: var(--color-linea);
+    background: var(--color-brand-50);
   }
   /* Tres capas, una transformación cada una, y en este orden por un motivo:
      la lente es la que recibe el recorte de la cortina, así que tiene que
