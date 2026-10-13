@@ -36,14 +36,11 @@ const T = {
     compromisoAnte: 'El compromiso es de nosotros',
     compromisoTitulo: 'Cada entrega sostiene el trabajo de un equipo de salud',
     compromiso: [
-      'Somos una droguería, no un intermediario. Esa condición cambia lo que ' +
-        'podemos ofrecer: no solo colocamos un producto, respondemos por su ' +
-        'conservación, su trazabilidad documental y su ficha técnica frente al ' +
-        'área usuaria, al comité de compras y a la autoridad sanitaria.',
-      'Trabajamos para que las instituciones de salud estatales y privadas ' +
-        'dispongan de productos médicos, de bioseguridad y de protección ' +
-        'personal de alta calidad, en beneficio del equipo asistencial y de los ' +
-        'pacientes.',
+      'Más que productos, entregamos confianza, respaldo y trazabilidad: cada ' +
+        'solución llega con su documentación técnica, soporte especializado y ' +
+        'una atención personalizada.',
+      'Así su institución opera con seguridad, eficiencia y continuidad, en ' +
+        'beneficio del equipo asistencial y de los pacientes.',
     ],
     anios: 'Años operando',
     marcasDato: 'Marcas',
@@ -71,13 +68,11 @@ const T = {
     compromisoAnte: 'The commitment is ours',
     compromisoTitulo: 'Every delivery sustains the work of a healthcare team',
     compromiso: [
-      'We are a drugstore, not a middleman. That status changes what we can ' +
-        'offer: we do not merely place a product, we answer for its storage, ' +
-        'its documentary traceability and its datasheet before the end user, ' +
-        'the purchasing committee and the health authority.',
-      'We work so that public and private healthcare institutions have ' +
-        'high-quality medical, biosafety and personal protection products, for ' +
-        'the benefit of the clinical team and of patients.',
+      'More than products, we deliver trust, backing and traceability: every ' +
+        'solution arrives with its technical documentation, specialist support ' +
+        'and personal attention.',
+      'That way your institution runs safely, efficiently and without ' +
+        'interruption, for the benefit of the clinical team and of patients.',
     ],
     anios: 'Years in operation',
     marcasDato: 'Brands',
@@ -156,7 +151,7 @@ const matriz = lineasCat.map((c, i) => ({
               </span>
 
               <span class="celda__ic">
-                <Icon name={c.icono} size={52} stroke={0.9} anim />
+                <Icon name={c.icono} size={40} stroke={1} anim />
               </span>
 
               <span class="celda__pie">
@@ -181,7 +176,7 @@ const matriz = lineasCat.map((c, i) => ({
               <span class="celda__cuenta">{t.productosCuenta(productos.length)}</span>
             </span>
             <span class="celda__ic">
-              <Icon name="reticula" size={52} stroke={0.9} anim />
+              <Icon name="reticula" size={40} stroke={1} anim />
             </span>
             <span class="celda__pie">
               <span class="celda__nombre">{T.verCatalogo}</span>
@@ -333,14 +328,23 @@ const matriz = lineasCat.map((c, i) => ({
   .celda:hover .celda__cuenta { color: rgba(255, 255, 255, 0.6); }
 
   .celda__ic {
-    display: flex;
-    align-items: center;
-    height: 3.75rem;
+    display: grid;
+    place-items: center;
+    width: 4.75rem;
+    height: 4.75rem;
     margin-top: 1.9rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
     color: var(--color-brand-700);
-    transition: color 0.5s var(--ease-editorial), transform 0.6s var(--ease-salida);
+    transition: color 0.5s var(--ease-editorial), background-color 0.5s var(--ease-editorial),
+      transform 0.6s var(--ease-salida);
   }
-  .celda:hover .celda__ic { color: #fff; transform: translateY(-3px); }
+  .celda:hover .celda__ic {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-3px);
+  }
+  .celda--cierre .celda__ic { background: var(--color-papel); }
 
   .celda__pie { margin-top: 1.9rem; }
   .celda__nombre {

@@ -7,7 +7,7 @@ import Respaldo from '../components/Respaldo.astro';
 import Clientes from '../components/Clientes.astro';
 import { site, valores } from '../data/site';
 import { marcas } from '../data/marcas';
-import { categorias, productos } from '../data/catalogo';
+import { lineas, productos } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { valoresEn } from '../i18n/contenido';
 
@@ -42,33 +42,36 @@ const T = {
     cifras: [
       { v: String(site.fundacion), e: 'Año de fundación', n: 'Más de dos décadas en el sector' },
       { v: String(marcas.length), e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
-      { v: String(productos.length), e: 'Productos en catálogo', n: `En ${categorias.length} líneas` },
-      { v: '49', e: 'Fichas técnicas', n: 'Documentación pública en PDF' },
+      { v: String(productos.length), e: 'Productos en catálogo', n: `En ${lineas.length} líneas` },
     ],
     quienesAnte: 'Quiénes somos',
-    quienesTitulo: 'Una droguería, no un intermediario',
-    quienes: [
-      'Q-MEDICAL S.A.C. es una empresa peruana especializada en la ' +
-        'comercialización y distribución de dispositivos médicos, insumos ' +
-        'hospitalarios, productos de bioseguridad y equipos de protección ' +
-        'personal.',
-      `Desde el año ${site.fundacion}, trabajamos para atender las necesidades de ` +
-        'hospitales, clínicas, laboratorios e instituciones públicas y privadas ' +
-        'del sector salud. Contamos con un amplio portafolio que incluye productos ' +
-        'para bioseguridad, cirugía laparoscópica, aspiración, antisepsia, ' +
-        'nutrición enteral y parenteral, higiene del paciente, protección ' +
-        'personal, manejo de la vía aérea y material médico no instrumental.',
-      'Nuestro compromiso es ofrecer productos confiables, atención ' +
-        'personalizada y un servicio oportuno, contribuyendo a que los ' +
-        'profesionales de la salud desarrollen sus actividades de manera segura ' +
-        'y eficiente.',
-      'Esa condición cambia lo que podemos ofrecer: no solo colocamos un producto, ' +
-        'respondemos por su conservación, su trazabilidad documental y su ficha ' +
-        'técnica frente al área usuaria, al comité de compras y a la autoridad ' +
-        'sanitaria.',
-      'Atendemos a instituciones médicas de todas las regiones del país ' +
-        '—hospitales, clínicas, laboratorios, centros geriátricos y retail— tanto ' +
-        'en compra directa como en procesos de licitación pública.',
+    quienesTitulo: 'Su aliado estratégico en insumos y dispositivos médicos',
+    quienesEntrada:
+      'Q-MEDICAL S.A.C.: más de 20 años asegurando el abastecimiento del sector ' +
+      'salud en el Perú.',
+    quienesTexto:
+      'Somos una empresa peruana especializada en la comercialización y ' +
+      'distribución de dispositivos médicos, insumos hospitalarios, productos de ' +
+      `bioseguridad y equipos de protección personal. Desde el año ${site.fundacion}, ` +
+      'acompañamos a hospitales, clínicas, laboratorios e instituciones de salud ' +
+      'en todo el país.',
+    portafolioRotulo: 'Ofrecemos un portafolio integral de soluciones para:',
+    portafolio: [
+      { i: 'bioseguridad', t: 'Bioseguridad y protección personal' },
+      { i: 'laparoscopia', t: 'Cirugía laparoscópica' },
+      { i: 'aspiracion', t: 'Aspiración y manejo de la vía aérea' },
+      { i: 'antisepsia', t: 'Antisepsia e higiene del paciente' },
+      { i: 'nutricion', t: 'Nutrición enteral y parenteral' },
+      { i: 'instrumental', t: 'Material médico no instrumental' },
+    ],
+    quienesCierre: [
+      'Más que productos, entregamos confianza, respaldo y trazabilidad. Cada ' +
+        'solución llega con documentación técnica, soporte especializado y una ' +
+        'atención personalizada, para que su institución opere con seguridad, ' +
+        'eficiencia y continuidad.',
+      'Atendemos compras directas y procesos de licitación pública y privada, ' +
+        'con un equipo profesional comprometido en responder con rapidez, ' +
+        'precisión y soluciones a la medida del sector salud.',
     ],
     infraAnte: 'Infraestructura',
     infraTitulo: 'Capacidad operativa que responde cuando la salud lo necesita',
@@ -121,33 +124,34 @@ const T = {
     cifras: [
       { v: String(site.fundacion), e: 'Year founded', n: 'More than two decades in the sector' },
       { v: String(marcas.length), e: 'Brands represented', n: 'Manufacturers worldwide' },
-      { v: String(productos.length), e: 'Products in the catalogue', n: `Across ${categorias.length} lines` },
-      { v: '49', e: 'Datasheets', n: 'Public documentation in PDF' },
+      { v: String(productos.length), e: 'Products in the catalogue', n: `Across ${lineas.length} lines` },
     ],
     quienesAnte: 'Who we are',
-    quienesTitulo: 'A drugstore, not a middleman',
-    quienes: [
-      'Q-MEDICAL S.A.C. is a Peruvian company specialising in the supply and ' +
-        'distribution of medical devices, hospital consumables, biosafety ' +
-        'products and personal protective equipment.',
-      `Since ${site.fundacion} we have served the needs of hospitals, clinics, ` +
-        'laboratories and public and private institutions across the health ' +
-        'sector, with a portfolio that spans biosafety, laparoscopic surgery, ' +
-        'suction, antisepsis, enteral and parenteral nutrition, patient hygiene, ' +
-        'personal protection, airway management and non-instrumental supplies.',
-      'Our commitment is to offer reliable products, personal attention and ' +
-        'prompt service, so that healthcare professionals can do their work ' +
-        'safely and efficiently.',
-      'Q-MEDICAL S.A.C. began trading as a ' +
-        'drugstore specialising in high-quality medical devices. We ' +
-        'hold the Good Storage Practices certification granted by DIGEMID, and we ' +
-        'represent and distribute products from companies recognised worldwide.',
-      'That status changes what we can offer: we do not merely place a product, we ' +
-        'answer for its storage, its documentary traceability and its datasheet ' +
-        'before the end user, the purchasing committee and the health authority.',
-      'We serve medical institutions in every region of the country —hospitals, ' +
-        'clinics, laboratories, geriatric centres and retail chains— both through ' +
-        'direct purchase and through public tenders.',
+    quienesTitulo: 'Your strategic partner in medical supplies and devices',
+    quienesEntrada:
+      'Q-MEDICAL S.A.C.: more than 20 years securing supply for Peru’s health sector.',
+    quienesTexto:
+      'We are a Peruvian company specialising in the supply and distribution of ' +
+      'medical devices, hospital consumables, biosafety products and personal ' +
+      `protective equipment. Since ${site.fundacion} we have worked alongside ` +
+      'hospitals, clinics, laboratories and health institutions across the country.',
+    portafolioRotulo: 'A complete portfolio of solutions for:',
+    portafolio: [
+      { i: 'bioseguridad', t: 'Biosafety and personal protection' },
+      { i: 'laparoscopia', t: 'Laparoscopic surgery' },
+      { i: 'aspiracion', t: 'Suction and airway management' },
+      { i: 'antisepsia', t: 'Antisepsis and patient hygiene' },
+      { i: 'nutricion', t: 'Enteral and parenteral nutrition' },
+      { i: 'instrumental', t: 'Non-instrumental medical supplies' },
+    ],
+    quienesCierre: [
+      'More than products, we deliver trust, backing and traceability. Every ' +
+        'solution arrives with its technical documentation, specialist support ' +
+        'and personal attention, so your institution runs safely, efficiently ' +
+        'and without interruption.',
+      'We handle direct purchases as well as public and private tenders, with a ' +
+        'professional team committed to responding quickly, precisely and with ' +
+        'solutions tailored to the health sector.',
     ],
     infraAnte: 'Facilities',
     infraTitulo: 'Operating capacity that responds when health needs it',
@@ -231,15 +235,36 @@ const principios = valores.map((v, i) => ({
     </div>
   </section>
 
-  <!-- ── Quiénes somos ───────────────────────────────────────────────── -->
+  <!-- ── Quiénes somos ───────────────────────────────────────────────
+       Antes eran cinco párrafos seguidos en una columna: un muro de texto
+       que nadie termina. El portafolio, que era la enumeración más larga,
+       sale de la prosa y se vuelve una rejilla de seis piezas con su icono;
+       lo que queda de texto son tres bloques cortos con aire entre ellos. -->
   <section class="aire bg-[var(--color-papel)]">
-    <div class="caja quienes" data-anim-grupo="90">
-      <div>
-        <p class="ante ante-brand" data-anim="sube">{T.quienesAnte}</p>
-        <h2 class="display-lg mt-5 max-w-[13ch]" data-anim="sube">{T.quienesTitulo}</h2>
+    <div class="caja">
+      <div class="quienes" data-anim-grupo="90">
+        <div>
+          <p class="ante ante-brand" data-anim="sube">{T.quienesAnte}</p>
+          <h2 class="display-lg mt-5 max-w-[20ch]" data-anim="sube">{T.quienesTitulo}</h2>
+        </div>
+        <div data-anim="sube">
+          <p class="quienes__entrada">{T.quienesEntrada}</p>
+          <p class="cuerpo-lg mt-6">{T.quienesTexto}</p>
+        </div>
       </div>
-      <div class="cuerpo-lg" data-anim="sube">
-        {T.quienes.map((parrafo) => <p>{parrafo}</p>)}
+
+      <p class="portafolio__rotulo" data-anim="sube">{T.portafolioRotulo}</p>
+      <ul class="portafolio" data-anim-grupo="60">
+        {T.portafolio.map((p) => (
+          <li class="area" data-anim="sube">
+            <span class="area__ic"><Icon name={p.i} size={26} stroke={1.1} /></span>
+            <span class="area__t">{p.t}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="quienes__cierre" data-anim-grupo="80">
+        {T.quienesCierre.map((parrafo) => <p data-anim="sube">{parrafo}</p>)}
       </div>
     </div>
   </section>
@@ -340,7 +365,7 @@ const principios = valores.map((v, i) => ({
 <style>
   /* ── Cifras ───────────────────────────────────────────────────────── */
   .cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (min-width: 900px) { .cifras { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (min-width: 900px) { .cifras { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .cifras > div { padding: 2.5rem 1.5rem 2.5rem 0; border-top: 1px solid var(--color-linea); }
   @media (min-width: 900px) {
     .cifras > div { border-top: 0; }
@@ -358,9 +383,69 @@ const principios = valores.map((v, i) => ({
   .cifras__nota { margin-top: 0.3rem; font-size: 0.8rem; color: var(--color-tinta-45); }
 
   /* ── Quiénes somos ────────────────────────────────────────────────── */
+  /* La entrada va en azul y a cuerpo mayor: es la frase que resume la
+     empresa, y en el gris del texto corrido se perdía entre las demás. */
+  .quienes__entrada {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    line-height: 1.3;
+    color: var(--color-brand-700);
+  }
+
+  .portafolio__rotulo {
+    margin-top: 4rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+  }
+  .portafolio {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 640px) { .portafolio { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .portafolio { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.2rem 1.35rem;
+    border-radius: var(--r-md);
+    background: var(--color-brand-50);
+    transition: background-color 0.35s var(--ease-editorial);
+  }
+  .area:hover { background: var(--color-brand-100); }
+  .area__ic {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: var(--color-papel);
+    color: var(--color-brand-700);
+  }
+  .area__t { font-size: 1rem; line-height: 1.35; }
+
+  .quienes__cierre {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+    font-size: 1.02rem;
+    line-height: 1.68;
+    color: var(--color-tinta-70);
+  }
+  @media (min-width: 900px) {
+    .quienes__cierre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
+  }
+
   .quienes { display: grid; gap: 2.5rem; }
   @media (min-width: 1024px) {
-    .quienes { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: 5rem; }
+    .quienes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4.5rem; align-items: start; }
   }
 
   /* ── Valores ──────────────────────────────────────────────────────────
