@@ -33,9 +33,12 @@ interface Props {
   titulo?: string;
   /** A dónde llevan las placas y el enlace del encabezado. */
   a?: string;
-  aTexto?: string;
+  /** Rótulo del enlace del encabezado. En nulo, no se pone enlace. */
+  aTexto?: string | null;
+  /** Texto de la columna derecha. */
+  nota?: string;
 }
-const { lang = 'es', claro = false, id = 'respaldo', ante, titulo, a, aTexto } = Astro.props;
+const { lang = 'es', claro = false, id = 'respaldo', ante, titulo, a, aTexto, nota } = Astro.props;
 
 const T = {
   es: {
@@ -69,7 +72,8 @@ const avales = certificaciones.map((c, i) => ({
 const destino = a ?? via(lang, 'nosotros', undefined, 'certificaciones');
 const rotuloAnte = ante ?? T.ante;
 const rotuloTitulo = titulo ?? T.titulo;
-const rotuloEnlace = aTexto ?? T.ver;
+const rotuloEnlace = aTexto === null ? null : (aTexto ?? T.ver);
+const rotuloNota = nota ?? T.nota;
 ---
 
 <section id={id} class:list={['respaldo', claro && 'es-clara']} data-respaldo>
@@ -85,10 +89,12 @@ const rotuloEnlace = aTexto ?? T.ver;
         <h2 class="display-lg mt-5 max-w-[22ch]" data-anim="sube">{rotuloTitulo}</h2>
       </div>
       <div class="respaldo__nota" data-anim="sube">
-        <p>{T.nota}</p>
-        <a href={destino} class="respaldo__ir">
-          {rotuloEnlace}<Icon name="flecha" size={15} />
-        </a>
+        <p>{rotuloNota}</p>
+        {rotuloEnlace && (
+          <a href={destino} class="respaldo__ir">
+            {rotuloEnlace}<Icon name="flecha" size={15} />
+          </a>
+        )}
       </div>
     </div>
 

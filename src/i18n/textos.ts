@@ -36,7 +36,6 @@ const es = {
   },
 
   megaCatalogo: {
-    destacado: 'Destacado',
     lineas: 'Líneas de producto',
     todo: (n: number) => `Todo el catálogo · ${n} productos`,
     cotizar: 'Solicitar una cotización',
@@ -163,7 +162,6 @@ const en: typeof es = {
   },
 
   megaCatalogo: {
-    destacado: 'Featured',
     lineas: 'Product lines',
     todo: (n: number) => `Full catalogue · ${n} products`,
     cotizar: 'Request a quotation',

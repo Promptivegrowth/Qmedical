@@ -18,8 +18,10 @@ interface Props {
   foto?: string;
   /** Dato al pie de la cabecera, a la derecha. */
   dato?: { valor: string; etiqueta: string };
+  /** Llamada corta que cierra la bajada. */
+  remate?: string;
 }
-const { lang = 'es', ante, titulo, texto, migas = [], foto, dato } = Astro.props;
+const { lang = 'es', ante, titulo, texto, migas = [], foto, dato, remate } = Astro.props;
 const t = textos(lang);
 ---
 
@@ -51,6 +53,7 @@ const t = textos(lang);
       {ante && <p class="ante ante-claro">{ante}</p>}
       <h1 class="display-lg mt-5 max-w-[19ch]">{titulo}</h1>
       {texto && <p class="portada__bajada">{texto}</p>}
+      {remate && <p class="portada__remate">{remate}</p>}
     </div>
 
     {dato && (
@@ -63,6 +66,13 @@ const t = textos(lang);
 </section>
 
 <style>
+  .portada__remate {
+    margin-top: 1rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #fff;
+  }
+
   .portada {
     position: relative;
     overflow: hidden;

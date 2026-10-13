@@ -28,11 +28,13 @@ const T = {
       'en Av. Arica 1442, Breña, Lima. Teléfono (01) 424-7290 y WhatsApp ' +
       '+51 977 814 006.',
     ante: 'Contacto',
-    titulo: 'Cuéntenos qué necesita su institución',
+    titulo: 'Cuéntanos qué necesita tu institución y haz de Q-MEDICAL tu aliado estratégico',
     bajada:
-      'Atendemos requerimientos de hospitales, clínicas, laboratorios, centros ' +
-      'geriátricos y retail en todo el país, tanto en compra directa como en ' +
-      'procesos de licitación pública.',
+      'Abastecemos hospitales, clínicas, centros de salud, retail y ' +
+      'distribuidores con un portafolio integral de dispositivos médicos, ' +
+      'calidad y respaldo comercial. Encuentra las soluciones que buscas y ' +
+      'fortalece tu abastecimiento con un aliado que impulsa el sector salud.',
+    remate: '¡Solicita tu cotización hoy y lleva tu abastecimiento al siguiente nivel!',
     telefonos: 'Teléfono',
     cotizaciones: 'Cotizaciones',
     horario: 'Horario',
@@ -80,11 +82,13 @@ const T = {
       'Av. Arica 1442, Breña, Lima. Phone (01) 424-7290 and WhatsApp ' +
       '+51 977 814 006.',
     ante: 'Contact',
-    titulo: 'Tell us what your institution needs',
+    titulo: 'Tell us what your institution needs and make Q-MEDICAL your strategic partner',
     bajada:
-      'We serve requirements from hospitals, clinics, laboratories, geriatric ' +
-      'centres and retail chains across the country, both through direct purchase ' +
-      'and through public tenders.',
+      'We supply hospitals, clinics, health centres, retail chains and ' +
+      'distributors with a complete portfolio of medical devices, quality and ' +
+      'commercial backing. Find the solutions you are looking for and ' +
+      'strengthen your supply with a partner that drives the health sector.',
+    remate: 'Request your quotation today and take your supply to the next level.',
     telefonos: 'Phone',
     cotizaciones: 'Quotations',
     horario: 'Opening hours',
@@ -157,7 +161,14 @@ const schema = {
 ---
 
 <Base lang={lang} clave="contacto" title={T.meta} description={T.metaDesc} schema={schema}>
-  <Portada lang={lang} ante={T.ante} titulo={T.titulo} texto={T.bajada} migas={[{ nombre: T.ante }]} />
+  <Portada
+    lang={lang}
+    ante={T.ante}
+    titulo={T.titulo}
+    texto={T.bajada}
+    remate={T.remate}
+    migas={[{ nombre: T.ante }]}
+  />
 
   <!-- Vías de contacto -->
   <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">

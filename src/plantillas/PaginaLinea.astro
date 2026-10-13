@@ -49,7 +49,6 @@ const T = {
   es: {
     ante: 'Línea de producto',
     catalogo: 'Catálogo',
-    unidad: (n: number) => (n === 1 ? 'producto' : 'productos'),
     marcas: 'Marcas',
     cobertura: 'Cobertura',
     coberturaDato: 'Todas las regiones del Perú',
@@ -63,7 +62,6 @@ const T = {
   en: {
     ante: 'Product line',
     catalogo: 'Catalogue',
-    unidad: (n: number) => (n === 1 ? 'product' : 'products'),
     marcas: 'Brands',
     cobertura: 'Coverage',
     coberturaDato: 'Every region of Peru',
@@ -90,7 +88,6 @@ const T = {
     titulo={linea.nombre}
     texto={linea.resumen}
     migas={[{ nombre: T.catalogo, href: via(lang, 'catalogo') }, { nombre: linea.nombre }]}
-    dato={{ valor: String(total), etiqueta: T.unidad(total) }}
   />
 
   <!-- ── Marcas y cobertura ──────────────────────────────────────────── -->
@@ -154,8 +151,8 @@ const T = {
   .rejilla-linea {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 2.5rem var(--medianil);
-    margin-top: 2.25rem;
+    gap: 3.5rem var(--medianil);
+    margin-top: 2.75rem;
   }
   @media (min-width: 640px) { .rejilla-linea { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .rejilla-linea { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

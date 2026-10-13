@@ -24,25 +24,30 @@ const { lang = 'es', claro = false } = Astro.props;
 const logos = manifest.clientes as Record<string, string>;
 const lista = clientes.filter((c) => logos[c.slug]);
 
+/* Dos pistas que corren en sentidos opuestos. Partir la lista por la mitad
+   evita que la misma marca aparezca dos veces en pantalla a la vez. */
+const mitad = Math.ceil(lista.length / 2);
+const pistas = [lista.slice(0, mitad), lista.slice(mitad)];
+
 const T = {
   es: {
     ante: 'Clientes',
     titulo: 'Construimos relaciones que generan confianza',
     texto:
-      'Trabajamos junto a hospitales, clínicas, laboratorios, centros médicos ' +
-      'e instituciones públicas y privadas del sector salud, brindando ' +
-      'productos y soluciones que responden a sus necesidades operativas y ' +
-      'asistenciales.',
-    cuenta: (n: number) => `${n} instituciones atendidas`,
+      'Las principales instituciones públicas y privadas del sector salud en el ' +
+      'Perú confían en Q-MEDICAL para garantizar un abastecimiento oportuno y de ' +
+      'calidad. Nos mueve un propósito que va más allá de cada entrega: ' +
+      'respaldar a quienes cuidan vidas y contribuir a una mejor salud para ' +
+      'todos los peruanos.',
   },
   en: {
     ante: 'Clients',
     titulo: 'We build relationships that earn trust',
     texto:
-      'We work alongside hospitals, clinics, laboratories, medical centres and ' +
-      'public and private institutions in the health sector, supplying products ' +
-      'and solutions that match their operational and clinical needs.',
-    cuenta: (n: number) => `${n} institutions served`,
+      'Peru’s leading public and private health institutions trust Q-MEDICAL to ' +
+      'guarantee timely, quality supply. We are driven by a purpose that goes ' +
+      'beyond each delivery: supporting those who care for lives and ' +
+      'contributing to better health for everyone in Peru.',
   },
 }[lang];
 ---
@@ -57,24 +62,38 @@ const T = {
         </div>
         <div class="clientes__nota" data-anim="sube">
           <p>{T.texto}</p>
-          <p class="clientes__cuenta">{T.cuenta(lista.length)}</p>
         </div>
       </div>
+    </div>
 
-      <ul class="clientes__rejilla" data-anim-grupo="25">
-        {lista.map((c) => (
-          <li data-anim class:list={[c.claro && 'es-oscura']}>
-            <img
-              src={`/img/${logos[c.slug]}`}
-              srcset={`/img/${logos[c.slug].replace('.webp', '-1x.webp')} 1x, /img/${logos[c.slug]} 2x`}
-              alt={c.nombre}
-              height="44"
-              loading="lazy"
-              decoding="async"
-            />
-          </li>
-        ))}
-      </ul>
+    <!-- Franja, no retícula: veintiséis logotipos en cuadrícula pedían una
+         pared entera y la última fila quedaba coja. En dos pistas que corren
+         en sentidos opuestos ocupan el alto de dos tejas, se leen de uno en
+         uno y la sección respira. Cada pista lleva su lista dos veces para
+         que el giro no deje hueco; la copia no se anuncia a los lectores. -->
+    <div class="clientes__banda" data-anim="sube">
+      {pistas.map((pista, i) => (
+        <div class:list={['marquesina', i === 1 && 'marquesina--inversa']}>
+          <div class="marquesina__pista">
+            {[0, 1].map((copia) => (
+              <ul class="marquesina__lista" aria-hidden={copia === 1 ? 'true' : undefined}>
+                {pista.map((c) => (
+                  <li class:list={['cliente', c.claro && 'es-oscura']}>
+                    <img
+                      src={`/img/${logos[c.slug]}`}
+                      srcset={`/img/${logos[c.slug].replace('.webp', '-1x.webp')} 1x, /img/${logos[c.slug]} 2x`}
+                      alt={copia === 1 ? '' : c.nombre}
+                      height="44"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   </section>
 )}
@@ -103,49 +122,71 @@ const T = {
     line-height: 1.65;
     color: var(--color-tinta-70);
   }
-  .clientes__cuenta {
-    margin-top: 1rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-tinta-45);
+  /* ── La franja ────────────────────────────────────────────────────
+     Dos pistas en sentidos opuestos. La animación mueve la pista media
+     vuelta: como lleva la lista dos veces, al llegar al final está
+     exactamente donde empezó y el giro no se nota. Se detiene al pasar el
+     puntero o al tabular dentro, para poder mirar un logotipo concreto. */
+  .clientes__banda {
+    display: grid;
+    gap: clamp(0.7rem, 1.4vw, 1rem);
+    margin-top: 3.5rem;
+  }
+  .marquesina {
+    display: flex;
+    overflow: hidden;
+    /* Se desvanece en los bordes: sin esto los logotipos aparecen y
+       desaparecen de golpe contra el margen. */
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  }
+  .marquesina__pista {
+    display: flex;
+    flex: none;
+    animation: clientes-desfile 64s linear infinite;
+  }
+  .marquesina--inversa .marquesina__pista {
+    animation-duration: 78s;
+    animation-direction: reverse;
+  }
+  .clientes__banda:hover .marquesina__pista,
+  .marquesina:focus-within .marquesina__pista { animation-play-state: paused; }
+  @keyframes clientes-desfile {
+    to { transform: translateX(-50%); }
   }
 
-  /* Los filetes los dibuja cada celda con su propia sombra, no el hueco de la
-     retícula: con `gap` sobre un fondo de color, la última fila incompleta
-     dejaba media franja gris a la vista. */
-  .clientes__rejilla {
+  .marquesina__lista {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: clamp(0.7rem, 1.4vw, 1rem);
+    padding-right: clamp(0.7rem, 1.4vw, 1rem);
+  }
+
+  .cliente {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 3.5rem;
-    overflow: hidden;
+    place-items: center;
+    flex: none;
+    width: clamp(10rem, 15vw, 13rem);
+    height: clamp(5.5rem, 7vw, 6.5rem);
+    padding: 1.1rem 1.3rem;
     background: #fff;
     border: 1px solid var(--color-linea);
     border-radius: var(--r-md);
+    transition: border-color 0.4s var(--ease-editorial), box-shadow 0.4s var(--ease-editorial);
   }
-  @media (min-width: 540px) { .clientes__rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 900px) { .clientes__rejilla { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-  @media (min-width: 1280px) { .clientes__rejilla { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-
-  .clientes__rejilla > li {
-    display: grid;
-    place-items: center;
-    min-height: 7rem;
-    padding: 1.5rem 1.25rem;
-    background: #fff;
-    box-shadow: 0 0 0 0.5px var(--color-linea);
-  }
+  .cliente:hover { border-color: var(--color-brand-700); box-shadow: 0 18px 40px -32px rgba(20, 22, 28, 0.55); }
 
   /* Los logotipos dibujados en blanco van sobre fondo oscuro, que es para lo
      que fueron hechos. */
-  .clientes__rejilla > li.es-oscura { background: var(--color-brand-700); }
-  .clientes__rejilla > li.es-oscura img { filter: none; opacity: 0.85; }
-  .clientes__rejilla > li.es-oscura:hover img { opacity: 1; }
+  .cliente.es-oscura { background: var(--color-brand-700); }
+  .cliente.es-oscura img { filter: none; opacity: 0.85; }
+  .cliente.es-oscura:hover img { opacity: 1; }
 
   /* En gris por defecto: veintiséis logotipos a todo color convierten la
-     retícula en un mosaico donde no se distingue ninguno. El color vuelve al
+     franja en un mosaico donde no se distingue ninguno. El color vuelve al
      pasar el puntero, que es cuando alguien se detiene en uno. */
-  .clientes__rejilla img {
+  .cliente img {
     max-width: 100%;
     max-height: 2.75rem;
     width: auto;
@@ -154,9 +195,15 @@ const T = {
     opacity: 0.55;
     transition: filter 0.45s var(--ease-editorial), opacity 0.45s var(--ease-editorial);
   }
-  .clientes__rejilla > li:hover img { filter: grayscale(0); opacity: 1; }
+  .cliente:hover img { filter: grayscale(0); opacity: 1; }
 
+  /* Sin movimiento: la franja se queda quieta y se recorre con el dedo o la
+     rueda, que es lo que espera quien pidió menos animación. */
   @media (prefers-reduced-motion: reduce) {
-    .clientes__rejilla img { transition: none; }
+    .marquesina { overflow-x: auto; scrollbar-width: none; }
+    .marquesina::-webkit-scrollbar { display: none; }
+    .marquesina__pista { animation: none; }
+    .marquesina__lista[aria-hidden='true'] { display: none; }
+    .cliente img { transition: none; }
   }
 </style>

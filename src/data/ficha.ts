@@ -21,6 +21,12 @@ import type { Presentacion } from './catalogo';
  *   · Empieza cada valor en mayúscula. Solo la primera letra: «PE de baja
  *     densidad» o «polipropileno rígido» vienen de la misma hoja y lo que se
  *     busca es que ninguno arranque en minúscula, no uniformar el resto.
+ *
+ *   · Rearma la composición de materiales. En el instrumental laparoscópico
+ *     la hoja la escribe por partes: un encabezado sin valor —«Tubo de
+ *     aislamiento:»— y debajo, con viñeta, de qué está hecho. Leído renglón
+ *     a renglón quedaba un solo bloque sin rótulo con ocho líneas dentro;
+ *     aquí cada parte recupera su nombre y su material.
  */
 
 export interface FilaFicha {
@@ -60,9 +66,21 @@ export function enMayuscula(s: string): string {
   return primera === primera.toUpperCase() ? t : primera.toUpperCase() + t.slice(1);
 }
 
+/** Lo que la hoja escribe con viñeta es un valor, no un renglón suelto. */
+function conVineta(s: string): boolean {
+  return /^[\s]*[•▪·*-]/.test(s);
+}
+
+interface Linea {
+  /** Venía con viñeta en la hoja. */
+  vineta: boolean;
+  rotulo: string;
+  valor: string;
+}
+
 export function fichaDe(
   pr: Presentacion,
-  rotulos: { marca: string; unidad: string; detalle: string; descripcion: string },
+  rotulos: { marca: string; unidad: string; detalle: string },
 ): Ficha {
   let medida = pr.medida;
   const filas: FilaFicha[] = [];
@@ -83,10 +101,74 @@ export function fichaDe(
     sueltas = [];
   };
 
-  for (const c of pr.caracteristicas) {
+  /* Primero se leen todas las líneas, porque para saber si una es el
+     encabezado de una parte hay que ver la siguiente. */
+  const lineas: Linea[] = pr.caracteristicas.map((c) => {
     const corte = c.indexOf(':');
-    const rotulo = corte > 0 ? sinVineta(c.slice(0, corte)) : '';
-    const valor = sinVineta(corte > 0 ? c.slice(corte + 1) : c);
+    return {
+      vineta: conVineta(c),
+      rotulo: corte > 0 ? sinVineta(c.slice(0, corte)) : '',
+      valor: sinVineta(corte > 0 ? c.slice(corte + 1) : c),
+    };
+  });
+
+  /* Encabezado de una parte: va sin viñeta y debajo, con viñeta, trae de
+     qué está hecha. O lo dice con dos puntos y sin valor —«Tubo de
+     aislamiento:»— o sin ellos —«Mango»—. Se reconoce por lo que tiene
+     debajo, no por cómo está escrito, y solo se queda con esa línea si
+     manda sobre ella sola: cuando debajo cuelga una lista entera es el
+     título de un grupo, no el nombre de una pieza.
+
+     El límite de largo y el punto final distinguen un rótulo de una frase:
+     en la hoja hay descripciones de tres renglones seguidas de más
+     renglones, y sin esto una se habría convertido en rótulo de la otra. */
+  const mandaSobreUna = (i: number): boolean => {
+    const sig = lineas[i + 1];
+    const dos = lineas[i + 2];
+    return !!sig && sig.vineta && !sig.rotulo && !!sig.valor && !(dos && dos.vineta && !dos.rotulo);
+  };
+
+  /* Título de grupo: en versales y con la lista debajo —«MATERIALES»,
+     «COMPONENTES Y MATERIALES»—. No dice nada que el propio cuadro no diga
+     ya, así que no se imprime. Se pide que tenga letras y varias, para que
+     no se lleve por delante un «12 V» ni un «(54.07%),». */
+  const esTituloDeGrupo = (l: Linea, sig: Linea | undefined): boolean => {
+    if (l.vineta || l.rotulo || !sig || !sig.vineta) return false;
+    const letras = l.valor.replace(/[^\p{L}]/gu, '');
+    return letras.length >= 4 && letras === letras.toUpperCase();
+  };
+
+  for (let i = 0; i < lineas.length; i++) {
+    const l = lineas[i];
+    const sig = lineas[i + 1];
+
+    // «Tubo de aislamiento:» sin valor: titula, nunca es dato.
+    if (!l.vineta && l.rotulo && !l.valor) {
+      if (mandaSobreUna(i)) {
+        volcar();
+        filas.push({ rotulo: enMayuscula(l.rotulo), valor: enMayuscula(sig!.valor) });
+        i++;
+      }
+      continue;
+    }
+
+    // «Mango» y debajo «- ABS»: el nombre de la pieza y su material.
+    if (
+      !l.vineta &&
+      !l.rotulo &&
+      l.valor.length <= 48 &&
+      !/[.;]$/.test(l.valor) &&
+      mandaSobreUna(i)
+    ) {
+      volcar();
+      filas.push({ rotulo: enMayuscula(l.valor), valor: enMayuscula(sig!.valor) });
+      i++;
+      continue;
+    }
+
+    if (esTituloDeGrupo(l, sig)) continue;
+
+    const { rotulo, valor } = l;
     if (!valor) continue;
 
     const valorComp = comparable(valor);
@@ -109,12 +191,10 @@ export function fichaDe(
   }
   volcar();
 
-  /* La descripción propia entra como una fila más y no como un párrafo
-     suelto: solo ocho de las noventa y seis la tienen, y colgando bajo el
-     cuadro hacía que esas ocho láminas se vieran de otra manera. */
-  if (pr.descripcion) {
-    filas.push({ rotulo: rotulos.descripcion, valor: enMayuscula(pr.descripcion) });
-  }
+  /* La descripción propia de la presentación no se publica. Repetía, con
+     otras palabras, lo que ya dice la descripción del producto unos
+     centímetros más arriba, y solo siete de las noventa y seis la traían:
+     esas siete láminas se leían distintas que las demás sin aportar nada. */
 
   return { medida: enMayuscula(medida), filas };
 }

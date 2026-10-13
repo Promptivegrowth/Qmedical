@@ -33,40 +33,35 @@ const T = {
       'Vacantes vigentes en Q-MEDICAL S.A.C. Postule en línea adjuntando su CV ' +
       'o envíenos su hoja de vida para futuras convocatorias.',
     ante: 'Trabaja con nosotros',
-    titulo: 'Abastecer salud se hace entre personas',
+    titulo: '¡Impulsa tu talento y crece con Q-MEDICAL!',
     bajada:
-      'Somos una droguería pequeña en número y exigente en método: lo que entra ' +
-      'al almacén sale con su documentación en regla. Buscamos gente que entienda ' +
-      'que detrás de cada entrega hay un paciente esperando.',
-    dato: 'años en el mercado',
+      'Buscamos personas con iniciativa, talento y ganas de crecer ' +
+      'profesionalmente. Únete a un equipo que impulsa el sector salud y sé ' +
+      'parte de una empresa que conecta soluciones médicas con las principales ' +
+      'instituciones de salud del Perú.',
+    remate: '¡Postula hoy y convierte tu talento en nuevas oportunidades!',
     porqueAnte: 'Por qué aquí',
     porqueTitulo: 'Lo que ofrecemos a quien se suma',
     razones: [
       {
         icono: 'certificado',
-        titulo: 'Un oficio con norma',
-        texto:
-          'Trabajamos bajo Buenas Prácticas de Almacenamiento certificadas por ' +
-          'DIGEMID. Aquí se aprende a hacer las cosas como deben hacerse, y eso ' +
-          'vale en cualquier empresa del sector.',
+        titulo: 'Capacitación y aprendizaje',
+        texto: 'Fortalece tus conocimientos y habilidades profesionales.',
       },
       {
         icono: 'equipo',
-        titulo: 'Un equipo que se ve',
-        texto:
-          'Somos un equipo donde cada uno sabe lo que hace el de al lado. Lo que ' +
-          'usted proponga lo escucha quien decide, sin pasar por cinco escalones.',
+        titulo: 'Oportunidades de crecimiento',
+        texto: 'Accede a nuevos retos y desarrolla tu línea de carrera.',
       },
       {
         icono: 'escudo',
-        titulo: 'Planilla desde el primer día',
+        titulo: 'Experiencia con impacto',
         texto:
-          'Contrato en planilla con todos los beneficios de ley, capacitación ' +
-          'continua en normativa sanitaria y estabilidad en una empresa con ' +
-          'veintitrés años de operación.',
+          'Participa en el abastecimiento de productos médicos para las ' +
+          'instituciones de salud públicas y privadas más importantes del Perú.',
       },
     ],
-    vacantesAnte: 'Convocatorias',
+    vacantesAnte: 'Vacantes abiertas',
     vacantesTitulo: 'Puestos disponibles',
     vacantesPie: (n: number) =>
       n === 1 ? '1 vacante vigente' : `${n} vacantes vigentes`,
@@ -97,41 +92,35 @@ const T = {
       'Current openings at Q-MEDICAL S.A.C. Apply online with your CV, or send ' +
       'us your résumé for future openings.',
     ante: 'Careers',
-    titulo: 'Supplying healthcare is done between people',
+    titulo: 'Grow your talent with Q-MEDICAL',
     bajada:
-      'We are a small drugstore with demanding methods: whatever enters the ' +
-      'warehouse leaves with its paperwork in order. We look for people who ' +
-      'understand that behind every delivery there is a patient waiting.',
-    dato: 'years in the market',
+      'We look for people with initiative, talent and a desire to grow ' +
+      'professionally. Join a team that drives the health sector and be part of ' +
+      'a company that connects medical solutions with Peru’s leading health ' +
+      'institutions.',
+    remate: 'Apply today and turn your talent into new opportunities.',
     porqueAnte: 'Why here',
     porqueTitulo: 'What we offer whoever joins',
     razones: [
       {
         icono: 'certificado',
-        titulo: 'A trade with a standard',
-        texto:
-          'We work under Good Storage Practices certified by DIGEMID. Here you ' +
-          'learn to do things the way they should be done, and that counts in ' +
-          'any company in the sector.',
+        titulo: 'Training and learning',
+        texto: 'Strengthen your professional knowledge and skills.',
       },
       {
         icono: 'equipo',
-        titulo: 'A team you can see',
-        texto:
-          'We are a team where everyone knows what the person next to them does. ' +
-          'Whatever you propose is heard by whoever decides, without going ' +
-          'through five layers.',
+        titulo: 'Room to grow',
+        texto: 'Take on new challenges and build your career path.',
       },
       {
         icono: 'escudo',
-        titulo: 'On the payroll from day one',
+        titulo: 'Work that matters',
         texto:
-          'A payroll contract with every statutory benefit, continuous training ' +
-          'in health regulations and stability in a company with twenty-three ' +
-          'years of operation.',
+          'Take part in supplying medical products to the most important public ' +
+          'and private health institutions in Peru.',
       },
     ],
-    vacantesAnte: 'Openings',
+    vacantesAnte: 'Open positions',
     vacantesTitulo: 'Current openings',
     vacantesPie: (n: number) => (n === 1 ? '1 current opening' : `${n} current openings`),
     vacio: 'There are no open positions at the moment.',
@@ -157,7 +146,6 @@ const T = {
   },
 }[lang];
 
-const anios = new Date().getFullYear() - site.fundacion;
 
 /* Lo que necesita el buscador de empleo de Google: una oferta por vacante. */
 const schema = lista.map((v) => ({
@@ -196,8 +184,9 @@ const schema = lista.map((v) => ({
     ante={T.ante}
     titulo={T.titulo}
     texto={T.bajada}
+    remate={T.remate}
     migas={[{ nombre: T.ante }]}
-    dato={{ valor: String(anios), etiqueta: T.dato }}
+    foto="/img/fotos/operario-almacen-1600.webp"
   />
 
   <!-- ── Por qué aquí ─────────────────────────────────────────────────── -->

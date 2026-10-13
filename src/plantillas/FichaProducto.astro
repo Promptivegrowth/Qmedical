@@ -97,7 +97,6 @@ const T = {
     esMarca: 'Marca',
     esUnidad: 'Unidad de venta',
     esDetalle: 'Detalle',
-    esDescripcion: 'Descripción',
     ampliar: 'Ampliar la imagen',
     cerrar: 'Cerrar',
     tambienEn: (c: string) => `También en ${c.toLowerCase()}`,
@@ -132,7 +131,6 @@ const T = {
     esMarca: 'Brand',
     esUnidad: 'Sold by',
     esDetalle: 'Detail',
-    esDescripcion: 'Description',
     ampliar: 'Enlarge the image',
     cerrar: 'Close',
     tambienEn: (c: string) => `More in ${c.toLowerCase()}`,
@@ -313,8 +311,7 @@ const schema = [
         {p.presentaciones.map((pr, i) => {
           const foto = imagenDePresentacion(origen.slug, i, 480);
           const ficha = fichaDe(pr, {
-            marca: T.esMarca, unidad: T.esUnidad,
-            detalle: T.esDetalle, descripcion: T.esDescripcion,
+            marca: T.esMarca, unidad: T.esUnidad, detalle: T.esDetalle,
           });
           return (
             <li class="presentacion" data-anim>

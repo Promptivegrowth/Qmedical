@@ -35,10 +35,10 @@ const T = {
     ante: 'Catálogo',
     titulo: 'Todo el catálogo, línea por línea',
     bajada:
-      `${productos.length} productos ordenados en ${lineasCat.length} líneas, ` +
-      'agrupadas por la función que cumplen y no por el fabricante. Cada ficha ' +
-      'publica sus características y las presentaciones disponibles.',
-    dato: 'productos publicados',
+      'Descubre nuestro amplio portafolio de dispositivos médicos para cada ' +
+      'especialidad y abastece tus servicios con la calidad y respaldo de ' +
+      'Q-Medical.',
+    remate: '¡Cotiza hoy y lleva tu abastecimiento al siguiente nivel!',
     indice: 'Índice de líneas',
     buscarRotulo: 'Buscar en el catálogo',
     buscarPista: 'Buscar producto, marca o código…',
@@ -75,10 +75,9 @@ const T = {
     ante: 'Catalogue',
     titulo: 'The whole catalogue, line by line',
     bajada:
-      `${productos.length} products sorted into ${lineasCat.length} lines, ` +
-      'grouped by the job they do rather than by manufacturer. Every page ' +
-      'publishes its features and the available presentations.',
-    dato: 'products published',
+      'Explore our broad portfolio of medical devices for every specialty and ' +
+      'supply your services with the quality and backing of Q-Medical.',
+    remate: 'Request a quotation today and take your supply to the next level.',
     indice: 'Index of lines',
     buscarRotulo: 'Search the catalogue',
     buscarPista: 'Search by product, brand or code…',
@@ -172,8 +171,8 @@ const schema = {
     ante={T.ante}
     titulo={T.titulo}
     texto={T.bajada}
+    remate={T.remate}
     migas={[{ nombre: T.ante }]}
-    dato={{ valor: String(productos.length), etiqueta: T.dato }}
   />
 
   <!-- ── Navegador del catálogo ───────────────────────────────────────
@@ -257,7 +256,7 @@ const schema = {
         </nav>
 
         <div class="resultados__alto">
-          <p id="conteo" class="resultados__cuenta" aria-live="polite">
+          <p id="conteo" class="solo-lectores" aria-live="polite">
             {t.productosCuenta(productos.length)}
           </p>
           <div class="resultados__acciones">
@@ -500,16 +499,31 @@ const schema = {
   .migas__sep { color: var(--color-tinta-45); }
 
   /* ── Resultados ───────────────────────────────────────────────────── */
+  /* Los accesos van a la derecha: la cuenta que ocupaba la izquierda ya no
+     se imprime, y «space-between» los dejaba descolgados al principio. */
   .resultados__alto {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 1rem;
     padding-bottom: 1.1rem;
     border-bottom: 1px solid var(--color-linea);
   }
-  .resultados__cuenta { font-size: 0.85rem; color: var(--color-tinta-45); }
+  /* La cuenta ya no se imprime, pero se sigue anunciando al filtrar: sin
+     ella, quien navega con lector de pantalla no sabe si el filtro encontró
+     algo. Fuera de la vista y fuera del flujo, sin desaparecer del árbol. */
+  .solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
   .resultados__acciones { display: flex; flex-wrap: wrap; gap: 0.6rem 1.25rem; }
 
   .enlace-sutil {
@@ -524,8 +538,8 @@ const schema = {
   .rejilla-catalogo {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 2.5rem 1.75rem;
-    margin-top: 2.25rem;
+    gap: 3.5rem 2.75rem;
+    margin-top: 2.75rem;
   }
   @media (min-width: 560px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -1,11 +1,11 @@
 ---
 import Icon from './Icon.astro';
 import { site, whatsapp, waMensajes } from '../data/site';
-import { lineas as lineasCat, productos, productosDeLinea, imagenPrincipal, productosDestacados } from '../data/catalogo';
+import { lineas as lineasCat, productos, productosDeLinea } from '../data/catalogo';
 import { marcas } from '../data/marcas';
 import { ruta as via, otroIdioma, NOMBRE_IDIOMA, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
-import { lineaEn, productoEn, waMensajesEn } from '../i18n/contenido';
+import { lineaEn, waMensajesEn } from '../i18n/contenido';
 
 interface Props {
   lang?: Idioma;
@@ -31,7 +31,6 @@ const lineas = lineasCat.map((c) => ({
   cuenta: t.productosCuenta(productosDeLinea(c.slug).length),
 }));
 
-const destCatalogo = productoEn(productosDestacados()[0] ?? productos[0], lang);
 
 const empresa = [
   { nombre: t.megaEmpresa.sobreNosotros, href: via(lang, 'nosotros'), nota: t.megaEmpresa.sobreNosotrosNota, icono: 'equipo' },
@@ -154,19 +153,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 
     <!-- ── Láminas del mega-menú ─────────────────────────────────────── -->
     <div class="lamina-menu" id="lamina-catalogo" data-lamina="catalogo" hidden>
-      <div class="caja lamina-menu__cuerpo">
-        <a href={via(lang, 'producto', destCatalogo.slug)} class="lamina destacado">
-          <img src={imagenPrincipal(destCatalogo.slug, 900)} width="900" height="900" alt=""
-            loading="lazy" class="destacado__img" />
-          <span class="lamina__pie">
-            <span>
-              <span class="ante ante-claro">{t.megaCatalogo.destacado}</span>
-              <span class="mt-1 block display-sm text-white">{destCatalogo.nombre}</span>
-            </span>
-            <span class="disco-flecha"><Icon name="flecha" size={17} /></span>
-          </span>
-        </a>
-
+      <div class="caja lamina-menu__cuerpo lamina-menu__cuerpo--pleno">
         <div class="lamina-menu__lista">
           <p class="ante mb-5">{t.megaCatalogo.lineas} · {lineasCat.length}</p>
           <ul class="rejilla-lineas">
@@ -523,6 +510,9 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
     gap: 3rem;
     padding-block: 0.5rem 2.75rem;
   }
+  /* La del catálogo no tiene columna de pieza destacada: las líneas ocupan
+     el ancho entero, que es lo que se viene a consultar. */
+  .lamina-menu__cuerpo--pleno { grid-template-columns: minmax(0, 1fr); }
   @media (max-width: 1180px) {
     .lamina-menu__cuerpo { grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 2rem; }
   }
@@ -550,6 +540,13 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.15rem 1rem;
+  }
+  .lamina-menu__cuerpo--pleno .rejilla-lineas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem 1.5rem;
+  }
+  @media (max-width: 1180px) {
+    .lamina-menu__cuerpo--pleno .rejilla-lineas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   .rejilla-lineas--anchas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (max-width: 1180px) { .rejilla-lineas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -71,10 +71,17 @@ const T = {
         'en compra directa como en procesos de licitación pública.',
     ],
     infraAnte: 'Infraestructura',
-    infraTitulo: 'Un almacén que responde por el producto',
+    infraTitulo: 'Capacidad operativa que responde cuando la salud lo necesita',
     infraTexto:
-      'La certificación BPA no es un sello en la pared: es un régimen de control ' +
-      'sobre la recepción, el almacenamiento, la conservación y el despacho de cada lote.',
+      'Q-MEDICAL cuenta con tres almacenes estratégicamente ubicados en Lima, ' +
+      'que cumplen con las exigencias de DIGEMID para el adecuado almacenamiento ' +
+      'y conservación de dispositivos médicos.',
+    infraCierre: 'Más capacidad logística, entregas oportunas y confianza para el sector salud.',
+    almacenes: [
+      { n: 'Almacén 01', d: 'Av. Arica 1442 — Breña' },
+      { n: 'Almacén 02', d: 'Jr. Napo 940 — Breña' },
+      { n: 'Almacén 03', d: 'Av. Venezuela 1684 — Breña' },
+    ],
     controles: [
       { t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
       { t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
@@ -92,7 +99,10 @@ const T = {
     certifTitulo:
       'Calidad que impulsa la mejora continua en todos los eslabones de la ' +
       'cadena de suministro',
-    verDocs: 'Solicitar la documentación técnica',
+    certifNota:
+      'La excelencia no se improvisa: se construye en cada etapa y se respalda ' +
+      'con certificaciones y acreditaciones internacionales que garantizan ' +
+      'calidad, confianza y compromiso con el sector salud.',
   },
   en: {
     meta: `About us — ${site.anios} years supplying Peru’s health sector`,
@@ -140,10 +150,17 @@ const T = {
         'direct purchase and through public tenders.',
     ],
     infraAnte: 'Facilities',
-    infraTitulo: 'A warehouse that answers for the product',
+    infraTitulo: 'Operating capacity that responds when health needs it',
     infraTexto:
-      'The BPA certification is not a plaque on the wall: it is a regime of control ' +
-      'over the receipt, storage, preservation and dispatch of every batch.',
+      'Q-MEDICAL has three warehouses strategically located in Lima, all meeting ' +
+      'DIGEMID requirements for the proper storage and preservation of medical ' +
+      'devices.',
+    infraCierre: 'More logistics capacity, timely deliveries and confidence for the health sector.',
+    almacenes: [
+      { n: 'Warehouse 01', d: 'Av. Arica 1442 — Breña' },
+      { n: 'Warehouse 02', d: 'Jr. Napo 940 — Breña' },
+      { n: 'Warehouse 03', d: 'Av. Venezuela 1684 — Breña' },
+    ],
     controles: [
       { t: 'Receipt', d: 'Documentary and packaging-integrity checks before any batch is admitted.' },
       { t: 'Storage', d: 'Segregated and labelled by batch and expiry date, on identified racking.' },
@@ -161,7 +178,10 @@ const T = {
     certifTitulo:
       'Quality that drives continuous improvement across every link of the ' +
       'supply chain',
-    verDocs: 'Request the technical documentation',
+    certifNota:
+      'Excellence is not improvised: it is built at every stage and backed by ' +
+      'international certifications and accreditations that guarantee quality, ' +
+      'trust and commitment to the health sector.',
   },
 }[lang];
 
@@ -253,8 +273,22 @@ const principios = valores.map((v, i) => ({
           <p class="ante ante-brand" data-anim="sube">{T.infraAnte}</p>
           <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">{T.infraTitulo}</h2>
         </div>
-        <p class="cuerpo-lg max-w-xl" data-anim="sube">{T.infraTexto}</p>
+        <div class="max-w-xl">
+          <p class="cuerpo-lg" data-anim="sube">{T.infraTexto}</p>
+          <p class="infra__cierre" data-anim="sube">{T.infraCierre}</p>
+        </div>
       </div>
+
+      <!-- Los tres almacenes. Son la prueba del párrafo de arriba, así que
+           van pegados a él y antes de los controles. -->
+      <ul class="almacenes" data-anim-grupo="70">
+        {T.almacenes.map((a) => (
+          <li class="almacen" data-anim="sube">
+            <span class="almacen__rotulo">{a.n}</span>
+            <span class="almacen__dir">{a.d}</span>
+          </li>
+        ))}
+      </ul>
 
       <ol class="controles" data-anim-grupo="70">
         {T.controles.map((c, i) => (
@@ -294,8 +328,8 @@ const principios = valores.map((v, i) => ({
     id="certificaciones"
     ante={T.certifAnte}
     titulo={T.certifTitulo}
-    a={via(lang, 'contacto', undefined, 'cotizar')}
-    aTexto={T.verDocs}
+    nota={T.certifNota}
+    aTexto={null}
   />
 
   <Clientes lang={lang} claro />
@@ -457,6 +491,35 @@ const principios = valores.map((v, i) => ({
   @media (min-width: 1024px) {
     .infra__intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
   }
+  /* ── Almacenes ────────────────────────────────────────────────────── */
+  .infra__cierre {
+    margin-top: 1.1rem;
+    font-size: 1.02rem;
+    color: var(--color-brand-700);
+  }
+  .almacenes {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 3rem;
+  }
+  @media (min-width: 760px) { .almacenes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .almacen {
+    min-width: 0;
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid var(--color-linea);
+    border-radius: 0.9rem;
+    background: color-mix(in srgb, var(--color-brand-700) 3%, transparent);
+  }
+  .almacen__rotulo {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-brand-700);
+  }
+  .almacen__dir { font-size: 1.02rem; }
+
   .controles {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));

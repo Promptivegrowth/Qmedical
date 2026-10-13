@@ -2,14 +2,13 @@
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import Hero from '../components/Hero.astro';
-import ProductoCard from '../components/ProductoCard.astro';
 import MarcasConstelacion from '../components/MarcasConstelacion.astro';
 import Clientes from '../components/Clientes.astro';
 import Especialidades from '../components/Especialidades.astro';
 import Respaldo from '../components/Respaldo.astro';
 import { site } from '../data/site';
 import { marcas } from '../data/marcas';
-import { lineas as lineasCat, productos, productosDeLinea, productosDestacados } from '../data/catalogo';
+import { lineas as lineasCat, productos, productosDeLinea } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { lineaEn, categoriaEn, empresaEn } from '../i18n/contenido';
@@ -20,7 +19,6 @@ interface Props {
 const { lang = 'es' } = Astro.props;
 const t = textos(lang);
 
-const destacados = productosDestacados().slice(0, 5);
 
 const T = {
   es: {
@@ -51,9 +49,6 @@ const T = {
     marcasDato: 'Marcas',
     productosDato: 'Productos',
     conocer: 'Conocer la empresa',
-    catalogoAnte: 'Catálogo',
-    catalogoTitulo: 'Piezas que definen la línea',
-    losProductos: (n: number) => `Los ${n} productos`,
     fotos: [
       'Nave de racks selectivos del almacén central de Q-MEDICAL',
       'Operario de Q-MEDICAL trasladando producto con transpaleta',
@@ -88,9 +83,6 @@ const T = {
     marcasDato: 'Brands',
     productosDato: 'Products',
     conocer: 'About the company',
-    catalogoAnte: 'Catalogue',
-    catalogoTitulo: 'The pieces that define the line',
-    losProductos: (n: number) => `All ${n} products`,
     fotos: [
       'Selective racking at the Q-MEDICAL central warehouse',
       'A Q-MEDICAL operator moving product with a pallet truck',
@@ -202,7 +194,7 @@ const matriz = lineasCat.map((c, i) => ({
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 02 · El compromiso -->
+  <!-- ══════════════════════════════ 03 · El compromiso -->
   <section class="aire bg-[var(--color-papel-2)]">
     <div class="caja">
       <!-- Encabezado: el titular manda a la izquierda, la nota acompaña a la
@@ -269,33 +261,6 @@ const matriz = lineasCat.map((c, i) => ({
         <a href={via(lang, 'nosotros')} class="enlace compromiso__enlace">
           {T.conocer}<Icon name="flecha" size={15} />
         </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════ 03 · Catálogo destacado -->
-  <section class="aire bg-[var(--color-papel)]">
-    <div class="caja">
-      <div class="cabecera-seccion" data-anim-grupo="80">
-        <div>
-          <p class="ante ante-brand" data-anim="sube">{T.catalogoAnte}</p>
-          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">{T.catalogoTitulo}</h2>
-        </div>
-        <a href={via(lang, 'catalogo')} class="enlace shrink-0" data-anim="sube">
-          {T.losProductos(productos.length)}<Icon name="flecha" size={15} />
-        </a>
-      </div>
-
-      <div class="mt-14" data-anim="sube">
-        <ProductoCard lang={lang} producto={destacados[0]} formato="ancha" eager />
-      </div>
-
-      <hr class="filete my-14" />
-
-      <div class="rejilla-catalogo" data-anim-grupo="70">
-        {destacados.slice(1).map((p) => (
-          <div data-anim="sube"><ProductoCard lang={lang} producto={p} /></div>
-        ))}
       </div>
     </div>
   </section>
@@ -561,12 +526,4 @@ const matriz = lineasCat.map((c, i) => ({
     justify-content: space-between;
     gap: 2rem;
   }
-  .rejilla-catalogo {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 2.5rem 1.75rem;
-  }
-  @media (min-width: 640px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-
 </style>

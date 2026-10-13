@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { imagenPrincipal, categoriaPorSlug, resumenDe, type Producto } from '../data/catalogo';
+import { imagenPrincipal, categoriaPorSlug, type Producto } from '../data/catalogo';
 import { marcaPorSlug } from '../data/marcas';
 import { ruta, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
@@ -8,23 +8,20 @@ import { categoriaEn, productoEn } from '../i18n/contenido';
 
 /**
  * Entrada de catálogo en registro magazine: la imagen manda, y bajo el filete
- * van el crédito de marca, el título y el sumario, como el pie de una foto.
+ * van el crédito de marca y el título, como el pie de una foto.
+ *
+ * Sin sumario a propósito. Con él, la retícula era un muro de párrafos
+ * cortados a tres líneas que no se leían y le robaban sitio a lo único que
+ * se mira al recorrer un catálogo: la foto y el nombre. La descripción vive
+ * en la ficha, que es donde alguien ya decidió detenerse.
  */
 interface Props {
   lang?: Idioma;
   producto: Producto;
   eager?: boolean;
   mostrarCategoria?: boolean;
-  /** `ancha` ocupa dos columnas y coloca el texto al costado. */
-  formato?: 'normal' | 'ancha';
 }
-const {
-  lang = 'es',
-  producto,
-  eager = false,
-  mostrarCategoria = true,
-  formato = 'normal',
-} = Astro.props;
+const { lang = 'es', producto, eager = false, mostrarCategoria = true } = Astro.props;
 
 const t = textos(lang);
 const p = productoEn(producto, lang);
@@ -45,13 +42,13 @@ const cat = catBase ? categoriaEn(catBase, lang) : undefined;
 const href = ruta(lang, 'producto', p.slug);
 ---
 
-<article class:list={['entrada', formato === 'ancha' && 'entrada--ancha']}>
+<article class="entrada">
   <a href={href} class="entrada__marco" tabindex="-1" aria-hidden="true">
     {img && (
       <img
         src={imgSm}
         srcset={`${imgSm} 480w, ${img} 900w`}
-        sizes={formato === 'ancha' ? '(min-width: 1024px) 40vw, 90vw' : '(min-width: 1024px) 22vw, (min-width: 640px) 44vw, 84vw'}
+        sizes="(min-width: 1024px) 22vw, (min-width: 640px) 44vw, 84vw"
         width="480" height="480" alt={p.nombre}
         loading={eager ? 'eager' : 'lazy'} decoding="async" class="entrada__img"
       />
@@ -72,8 +69,6 @@ const href = ruta(lang, 'producto', p.slug);
     <h3 class="entrada__titulo">
       <a href={href}>{p.nombre}</a>
     </h3>
-
-    <p class="entrada__sumario">{resumenDe(p, 120)}</p>
 
     <span class="entrada__accion">
       {t.verProducto}<span class="entrada__flecha"><Icon name="flecha" size={14} /></span>
@@ -105,7 +100,7 @@ const href = ruta(lang, 'producto', p.slug);
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 12%;
+    padding: 9%;
     transition: transform 0.8s var(--ease-salida);
   }
   .entrada:hover .entrada__img { transform: scale(1.06); }
@@ -150,27 +145,18 @@ const href = ruta(lang, 'producto', p.slug);
     text-transform: uppercase;
   }
 
+  /* Mayor que antes: al quitar el sumario, el nombre es lo que queda para
+     reconocer el producto, y a 1.12rem competía con el crédito de marca. */
   .entrada__titulo {
-    margin-top: 0.55rem;
+    margin-top: 0.6rem;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 1.12rem;
-    line-height: 1.24;
+    font-size: 1.28rem;
+    line-height: 1.22;
     letter-spacing: -0.008em;
   }
   /* La tarjeta entera es pulsable, pero el foco vive en el enlace del título */
   .entrada__titulo a::after { content: ''; position: absolute; inset: 0; }
-
-  .entrada__sumario {
-    margin-top: 0.55rem;
-    font-size: 0.865rem;
-    line-height: 1.55;
-    color: var(--color-tinta-70);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
 
   .entrada__accion {
     display: inline-flex;
@@ -185,17 +171,4 @@ const href = ruta(lang, 'producto', p.slug);
   .entrada__flecha { display: inline-flex; transition: transform 0.4s var(--ease-salida); }
   .entrada:hover .entrada__flecha { transform: translateX(4px); }
 
-  /* ── Formato ancho: imagen y texto en paralelo ─────────────────────── */
-  @media (min-width: 768px) {
-    .entrada--ancha {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      align-items: center;
-      gap: 2rem;
-    }
-    .entrada--ancha .entrada__marco { aspect-ratio: 4 / 3; }
-    .entrada--ancha .entrada__pie { padding-top: 0; justify-content: center; }
-    .entrada--ancha .entrada__titulo { font-size: 1.6rem; }
-    .entrada--ancha .entrada__sumario { font-size: 0.95rem; -webkit-line-clamp: 4; }
-  }
 </style>
