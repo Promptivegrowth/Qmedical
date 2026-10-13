@@ -5,6 +5,10 @@ import { lineas as lineasCat } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { lineaEn, categoriaEn, areasEn, empresaEn, waMensajesEn } from '../i18n/contenido';
+import { srcsetDe, mayorDe } from '../data/fotos';
+
+/** El fondo del pie. */
+const FONDO = '/img/fotos/almacen-pasillo-1-1600.webp';
 
 interface Props {
   lang?: Idioma;
@@ -49,8 +53,8 @@ const enlacesEmpresa = [
       <span class="cierre-hero__plano parallax" data-parallax="0.16">
       <img
         class="cierre-hero__img"
-        src="/img/fotos/almacen-pasillo-1-1600.webp"
-        srcset="/img/fotos/almacen-pasillo-1-1000.webp 1000w, /img/fotos/almacen-pasillo-1-1600.webp 1600w, /img/fotos/almacen-pasillo-1-2400.webp 2400w, /img/fotos/almacen-pasillo-1-3200.webp 3200w"
+        src={mayorDe(FONDO)}
+        srcset={srcsetDe(FONDO)}
         sizes="100vw"
         width="1600"
         height="1200"

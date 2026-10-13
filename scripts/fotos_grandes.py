@@ -14,11 +14,14 @@ ensuciarían el repositorio.
 
 Uso:  python scripts/fotos_grandes.py
 """
+import json
 import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+
+from PIL import Image  # noqa: E402
 
 from optimize_images import OUT, RETOCADAS, INSTALACIONES, emit_photo, preview_raw  # noqa: E402
 
@@ -45,20 +48,52 @@ def main():
     hechas, saltadas = 0, 0
     for archivo, nombre in INSTALACIONES:
         anchos = [ANCHO] + ([ANCHO_SANGRE] if nombre in A_SANGRE else [])
-        faltan = [w for w in anchos
-                  if not os.path.exists(P(OUT, "fotos", "%s-%d.webp" % (nombre, w)))]
-        if not faltan:
+        if all(os.path.exists(P(OUT, "fotos", "%s-%d.webp" % (nombre, w))) for w in anchos):
             saltadas += 1
             continue
+
         origen = P(RETOCADAS, archivo)
         if not os.path.exists(origen):
             print("  !! FALTA %s" % origen)
             return 1
         # Los RAW se revelan igual que en el guion grande.
         fuente = preview_raw(origen) if archivo.lower().endswith(".dng") else origen
+        ancho_fuente = fuente.width if hasattr(fuente, "width") else Image.open(fuente).width
+
+        # Nadie puede pedir más píxeles de los que tiene el original. Un RAW
+        # guarda dentro una vista previa de 1920 px, no el negativo, así que
+        # sus fotografías se quedan ahí: pedir 3200 solo escribiría otra vez
+        # el archivo de 1920 en cada pasada.
+        topes = sorted({min(w, ancho_fuente) for w in anchos})
+        faltan = [w for w in topes
+                  if not os.path.exists(P(OUT, "fotos", "%s-%d.webp" % (nombre, w)))]
+        if not faltan:
+            saltadas += 1
+            continue
+
         emit_photo(fuente, nombre, widths=tuple(faltan))
         print("  %-28s %s px" % (nombre, ", ".join(str(w) for w in faltan)))
         hechas += 1
+
+    # El índice de anchos. Las fotografías reveladas de un RAW no pasan de
+    # 1920 px —dentro del archivo hay una vista previa, no el negativo—, así
+    # que no todas tienen los mismos tamaños. Las plantillas arman el srcset
+    # leyendo esto, y así nunca ofrecen un archivo que no existe.
+    indice = {}
+    carpeta = P(OUT, "fotos")
+    for f in sorted(os.listdir(carpeta)):
+        if not f.endswith(".webp"):
+            continue
+        nombre, _, ancho = f[:-5].rpartition("-")
+        if nombre and ancho.isdigit():
+            indice.setdefault(nombre, []).append(int(ancho))
+    for n in indice:
+        indice[n] = sorted(set(indice[n]))
+
+    destino = P(os.path.dirname(HERE), "src", "data", "fotos-anchos.json")
+    with open(destino, "w", encoding="utf-8") as fh:
+        json.dump(indice, fh, ensure_ascii=False, indent=1, sort_keys=True)
+    print("Índice: %d fotografías" % len(indice))
 
     print("Listo: %d nuevas, %d ya estaban" % (hechas, saltadas))
     return 0

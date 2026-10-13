@@ -7,6 +7,14 @@ import Postular from '../components/Postular.astro';
 import { vacantes, fecha, lugarDe, metaDe } from '../data/empleos';
 import { site } from '../data/site';
 import { ruta as via, type Idioma } from '../i18n/rutas';
+import { srcsetDe, mayorDe } from '../data/fotos';
+
+/**
+ * La banda de postulación. No puede ser la del pie, que va justo debajo, ni
+ * la nave 2: aquella sale de un RAW y se queda en 1920 px, que a densidad
+ * doble se vería estirada. Esta llega a 2400.
+ */
+const BANDA = '/img/fotos/almacen-venezuela-1-1600.webp';
 
 /**
  * Trabaja con nosotros.
@@ -315,8 +323,8 @@ const schema = lista.map((v) => ({
           <!-- No puede ser la del pie: el pie va unos centímetros más abajo
                y se veían las dos a la vez. -->
           <img
-            src="/img/fotos/almacen-nave-2-1600.webp"
-            srcset="/img/fotos/almacen-nave-2-1000.webp 1000w, /img/fotos/almacen-nave-2-1600.webp 1600w, /img/fotos/almacen-nave-2-2400.webp 2400w, /img/fotos/almacen-nave-2-3200.webp 3200w"
+            src={mayorDe(BANDA)}
+            srcset={srcsetDe(BANDA)}
             sizes="(min-width: 1280px) 1200px, 94vw"
             width="1600" height="1067" alt="" loading="lazy" decoding="async"
           />

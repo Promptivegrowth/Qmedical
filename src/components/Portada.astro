@@ -2,6 +2,7 @@
 import Icon from './Icon.astro';
 import { ruta, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
+import { srcsetDe, mayorDe } from '../data/fotos';
 
 /**
  * Cabecera de página interior. Mantiene el registro de la portada —lámina
@@ -35,10 +36,8 @@ const t = textos(lang);
           la imagen se acerca. */}
       <span class="portada__plano parallax" data-parallax="0.12">
         <img
-          src={foto}
-          srcset={foto.replace('-1600.webp', '-1000.webp') + ' 1000w, ' + foto + ' 1600w, ' +
-            foto.replace('-1600.webp', '-2400.webp') + ' 2400w, ' +
-            foto.replace('-1600.webp', '-3200.webp') + ' 3200w'}
+          src={mayorDe(foto)}
+          srcset={srcsetDe(foto)}
           sizes="100vw"
           alt="" aria-hidden="true" class="portada__img"
         />
