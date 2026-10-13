@@ -294,7 +294,7 @@ const domicilio = lang === 'en'
                  marcarlo aparece el apoderado y pasa a ser obligatorio. -->
             <label class="flex items-start gap-3 sm:col-span-2">
               <input type="checkbox" name="Es menor de edad" value="Sí"
-                class="mt-1 h-4 w-4 accent-[#152e7f]" data-menor />
+                class="mt-1 h-4 w-4 accent-[var(--color-brand-700)]" data-menor />
               <span class="text-sm leading-relaxed">{T.lMenor}</span>
             </label>
             <label class="sm:col-span-2" data-apoderado hidden>
@@ -343,11 +343,11 @@ const domicilio = lang === 'en'
               <span class="rotulo">{T.lTipoRegistro}</span>
               <div class="mt-2 flex flex-wrap gap-3">
                 <label class="opcion">
-                  <input type="radio" name="Tipo de reclamación" value="Reclamo" required class="h-4 w-4 accent-[#152e7f]" />
+                  <input type="radio" name="Tipo de reclamación" value="Reclamo" required class="h-4 w-4 accent-[var(--color-brand-700)]" />
                   {T.reclamo}
                 </label>
                 <label class="opcion">
-                  <input type="radio" name="Tipo de reclamación" value="Queja" class="h-4 w-4 accent-[#152e7f]" />
+                  <input type="radio" name="Tipo de reclamación" value="Queja" class="h-4 w-4 accent-[var(--color-brand-700)]" />
                   {T.queja}
                 </label>
               </div>
@@ -367,7 +367,7 @@ const domicilio = lang === 'en'
 
             <label class="flex items-start gap-3">
               <input type="checkbox" name="Declaración de veracidad" value="Sí, declaro que la información es veraz"
-                required class="mt-1 h-4 w-4 shrink-0 accent-[#152e7f]" />
+                required class="mt-1 h-4 w-4 shrink-0 accent-[var(--color-brand-700)]" />
               <span class="text-[0.83rem] leading-relaxed text-[var(--color-tinta-70)]">{T.declaracion}</span>
             </label>
           </div>

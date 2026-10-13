@@ -78,7 +78,7 @@ const lema = lang === 'en'
     justify-content: center;
     background: #fff;
     background-image:
-      radial-gradient(120% 90% at 50% 0%, #f2f5fc 0%, #fff 62%);
+      radial-gradient(120% 90% at 50% 0%, var(--color-brand-50) 0%, #fff 62%);
   }
   /* Debe seguir presente durante `is-loaded` para que el desvanecido se vea:
      una animación no se ejecuta sobre un elemento con `display: none`. */
@@ -126,9 +126,9 @@ const lema = lang === 'en'
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
   }
-  .ecg-base { stroke: #dbe1f4; }
+  .ecg-base { stroke: var(--color-brand-100); }
   .ecg-trace {
-    stroke: #152e7f;
+    stroke: var(--color-brand-700);
     stroke-dasharray: 0.22 1;
     animation: ecg 1.55s linear infinite;
     filter: drop-shadow(0 0 5px rgba(21, 46, 127, 0.35));
@@ -144,7 +144,7 @@ const lema = lang === 'en'
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #8e9fd8;
+    color: var(--color-brand-300);
   }
 
   .preloader__bar {
@@ -153,14 +153,14 @@ const lema = lang === 'en'
     height: 2px;
     margin: 1.2rem auto 0;
     overflow: hidden;
-    background: #e3e7ee;
+    background: var(--color-brand-100);
     border-radius: 999px;
   }
   .preloader__bar span {
     position: absolute;
     inset: 0;
     display: block;
-    background: #152e7f;
+    background: var(--color-brand-700);
     transform: translateX(-100%);
     animation: bar 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
