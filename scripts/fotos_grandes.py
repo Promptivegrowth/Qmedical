@@ -25,6 +25,9 @@ from PIL import Image  # noqa: E402
 
 from optimize_images import OUT, RETOCADAS, INSTALACIONES, emit_photo, preview_raw  # noqa: E402
 
+# Los tamaños que genera también la pasada completa. Se repiten aquí para
+# que una fotografía recién entregada no obligue a rehacer las doscientas.
+BASICOS = (640, 1000, 1600)
 ANCHO = 2400
 
 # Las que se sirven a sangre —cabeceras de escena, la banda de postulación y
@@ -33,6 +36,7 @@ ANCHO = 2400
 # le suma algo más. Las de galería no lo necesitan: nunca ocupan el ancho
 # entero.
 A_SANGRE = {
+    "equipo-almacen",
     "almacen-racks-1",
     "almacen-pasillo-1",
     "almacen-pasillo-2",
@@ -47,7 +51,7 @@ P = os.path.join
 def main():
     hechas, saltadas = 0, 0
     for archivo, nombre in INSTALACIONES:
-        anchos = [ANCHO] + ([ANCHO_SANGRE] if nombre in A_SANGRE else [])
+        anchos = list(BASICOS) + [ANCHO] + ([ANCHO_SANGRE] if nombre in A_SANGRE else [])
         if all(os.path.exists(P(OUT, "fotos", "%s-%d.webp" % (nombre, w))) for w in anchos):
             saltadas += 1
             continue

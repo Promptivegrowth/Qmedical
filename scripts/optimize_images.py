@@ -459,6 +459,9 @@ INSTALACIONES = [
     ("Almacén Venezuela (3) - sin señalética.jpg", "almacen-venezuela-3-limpia"),
     # El unico plano con figura humana.
     ("Foto operario almacen.png", "operario-almacen"),
+    # Entrega del 13 de octubre de 2026: el equipo trabajando, con la marca
+    # en las cajas y en las casacas. Es la cabecera de «Trabaja con nosotros».
+    ("Equipo almacen.png", "equipo-almacen"),
 ]
 
 

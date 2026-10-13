@@ -86,10 +86,10 @@ const T = {
       { n: 'Almacén 03', d: 'Av. Venezuela 1684 — Breña' },
     ],
     controles: [
-      { t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
-      { t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
-      { t: 'Rotación', d: 'Bajo criterio de primero en vencer, primero en salir, sin excepciones.' },
-      { t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
+      { ic: 'documento', t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
+      { ic: 'almacen', t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
+      { ic: 'reloj', t: 'Rotación', d: 'Bajo criterio de primero en vencer, primero en salir, sin excepciones.' },
+      { ic: 'buscar', t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
     ],
     fotos: [
       'Racks del almacén central de Q-MEDICAL, con producto rotulado por lote',
@@ -166,10 +166,10 @@ const T = {
       { n: 'Warehouse 03', d: 'Av. Venezuela 1684 — Breña' },
     ],
     controles: [
-      { t: 'Receipt', d: 'Documentary and packaging-integrity checks before any batch is admitted.' },
-      { t: 'Storage', d: 'Segregated and labelled by batch and expiry date, on identified racking.' },
-      { t: 'Rotation', d: 'First to expire, first out — without exception.' },
-      { t: 'Traceability', d: 'Records that trace any unit from receipt through to dispatch.' },
+      { ic: 'documento', t: 'Receipt', d: 'Documentary and packaging-integrity checks before any batch is admitted.' },
+      { ic: 'almacen', t: 'Storage', d: 'Segregated and labelled by batch and expiry date, on identified racking.' },
+      { ic: 'reloj', t: 'Rotation', d: 'First to expire, first out — without exception.' },
+      { ic: 'buscar', t: 'Traceability', d: 'Records that trace any unit from receipt through to dispatch.' },
     ],
     fotos: [
       'Racking at the Q-MEDICAL central warehouse, with product labelled by batch',
@@ -326,10 +326,17 @@ const principios = valores.map((v, i) => ({
         ))}
       </ul>
 
-      <ol class="controles" data-anim-grupo="70">
+      <!-- Los cuatro controles son un proceso, no cuatro datos sueltos: por
+           eso van unidos por una línea que se traza de principio a fin
+           cuando la sección entra en pantalla, y cada paso enciende su
+           pictograma al llegarle el turno. -->
+      <ol class="controles" data-anim data-anim-grupo="160">
         {T.controles.map((c, i) => (
           <li class="control" data-anim="sube">
-            <span class="folio">{String(i + 1).padStart(2, '0')}</span>
+            <span class="control__marca">
+              <span class="control__ic"><Icon name={c.ic} size={24} stroke={1.15} anim /></span>
+            </span>
+            <span class="folio control__folio">{String(i + 1).padStart(2, '0')}</span>
             <h3 class="control__titulo">{c.t}</h3>
             <p class="control__texto">{c.d}</p>
           </li>
@@ -679,7 +686,15 @@ const principios = valores.map((v, i) => ({
   }
   .almacen__dir { font-size: 1.02rem; }
 
+  /* ── Los cuatro controles, como un proceso ────────────────────────
+     Eran cuatro columnas separadas por un filete: cuatro datos sueltos.
+     Son los cuatro pasos por los que pasa un lote, en orden, así que ahora
+     se leen como una línea de tiempo: un trazo que los une y se dibuja de
+     principio a fin, y cada paso con su disco, que enciende su pictograma
+     al llegarle el turno. Con una o dos columnas el trazo no diría nada y
+     no se pinta. */
   .controles {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 0;
@@ -689,6 +704,62 @@ const principios = valores.map((v, i) => ({
   @media (min-width: 640px) { .controles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1100px) { .controles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .control { padding: 1.75rem 1.5rem 1.75rem 0; border-bottom: 1px solid var(--color-linea); }
+
+  @media (min-width: 1100px) {
+    .control { padding-top: 2.5rem; }
+
+    /* El trazo del proceso, a la altura del centro de los discos. */
+    .controles::before {
+      content: '';
+      position: absolute;
+      top: 4rem;
+      left: 1.5rem;
+      right: 1.5rem;
+      height: 2px;
+      background: linear-gradient(to right, var(--color-brand-200), var(--color-brand-700));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.6s var(--ease-salida) 0.2s;
+    }
+    .controles.visible::before { transform: scaleX(1); }
+  }
+
+  /* Solo el disco se apoya en el trazo. El folio bajó al pie del disco: en
+     la misma línea, el trazo lo atravesaba de lado a lado. */
+  .control__marca {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.1rem;
+  }
+  .control__ic {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    /* El halo de papel tapa el trazo por detrás del disco: así la línea
+       entra y sale de cada paso en vez de cruzarlo. */
+    box-shadow: 0 0 0 7px var(--color-papel);
+    transition: background-color 0.45s var(--ease-editorial),
+      color 0.45s var(--ease-editorial), transform 0.5s var(--ease-salida);
+  }
+  .control:hover .control__ic {
+    background: var(--color-brand-700);
+    color: #fff;
+    transform: scale(1.06);
+  }
+  .control__folio { display: block; font-size: 0.8rem; margin-bottom: 0.4rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .controles::before { transition: none; transform: scaleX(1); }
+    .control__ic { transition: none; }
+    .control:hover .control__ic { transform: none; }
+  }
   @media (min-width: 1100px) {
     .control { border-bottom: 0; }
     .control + .control { border-left: 1px solid var(--color-linea); padding-left: 1.75rem; }
