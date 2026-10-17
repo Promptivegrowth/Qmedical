@@ -27,6 +27,7 @@ const es = {
   verEn: (n: string) => `Ver esta página en ${n}`,
 
   nav: {
+    inicio: 'Inicio',
     nosotros: 'Nosotros',
     catalogo: 'Catálogo',
     empresa: 'Empresa',
@@ -37,7 +38,7 @@ const es = {
 
   megaCatalogo: {
     lineas: 'Líneas de producto',
-    todo: (n: number) => `Todo el catálogo · ${n} productos`,
+    todo: 'Ver todo el catálogo',
     cotizar: 'Solicitar una cotización',
   },
   megaEmpresa: {
@@ -46,7 +47,7 @@ const es = {
     sobreNosotros: 'Sobre nosotros',
     sobreNosotrosNota: 'Quiénes somos y cómo trabajamos',
     almacen: 'Nuestro almacén',
-    marcasNota: (n: number) => `${n} fabricantes representados`,
+    marcasNota: 'Los fabricantes que representamos',
     infraestructura: 'Infraestructura',
     infraestructuraNota: 'Almacén certificado BPA',
     certificaciones: 'Certificaciones',
@@ -88,6 +89,7 @@ const es = {
     lineas: 'Líneas de producto',
     empresa: 'Empresa',
     contacto: 'Contacto',
+    celular: 'Celular',
     correos: 'Correos por área',
     nosotros: 'Nosotros',
     catalogo: 'Catálogo',
@@ -153,6 +155,7 @@ const en: typeof es = {
   verEn: (n: string) => `View this page in ${n}`,
 
   nav: {
+    inicio: 'Home',
     nosotros: 'About us',
     catalogo: 'Catalogue',
     empresa: 'Company',
@@ -163,7 +166,7 @@ const en: typeof es = {
 
   megaCatalogo: {
     lineas: 'Product lines',
-    todo: (n: number) => `Full catalogue · ${n} products`,
+    todo: 'See the full catalogue',
     cotizar: 'Request a quotation',
   },
   megaEmpresa: {
@@ -172,7 +175,7 @@ const en: typeof es = {
     sobreNosotros: 'About us',
     sobreNosotrosNota: 'Who we are and how we work',
     almacen: 'Our warehouse',
-    marcasNota: (n: number) => `${n} manufacturers represented`,
+    marcasNota: 'The manufacturers we represent',
     infraestructura: 'Facilities',
     infraestructuraNota: 'BPA-certified warehouse',
     certificaciones: 'Certifications',
@@ -212,6 +215,7 @@ const en: typeof es = {
     lineas: 'Product lines',
     empresa: 'Company',
     contacto: 'Contact',
+    celular: 'Mobile',
     correos: 'Email by department',
     nosotros: 'About us',
     catalogo: 'Catalogue',

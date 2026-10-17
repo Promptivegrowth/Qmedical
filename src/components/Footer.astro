@@ -144,11 +144,7 @@ const enlacesEmpresa = [
           </li>
           <li class="flex gap-3">
             <Icon name="telefono" size={16} class="mt-0.5 shrink-0 text-white/30" />
-            <span>
-              {site.telefonos.map((t, i) => (
-                <>{i > 0 && <br />}<a href={t.href} class="pie__enlace" data-vivo={i === 0 ? 'telefono-principal' : undefined}>{t.etiqueta}</a></>
-              ))}
-            </span>
+            <a href={site.telefonos[0].href} class="pie__enlace" data-vivo="telefono-principal">{site.telefonos[0].etiqueta}</a>
           </li>
           <li class="flex gap-3">
             <Icon name="correo" size={16} class="mt-0.5 shrink-0 text-white/30" />
@@ -158,6 +154,17 @@ const enlacesEmpresa = [
             <Icon name="reloj" size={16} class="mt-0.5 shrink-0 text-white/30" />
             <span class="text-white/70" data-vivo="horario">{horario}</span>
           </li>
+          {/* El celular va en su propia fila, debajo del horario: es donde la
+              empresa lo marcó en sus observaciones. */}
+          {site.telefonos[1] && (
+            <li class="flex gap-3">
+              <Icon name="telefono" size={16} class="mt-0.5 shrink-0 text-white/30" />
+              <span>
+                <span class="text-white/45">{t.pie.celular}: </span>
+                <a href={site.telefonos[1].href} class="pie__enlace">{site.telefonos[1].etiqueta}</a>
+              </span>
+            </li>
+          )}
         </ul>
       </div>
     </div>
@@ -205,7 +212,8 @@ const enlacesEmpresa = [
 
 <style>
   .pie {
-    background: var(--color-brand-700);
+    background: var(--color-brand-900);
+    background-image: var(--fondo-marino);
     color: #fff;
   }
 
@@ -257,12 +265,12 @@ const enlacesEmpresa = [
     background:
       linear-gradient(
         to right,
-        rgba(6, 12, 36, 0.92) 0%,
-        rgba(6, 12, 36, 0.82) 38%,
-        rgba(6, 12, 36, 0.5) 68%,
-        rgba(6, 12, 36, 0.34) 100%
+        rgb(4 26 66 / 0.92) 0%,
+        rgb(4 26 66 / 0.82) 38%,
+        rgb(4 26 66 / 0.5) 68%,
+        rgb(4 26 66 / 0.34) 100%
       ),
-      linear-gradient(to top, rgba(6, 12, 36, 0.45) 0%, rgba(6, 12, 36, 0.1) 55%, transparent 100%);
+      linear-gradient(to top, rgb(4 26 66 / 0.45) 0%, rgb(4 26 66 / 0.1) 55%, transparent 100%);
   }
   .cierre-hero__trama { position: absolute; inset: 0; opacity: 0.35; }
   .cierre-hero__cuerpo { position: relative; }

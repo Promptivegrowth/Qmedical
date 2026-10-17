@@ -6,22 +6,23 @@ import CtaContacto from '../components/CtaContacto.astro';
 import Respaldo from '../components/Respaldo.astro';
 import Clientes from '../components/Clientes.astro';
 import { site, valores } from '../data/site';
-import { marcas } from '../data/marcas';
-import { lineas, productos } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { valoresEn } from '../i18n/contenido';
+import { fotoEspecialidad } from '../data/especialidades';
 
 interface Props {
   lang?: Idioma;
 }
 const { lang = 'es' } = Astro.props;
 
+// Las cinco fotografías del almacén central que entregó la empresa en
+// octubre de 2026, en lugar de las anteriores.
 const FOTOS = [
-  { src: 'almacen-racks-1', ancho: true },
-  { src: 'almacen-pasillo-3' },
-  { src: 'almacen-venezuela-3-limpia' },
-  { src: 'almacen-venezuela-1' },
-  { src: 'almacen-venezuela-2' },
+  { src: 'almacen-central-3', ancho: true },
+  { src: 'almacen-central-2' },
+  { src: 'almacen-central-1' },
+  { src: 'almacen-central-4' },
+  { src: 'almacen-central-5' },
 ];
 
 const T = {
@@ -41,13 +42,13 @@ const T = {
     dato: 'años de operación',
     cifras: [
       { v: site.fundacion, e: 'Año de fundación', n: 'Más de dos décadas en el sector', anio: true },
-      { v: marcas.length, e: 'Marcas representadas', n: 'Fabricantes de todo el mundo' },
-      { v: productos.length, e: 'Productos en catálogo', n: `En ${lineas.length} líneas` },
+      { v: 3, e: 'Almacenes', n: 'Estratégicamente ubicados en Breña' },
+      { v: 3, e: 'Certificaciones', n: 'BPA · ISO 37001 · ISO 14001' },
     ],
     quienesAnte: 'Quiénes somos',
     quienesTitulo: 'Su aliado estratégico en insumos y dispositivos médicos',
     quienesEntrada:
-      'Q-MEDICAL S.A.C.: más de 20 años asegurando el abastecimiento del sector ' +
+      'Q-MEDICAL: más de 20 años asegurando el abastecimiento del sector ' +
       'salud en el Perú.',
     quienesTexto:
       'Somos una empresa peruana especializada en la comercialización y ' +
@@ -64,44 +65,37 @@ const T = {
       { i: 'nutricion', f: 'nutricion-enteral', t: 'Nutrición enteral y parenteral' },
       { i: 'instrumental', f: 'enfermeria', t: 'Material médico no instrumental' },
     ],
-    quienesCierre: [
-      'Más que productos, entregamos confianza, respaldo y trazabilidad. Cada ' +
-        'solución llega con documentación técnica, soporte especializado y una ' +
-        'atención personalizada, para que su institución opere con seguridad, ' +
-        'eficiencia y continuidad.',
-      'Atendemos compras directas y procesos de licitación pública y privada, ' +
-        'con un equipo profesional comprometido en responder con rapidez, ' +
-        'precisión y soluciones a la medida del sector salud.',
-    ],
     infraAnte: 'Infraestructura',
     infraTitulo: 'Capacidad operativa que responde cuando la salud lo necesita',
     infraTexto:
-      'Q-MEDICAL cuenta con tres almacenes estratégicamente ubicados en Lima, ' +
-      'que cumplen con las exigencias de DIGEMID para el adecuado almacenamiento ' +
-      'y conservación de dispositivos médicos.',
+      'Q-MEDICAL cuenta con tres almacenes estratégicamente ubicados, que ' +
+      'cumplen con las exigencias de DIGEMID para el adecuado almacenamiento y ' +
+      'conservación de dispositivos médicos.',
     infraCierre: 'Más capacidad logística, entregas oportunas y confianza para el sector salud.',
     almacenes: [
       { n: 'Almacén 01', d: 'Av. Arica 1442 — Breña' },
       { n: 'Almacén 02', d: 'Jr. Napo 940 — Breña' },
       { n: 'Almacén 03', d: 'Av. Venezuela 1684 — Breña' },
     ],
+    // Los cuatro que entregó la empresa en OBSERVACIONES 3.
     controles: [
-      { ic: 'documento', t: 'Recepción', d: 'Verificación documental y de integridad de empaque antes de ingresar cualquier lote.' },
-      { ic: 'almacen', t: 'Almacenamiento', d: 'Segregado y rotulado por lote y fecha de vencimiento, en racks identificados.' },
-      { ic: 'reloj', t: 'Rotación', d: 'Bajo criterio de primero en vencer, primero en salir, sin excepciones.' },
-      { ic: 'buscar', t: 'Trazabilidad', d: 'Registro que permite rastrear cualquier unidad desde la recepción hasta el despacho.' },
+      { ic: 'almacen', t: 'Infraestructura especializada', d: 'Tres almacenes estratégicamente ubicados para respaldar nuestra operación logística.' },
+      { ic: 'escudo', t: 'Conservación garantizada', d: 'Condiciones de almacenamiento orientadas a preservar la integridad y calidad de los dispositivos médicos.' },
+      { ic: 'entrega', t: 'Respuesta logística', d: 'Una operación organizada y eficiente para atender los requerimientos de abastecimiento de nuestros clientes.' },
+      { ic: 'buscar', t: 'Control y trazabilidad', d: 'Seguimiento de los productos para respaldar el control desde su recepción hasta su despacho.' },
     ],
     fotos: [
-      'Racks del almacén central de Q-MEDICAL, con producto rotulado por lote',
-      'Pasillo entre racks, con producto rotulado por lote',
-      'Carga paletizada en el almacén de la avenida Venezuela',
-      'Zona de acopio con producto paletizado y señalización de piso',
-      'Pasillo entre pallets en el almacén de la avenida Venezuela',
+      'Pasillo central del almacén de Q-MEDICAL, con racks a ambos lados',
+      'Apilador eléctrico y transpaleta entre los racks del almacén',
+      'Racks selectivos con producto paletizado',
+      'Racks con cajas rotuladas y pallets identificados',
+      'Pasillo entre racks, con producto ordenado por niveles',
     ],
     certifAnte: 'Certificaciones y acreditaciones',
-    certifTitulo:
-      'Calidad que impulsa la mejora continua en todos los eslabones de la ' +
-      'cadena de suministro',
+    certifTitulo: [
+      'Calidad que impulsa la mejora continua',
+      'en todos los eslabones de la cadena de suministro',
+    ] as [string, string],
     certifNota:
       'La excelencia no se improvisa: se construye en cada etapa y se respalda ' +
       'con certificaciones y acreditaciones internacionales que garantizan ' +
@@ -123,13 +117,13 @@ const T = {
     dato: 'years in operation',
     cifras: [
       { v: site.fundacion, e: 'Year founded', n: 'More than two decades in the sector', anio: true },
-      { v: marcas.length, e: 'Brands represented', n: 'Manufacturers worldwide' },
-      { v: productos.length, e: 'Products in the catalogue', n: `Across ${lineas.length} lines` },
+      { v: 3, e: 'Warehouses', n: 'Strategically located in Breña' },
+      { v: 3, e: 'Certifications', n: 'BPA · ISO 37001 · ISO 14001' },
     ],
     quienesAnte: 'Who we are',
     quienesTitulo: 'Your strategic partner in medical supplies and devices',
     quienesEntrada:
-      'Q-MEDICAL S.A.C.: more than 20 years securing supply for Peru’s health sector.',
+      'Q-MEDICAL: more than 20 years securing supply for Peru’s health sector.',
     quienesTexto:
       'We are a Peruvian company specialising in the supply and distribution of ' +
       'medical devices, hospital consumables, biosafety products and personal ' +
@@ -144,19 +138,10 @@ const T = {
       { i: 'nutricion', f: 'nutricion-enteral', t: 'Enteral and parenteral nutrition' },
       { i: 'instrumental', f: 'enfermeria', t: 'Non-instrumental medical supplies' },
     ],
-    quienesCierre: [
-      'More than products, we deliver trust, backing and traceability. Every ' +
-        'solution arrives with its technical documentation, specialist support ' +
-        'and personal attention, so your institution runs safely, efficiently ' +
-        'and without interruption.',
-      'We handle direct purchases as well as public and private tenders, with a ' +
-        'professional team committed to responding quickly, precisely and with ' +
-        'solutions tailored to the health sector.',
-    ],
     infraAnte: 'Facilities',
     infraTitulo: 'Operating capacity that responds when health needs it',
     infraTexto:
-      'Q-MEDICAL has three warehouses strategically located in Lima, all meeting ' +
+      'Q-MEDICAL has three strategically located warehouses, all meeting ' +
       'DIGEMID requirements for the proper storage and preservation of medical ' +
       'devices.',
     infraCierre: 'More logistics capacity, timely deliveries and confidence for the health sector.',
@@ -166,22 +151,23 @@ const T = {
       { n: 'Warehouse 03', d: 'Av. Venezuela 1684 — Breña' },
     ],
     controles: [
-      { ic: 'documento', t: 'Receipt', d: 'Documentary and packaging-integrity checks before any batch is admitted.' },
-      { ic: 'almacen', t: 'Storage', d: 'Segregated and labelled by batch and expiry date, on identified racking.' },
-      { ic: 'reloj', t: 'Rotation', d: 'First to expire, first out — without exception.' },
-      { ic: 'buscar', t: 'Traceability', d: 'Records that trace any unit from receipt through to dispatch.' },
+      { ic: 'almacen', t: 'Specialised infrastructure', d: 'Three strategically located warehouses backing our logistics operation.' },
+      { ic: 'escudo', t: 'Guaranteed preservation', d: 'Storage conditions aimed at preserving the integrity and quality of medical devices.' },
+      { ic: 'entrega', t: 'Logistics response', d: 'An organised, efficient operation to meet our clients’ supply requirements.' },
+      { ic: 'buscar', t: 'Control and traceability', d: 'Product tracking that supports control from receipt through to dispatch.' },
     ],
     fotos: [
-      'Racking at the Q-MEDICAL central warehouse, with product labelled by batch',
-      'Aisle between racking, with product labelled by batch',
-      'Palletised load at the Avenida Venezuela warehouse',
-      'Collection area with palletised product and floor markings',
-      'Aisle between pallets at the Avenida Venezuela warehouse',
+      'Central aisle of the Q-MEDICAL warehouse, with racking on both sides',
+      'Electric stacker and pallet truck between the warehouse racks',
+      'Selective racking with palletised product',
+      'Racking with labelled boxes and identified pallets',
+      'Aisle between racks, with product arranged by level',
     ],
     certifAnte: 'Certifications and accreditations',
-    certifTitulo:
-      'Quality that drives continuous improvement across every link of the ' +
-      'supply chain',
+    certifTitulo: [
+      'Quality that drives continuous improvement',
+      'across every link of the supply chain',
+    ] as [string, string],
     certifNota:
       'Excellence is not improvised: it is built at every stage and backed by ' +
       'international certifications and accreditations that guarantee quality, ' +
@@ -248,12 +234,10 @@ const principios = valores.map((v, i) => ({
        lo que queda de texto son tres bloques cortos con aire entre ellos. -->
   <section class="aire bg-[var(--color-papel)]">
     <div class="caja">
-      <div class="quienes" data-anim-grupo="90">
-        <div>
-          <p class="ante ante-brand" data-anim="sube">{T.quienesAnte}</p>
-          <h2 class="display-lg mt-5 max-w-[20ch]" data-anim="sube">{T.quienesTitulo}</h2>
-        </div>
-        <div data-anim="sube">
+      <p class="ante ante-brand" data-anim="sube">{T.quienesAnte}</p>
+      <div class="quienes alto-alineado" data-anim-grupo="90">
+        <h2 class="display-lg max-w-[20ch]" data-anim="sube">{T.quienesTitulo}</h2>
+        <div class="alto-alineado__texto" data-anim="sube">
           <p class="quienes__entrada">{T.quienesEntrada}</p>
           <p class="cuerpo-lg mt-6">{T.quienesTexto}</p>
         </div>
@@ -264,7 +248,10 @@ const principios = valores.map((v, i) => ({
         {T.portafolio.map((p) => (
           <li class="area" data-anim="sube">
             <span class="area__foto">
-              <img src={`/img/especialidades/${p.f}-480.webp`} width="480" height="480"
+              <img src={fotoEspecialidad(p.f, 480)}
+                srcset={`${fotoEspecialidad(p.f, 480)} 480w, ${fotoEspecialidad(p.f, 960)} 960w`}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                width="480" height="480"
                 alt="" loading="lazy" decoding="async" />
               <span class="area__velo" aria-hidden="true"></span>
             </span>
@@ -274,9 +261,6 @@ const principios = valores.map((v, i) => ({
         ))}
       </ul>
 
-      <div class="quienes__cierre" data-anim-grupo="80">
-        {T.quienesCierre.map((parrafo) => <p data-anim="sube">{parrafo}</p>)}
-      </div>
     </div>
   </section>
 
@@ -304,12 +288,10 @@ const principios = valores.map((v, i) => ({
   <!-- ── Infraestructura ─────────────────────────────────────────────── -->
   <section id="infraestructura" class="aire scroll-mt-20 bg-[var(--color-papel)]">
     <div class="caja">
-      <div class="infra__intro" data-anim-grupo="80">
-        <div>
-          <p class="ante ante-brand" data-anim="sube">{T.infraAnte}</p>
-          <h2 class="display-lg mt-5 max-w-[14ch]" data-anim="sube">{T.infraTitulo}</h2>
-        </div>
-        <div class="max-w-xl">
+      <p class="ante ante-brand" data-anim="sube">{T.infraAnte}</p>
+      <div class="infra__intro alto-alineado" data-anim-grupo="80">
+        <h2 class="display-lg max-w-[14ch]" data-anim="sube">{T.infraTitulo}</h2>
+        <div class="alto-alineado__texto max-w-xl">
           <p class="cuerpo-lg" data-anim="sube">{T.infraTexto}</p>
           <p class="infra__cierre" data-anim="sube">{T.infraCierre}</p>
         </div>
@@ -372,8 +354,8 @@ const principios = valores.map((v, i) => ({
     id="certificaciones"
     ante={T.certifAnte}
     titulo={T.certifTitulo}
+    texto={null}
     nota={T.certifNota}
-    aTexto={null}
   />
 
   <Clientes lang={lang} claro />
@@ -448,7 +430,7 @@ const principios = valores.map((v, i) => ({
   .area:hover {
     background: var(--color-brand-100);
     transform: translateY(-5px);
-    box-shadow: 0 30px 55px -38px rgba(21, 46, 127, 0.6);
+    box-shadow: 0 30px 55px -38px rgb(8 59 128 / 0.6);
   }
 
   .area__foto {
@@ -490,7 +472,7 @@ const principios = valores.map((v, i) => ({
     border-radius: 999px;
     background: var(--color-papel);
     color: var(--color-brand-700);
-    box-shadow: 0 10px 22px -12px rgba(21, 46, 127, 0.55);
+    box-shadow: 0 10px 22px -12px rgb(8 59 128 / 0.55);
     transition: background-color 0.45s var(--ease-editorial),
       color 0.45s var(--ease-editorial), transform 0.5s var(--ease-salida);
   }
@@ -512,22 +494,7 @@ const principios = valores.map((v, i) => ({
     .area:hover .area__foto img, .area:hover .area__ic { transform: none; }
   }
 
-  .quienes__cierre {
-    display: grid;
-    gap: 1.5rem;
-    margin-top: 3.5rem;
-    font-size: 1.02rem;
-    line-height: 1.68;
-    color: var(--color-tinta-70);
-  }
-  @media (min-width: 900px) {
-    .quienes__cierre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
-  }
-
-  .quienes { display: grid; gap: 2.5rem; }
-  @media (min-width: 1024px) {
-    .quienes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4.5rem; align-items: start; }
-  }
+  .quienes { margin-top: 1.25rem; }
 
   /* ── Valores ──────────────────────────────────────────────────────────
      Antes eran tres columnas separadas por filetes, encabezadas por 01, 02 y
@@ -564,7 +531,7 @@ const principios = valores.map((v, i) => ({
   .valores > li:is(:hover, :focus-within) .valor {
     --alza: -6px;
     border-color: var(--color-brand-300);
-    box-shadow: 0 28px 55px -30px rgba(27, 47, 122, 0.42);
+    box-shadow: 0 28px 55px -30px rgb(8 59 128 / 0.42);
   }
 
   /* Filo de luz sobre el canto superior: se traza de dentro hacia fuera al
@@ -653,10 +620,7 @@ const principios = valores.map((v, i) => ({
   }
 
   /* ── Infraestructura ──────────────────────────────────────────────── */
-  .infra__intro { display: grid; gap: 2.5rem; }
-  @media (min-width: 1024px) {
-    .infra__intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
-  }
+  .infra__intro { margin-top: 1.25rem; }
   /* ── Almacenes ────────────────────────────────────────────────────── */
   .infra__cierre {
     margin-top: 1.1rem;

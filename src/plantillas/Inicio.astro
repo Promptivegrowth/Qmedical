@@ -7,8 +7,7 @@ import Clientes from '../components/Clientes.astro';
 import Especialidades from '../components/Especialidades.astro';
 import Respaldo from '../components/Respaldo.astro';
 import { site } from '../data/site';
-import { marcas } from '../data/marcas';
-import { lineas as lineasCat, productos, productosDeLinea, imagenPrincipal } from '../data/catalogo';
+import { lineas as lineasCat, productosDeLinea, imagenPrincipal } from '../data/catalogo';
 import { ruta as via, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { lineaEn, categoriaEn, productoEn, empresaEn } from '../i18n/contenido';
@@ -26,10 +25,6 @@ const T = {
     metaDesc: site.descripcion,
     lineasAnte: 'Líneas de producto',
     lineasTitulo: 'El catálogo, ordenado en once líneas',
-    lineasTexto:
-      'Cada línea agrupa los productos por la función que cumplen, no por el ' +
-      'proveedor que los fabrica. Así el área usuaria encuentra lo que busca ' +
-      'por donde lo busca.',
     verCatalogo: 'Ver el catálogo completo',
     lineasCierre: 'Las once líneas, con el buscador y los filtros por categoría.',
     selloBpa: 'Almacén certificado BPA',
@@ -42,15 +37,12 @@ const T = {
       'Así su institución opera con seguridad, eficiencia y continuidad, en ' +
         'beneficio del equipo asistencial y de los pacientes.',
     ],
-    anios: 'Años operando',
-    marcasDato: 'Marcas',
-    productosDato: 'Productos',
     conocer: 'Conocer la empresa',
     fotos: [
-      'Nave de racks selectivos del almacén central de Q-MEDICAL',
-      'Operario de Q-MEDICAL trasladando producto con transpaleta',
+      'Racks selectivos del almacén central de Q-MEDICAL, con producto paletizado',
+      'Apilador eléctrico y transpaleta entre los racks del almacén',
+      'Pasillo central del almacén, con racks a ambos lados',
       'Racks con cajas rotuladas y pallets identificados',
-      'Estantería con producto ordenado por lote',
     ],
   },
   en: {
@@ -58,10 +50,6 @@ const T = {
     metaDesc: empresaEn.descripcion,
     lineasAnte: 'Product lines',
     lineasTitulo: 'The catalogue, ordered into eleven lines',
-    lineasTexto:
-      'Each line groups products by the function they perform, not by the ' +
-      'supplier who makes them. That way the end user finds what they are ' +
-      'looking for where they look for it.',
     verCatalogo: 'See the full catalogue',
     lineasCierre: 'All eleven lines, with the search box and the category filters.',
     selloBpa: 'BPA-certified warehouse',
@@ -74,28 +62,24 @@ const T = {
       'That way your institution runs safely, efficiently and without ' +
         'interruption, for the benefit of the clinical team and of patients.',
     ],
-    anios: 'Years in operation',
-    marcasDato: 'Brands',
-    productosDato: 'Products',
     conocer: 'About the company',
     fotos: [
-      'Selective racking at the Q-MEDICAL central warehouse',
-      'A Q-MEDICAL operator moving product with a pallet truck',
+      'Selective racking at the Q-MEDICAL central warehouse, with palletised product',
+      'Electric stacker and pallet truck between the warehouse racks',
+      'Central aisle of the warehouse, with racking on both sides',
       'Racking with labelled boxes and identified pallets',
-      'Shelving with product arranged by batch',
     ],
   },
 }[lang];
 
-// Las cuatro fotografias del bloque del compromiso. El archivo es el mismo
-// en los dos idiomas; el pie viene de la tabla de textos.
-// almacen-pasillo-1 no esta aqui a proposito: es la que abre la banda de
-// cierre del pie, y repetirla restaria a las dos.
+// Las cuatro fotografias del bloque del compromiso: las del almacén central
+// que entregó la empresa en octubre de 2026. El archivo es el mismo en los
+// dos idiomas; el pie viene de la tabla de textos.
 const ARCHIVOS_FOTOS = [
-  'almacen-nave-1',
-  'operario-almacen',
-  'almacen-nave-2',
-  'almacen-racks-2',
+  'almacen-central-1',
+  'almacen-central-2',
+  'almacen-central-3',
+  'almacen-central-4',
 ];
 const galeria = ARCHIVOS_FOTOS.map((src, i) => ({ src, alt: T.fotos[i] }));
 
@@ -129,71 +113,56 @@ const matriz = lineasCat.map((c, i) => {
   <!-- ══════════════════════════════ 01 · Especialidades clínicas -->
   <Especialidades lang={lang} />
 
-  <!-- ══════════════════════════════ 02 · Índice de líneas -->
-  <section id="lineas" class="aire bg-[var(--color-papel)]">
+  <!-- ══════════════════════════════ 02 · Índice de líneas
+       La empresa la encontró «básica, como un formato de Word»: era una
+       tabla de filetes finos. Ahora cada línea es una tarjeta con su
+       producto sobre un fondo celeste, que se eleva y se viste de marino al
+       pasar el puntero, y la duodécima es la llamada al catálogo. -->
+  <section id="lineas" class="aire bg-[var(--color-papel-2)]">
     <div class="caja">
       <div class="matriz__intro" data-anim-grupo="80">
         <div>
           <p class="ante ante-brand" data-anim="sube">{T.lineasAnte}</p>
           <h2 class="display-lg mt-5 max-w-[16ch]" data-anim="sube">{T.lineasTitulo}</h2>
         </div>
-        <div class="matriz__intro-texto" data-anim="sube">
-          <p class="cuerpo-lg">{T.lineasTexto}</p>
-          <a href={via(lang, 'catalogo')} class="enlace mt-7">
-            {T.verCatalogo}<Icon name="flecha" size={15} />
-          </a>
-        </div>
+        <a href={via(lang, 'catalogo')} class="enlace matriz__ir" data-anim="sube">
+          {T.verCatalogo}<Icon name="flecha" size={15} />
+        </a>
       </div>
 
-      <!-- Matriz: retícula de filetes finos, sin fotografía de producto.
-           Cada celda dibuja su icono al entrar en pantalla. -->
       <ol class="matriz" data-anim-grupo="70">
         {matriz.map((c) => (
           <li data-anim="escala">
             <a href={c.href} class="celda">
-              <span class="celda__alto">
+              <span class="celda__foto">
                 <span class="folio celda__folio">{c.n}</span>
-                <span class="celda__cuenta">{c.cuenta}</span>
+                {c.foto
+                  ? <img src={c.foto} width="480" height="480" alt={c.fotoAlt} loading="lazy" decoding="async" />
+                  : <span class="celda__ic"><Icon name={c.icono} size={40} stroke={1} anim /></span>}
               </span>
-
-              {c.foto
-                ? (
-                  <span class="celda__foto">
-                    <img src={c.foto} width="480" height="480" alt={c.fotoAlt} loading="lazy" decoding="async" />
-                  </span>
-                )
-                : (
-                  <span class="celda__ic"><Icon name={c.icono} size={40} stroke={1} anim /></span>
-                )}
-
               <span class="celda__pie">
-                <span class="celda__nombre">{c.corto}</span>
+                <span class="min-w-0">
+                  <span class="celda__nombre">{c.corto}</span>
+                  <span class="celda__cuenta">{c.cuenta}</span>
+                </span>
+                <span class="celda__flecha" aria-hidden="true"><Icon name="flecha" size={16} /></span>
               </span>
-
-              <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
             </a>
           </li>
         ))}
 
-        <!-- Celda doce. Once líneas nunca llenan una rejilla, y como los
-             filetes son el fondo del contenedor asomando entre celdas, el
-             hueco se veía como un rectángulo plomo. En vez de rellenarlo
-             con nada, lo ocupa la llamada que a la sección le faltaba al
-             pie: con doce celdas, 2, 3 y 4 columnas cierran exactas. -->
+        <!-- La duodécima: once líneas no llenan una rejilla, y 2, 3 y 4
+             columnas dividen a doce sin resto. -->
         <li data-anim="escala">
           <a href={via(lang, 'catalogo')} class="celda celda--cierre">
-            <span class="celda__alto">
-              <span class="folio celda__folio">{String(matriz.length + 1).padStart(2, '0')}</span>
-              <span class="celda__cuenta">{t.productosCuenta(productos.length)}</span>
-            </span>
-            <span class="celda__ic">
-              <Icon name="reticula" size={40} stroke={1} anim />
-            </span>
+            <span class="celda__ic"><Icon name="reticula" size={34} stroke={1.2} anim /></span>
             <span class="celda__pie">
-              <span class="celda__nombre">{T.verCatalogo}</span>
-              <span class="celda__sintesis">{T.lineasCierre}</span>
+              <span class="min-w-0">
+                <span class="celda__nombre">{T.verCatalogo}</span>
+                <span class="celda__sintesis">{T.lineasCierre}</span>
+              </span>
+              <span class="celda__flecha" aria-hidden="true"><Icon name="flecha" size={16} /></span>
             </span>
-            <span class="celda__flecha"><Icon name="flecha" size={16} /></span>
           </a>
         </li>
       </ol>
@@ -205,14 +174,13 @@ const matriz = lineasCat.map((c, i) => {
     <div class="caja">
       <!-- Encabezado: el titular manda a la izquierda, la nota acompaña a la
            derecha. Las dos columnas arrancan a la misma altura. -->
-      <div class="compromiso__alto" data-anim-grupo="90">
-        <div class="compromiso__titular">
-          <p class="ante ante-brand" data-anim="sube">{T.compromisoAnte}</p>
-          <h2 class="display-lg mt-5" data-anim="sube">{T.compromisoTitulo}</h2>
-        </div>
+      <p class="ante ante-brand" data-anim="sube">{T.compromisoAnte}</p>
+      <div class="compromiso__alto alto-alineado" data-anim-grupo="90">
+        <h2 class="display-lg" data-anim="sube">{T.compromisoTitulo}</h2>
 
-        <div class="compromiso__nota" data-anim="sube">
-          {T.compromiso.map((parrafo) => <p>{parrafo}</p>)}
+        <div class="compromiso__nota alto-alineado__texto" data-anim="sube">
+          <p class="compromiso__entrada">{T.compromiso[0]}</p>
+          <p class="compromiso__apoyo">{T.compromiso[1]}</p>
         </div>
       </div>
 
@@ -247,23 +215,11 @@ const matriz = lineasCat.map((c, i) => {
         ))}
       </div>
 
-      <!-- Cierre: las cifras y el enlace, sobre el mismo filete -->
+      {/* Cierre: el enlace sobre su filete. La fila de cifras —años, marcas
+          y productos— se retiró a pedido de la empresa (OBSERVACIONES 3):
+          pidió quitar los totales de marcas y productos de todas las
+          páginas, y en su captura tachó la fila entera. */}
       <div class="compromiso__cierre" data-anim="sube">
-        <dl class="compromiso__datos">
-          <div>
-            <dt class="ante">{T.anios}</dt>
-            <dd class="compromiso__dato cuenta" data-conteo={site.anios} data-duracion="1400">0</dd>
-          </div>
-          <div>
-            <dt class="ante">{T.marcasDato}</dt>
-            <dd class="compromiso__dato cuenta" data-conteo={marcas.length} data-duracion="1500">0</dd>
-          </div>
-          <div>
-            <dt class="ante">{T.productosDato}</dt>
-            <dd class="compromiso__dato cuenta" data-conteo={productos.length} data-duracion="1700">0</dd>
-          </div>
-        </dl>
-
         <a href={via(lang, 'nosotros')} class="enlace compromiso__enlace">
           {T.conocer}<Icon name="flecha" size={15} />
         </a>
@@ -282,163 +238,187 @@ const matriz = lineasCat.map((c, i) => {
 </Base>
 
 <style>
-  /* ── Matriz de especialidades ─────────────────────────────────────── */
-  .matriz__intro { display: grid; gap: 2.5rem; }
-  @media (min-width: 1024px) {
-    .matriz__intro { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 5rem; align-items: end; }
+  /* ── Índice de líneas ─────────────────────────────────────────────── */
+  .matriz__intro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
   }
-  .matriz__intro-texto { max-width: 34rem; }
+  .matriz__ir { margin-bottom: 0.4rem; }
 
-  /* La retícula se dibuja con el propio hueco: el fondo del contenedor
-     asoma entre celdas y forma los filetes, sin bordes dobles. */
   .matriz {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    margin-top: 4rem;
-    background: var(--color-linea);
-    border: 1px solid var(--color-linea);
+    gap: 0.75rem;
+    margin-top: 3.5rem;
   }
-  /* Dos, tres y cuatro columnas dividen a doce sin resto. Cinco no, y por
-     eso la última fila quedaba a medias. */
-  @media (min-width: 768px) { .matriz { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (min-width: 768px) { .matriz { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; } }
+  @media (min-width: 1100px) { .matriz { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
+  .matriz > li { display: flex; }
 
   .celda {
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 12rem;
-    padding: 1.35rem;
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--color-linea);
+    border-radius: 1.1rem;
     background: var(--color-papel);
     color: var(--color-tinta);
-    overflow: hidden;
-    transition: background-color 0.5s var(--ease-editorial),
-      color 0.5s var(--ease-editorial);
+    box-shadow: 0 1px 2px rgb(4 26 66 / 0.04);
+    transition: transform 0.5s var(--ease-salida), box-shadow 0.5s var(--ease-editorial),
+      border-color 0.4s var(--ease-editorial), background-color 0.45s var(--ease-editorial),
+      color 0.45s var(--ease-editorial);
   }
-  @media (min-width: 768px) { .celda { min-height: 13.5rem; padding: 1.6rem; } }
-  .celda:hover { background: var(--color-brand-700); color: #fff; }
-
-  /* La celda de cierre va ya vestida de llamada: se distingue de las once
-     líneas sin romper la retícula. */
-  .celda--cierre { background: var(--color-papel-2); }
-  .celda--cierre .celda__nombre { color: var(--color-brand-700); }
-  .celda--cierre:hover .celda__nombre { color: #fff; }
-
-  .celda__alto { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
-  .celda__folio { transition: color 0.5s var(--ease-editorial); }
-  .celda:hover .celda__folio { color: rgba(255, 255, 255, 0.5); }
-  .celda__cuenta {
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-tinta-45);
-    transition: color 0.5s var(--ease-editorial);
-  }
-  .celda:hover .celda__cuenta { color: rgba(255, 255, 255, 0.6); }
-
-  .celda__ic {
-    display: grid;
-    place-items: center;
-    width: 4.75rem;
-    height: 4.75rem;
-    margin-top: 1.5rem;
-    border-radius: 999px;
-    background: var(--color-brand-50);
-    color: var(--color-brand-700);
-    transition: color 0.5s var(--ease-editorial), background-color 0.5s var(--ease-editorial),
-      transform 0.6s var(--ease-salida);
-  }
-  .celda:hover .celda__ic {
+  .celda:hover,
+  .celda:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--color-brand-900);
+    background-color: var(--color-brand-900);
     color: #fff;
-    background: rgba(255, 255, 255, 0.14);
-    transform: translateY(-3px);
+    box-shadow: 0 26px 50px -26px rgb(4 26 66 / 0.55);
   }
-  .celda--cierre .celda__ic { background: var(--color-papel); }
 
-  /* La fotografía vive en su propia teja blanca: la celda se vuelve azul al
-     pasar el puntero y un producto recortado sobre blanco necesita su
-     superficie para no quedar flotando sobre el azul. */
+  /* La foto del producto, sobre un celeste muy claro: recortado sobre
+     blanco puro, el producto se perdía contra la tarjeta. */
   .celda__foto {
+    position: relative;
     display: grid;
     place-items: center;
-    margin-top: 1.2rem;
     aspect-ratio: 4 / 3;
-    border-radius: var(--r-sm);
-    background: var(--color-papel);
+    border-radius: 0.75rem;
+    background:
+      radial-gradient(70% 70% at 50% 45%, #fff 0%, rgb(255 255 255 / 0) 75%),
+      var(--color-brand-50);
     overflow: hidden;
   }
   .celda__foto img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 8%;
-    transition: transform 0.7s var(--ease-salida);
+    padding: 11%;
+    mix-blend-mode: multiply;
+    transition: transform 0.8s var(--ease-salida);
   }
-  .celda:hover .celda__foto img { transform: scale(1.06); }
-  @media (prefers-reduced-motion: reduce) {
-    .celda__foto img { transition: none; }
+  .celda:hover .celda__foto img { transform: scale(1.07); }
+  .celda__folio {
+    position: absolute;
+    top: 0.7rem;
+    left: 0.85rem;
+    z-index: 1;
+    font-size: 0.78rem;
+    color: var(--color-brand-700);
   }
 
-  .celda__pie { margin-top: auto; padding-top: 1.4rem; }
+  .celda__ic {
+    display: grid;
+    place-items: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    border: 1px solid rgb(158 219 255 / 0.35);
+    color: var(--color-celeste);
+  }
+
+  .celda__pie {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding: 1rem 0.55rem 0.45rem;
+  }
   .celda__nombre {
     display: block;
     font-family: var(--font-display-texto);
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     line-height: 1.2;
   }
+  .celda__cuenta {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-tinta-45);
+    transition: color 0.45s var(--ease-editorial);
+  }
+  .celda:hover .celda__cuenta { color: var(--color-celeste-suave); }
+
+  /* La flecha en círculo, como los botones de las tarjetas de la referencia. */
+  .celda__flecha {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-linea);
+    color: var(--color-brand-700);
+    transition: background-color 0.4s var(--ease-editorial), border-color 0.4s var(--ease-editorial),
+      color 0.4s var(--ease-editorial), transform 0.5s var(--ease-salida);
+  }
+  .celda:hover .celda__flecha {
+    background: var(--color-celeste);
+    border-color: var(--color-celeste);
+    color: var(--color-brand-950);
+    transform: translateX(3px);
+  }
+
+  /* La llamada al catálogo, ya vestida de marino. */
+  .celda--cierre {
+    padding: 1.4rem 1rem 0.6rem;
+    border-color: transparent;
+    background-color: var(--color-brand-900);
+    background-image: var(--fondo-marino);
+    color: #fff;
+  }
+  .celda--cierre .celda__flecha { border-color: rgb(158 219 255 / 0.4); color: var(--color-celeste); }
   .celda__sintesis {
     display: block;
     margin-top: 0.45rem;
     font-size: 0.8rem;
     line-height: 1.45;
-    color: var(--color-tinta-70);
-    transition: color 0.5s var(--ease-editorial);
+    color: var(--color-celeste-suave);
   }
-  .celda:hover .celda__sintesis { color: rgba(255, 255, 255, 0.72); }
-
-  .celda__flecha {
-    position: absolute;
-    right: 1.35rem;
-    bottom: 1.35rem;
-    display: inline-flex;
-    opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.45s var(--ease-editorial), transform 0.45s var(--ease-salida);
+  @media (max-width: 520px) {
+    .celda__pie { padding-inline: 0.3rem; }
+    .celda__flecha { width: 2rem; height: 2rem; }
+    .celda__nombre { font-size: 0.92rem; }
   }
-  .celda:hover .celda__flecha { opacity: 1; transform: none; }
-  @media (min-width: 768px) { .celda__flecha { right: 1.6rem; bottom: 1.6rem; } }
+  @media (prefers-reduced-motion: reduce) {
+    .celda, .celda__foto img, .celda__flecha { transition: none; }
+  }
 
   /* ── El compromiso ────────────────────────────────────────────────
      Todo se apoya en la misma retícula: el titular ocupa siete de doce
      columnas, la nota las cinco restantes, y las fotografías se parten por
      la mitad exacta. Los medianiles verticales de las dos filas de fotos
      coinciden, que es lo que hace que el bloque se lea alineado.          */
-  .compromiso__alto { display: grid; gap: 2rem; }
-  @media (min-width: 900px) {
-    .compromiso__alto {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 2rem var(--medianil);
-      align-items: start;
-    }
-    .compromiso__titular { grid-column: 1 / span 7; }
-    .compromiso__nota { grid-column: 8 / span 5; }
-  }
+  .compromiso__alto { margin-top: 1.25rem; }
 
-  .compromiso__nota {
-    display: grid;
-    gap: 1.1rem;
+  /* La nota arranca a la altura del titular, no del antetítulo: la
+     empresa la vio «muy arriba y no a la misma altura que el título
+     principal». El primer párrafo sube de cuerpo —era texto corrido gris y
+     se leía «muy simple»— y el segundo cuelga de un filete celeste. */
+  .compromiso__nota { display: grid; gap: 1.4rem; }
+  .compromiso__entrada {
+    font-family: var(--font-display-texto);
+    font-size: clamp(1.15rem, 1.6vw, 1.38rem);
+    line-height: 1.45;
+    color: var(--color-brand-900);
+  }
+  .compromiso__apoyo {
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--color-celeste);
     font-size: 0.98rem;
     line-height: 1.7;
     color: var(--color-tinta-70);
   }
-  @media (min-width: 900px) {
-    /* Se alinea con la primera línea del titular, no con su bloque entero. */
-    .compromiso__nota { padding-top: 0.7rem; }
-  }
-  .compromiso__nota p { padding-bottom: 1.1rem; border-bottom: 1px solid var(--color-linea); }
-  .compromiso__nota p:last-child { padding-bottom: 0; border-bottom: 0; }
 
   /* ── Retícula de fotografías ──────────────────────────────────────── */
   .compromiso__fotos {
@@ -498,9 +478,6 @@ const matriz = lineasCat.map((c, i) => {
     from { transform: scale(1); }
     to { transform: scale(1.12); }
   }
-  /* La figura humana se encuadra más arriba: el recorte le comía la cabeza. */
-  .foto:nth-child(2) img { object-position: 50% 30%; }
-
   .foto__sello {
     position: absolute;
     left: 0;
@@ -521,36 +498,13 @@ const matriz = lineasCat.map((c, i) => {
     .foto__sello { font-size: 0.62rem; padding: 0.45rem 0.7rem; gap: 0.35rem; }
   }
 
-  /* ── Cierre: cifras y enlace ──────────────────────────────────────── */
+  /* ── Cierre: el enlace ─────────────────────────────────────────────── */
   .compromiso__cierre {
-    display: grid;
-    gap: 2rem;
-    margin-top: 3.5rem;
-    padding-top: 2.25rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3rem;
+    padding-top: 1.75rem;
     border-top: 1px solid var(--color-linea);
-  }
-  @media (min-width: 900px) {
-    .compromiso__cierre {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: var(--medianil);
-      align-items: end;
-    }
-    .compromiso__datos { grid-column: 1 / span 9; }
-    .compromiso__enlace { grid-column: 10 / span 3; justify-self: end; }
-  }
-
-  .compromiso__datos {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
-  }
-  .compromiso__dato {
-    margin-top: 0.6rem;
-    font-family: var(--font-display);
-    font-size: clamp(2.6rem, 5.2vw, 4.25rem);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    color: var(--color-brand-700);
   }
 
   @media (prefers-reduced-motion: reduce) {

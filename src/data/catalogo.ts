@@ -62,6 +62,8 @@ type FilaPresentacion = {
   unidad_en: string | null;
   caracteristicas: string[];
   caracteristicas_en: string[];
+  detalle: string | null;
+  detalle_en: string | null;
   descripcion: string | null;
   descripcion_en: string | null;
   imagen: string | null;
@@ -116,7 +118,7 @@ async function deLaBase(): Promise<Catalogo> {
     pedir<FilaProducto>(
       'catalogo_productos?select=slug,nombre,nombre_en,descripcion,descripcion_en,destacado,categoria_id,' +
         'catalogo_presentaciones(medida,medida_en,marca,marca_slug,unidad,unidad_en,caracteristicas,' +
-        `caracteristicas_en,descripcion,descripcion_en,imagen,orden,visible)&${comun}`,
+        `caracteristicas_en,detalle,detalle_en,descripcion,descripcion_en,imagen,orden,visible)&${comun}`,
     ),
   ]);
   if (!filasL.length || !filasC.length || !filasP.length) {
@@ -165,11 +167,13 @@ async function deLaBase(): Promise<Catalogo> {
         marcaSlug: o(pr.marca_slug),
         unidad: pr.unidad,
         caracteristicas: pr.caracteristicas,
+        detalle: o(pr.detalle),
         descripcion: o(pr.descripcion),
         en: {
           medida: o(pr.medida_en),
           unidad: o(pr.unidad_en),
           caracteristicas: pr.caracteristicas_en.length ? pr.caracteristicas_en : undefined,
+          detalle: o(pr.detalle_en),
           descripcion: o(pr.descripcion_en),
         },
       })),
@@ -199,6 +203,7 @@ function deLaCopia(): Catalogo {
             medida: medidasEn[pr.medida],
             unidad: unidadesEn[pr.unidad],
             caracteristicas: pr.caracteristicas.map((c) => caracteristicasEn[c] ?? c),
+            detalle: pr.detalle ? (caracteristicasEn[pr.detalle] ?? pr.detalle) : undefined,
             descripcion: t?.descripciones?.[i],
           },
         })),

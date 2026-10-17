@@ -28,6 +28,19 @@ export interface Especialidad {
   lineas: string[];
 }
 
+/**
+ * Carpeta de las fotografías, bajo /img/. Lleva la fecha de la entrega: /img/
+ * se sirve con caché inmutable, y una foto nueva con el nombre de la vieja no
+ * le llegaría a quien ya visitó el sitio. La escribe
+ * scripts/fotos_especialidades.py.
+ */
+export const CARPETA_FOTOS = '/img/especialidades/2026-10';
+
+/** La fotografía de una especialidad en el ancho pedido. */
+export function fotoEspecialidad(slug: string, ancho: 160 | 480 | 960): string {
+  return `${CARPETA_FOTOS}/${slug}-${ancho}.webp`;
+}
+
 export const especialidades: Especialidad[] = [
   {
     slug: 'cirugia-laparoscopica',

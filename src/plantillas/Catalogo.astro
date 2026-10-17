@@ -30,8 +30,8 @@ const T = {
   es: {
     meta: 'Catálogo de dispositivos médicos y bioseguridad',
     metaDesc:
-      `Catálogo completo de Q-MEDICAL S.A.C.: ${productos.length} productos en ` +
-      `${lineasCat.length} líneas, con características técnicas y presentaciones.`,
+      `Catálogo completo de Q-MEDICAL S.A.C. en ${lineasCat.length} líneas, con ` +
+      'características técnicas y presentaciones.',
     ante: 'Catálogo',
     titulo: 'Todo el catálogo, línea por línea',
     bajada:
@@ -70,7 +70,7 @@ const T = {
   en: {
     meta: 'Catalogue of medical devices and biosafety products',
     metaDesc:
-      `The full Q-MEDICAL S.A.C. catalogue: ${productos.length} products across ` +
+      `The full Q-MEDICAL S.A.C. catalogue across ` +
       `${lineasCat.length} lines, with technical features and presentations.`,
     ante: 'Catalogue',
     titulo: 'The whole catalogue, line by line',
@@ -140,7 +140,7 @@ const indice = productos.map((base) => {
       resumenDe(p),
       (base.marca ? marcaPorSlug.get(base.marca)?.nombre : '') ?? '',
       // La presentacion es lo que distingue a una de otra: medida, marca y
-      // ficha entran al buscador para que «3 litros» o «Bemis» encuentren.
+      // ficha entran al buscador para que «3 litros» o «Medcaptain» encuentren.
       ...p.presentaciones.flatMap((pr) => [pr.medida, pr.marca, ...pr.caracteristicas]),
     ]
       .join(' ')
@@ -202,7 +202,8 @@ const schema = {
           <button type="button" class="rama rama--todas es-activa" data-filtro="" aria-pressed="true">
             <span class="rama__ic"><Icon name="reticula" size={18} /></span>
             <span class="rama__nombre">{T.todos}</span>
-            <span class="rama__cuenta">{productos.length}</span>
+            {/* Sin el total: la empresa pidió quitar la cifra de productos de
+                todas las páginas. Las líneas sí conservan la suya. */}
           </button>
 
           {lineas.map((l) => (

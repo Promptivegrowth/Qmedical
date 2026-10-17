@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { marcas } from '../data/marcas';
+import { marcas, logoDe } from '../data/marcas';
 import { ruta, type Idioma } from '../i18n/rutas';
 
 interface Props {
@@ -33,7 +33,7 @@ const T = {
     titulo:
       'Aliados con las mejores marcas líderes en salud a nivel mundial: ' +
       'excelencia que cuida vidas.',
-    cta: (n: number) => `Conocer las ${n} marcas`,
+    cta: 'Conocer nuestras marcas',
     lista: 'Marcas asociadas a Q-MEDICAL',
   },
   en: {
@@ -41,19 +41,22 @@ const T = {
     titulo:
       'Partnered with the world’s leading healthcare brands: excellence that ' +
       'cares for lives.',
-    cta: (n: number) => `Meet the ${n} brands`,
+    cta: 'Meet our brands',
     lista: 'Brands partnered with Q-MEDICAL',
   },
 }[lang];
 
-const N = marcas.length;
+const enAnillo = marcas.filter((m) => m.enAnillo !== false);
+const N = enAnillo.length;
 const RX = 42; // vw — semieje horizontal del anillo
 const RY = 34; // vh — semieje vertical (aro inclinado, no circunferencia)
 
-// Ligera variación de tamaño para que la cadena no se lea mecánica.
-const tallas = [7.8, 7.2, 8.2, 7.4, 8.0, 7.0, 8.4, 7.6, 7.9, 7.1, 8.3, 7.5, 8.1, 7.3, 7.7];
+// Ligera variación de tamaño para que la cadena no se lea mecánica. Un
+// punto más grandes que antes: la empresa señaló que los logotipos «no se
+// ven».
+const tallas = [9.0, 8.6, 9.4, 8.8, 9.2, 8.5, 9.3, 8.7, 9.1, 8.6, 9.4, 8.8, 9.0, 8.5, 9.2];
 
-const orbes = marcas.map((m, i) => {
+const orbes = enAnillo.map((m, i) => {
   // Posición de partida; es también el respaldo si no hay animación.
   const ang = ((i / N) * 360 - 90) * (Math.PI / 180);
   return {
@@ -67,7 +70,7 @@ const orbes = marcas.map((m, i) => {
 });
 ---
 
-<section class="constelacion" data-constelacion>
+<section class="constelacion" data-constelacion style={`--n:${N}`}>
   <div class="constelacion__pin">
     <!-- Capa decorativa: el listado accesible va al final de la sección -->
     <div class="anillo" aria-hidden="true">
@@ -80,8 +83,8 @@ const orbes = marcas.map((m, i) => {
             <span class="orbe__disco">
               <img
                 class="orbe__logo orbe__logo--color"
-                src={`/img/marcas/${m.slug}.webp`}
-                srcset={`/img/marcas/${m.slug}-1x.webp 1x, /img/marcas/${m.slug}.webp 2x`}
+                src={logoDe(m.slug)}
+                srcset={`${logoDe(m.slug, '1x')} 1x, ${logoDe(m.slug)} 2x`}
                 width="240"
                 height="120"
                 alt=""
@@ -90,7 +93,7 @@ const orbes = marcas.map((m, i) => {
               />
               <img
                 class="orbe__logo orbe__logo--fantasma"
-                src={`/img/marcas/${m.slug}-1x.webp`}
+                src={logoDe(m.slug, '1x')}
                 width="240"
                 height="120"
                 alt=""
@@ -110,7 +113,7 @@ const orbes = marcas.map((m, i) => {
 
     <!-- Por encima de todo el anillo: nunca queda tapado ni deja de ser pulsable -->
     <a href={ruta(lang, 'marcas')} class="constelacion__cta">
-      {T.cta(marcas.length)}
+      {T.cta}
       <Icon name="flecha" size={15} />
     </a>
   </div>
@@ -118,7 +121,7 @@ const orbes = marcas.map((m, i) => {
   <!-- Equivalente accesible de la capa decorativa -->
   <h3 class="sr-only">{T.lista}</h3>
   <ul class="sr-only">
-    {marcas.map((m) => <li><a href={`/marcas#${m.slug}`}>{m.nombre}</a></li>)}
+    {enAnillo.map((m) => <li>{m.nombre}</li>)}
   </ul>
 </section>
 
@@ -149,7 +152,8 @@ const orbes = marcas.map((m, i) => {
   }
 
   .constelacion {
-    --n: 15; /* marcas en la cadena */
+    /* --n, las marcas de la cadena, lo pone la plantilla: estaba fijo en
+       15 con veintiuna marcas, y los discos se pisaban. */
     --dur: 46s; /* una vuelta completa */
     --rx: 42vw;
     --ry: 34vh;
@@ -189,7 +193,7 @@ const orbes = marcas.map((m, i) => {
     --prof: var(--fp);
     transform: translate(-50%, -50%)
       translate(calc(var(--fx) * 1vw), calc(var(--fy) * 1vh))
-      scale(calc(0.52 + var(--fp) * 0.6));
+      scale(calc(0.6 + var(--fp) * 0.5));
     z-index: 0;
   }
 
@@ -199,24 +203,26 @@ const orbes = marcas.map((m, i) => {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    /* Del negro del fondo al blanco pleno, según se acerca */
-    background: color-mix(in srgb, #ffffff calc(var(--prof) * 100%), var(--color-brand-900));
+    /* Del celeste grisáceo al blanco pleno, según se acerca. Antes partía
+       del marino del fondo y los discos de atrás se perdían en él. */
+    background: color-mix(in srgb, #ffffff calc(58% + var(--prof) * 42%), var(--color-brand-900));
+    box-shadow: 0 12px 30px -14px rgb(0 0 0 / 0.55);
   }
 
   .orbe__logo {
     position: absolute;
-    inset: 15%;
-    width: 70%;
-    height: 70%;
+    inset: 12%;
+    width: 76%;
+    height: 76%;
     object-fit: contain;
   }
   /* Delante, el logotipo original. Detrás, una silueta blanca muy tenue:
      es como se leen los discos del fondo en la referencia. */
-  .orbe__logo--color { opacity: var(--prof); }
-  .orbe__logo--fantasma {
-    filter: brightness(0) invert(1);
-    opacity: calc((1 - var(--prof)) * 0.4);
-  }
+  /* El logotipo se ve siempre a color; atrás, algo más tenue. La silueta
+     blanca que llevaban los discos del fondo no se leía como ninguna
+     marca. */
+  .orbe__logo--color { opacity: calc(0.6 + var(--prof) * 0.4); }
+  .orbe__logo--fantasma { display: none; }
 
   /* ── Giro continuo ──────────────────────────────────────────────────── */
   /* Se activa solo si el navegador admite propiedades registradas,
@@ -227,7 +233,7 @@ const orbes = marcas.map((m, i) => {
 
     transform: translate(-50%, -50%)
       translate(calc(cos(var(--ang)) * var(--rx)), calc(sin(var(--ang)) * var(--ry)))
-      scale(calc(0.52 + var(--prof) * 0.6));
+      scale(calc(0.6 + var(--prof) * 0.5));
 
     animation:
       girar var(--dur) linear infinite,

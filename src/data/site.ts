@@ -27,7 +27,10 @@ export const site = {
   /* Se publica un solo numero. Sigue siendo una lista porque el pie, la
      pagina de contacto y la hoja de reclamacion la recorren, y porque anadir
      otro manana no deberia obligar a tocar ninguna plantilla. */
-  telefonos: [{ etiqueta: '(01) 424-7290', href: 'tel:+5114247290' }],
+  telefonos: [
+    { etiqueta: '(01) 424-7290', href: 'tel:+5114247290' },
+    { etiqueta: '+51 977 814 006', href: 'tel:+51977814006' },
+  ],
   whatsapp: {
     numero: '+51 977 814 006',
     href: 'https://wa.me/51977814006',
@@ -121,16 +124,16 @@ export const certificaciones = [
     nombre: 'Buenas Prácticas de Almacenamiento',
     emisor: 'DIGEMID — Ministerio de Salud del Perú',
     detalle:
-      'Acredita que nuestros almacenes cumplen las condiciones de ' +
-      'infraestructura, control de temperatura, trazabilidad y documentación ' +
-      'exigidas para la conservación de dispositivos médicos.',
+      'Asegura que nuestros dispositivos cumplan con condiciones de ' +
+      'almacenamiento, control de temperatura, trazabilidad y documentación, ' +
+      'alineados con la normatividad sanitaria internacional.',
   },
   {
     sigla: 'ISO 37001',
     certificado: '/certificados/iso-37001.pdf',
     icono: 'balanza',
     nombre: 'Sistema de gestión antisoborno',
-    emisor: 'Norma internacional ISO',
+    emisor: 'Norma Internacional ISO',
     detalle:
       'Respalda la transparencia de nuestros procesos comerciales y de ' +
       'participación en licitaciones públicas y privadas.',
@@ -140,9 +143,9 @@ export const certificaciones = [
     certificado: '/certificados/iso-14001.pdf',
     icono: 'hoja-ambiental',
     nombre: 'Sistema de gestión ambiental',
-    emisor: 'Norma internacional ISO',
+    emisor: 'Norma Internacional ISO',
     detalle:
-      'Ordena el control de los aspectos ambientales de nuestra operación ' +
+      'Confirma el control de los impactos ambientales de nuestra operación ' +
       'logística y del manejo responsable de residuos.',
   },
 ];
@@ -152,25 +155,26 @@ export const valores = [
     icono: 'brujula',
     titulo: 'Misión',
     texto:
-      'Fortalecemos el sistema de salud del Perú suministrando dispositivos ' +
-      'médicos y soluciones de bioseguridad de calidad, con precios ' +
-      'competitivos, atención oportuna y respaldo técnico especializado.',
+      'Fortalecer el sistema de salud del Perú suministrando dispositivos ' +
+      'médicos y soluciones de bioseguridad de calidad, mediante una gestión ' +
+      'eficiente, atención oportuna y respaldo técnico especializado.',
   },
   {
     icono: 'horizonte',
     titulo: 'Visión',
     texto:
-      'Ser el aliado estratégico de referencia de las instituciones de salud del ' +
-      'Perú, reconocidos por la confiabilidad de nuestros productos, la ' +
-      'excelencia de nuestro servicio, la oportunidad de nuestras soluciones y ' +
-      'nuestro compromiso con el sector salud.',
+      'Ser el socio estratégico que facilita a las instituciones de salud ' +
+      'públicas y privadas del Perú el acceso oportuno y confiable a ' +
+      'dispositivos médicos y soluciones de bioseguridad, consolidándose como ' +
+      'el referente por excelencia por su confiabilidad, agilidad y respaldo ' +
+      'técnico.',
   },
   {
     icono: 'compromiso',
     titulo: 'Filosofía',
     texto:
-      'El compromiso es de nosotros: cada entrega sostiene el trabajo de un ' +
-      'equipo de salud y la seguridad de un paciente.',
+      'Aseguramos que la atención nunca se detenga, con dispositivos médicos ' +
+      'confiables y una respuesta que llega cuando la salud más lo necesita.',
   },
 ];
 

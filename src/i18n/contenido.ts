@@ -50,8 +50,9 @@ const marcasEn: Record<string, MarcaEn> = {
   },
   'nex-medical': {
     resumen:
-      'Chlorhexidine gluconate antiseptics for pre-surgical skin preparation, ' +
-      'in applicator, sponge and brush formats.',
+      'Antiseptics by NEX MEDICAL Antiseptics for pre-surgical skin ' +
+      'preparation, based on chlorhexidine gluconate, in applicator, sponge ' +
+      'and brush formats.',
     linea: 'Antisepsis · skin preparation',
   },
   'alleva-medical': {
@@ -223,9 +224,9 @@ export const certificacionesEn = [
     nombre: 'Good Storage Practices',
     emisor: 'DIGEMID — Ministry of Health of Peru',
     detalle:
-      'It certifies that our warehouses meet the requirements for ' +
-      'infrastructure, temperature control, traceability and documentation ' +
-      'demanded for the storage of medical devices.',
+      'It ensures that our devices meet storage, temperature-control, ' +
+      'traceability and documentation conditions aligned with international ' +
+      'health regulations.',
   },
   {
     nombre: 'Anti-bribery management system',
@@ -238,7 +239,7 @@ export const certificacionesEn = [
     nombre: 'Environmental management system',
     emisor: 'ISO international standard',
     detalle:
-      'It governs the control of the environmental aspects of our logistics ' +
+      'It confirms the control of the environmental impacts of our logistics ' +
       'operation and the responsible handling of waste.',
   },
 ];
@@ -248,23 +249,23 @@ export const valoresEn = [
   {
     titulo: 'Mission',
     texto:
-      'We strengthen Peru’s health system by supplying quality medical devices ' +
-      'and biosafety solutions, with competitive prices, prompt service and ' +
-      'specialist technical support.',
+      'To strengthen Peru’s health system by supplying quality medical devices ' +
+      'and biosafety solutions, through efficient management, prompt service ' +
+      'and specialist technical support.',
   },
   {
     titulo: 'Vision',
     texto:
-      'To be the strategic partner of reference for Peru’s healthcare ' +
-      'institutions, recognised for the reliability of our products, the ' +
-      'excellence of our service, the timeliness of our solutions and our ' +
-      'commitment to the health sector.',
+      'To be the strategic partner that gives Peru’s public and private ' +
+      'healthcare institutions timely, reliable access to medical devices and ' +
+      'biosafety solutions, and to become the benchmark for reliability, agility ' +
+      'and technical support.',
   },
   {
     titulo: 'Philosophy',
     texto:
-      'The commitment is ours: every delivery sustains the work of a ' +
-      'healthcare team and the safety of a patient.',
+      'We make sure care never stops, with reliable medical devices and a ' +
+      'response that arrives when health needs it most.',
   },
 ];
 
@@ -363,6 +364,7 @@ export function productoEn(p: Producto, idioma: Idioma): Producto {
         medida: t?.medida ?? pr.medida,
         unidad: t?.unidad ?? pr.unidad,
         caracteristicas: cars,
+        detalle: t?.detalle ?? pr.detalle,
         descripcion: t?.descripcion ?? pr.descripcion,
       };
     }),

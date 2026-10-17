@@ -104,7 +104,7 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
       <link rel="alternate" hreflang={e.hreflang} href={e.href} />
     ))}
     <link rel="alternate" hreflang="x-default" href={enlacesIdioma[0].href} />
-    <meta name="theme-color" content="#152e7f" />
+    <meta name="theme-color" content="#06275e" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="author" content={site.nombre} />
     <meta name="generator" content={Astro.generator} />
@@ -130,7 +130,7 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,400..600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,400..600&display=swap"
     />
 
     <script is:inline define:vars={{ preloader }}>
@@ -248,6 +248,11 @@ const schemas = [organizacion, ...(schema ? (Array.isArray(schema) ? schema : [s
 
       if (quieto) {
         objetivos.forEach((el) => el.classList.add('visible'));
+        /* Sin movimiento no hay telón que esperar. Sin esta línea, quien
+           pide «reducir movimiento» veía los marcos de fotografía vacíos:
+           la cortina esperaba una marca de «lista» que solo pone el
+           observador de abajo, y ese observador no corre en este caso. */
+        document.querySelectorAll('[data-espera-foto]').forEach((m) => m.classList.add('lista'));
       } else if (objetivos.length) {
         document.querySelectorAll<HTMLElement>('[data-anim-grupo]').forEach((grupo) => {
           const paso = Number(grupo.dataset.animGrupo) || 90;

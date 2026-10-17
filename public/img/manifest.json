@@ -1,258 +1,236 @@
 {
- "productos": {
-  "contenedores-punzocortantes": [
-   "productos/contenedores-punzocortantes-1-c13eef3e.webp",
-   "productos/contenedores-punzocortantes-2-2c317d9e.webp",
-   "productos/contenedores-punzocortantes-3-5c0f722b.webp",
-   "productos/contenedores-punzocortantes-4-66a5e01e.webp",
-   "productos/contenedores-punzocortantes-5-fa9eae38.webp",
-   "productos/contenedores-punzocortantes-6-31c2da79.webp",
-   "productos/contenedores-punzocortantes-7-839ad2d5.webp"
-  ],
-  "contenedores-residuos-citotoxicos": [
-   "productos/contenedores-residuos-citotoxicos-1-1c162f26.webp",
-   "productos/contenedores-residuos-citotoxicos-2-85cec015.webp",
-   "productos/contenedores-residuos-citotoxicos-3-29560bb6.webp"
-  ],
-  "contenedores-residuos-vidrio": [
-   "productos/contenedores-residuos-vidrio-1-0e1f5904.webp",
-   "productos/contenedores-residuos-vidrio-2-1c4cf55c.webp",
-   "productos/contenedores-residuos-vidrio-3-79b6da31.webp"
-  ],
-  "tapete-adhesivo-descontaminante": [
-   "productos/tapete-adhesivo-descontaminante-1-dd9c4644.webp"
-  ],
-  "trocar-para-cirugia-laparoscopica": [
-   "productos/trocar-para-cirugia-laparoscopica-1-fe531f2e.webp",
-   "productos/trocar-para-cirugia-laparoscopica-2-baf2f162.webp",
-   "productos/trocar-para-cirugia-laparoscopica-3-1080ee16.webp",
-   "productos/trocar-para-cirugia-laparoscopica-4-f6d7e7cb.webp",
-   "productos/trocar-para-cirugia-laparoscopica-5-248d701f.webp",
-   "productos/trocar-para-cirugia-laparoscopica-6-4701449a.webp"
-  ],
-  "disector-monopolar-maryland": [
-   "productos/disector-monopolar-maryland-1-5c15761e.webp"
-  ],
-  "pinza-agarre-clinch": [
-   "productos/pinza-agarre-clinch-1-74df553b.webp"
-  ],
-  "pinza-agarre-fenestrated-grasper": [
-   "productos/pinza-agarre-fenestrated-grasper-1-e8e61a97.webp"
-  ],
-  "tijeras-monopolares-curved-scissor": [
-   "productos/tijeras-monopolares-curved-scissor-1-486d2d91.webp"
-  ],
-  "bolsa-aspiracion-secreciones": [
-   "productos/bolsa-aspiracion-secreciones-1-29ddfe9d.webp",
-   "productos/bolsa-aspiracion-secreciones-2-fc669730.webp",
-   "productos/bolsa-aspiracion-secreciones-3-816487b1.webp",
-   "productos/bolsa-aspiracion-secreciones-4-2c97cf62.webp",
-   "productos/bolsa-aspiracion-secreciones-5-ecc586b1.webp"
-  ],
-  "canister-rigido-reusable": [
-   "productos/canister-rigido-reusable-1-f96c75c1.webp",
-   "productos/canister-rigido-reusable-2-9cb367ab.webp",
-   "productos/canister-rigido-reusable-3-763a2add.webp",
-   "productos/canister-rigido-reusable-4-a2f9ee0f.webp",
-   "productos/canister-rigido-reusable-5-9c25efaa.webp"
-  ],
-  "coches-rodables": [
-   "productos/coches-rodables-1-592ae721.webp",
-   "productos/coches-rodables-2-cbe75a4b.webp",
-   "productos/coches-rodables-3-2239f726.webp"
-  ],
-  "placas-de-anclaje-para-pared": [
-   "productos/placas-de-anclaje-para-pared-1-d5eac562.webp"
-  ],
-  "manifold": [
-   "productos/manifold-1-0d3ca952.webp",
-   "productos/manifold-2-969c7e15.webp"
-  ],
-  "tubo-succion-sin-yankauer": [
-   "productos/tubo-succion-sin-yankauer-1-d7b800b6.webp",
-   "productos/tubo-succion-sin-yankauer-2-d7b800b6.webp"
-  ],
-  "manguera-o-tubuladura-de-silicona": [
-   "productos/manguera-o-tubuladura-de-silicona-1-bb23e790.webp",
-   "productos/manguera-o-tubuladura-de-silicona-2-bb23e790.webp",
-   "productos/manguera-o-tubuladura-de-silicona-3-bb23e790.webp",
-   "productos/manguera-o-tubuladura-de-silicona-4-bb23e790.webp"
-  ],
-  "aplicadores-clorhexidina-2": [
-   "productos/aplicadores-clorhexidina-2-1-96445f07.webp",
-   "productos/aplicadores-clorhexidina-2-2-a0cab6a4.webp",
-   "productos/aplicadores-clorhexidina-2-3-326254f7.webp",
-   "productos/aplicadores-clorhexidina-2-4-d3e685e0.webp",
-   "productos/aplicadores-clorhexidina-2-5-d20680d1.webp",
-   "productos/aplicadores-clorhexidina-2-6-ab3e1061.webp",
-   "productos/aplicadores-clorhexidina-2-7-f8381d29.webp",
-   "productos/aplicadores-clorhexidina-2-8-27c9dfaf.webp",
-   "productos/aplicadores-clorhexidina-2-9-46f5f936.webp"
-  ],
-  "cepillo-esponja-clorhexidina-4": [
-   "productos/cepillo-esponja-clorhexidina-4-1-6ae7d4ea.webp"
-  ],
-  "esponja-clorhexidina-2": [
-   "productos/esponja-clorhexidina-2-1-b6912812.webp"
-  ],
-  "toallita-limpieza-piel-clorhexidina": [
-   "productos/toallita-limpieza-piel-clorhexidina-1-0e6d4424.webp"
-  ],
-  "bolsas-de-nutricion-enteral": [
-   "productos/bolsas-de-nutricion-enteral-1-e2db7fb4.webp",
-   "productos/bolsas-de-nutricion-enteral-2-038bd955.webp"
-  ],
-  "set-de-nutricion-enteral": [
-   "productos/set-de-nutricion-enteral-1-7f28ed78.webp"
-  ],
-  "bomba-de-nutricion-enteral": [
-   "productos/bomba-de-nutricion-enteral-1-5d20578d.webp"
-  ],
-  "pano-bano-facil": [
-   "productos/pano-bano-facil-1-e789b65d.webp",
-   "productos/pano-bano-facil-2-82b60f88.webp",
-   "productos/pano-bano-facil-3-88f62945.webp"
-  ],
-  "toalla-para-secado-corporal": [
-   "productos/toalla-para-secado-corporal-1-cfcc2da0.webp"
-  ],
-  "pano-clinico-absorbente": [
-   "productos/pano-clinico-absorbente-1-163c76be.webp",
-   "productos/pano-clinico-absorbente-2-2c25e033.webp"
-  ],
-  "bolsa-emesis": [
-   "productos/bolsa-emesis-1-f6a7206d.webp"
-  ],
-  "manta-absorbente-de-fluidos-antideslizante": [
-   "productos/manta-absorbente-de-fluidos-antideslizante-1-40fbe0da.webp"
-  ],
-  "manta-absorbente-de-fluidos-precortada": [
-   "productos/manta-absorbente-de-fluidos-precortada-1-115d47f6.webp"
-  ],
-  "mantas-super-absorbentes": [
-   "productos/mantas-super-absorbentes-1-382553ae.webp"
-  ],
-  "protector-tela-impermeable": [
-   "productos/protector-tela-impermeable-1-be317988.webp"
-  ],
-  "guantes-nitrilo-sin-polvo": [
-   "productos/guantes-nitrilo-sin-polvo-1-27f115fe.webp",
-   "productos/guantes-nitrilo-sin-polvo-2-27f115fe.webp",
-   "productos/guantes-nitrilo-sin-polvo-3-27f115fe.webp",
-   "productos/guantes-nitrilo-sin-polvo-4-27f115fe.webp"
-  ],
-  "marcador-piel-esteril": [
-   "productos/marcador-piel-esteril-1-7280eef1.webp"
-  ],
-  "marcador-piel-no-esteril": [
-   "productos/marcador-piel-no-esteril-1-22acaa60.webp"
-  ],
-  "contador-de-aguja-doble-iman": [
-   "productos/contador-de-aguja-doble-iman-1-f765dbc2.webp"
-  ],
-  "bolsas-para-contar-gasas": [
-   "productos/bolsas-para-contar-gasas-1-23b23d13.webp"
-  ],
-  "limpiador-puntas-electrocauterio": [
-   "productos/limpiador-puntas-electrocauterio-1-21668331.webp"
-  ],
-  "cepillo-instrumental-dental-prcb-01": [
-   "productos/cepillo-instrumental-dental-prcb-01-1-db8165bf.webp"
-  ],
-  "cepillo-instrumental-dental-doble-cabeza": [
-   "productos/cepillo-instrumental-dental-doble-cabeza-1-5e2c1f42.webp"
-  ],
-  "cepillo-instrumental-dental-icb-3": [
-   "productos/cepillo-instrumental-dental-icb-3-1-8be3a821.webp"
-  ],
-  "escobilla-nailon-doble-cabeza": [
-   "productos/escobilla-nailon-doble-cabeza-1-11e16cd9.webp"
-  ],
-  "cepillo-nailon-mango-ancho": [
-   "productos/cepillo-nailon-mango-ancho-1-4c181ce9.webp"
-  ],
-  "videolaringoscopio-vs-10h": [
-   "productos/videolaringoscopio-vs-10h-1-19a77c1a.webp"
-  ],
-  "hojas-videolaringoscopio": [
-   "productos/hojas-videolaringoscopio-1-06fb44b0.webp",
-   "productos/hojas-videolaringoscopio-2-e62fd901.webp",
-   "productos/hojas-videolaringoscopio-3-4facff36.webp",
-   "productos/hojas-videolaringoscopio-4-45b9d878.webp",
-   "productos/hojas-videolaringoscopio-5-8d9857e6.webp"
-  ],
-  "bomba-de-infusion-hp-60": [
-   "productos/bomba-de-infusion-hp-60-1-d050882f.webp"
-  ],
-  "bomba-de-jeringa-hp-30": [
-   "productos/bomba-de-jeringa-hp-30-1-c560fdd5.webp"
-  ],
-  "bomba-de-jeringa-hp-tci": [
-   "productos/bomba-de-jeringa-hp-tci-1-d393565a.webp"
-  ]
- },
- "fotos": {
-  "almacen-pasillo-1": "fotos/almacen-pasillo-1-1600.webp",
-  "almacen-pasillo-2": "fotos/almacen-pasillo-2-1600.webp",
-  "almacen-pasillo-3": "fotos/almacen-pasillo-3-1600.webp",
-  "almacen-racks-1": "fotos/almacen-racks-1-1600.webp",
-  "almacen-racks-2": "fotos/almacen-racks-2-1600.webp",
-  "almacen-nave-1": "fotos/almacen-nave-1-1600.webp",
-  "almacen-nave-2": "fotos/almacen-nave-2-1600.webp",
-  "almacen-venezuela-1": "fotos/almacen-venezuela-1-1600.webp",
-  "almacen-venezuela-2": "fotos/almacen-venezuela-2-1600.webp",
-  "almacen-venezuela-3-limpia": "fotos/almacen-venezuela-3-limpia-1600.webp",
-  "operario-almacen": "fotos/operario-almacen-1600.webp"
- },
- "marcas": {
-  "alleva-medical": "marcas/alleva-medical.webp",
-  "bano-facil": "marcas/bano-facil.webp",
-  "comfycloud": "marcas/comfycloud.webp",
-  "comfort-rubber-gloves": "marcas/comfort-rubber-gloves.webp",
-  "geyi": "marcas/geyi.webp",
-  "hefei": "marcas/hefei.webp",
-  "huaxinhong": "marcas/huaxinhong.webp",
-  "jiehong": "marcas/jiehong.webp",
-  "kangji-medical": "marcas/kangji-medical.webp",
-  "kangbao": "marcas/kangbao.webp",
-  "longood": "marcas/longood.webp",
-  "maxcon": "marcas/maxcon.webp",
-  "medcaptain": "marcas/medcaptain.webp",
-  "medispo": "marcas/medispo.webp",
-  "nex-medical": "marcas/nex-medical.webp",
-  "prep-bio-chx": "marcas/prep-bio-chx.webp",
-  "q-medical": "marcas/q-medical.webp",
-  "quick-fit-bemis": "marcas/quick-fit-bemis.webp",
-  "silpak": "marcas/silpak.webp",
-  "telijie": "marcas/telijie.webp",
-  "xodus": "marcas/xodus.webp"
- },
- "clientes": {
-  "clinica-angloamericana": "clientes/clinica-angloamericana.webp",
-  "clinica-aviva": "clientes/clinica-aviva.webp",
-  "clinica-buenaventura": "clientes/clinica-buenaventura.webp",
-  "clinica-centenario-peruano-japonesa": "clientes/clinica-centenario-peruano-japonesa.webp",
-  "clinica-detecta": "clientes/clinica-detecta.webp",
-  "clinica-good-hope": "clientes/clinica-good-hope.webp",
-  "clinica-internacional": "clientes/clinica-internacional.webp",
-  "clinica-izaguirre": "clientes/clinica-izaguirre.webp",
-  "clinica-javier-prado": "clientes/clinica-javier-prado.webp",
-  "clinica-montefiori": "clientes/clinica-montefiori.webp",
-  "clinica-monterrico": "clientes/clinica-monterrico.webp",
-  "clinica-montesur": "clientes/clinica-montesur.webp",
-  "clinica-ricardo-palma": "clientes/clinica-ricardo-palma.webp",
-  "clinica-san-marcos": "clientes/clinica-san-marcos.webp",
-  "clinica-santa-beatriz": "clientes/clinica-santa-beatriz.webp",
-  "clinica-santa-isabel": "clientes/clinica-santa-isabel.webp",
-  "clinica-stella-maris": "clientes/clinica-stella-maris.webp",
-  "clinica-tezza": "clientes/clinica-tezza.webp",
-  "clinica-uniderma": "clientes/clinica-uniderma.webp",
-  "clinica-vesalio": "clientes/clinica-vesalio.webp",
-  "essalud": "clientes/essalud.webp",
-  "euroclinica": "clientes/euroclinica.webp",
-  "grupo-auna": "clientes/grupo-auna.webp",
-  "grupo-san-pablo": "clientes/grupo-san-pablo.webp",
-  "minsa": "clientes/minsa.webp",
-  "operacion-sonrisa-peru": "clientes/operacion-sonrisa-peru.webp"
- }
+  "productos": {
+    "contenedores-punzocortantes": [
+      "productos/contenedores-punzocortantes-1-c13eef3e.webp",
+      "productos/contenedores-punzocortantes-2-2c317d9e.webp",
+      "productos/contenedores-punzocortantes-3-5c0f722b.webp",
+      "productos/contenedores-punzocortantes-4-66a5e01e.webp",
+      "productos/contenedores-punzocortantes-5-fa9eae38.webp",
+      "productos/contenedores-punzocortantes-6-31c2da79.webp",
+      "productos/contenedores-punzocortantes-7-839ad2d5.webp"
+    ],
+    "contenedores-residuos-citotoxicos": [
+      "productos/contenedores-residuos-citotoxicos-1-1c162f26.webp",
+      "productos/contenedores-residuos-citotoxicos-2-85cec015.webp",
+      "productos/contenedores-residuos-citotoxicos-3-29560bb6.webp"
+    ],
+    "contenedores-residuos-vidrio": [
+      "productos/contenedores-residuos-vidrio-1-0e1f5904.webp",
+      "productos/contenedores-residuos-vidrio-2-1c4cf55c.webp",
+      "productos/contenedores-residuos-vidrio-3-79b6da31.webp"
+    ],
+    "tapete-adhesivo-descontaminante": [
+      "productos/tapete-adhesivo-descontaminante-1-dd9c4644.webp"
+    ],
+    "trocar-para-cirugia-laparoscopica": [
+      "productos/trocar-para-cirugia-laparoscopica-1-fe531f2e.webp",
+      "productos/trocar-para-cirugia-laparoscopica-2-baf2f162.webp",
+      "productos/trocar-para-cirugia-laparoscopica-3-1080ee16.webp",
+      "productos/trocar-para-cirugia-laparoscopica-4-f6d7e7cb.webp",
+      "productos/trocar-para-cirugia-laparoscopica-5-248d701f.webp",
+      "productos/trocar-para-cirugia-laparoscopica-6-4701449a.webp"
+    ],
+    "bolsa-aspiracion-secreciones": [
+      "productos/bolsa-aspiracion-secreciones-1-29ddfe9d.webp",
+      "productos/bolsa-aspiracion-secreciones-2-fc669730.webp",
+      "productos/bolsa-aspiracion-secreciones-3-816487b1.webp"
+    ],
+    "canister-rigido-reusable": [
+      "productos/canister-rigido-reusable-1-f96c75c1.webp",
+      "productos/canister-rigido-reusable-2-9cb367ab.webp",
+      "productos/canister-rigido-reusable-3-763a2add.webp"
+    ],
+    "coches-rodables": [
+      "productos/coches-rodables-1-592ae721.webp",
+      "productos/coches-rodables-2-cbe75a4b.webp",
+      "productos/coches-rodables-3-2239f726.webp"
+    ],
+    "placas-de-anclaje-para-pared": [
+      "productos/placas-de-anclaje-para-pared-1-d5eac562.webp"
+    ],
+    "manifold": [
+      "productos/manifold-1-0d3ca952.webp",
+      "productos/manifold-2-969c7e15.webp"
+    ],
+    "tubo-succion-sin-yankauer": [
+      "productos/tubo-succion-sin-yankauer-1-d7b800b6.webp",
+      "productos/tubo-succion-sin-yankauer-2-d7b800b6.webp"
+    ],
+    "manguera-o-tubuladura-de-silicona": [
+      "productos/manguera-o-tubuladura-de-silicona-1-bb23e790.webp",
+      "productos/manguera-o-tubuladura-de-silicona-2-bb23e790.webp",
+      "productos/manguera-o-tubuladura-de-silicona-3-bb23e790.webp",
+      "productos/manguera-o-tubuladura-de-silicona-4-bb23e790.webp"
+    ],
+    "aplicadores-clorhexidina-2": [
+      "productos/aplicadores-clorhexidina-2-1-96445f07.webp",
+      "productos/aplicadores-clorhexidina-2-2-a0cab6a4.webp",
+      "productos/aplicadores-clorhexidina-2-3-326254f7.webp"
+    ],
+    "cepillo-esponja-clorhexidina-4": [
+      "productos/cepillo-esponja-clorhexidina-4-1-6ae7d4ea.webp"
+    ],
+    "esponja-clorhexidina-2": [
+      "productos/esponja-clorhexidina-2-1-b6912812.webp"
+    ],
+    "toallita-limpieza-piel-clorhexidina": [
+      "productos/toallita-limpieza-piel-clorhexidina-1-0e6d4424.webp"
+    ],
+    "bolsas-de-nutricion-enteral": [
+      "productos/bolsas-de-nutricion-enteral-1-e2db7fb4.webp",
+      "productos/bolsas-de-nutricion-enteral-2-038bd955.webp"
+    ],
+    "set-de-nutricion-enteral": [
+      "productos/set-de-nutricion-enteral-1-7f28ed78.webp"
+    ],
+    "bomba-de-nutricion-enteral": [
+      "productos/bomba-de-nutricion-enteral-1-5d20578d.webp"
+    ],
+    "pano-bano-facil": [
+      "productos/pano-bano-facil-1-e789b65d.webp",
+      "productos/pano-bano-facil-2-82b60f88.webp",
+      "productos/pano-bano-facil-3-88f62945.webp"
+    ],
+    "toalla-para-secado-corporal": [
+      "productos/toalla-para-secado-corporal-1-cfcc2da0.webp"
+    ],
+    "pano-clinico-absorbente": [
+      "productos/pano-clinico-absorbente-1-163c76be.webp",
+      "productos/pano-clinico-absorbente-2-2c25e033.webp"
+    ],
+    "bolsa-emesis": [
+      "productos/bolsa-emesis-1-f6a7206d.webp"
+    ],
+    "manta-absorbente-de-fluidos-antideslizante": [
+      "productos/manta-absorbente-de-fluidos-antideslizante-1-40fbe0da.webp"
+    ],
+    "manta-absorbente-de-fluidos-precortada": [
+      "productos/manta-absorbente-de-fluidos-precortada-1-115d47f6.webp"
+    ],
+    "mantas-super-absorbentes": [
+      "productos/mantas-super-absorbentes-1-382553ae.webp"
+    ],
+    "protector-tela-impermeable": [
+      "productos/protector-tela-impermeable-1-be317988.webp"
+    ],
+    "guantes-nitrilo-sin-polvo": [
+      "productos/guantes-nitrilo-sin-polvo-1-27f115fe.webp",
+      "productos/guantes-nitrilo-sin-polvo-2-27f115fe.webp",
+      "productos/guantes-nitrilo-sin-polvo-3-27f115fe.webp",
+      "productos/guantes-nitrilo-sin-polvo-4-27f115fe.webp"
+    ],
+    "marcador-piel-esteril": [
+      "productos/marcador-piel-esteril-1-7280eef1.webp"
+    ],
+    "marcador-piel-no-esteril": [
+      "productos/marcador-piel-no-esteril-1-22acaa60.webp"
+    ],
+    "contador-de-aguja-doble-iman": [
+      "productos/contador-de-aguja-doble-iman-1-f765dbc2.webp"
+    ],
+    "bolsas-para-contar-gasas": [
+      "productos/bolsas-para-contar-gasas-1-23b23d13.webp"
+    ],
+    "limpiador-puntas-electrocauterio": [
+      "productos/limpiador-puntas-electrocauterio-1-21668331.webp"
+    ],
+    "cepillo-instrumental-dental-prcb-01": [
+      "productos/cepillo-instrumental-dental-prcb-01-1-db8165bf.webp"
+    ],
+    "escobilla-nailon-doble-cabeza": [
+      "productos/escobilla-nailon-doble-cabeza-1-11e16cd9.webp"
+    ],
+    "cepillo-nailon-mango-ancho": [
+      "productos/cepillo-nailon-mango-ancho-1-4c181ce9.webp"
+    ],
+    "cepillo-instrumental-dental-doble-cabeza": [
+      "productos/cepillo-instrumental-dental-doble-cabeza-1-5e2c1f42.webp"
+    ],
+    "cepillo-instrumental-dental-icb-3": [
+      "productos/cepillo-instrumental-dental-icb-3-1-8be3a821.webp"
+    ],
+    "videolaringoscopio-vs-10h": [
+      "productos/videolaringoscopio-vs-10h-1-19a77c1a.webp"
+    ],
+    "hojas-videolaringoscopio": [
+      "productos/hojas-videolaringoscopio-1-06fb44b0.webp",
+      "productos/hojas-videolaringoscopio-2-e62fd901.webp",
+      "productos/hojas-videolaringoscopio-3-4facff36.webp",
+      "productos/hojas-videolaringoscopio-4-45b9d878.webp",
+      "productos/hojas-videolaringoscopio-5-8d9857e6.webp"
+    ],
+    "bomba-de-infusion-hp-60": [
+      "productos/bomba-de-infusion-hp-60-1-d050882f.webp"
+    ],
+    "bomba-de-jeringa-hp-30": [
+      "productos/bomba-de-jeringa-hp-30-1-c560fdd5.webp"
+    ],
+    "bomba-de-jeringa-hp-tci": [
+      "productos/bomba-de-jeringa-hp-tci-1-d393565a.webp"
+    ]
+  },
+  "fotos": {
+    "almacen-pasillo-1": "fotos/almacen-pasillo-1-1600.webp",
+    "almacen-pasillo-2": "fotos/almacen-pasillo-2-1600.webp",
+    "almacen-pasillo-3": "fotos/almacen-pasillo-3-1600.webp",
+    "almacen-racks-1": "fotos/almacen-racks-1-1600.webp",
+    "almacen-racks-2": "fotos/almacen-racks-2-1600.webp",
+    "almacen-nave-1": "fotos/almacen-nave-1-1600.webp",
+    "almacen-nave-2": "fotos/almacen-nave-2-1600.webp",
+    "almacen-venezuela-1": "fotos/almacen-venezuela-1-1600.webp",
+    "almacen-venezuela-2": "fotos/almacen-venezuela-2-1600.webp",
+    "almacen-venezuela-3-limpia": "fotos/almacen-venezuela-3-limpia-1600.webp",
+    "operario-almacen": "fotos/operario-almacen-1600.webp"
+  },
+  "marcas": {
+    "alleva-medical": "marcas/alleva-medical.webp",
+    "bano-facil": "marcas/bano-facil.webp",
+    "comfycloud": "marcas/comfycloud.webp",
+    "comfort-rubber-gloves": "marcas/comfort-rubber-gloves.webp",
+    "geyi": "marcas/geyi.webp",
+    "hefei": "marcas/hefei.webp",
+    "huaxinhong": "marcas/huaxinhong.webp",
+    "jiehong": "marcas/jiehong.webp",
+    "kangji-medical": "marcas/kangji-medical.webp",
+    "kangbao": "marcas/kangbao.webp",
+    "longood": "marcas/longood.webp",
+    "maxcon": "marcas/maxcon.webp",
+    "medcaptain": "marcas/medcaptain.webp",
+    "medispo": "marcas/medispo.webp",
+    "nex-medical": "marcas/nex-medical.webp",
+    "prep-bio-chx": "marcas/prep-bio-chx.webp",
+    "q-medical": "marcas/q-medical.webp",
+    "quick-fit-bemis": "marcas/quick-fit-bemis.webp",
+    "silpak": "marcas/silpak.webp",
+    "telijie": "marcas/telijie.webp",
+    "xodus": "marcas/xodus.webp"
+  },
+  "clientes": {
+    "clinica-angloamericana": "clientes/clinica-angloamericana.webp",
+    "clinica-aviva": "clientes/clinica-aviva.webp",
+    "clinica-buenaventura": "clientes/clinica-buenaventura.webp",
+    "clinica-centenario-peruano-japonesa": "clientes/clinica-centenario-peruano-japonesa.webp",
+    "clinica-detecta": "clientes/clinica-detecta.webp",
+    "clinica-good-hope": "clientes/clinica-good-hope.webp",
+    "clinica-internacional": "clientes/clinica-internacional.webp",
+    "clinica-izaguirre": "clientes/clinica-izaguirre.webp",
+    "clinica-javier-prado": "clientes/clinica-javier-prado.webp",
+    "clinica-montefiori": "clientes/clinica-montefiori.webp",
+    "clinica-monterrico": "clientes/clinica-monterrico.webp",
+    "clinica-montesur": "clientes/clinica-montesur.webp",
+    "clinica-ricardo-palma": "clientes/clinica-ricardo-palma.webp",
+    "clinica-san-marcos": "clientes/clinica-san-marcos.webp",
+    "clinica-santa-beatriz": "clientes/clinica-santa-beatriz.webp",
+    "clinica-santa-isabel": "clientes/clinica-santa-isabel.webp",
+    "clinica-stella-maris": "clientes/clinica-stella-maris.webp",
+    "clinica-tezza": "clientes/clinica-tezza.webp",
+    "clinica-uniderma": "clientes/clinica-uniderma.webp",
+    "clinica-vesalio": "clientes/clinica-vesalio.webp",
+    "essalud": "clientes/essalud.webp",
+    "euroclinica": "clientes/euroclinica.webp",
+    "grupo-auna": "clientes/grupo-auna.webp",
+    "grupo-san-pablo": "clientes/grupo-san-pablo.webp",
+    "minsa": "clientes/minsa.webp",
+    "operacion-sonrisa-peru": "clientes/operacion-sonrisa-peru.webp"
+  }
 }

@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { especialidades } from '../data/especialidades';
+import { especialidades, fotoEspecialidad } from '../data/especialidades';
 import { lineaPorSlug, productosDeLinea } from '../data/catalogo';
 // La direccion de una categoria lleva su linea delante.
 import { ruta as via, type Idioma } from '../i18n/rutas';
@@ -106,7 +106,7 @@ const fichas = especialidades.map((base, i) => {
           >
             <span class="esp__tab-n">{f.n}</span>
             <span class="esp__tab-ic">
-              <img src={`/img/especialidades/${f.slug}-160.webp`} width="160" height="160"
+              <img src={fotoEspecialidad(f.slug, 160)} width="160" height="160"
                 alt="" loading="lazy" decoding="async" />
             </span>
             <span class="esp__tab-txt">{f.corto}</span>
@@ -140,7 +140,10 @@ const fichas = especialidades.map((base, i) => {
           >
             <div class="esp__panel-cab">
               <figure class="esp__foto">
-                <img src={`/img/especialidades/${f.slug}-480.webp`} width="480" height="480"
+                <img src={fotoEspecialidad(f.slug, 480)}
+                  srcset={`${fotoEspecialidad(f.slug, 480)} 480w, ${fotoEspecialidad(f.slug, 960)} 960w`}
+                  sizes="(min-width: 1024px) 19rem, 40vw"
+                  width="480" height="480"
                   alt={f.nombre} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
               </figure>
 
@@ -185,7 +188,8 @@ const fichas = especialidades.map((base, i) => {
     z-index: 1;
     overflow: hidden;
     padding-block: 5rem;
-    background: var(--color-brand-700);
+    background: var(--color-brand-900);
+    background-image: var(--fondo-marino);
     color: #fff;
     /* Sube por delante de la portada, como una lámina impresa sobre otra.
        El redondeo vive aquí, no en la portada: así la curva se recorta contra

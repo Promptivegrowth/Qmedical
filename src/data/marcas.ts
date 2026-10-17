@@ -1,6 +1,9 @@
 /**
  * Marcas representadas y distribuidas por Q-MEDICAL S.A.C.
- * `logo` apunta a /img/marcas/<slug>.webp generado por scripts/optimize_images.py
+ *
+ * En octubre de 2026 la empresa retiró, por estrategia comercial, a Kangji,
+ * Bemis (Quick Fit), Prep Bio y Huaxinhong: no deben aparecer en ninguna
+ * parte del sitio. Sus productos se ocultaron en el portal, no se borraron.
  */
 
 export interface Marca {
@@ -13,6 +16,11 @@ export interface Marca {
    */
   resumen: string;
   linea: string;
+  /**
+   * Si sale en el anillo de marcas asociadas. Por omisión, sí. El anillo
+   * muestra los logotipos que entregó la empresa, uno por marca.
+   */
+  enAnillo?: boolean;
 }
 
 /*
@@ -50,11 +58,14 @@ export const marcas: Marca[] = [
     linea: 'Bioseguridad · manejo de residuos',
   },
   {
+    /* La empresa la llama por su producto, NEX CLOREX; el logotipo que
+       entregó es el del fabricante, NEX MEDICAL Antiseptics. */
     slug: 'nex-medical',
-    nombre: 'NEX MEDICAL Antiseptics',
+    nombre: 'NEX CLOREX',
     resumen:
-      'Antisépticos de preparación prequirúrgica de la piel a base de ' +
-      'gluconato de clorhexidina, en formatos aplicador, esponja y cepillo.',
+      'Antisépticos de NEX MEDICAL Antiseptics para la preparación ' +
+      'prequirúrgica de la piel, a base de gluconato de clorhexidina, en ' +
+      'formatos aplicador, esponja y cepillo.',
     linea: 'Antisepsia · preparación de piel',
   },
   {
@@ -146,40 +157,21 @@ export const marcas: Marca[] = [
     linea: 'Seguridad quirúrgica',
   },
   /*
-   * Las seis siguientes llegaron con su logotipo en octubre de 2026, sin la
-   * descripción que las acompaña. Se publican igual: su ficha muestra el
-   * logotipo y los productos que la llevan, que es información cierta. El
-   * resumen se completa cuando la empresa lo entregue.
+   * Llegaron con su logotipo en octubre de 2026, sin la descripción que las
+   * acompaña. Se publican igual: su logotipo y los productos que la llevan
+   * son información cierta. El resumen se completa cuando la empresa lo
+   * entregue.
    */
   {
-    slug: 'kangji-medical',
-    nombre: 'Kangji Medical',
-    resumen: '',
-    linea: 'Instrumental laparoscópico',
-  },
-  {
-    slug: 'quick-fit-bemis',
-    nombre: 'Quick Fit · Bemis',
-    resumen: '',
-    linea: 'Aspiración de secreciones',
-  },
-  {
-    slug: 'prep-bio-chx',
-    nombre: 'Prep Bio CHX',
-    resumen: '',
-    linea: 'Antisepsia de la piel',
-  },
-  {
+    /* Hefei es el fabricante de TELIJIE, y su logotipo es el mismo: en el
+       anillo salían dos discos iguales. La empresa no lo incluyó entre los
+       logotipos de octubre de 2026, así que queda solo como la marca que el
+       catálogo nombra en el paño de celulosa. */
     slug: 'hefei',
     nombre: 'Hefei',
     resumen: '',
     linea: 'Higiene del paciente',
-  },
-  {
-    slug: 'huaxinhong',
-    nombre: 'Huaxinhong',
-    resumen: '',
-    linea: 'Mantas absorbentes',
+    enAnillo: false,
   },
   {
     slug: 'comfycloud',
@@ -188,5 +180,24 @@ export const marcas: Marca[] = [
     linea: 'Mantas absorbentes',
   },
 ];
+
+/*
+ * Logotipos. Los de la entrega de octubre de 2026 viven en su propia carpeta
+ * —/img/ se sirve con caché inmutable, y un archivo nuevo con el nombre del
+ * viejo no le llegaría a quien ya visitó el sitio— y los escribe
+ * scripts/entrega_octubre.py. Hefei no venía en esa entrega y conserva el
+ * suyo.
+ */
+const CON_LOGO_NUEVO = new Set([
+  'alleva-medical', 'bano-facil', 'comfycloud', 'comfort-rubber-gloves', 'geyi',
+  'jiehong', 'kangbao', 'longood', 'maxcon', 'medcaptain', 'medispo',
+  'nex-medical', 'q-medical', 'silpak', 'telijie', 'xodus',
+]);
+
+/** El logotipo de una marca: a doble densidad, o `-1x` para la sencilla. */
+export function logoDe(slug: string, densidad: '1x' | '2x' = '2x'): string {
+  const carpeta = CON_LOGO_NUEVO.has(slug) ? '/img/marcas/2026-10' : '/img/marcas';
+  return `${carpeta}/${slug}${densidad === '1x' ? '-1x' : ''}.webp`;
+}
 
 export const marcaPorSlug = new Map(marcas.map((m) => [m.slug, m]));

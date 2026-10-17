@@ -1,8 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { site, whatsapp, waMensajes } from '../data/site';
-import { lineas as lineasCat, productos, productosDeLinea } from '../data/catalogo';
-import { marcas } from '../data/marcas';
+import { lineas as lineasCat, productosDeLinea } from '../data/catalogo';
 import { ruta as via, otroIdioma, NOMBRE_IDIOMA, type Idioma } from '../i18n/rutas';
 import { textos } from '../i18n/textos';
 import { lineaEn, waMensajesEn } from '../i18n/contenido';
@@ -34,7 +33,7 @@ const lineas = lineasCat.map((c) => ({
 
 const empresa = [
   { nombre: t.megaEmpresa.sobreNosotros, href: via(lang, 'nosotros'), nota: t.megaEmpresa.sobreNosotrosNota, icono: 'equipo' },
-  { nombre: t.nav.marcas, href: via(lang, 'marcas'), nota: t.megaEmpresa.marcasNota(marcas.length), icono: 'reticula' },
+  { nombre: t.nav.marcas, href: via(lang, 'marcas'), nota: t.megaEmpresa.marcasNota, icono: 'reticula' },
   { nombre: t.megaEmpresa.infraestructura, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.infraestructuraNota, icono: 'almacen' },
   { nombre: t.megaEmpresa.certificaciones, href: via(lang, 'nosotros', undefined, 'certificaciones'), nota: t.megaEmpresa.certificacionesNota, icono: 'certificado' },
   { nombre: t.megaEmpresa.entregas, href: via(lang, 'nosotros', undefined, 'infraestructura'), nota: t.megaEmpresa.entregasNota, icono: 'entrega' },
@@ -91,6 +90,11 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
         </a>
 
         <nav class="nav" aria-label={t.navPrincipal}>
+          <!-- Inicio, primero: la empresa lo pidió en octubre de 2026. El
+               logotipo ya llevaba a la portada, pero no todo el mundo lo sabe. -->
+          <a href={inicio}
+            class:list={['nav__enlace', activo(inicio) && 'es-activo']}
+          >{t.nav.inicio}</a>
           <!-- Nosotros y Empresa eran dos entradas para la misma sección:
                todo lo de «Empresa» ya vivía dentro de /nosotros. Ahora es una
                sola, y el desplegable lleva a sus apartados. -->
@@ -170,7 +174,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
             ))}
           </ul>
           <div class="lamina-menu__pie">
-            <a href={via(lang, 'catalogo')} class="enlace">{t.megaCatalogo.todo(productos.length)}<Icon name="flecha" size={15} /></a>
+            <a href={via(lang, 'catalogo')} class="enlace">{t.megaCatalogo.todo}<Icon name="flecha" size={15} /></a>
             <a href={via(lang, 'contacto', undefined, 'cotizar')} class="enlace">{t.megaCatalogo.cotizar}<Icon name="flecha" size={15} /></a>
           </div>
         </div>
@@ -231,6 +235,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
 
       <ul class="mt-8 divide-y divide-[var(--color-linea)] border-y border-[var(--color-linea)]">
         {[
+          { n: t.nav.inicio, h: inicio },
           { n: t.nav.nosotros, h: via(lang, 'nosotros') },
           { n: t.nav.catalogo, h: via(lang, 'catalogo') },
           { n: t.nav.marcas, h: via(lang, 'marcas') },

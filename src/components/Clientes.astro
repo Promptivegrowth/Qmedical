@@ -55,12 +55,10 @@ const T = {
 {lista.length > 0 && (
   <section class:list={['clientes', claro && 'es-clara']}>
     <div class="caja">
-      <div class="clientes__alto" data-anim-grupo="90">
-        <div>
-          <p class="ante ante-brand" data-anim="sube">{T.ante}</p>
-          <h2 class="display-lg mt-5 max-w-[20ch]" data-anim="sube">{T.titulo}</h2>
-        </div>
-        <div class="clientes__nota" data-anim="sube">
+      <p class="ante ante-brand" data-anim="sube">{T.ante}</p>
+      <div class="clientes__alto alto-alineado" data-anim-grupo="90">
+        <h2 class="display-lg max-w-[20ch]" data-anim="sube">{T.titulo}</h2>
+        <div class="clientes__nota alto-alineado__texto" data-anim="sube">
           <p>{T.texto}</p>
         </div>
       </div>
@@ -106,16 +104,7 @@ const T = {
   .clientes.es-clara { background: var(--color-papel); }
   @media (min-width: 1024px) { .clientes { padding-block: 7rem; } }
 
-  .clientes__alto { display: grid; gap: 2rem; }
-  @media (min-width: 900px) {
-    .clientes__alto {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 2rem var(--medianil);
-      align-items: end;
-    }
-    .clientes__alto > div:first-child { grid-column: 1 / span 7; }
-    .clientes__nota { grid-column: 9 / span 4; }
-  }
+  .clientes__alto { margin-top: 1.25rem; }
 
   .clientes__nota {
     font-size: 0.95rem;

@@ -2,16 +2,23 @@
 """
 Optimiza las fotografías de las especialidades clínicas.
 
-La empresa entregó una por servicio, en PNG de unos 500x500 px y con canal
-alfa. Aquí se recortan a cuadrado, se componen sobre blanco —el alfa no
-aporta nada y pesa— y se exportan en WebP en dos tamaños: el del panel y el
-de la miniatura de la lista.
+Se usan en dos sitios: el panel de especialidades de la portada (foto grande
+y miniatura de la lista) y las seis tarjetas de «Quiénes somos».
 
-Ojo con el techo: 500 px es lo que hay. Ni el panel de la portada ni las
-tarjetas de «nosotros» deben mostrarlas más grandes, o se verán blandas, y
-en pantallas de densidad doble el límite real es la mitad. Si la empresa
-manda los originales a mayor tamaño, basta con subir ANCHOS y volver a
-correr esto.
+La entrega vigente es la de octubre de 2026 —«Nuevas fotos WEB QM /
+Especialidades clínicas»—: originales cuadrados de 2048 px, salvo
+Enfermería, de 1086. La anterior era de unos 500 px y obligaba a no pasar de
+480; con estas hay material para un 960, que es lo que pide el panel en una
+pantalla de densidad doble.
+
+Salen a una carpeta con fecha, no encima de las anteriores: /img/ se sirve
+con caché inmutable de un año, y un archivo que conserva su nombre no vuelve
+a pedirse. Las plantillas toman la carpeta de `src/data/especialidades.ts`
+(CARPETA_FOTOS), así que una entrega nueva es cambiar la fecha en los dos
+sitios.
+
+Se recortan a cuadrado, se componen sobre blanco —el alfa no aporta nada y
+pesa— y se exportan en WebP.
 
 Uso:  python scripts/fotos_especialidades.py
 """
@@ -25,29 +32,29 @@ from PIL import Image  # noqa: E402
 
 from optimize_images import OUT, save_webp  # noqa: E402
 
-ORIGEN = r"C:\Users\LUIGI\Desktop\QMEDICAL\imagenes para servicios"
+ORIGEN = (r"C:\Users\LUIGI\Desktop\QMEDICAL\nuevas observaciones"
+          r"\Nuevas fotos WEB QM\Especialidades clínicas")
 
 # El nombre del archivo que entregó la empresa → el slug de la especialidad.
-# Se mapea a mano porque los archivos vienen sin criterio: «cirujia»,
-# «nutrituon», «via aerea».
 MAPA = {
-    "cirujia.png": "cirugia-laparoscopica",
-    "bioseguridad.png": "bioseguridad",
-    "Antisepsia.png": "antisepsia",
-    "nutrituon.png": "nutricion-enteral",
-    "via aerea.png": "anestesiologia",
-    "enfermeria.png": "enfermeria",
+    "Cirugía laparoscópica.png": "cirugia-laparoscopica",
+    "Bioseguridad.png": "bioseguridad",
+    "Foto Antisepsia.png": "antisepsia",
+    "Nutrición enteral.png": "nutricion-enteral",
+    "Anestiología y vía aérea.jpg": "anestesiologia",
+    "Enfermería.png": "enfermeria",
 }
 
-ANCHOS = (480, 160)   # panel y miniatura de la lista
+CARPETA = "especialidades/2026-10"
+ANCHOS = (960, 480, 160)   # panel en densidad doble, panel y miniatura
 P = os.path.join
 
 
 def cuadrar(im):
     """Recorta al cuadrado por el centro.
 
-    Vienen casi cuadradas, pero no exactamente, y un marco cuadrado con una
-    imagen de 497x504 deforma o deja franja."""
+    Vienen cuadradas, pero una entrega anterior llegó de 497x504, y un marco
+    cuadrado con una imagen así deforma o deja franja."""
     lado = min(im.size)
     izq = (im.width - lado) // 2
     arr = (im.height - lado) // 2
@@ -55,7 +62,7 @@ def cuadrar(im):
 
 
 def main():
-    destino = P(OUT, "especialidades")
+    destino = P(OUT, CARPETA)
     os.makedirs(destino, exist_ok=True)
 
     for archivo, slug in MAPA.items():

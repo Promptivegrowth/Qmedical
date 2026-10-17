@@ -3,14 +3,26 @@
 /* ==========================================================================
    Sistema de diseño Q-MEDICAL S.A.C. — registro editorial
    --------------------------------------------------------------------------
-   Colores corporativos del Manual de Identidad (pág. 05):
-     Pantone Blue  R21  G46  B127  -> #152E7F
-     Pantone White #FFFFFF · Pantone Black #000000
+   Paleta corporativa de la web, la que fijó la empresa en octubre de 2026
+   (OBSERVACIONES 3, tomando como referencia su sección «Certificaciones y
+   acreditaciones»):
 
-   El soporte usa unicamente blanco, negro y grises neutros, que es lo que
-   autoriza la pagina 06 del manual ("fondos blancos, negro y grises hasta un
-   valor de 40 % de negro"). Sin tintes calidos ni frios: el unico color del
-   sitio es el azul corporativo.
+     Azul marino profundo  #06275E  fondos y secciones corporativas
+     Azul eléctrico        #083B80  tarjetas, paneles, degradados
+     Celeste brillante     #22BDF2  palabras destacadas, iconos, bordes,
+                                    botones de acción
+     Blanco                #FFFFFF  títulos y textos principales
+     Celeste suave         #9EDBFF  textos secundarios, numeración
+
+   Sustituye al azul del Manual de Identidad (#152E7F), que sigue siendo el
+   del logotipo. Toda la escala --color-brand-* se deriva de esos cinco: los
+   tonos intermedios son mezclas entre ellos, no colores nuevos.
+
+   Una regla de legibilidad que la paleta no dice y hay que cuidar: el
+   celeste brillante es para fondos azules. Sobre blanco no alcanza el
+   contraste de un texto (2,2:1), así que ahí el acento es el azul eléctrico.
+
+   El soporte claro sigue siendo blanco y grises neutros.
 
    Tipografia: el manual (pag. 07) pide Athelas Bold —de donde nace la Q del
    logotipo— y Adobe Caslon Pro Bold —de donde nace la palabra MEDICAL—. Las
@@ -21,26 +33,26 @@
    Comparten planteamiento —serifa contemporanea de libro, contraste bajo,
    serifas robustas, altura de x generosa— y Literata se diseno expresamente
    para leerse en pantalla, con un eje optico que ajusta el trazo al tamano.
-
-   Antes se usaba Libre Caslon Display, una revival de Caslon de contraste
-   altisimo. En texto corrido funciona, pero a cuerpo de titular sus finos se
-   vuelven filamentos y el conjunto adquiere un aire de esquela. Literata
-   sostiene el mismo registro editorial sin esa fragilidad.
    ========================================================================== */
 
 @theme {
-  /* Azul corporativo y su escala derivada */
-  --color-brand-50: #eef1fa;
-  --color-brand-100: #dde3f3;
-  --color-brand-200: #bcc7e7;
-  --color-brand-300: #93a3d6;
-  --color-brand-400: #6478bf;
-  --color-brand-500: #3d54a6;
-  --color-brand-600: #24398c;
-  --color-brand-700: #152e7f; /* azul corporativo */
-  --color-brand-800: #112563;
-  --color-brand-900: #0c1a46;
-  --color-brand-950: #070f2b;
+  /* La paleta de la empresa y su escala */
+  --color-marino: #06275e;        /* azul marino profundo */
+  --color-electrico: #083b80;     /* azul eléctrico */
+  --color-celeste: #22bdf2;       /* celeste brillante */
+  --color-celeste-suave: #9edbff; /* celeste suave */
+
+  --color-brand-50: #eff9ff;
+  --color-brand-100: #def2ff;
+  --color-brand-200: #c3e9ff;
+  --color-brand-300: #9edbff; /* celeste suave */
+  --color-brand-400: #22bdf2; /* celeste brillante */
+  --color-brand-500: #158ad0;
+  --color-brand-600: #0e62a6;
+  --color-brand-700: #083b80; /* azul eléctrico: el acento sobre blanco */
+  --color-brand-800: #07316f;
+  --color-brand-900: #06275e; /* azul marino profundo */
+  --color-brand-950: #041a42;
 
   /* Soporte: blanco, negro y grises neutros (manual, pág. 06) */
   --color-papel: #ffffff;
@@ -79,6 +91,13 @@
     --r-md: 12px;
     --r-lg: 24px;
     --r-lamina: 40px;
+
+    /* Fondo de las bandas corporativas: el marino manda y el eléctrico entra
+       en un degradado suave desde arriba a la derecha, como en la sección de
+       certificaciones que la empresa dio de referencia. */
+    --fondo-marino:
+      radial-gradient(90% 70% at 88% 0%, rgb(8 59 128 / 0.9) 0%, rgb(8 59 128 / 0) 70%),
+      linear-gradient(180deg, var(--color-brand-900) 0%, #05214f 100%);
 
     /* Medianil de la retícula. Acompaña al aire lateral de .caja, de modo
        que los huecos entre columnas y los márgenes de página se leen como
@@ -213,7 +232,40 @@
     color: var(--color-tinta-45);
   }
   .ante-brand { color: var(--color-brand-700); }
-  .ante-claro { color: rgba(255, 255, 255, 0.55); }
+  .ante-claro { color: var(--color-celeste-suave); }
+  /* El filete que antecede al antetítulo, como en la referencia de la
+     empresa: una raya corta que marca dónde empieza la sección. Sobre azul
+     va en celeste brillante; sobre blanco, en el eléctrico. */
+  .ante-brand::before,
+  .ante-claro::before {
+    content: '';
+    display: inline-block;
+    width: 2.25rem;
+    height: 2px;
+    margin-right: 0.9rem;
+    vertical-align: 0.28em;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .ante-claro::before { background: var(--color-celeste); }
+
+  /* ── Titular y texto a la misma altura ────────────────────────────────
+     La empresa lo señaló en cuatro secciones (OBSERVACIONES 3): el texto
+     de la derecha quedaba «muy arriba» o «descuadrado» respecto del título.
+     Pasaba porque el antetítulo vivía dentro de la columna del titular y la
+     empujaba hacia abajo, mientras el texto arrancaba desde arriba. Ahora el
+     antetítulo va encima de las dos columnas y la rejilla empieza con el
+     titular; el texto baja lo justo para alinearse con la altura de las
+     mayúsculas del titular, no con su caja. */
+  .alto-alineado { display: grid; gap: 1.75rem; }
+  @media (min-width: 1024px) {
+    .alto-alineado {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 5rem;
+      align-items: start;
+    }
+    .alto-alineado__texto { padding-top: 0.7rem; }
+  }
 
   /* Numeración de sumario */
   .folio {
@@ -391,7 +443,7 @@
   .campo:focus {
     outline: none;
     border-color: var(--color-brand-700);
-    box-shadow: 0 0 0 3px rgba(21, 46, 127, 0.1);
+    box-shadow: 0 0 0 3px rgb(8 59 128 / 0.1);
   }
   .rotulo {
     display: block;
