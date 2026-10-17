@@ -77,7 +77,7 @@ const t = textos(lang);
           class:list={['cifra block', /^\d+$/.test(dato.valor) && 'cuenta']}
           {...(/^\d+$/.test(dato.valor) ? { 'data-conteo': dato.valor, 'data-duracion': '1600' } : {})}
         >{dato.valor}</span>
-        <span class="mt-2 block text-[0.82rem] text-white/50">{dato.etiqueta}</span>
+        <span class="mt-2 block text-[0.82rem] text-[var(--color-celeste-suave)]">{dato.etiqueta}</span>
       </div>
     )}
   </div>
@@ -158,14 +158,15 @@ const t = textos(lang);
     margin-top: 1.5rem;
     font-size: 1.02rem;
     line-height: 1.65;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgb(255 255 255 / 0.85);
   }
 
   .portada__dato {
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgb(158 219 255 / 0.3);
   }
   @media (min-width: 1024px) {
-    .portada__dato { border-top: 0; border-left: 1px solid rgba(255, 255, 255, 0.15); padding: 0 0 0 3rem; }
+    .portada__dato { border-top: 0; border-left: 1px solid rgb(158 219 255 / 0.35); padding: 0 0 0 3rem; }
   }
+  .portada__dato .cifra { color: var(--color-celeste); }
 </style>

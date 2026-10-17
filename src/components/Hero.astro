@@ -123,7 +123,7 @@ const T = {
     <div class="caja flex flex-wrap items-center justify-between gap-x-10 gap-y-4">
       <ul class="flex flex-wrap gap-x-8 gap-y-2 text-[0.8rem] text-white/75">
         {T.avales.map((a) => (
-          <li class="flex items-center gap-2"><Icon name="visto" size={14} class="opacity-50" />{a}</li>
+          <li class="flex items-center gap-2"><Icon name="visto" size={14} class="text-[var(--color-celeste)]" />{a}</li>
         ))}
       </ul>
       <a href="#especialidades" class="hero__baja" aria-label={T.irA}>
@@ -264,7 +264,9 @@ const T = {
   .hero__linea:nth-child(1) > span { animation-delay: 0.25s; }
   .hero__linea:nth-child(2) > span { animation-delay: 0.37s; }
   .hero__linea:nth-child(3) > span { animation-delay: 0.49s; }
-  .hero__enfasis { color: rgba(255, 255, 255, 0.62); }
+  /* El segundo tramo del titular, en celeste: el mismo juego de dos tonos
+     del titular de certificaciones, que la empresa dio de referencia. */
+  .hero__enfasis { color: var(--color-celeste); }
 
   @keyframes sube-linea { to { transform: none; } }
   @keyframes asoma {
@@ -295,7 +297,7 @@ const T = {
     /* Deja libre la esquina inferior derecha, que ocupa el botón flotante
        de WhatsApp. */
     padding-right: 4.25rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgb(158 219 255 / 0.18);
     animation: asoma 1s var(--ease-salida) 1s both;
   }
   .hero__baja { display: inline-flex; align-items: center; gap: 0.75rem; }
@@ -304,12 +306,13 @@ const T = {
     place-items: center;
     width: 2.4rem;
     height: 2.4rem;
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    border: 1px solid rgb(34 189 242 / 0.6);
     border-radius: 999px;
+    color: var(--color-celeste);
     transition: background-color 0.3s, transform 0.4s var(--ease-salida);
   }
   .hero__baja:hover .hero__baja-disco {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgb(34 189 242 / 0.15);
     transform: translateY(3px);
   }
 

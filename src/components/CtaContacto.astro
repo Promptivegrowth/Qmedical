@@ -71,15 +71,16 @@ const mensaje = waMensaje ?? wa.cotizacion;
     opacity: 0.6;
     pointer-events: none;
   }
-  .cierre .ante-brand { color: var(--color-brand-200); }
+  .cierre .ante-brand { color: var(--color-celeste-suave); }
+  .cierre .ante-brand::before { background: var(--color-celeste); }
   .cierre .cuerpo { color: rgba(255, 255, 255, 0.8); }
 
   /* WhatsApp: hueco sobre el azul, relleno al apuntarlo. */
   .cierre__wa {
-    border-color: rgba(255, 255, 255, 0.45);
+    border-color: rgb(34 189 242 / 0.6);
     color: #fff;
   }
-  .cierre__wa:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+  .cierre__wa:hover { background: rgb(34 189 242 / 0.14); border-color: var(--color-celeste); }
   .cierre__cuerpo {
     display: grid;
     gap: 2.5rem;

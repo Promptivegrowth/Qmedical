@@ -161,7 +161,8 @@ const orbes = enAnillo.map((m, i) => {
     --k: 1; /* factor de escala de los discos */
 
     position: relative;
-    background: var(--color-brand-950); /* azul profundo del manual */
+    background-color: var(--color-brand-900);
+    background-image: var(--fondo-marino);
     color: #fff;
   }
 
@@ -279,7 +280,7 @@ const orbes = enAnillo.map((m, i) => {
     font-weight: 600;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-celeste-suave);
   }
   .constelacion__eyebrow::before,
   .constelacion__eyebrow::after {
@@ -314,21 +315,22 @@ const orbes = enAnillo.map((m, i) => {
     align-items: center;
     gap: 0.5rem;
     padding: 0.7rem 1.4rem;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid var(--color-celeste);
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.58);
+    background: var(--color-celeste);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     font-size: 0.84rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-brand-950);
+    box-shadow: 0 14px 30px -12px rgb(34 189 242 / 0.55);
     white-space: nowrap;
     transform: translateX(-50%);
     transition: background 0.25s, border-color 0.25s, gap 0.25s;
   }
   .constelacion__cta:hover {
-    background: rgba(0, 0, 0, 0.82);
-    border-color: rgba(255, 255, 255, 0.55);
+    background: var(--color-celeste-suave);
+    border-color: var(--color-celeste-suave);
     gap: 0.8rem;
   }
 
