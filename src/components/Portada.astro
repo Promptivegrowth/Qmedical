@@ -97,6 +97,9 @@ const t = textos(lang);
 
   .portada {
     position: relative;
+    /* Por encima de la sección que la sigue, que en /nosotros sube por
+       detrás de las esquinas redondeadas. */
+    z-index: 1;
     overflow: hidden;
     background: var(--color-brand-950);
     color: #fff;

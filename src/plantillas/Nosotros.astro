@@ -39,11 +39,11 @@ const T = {
       'dispongan de productos médicos, de bioseguridad y de protección personal ' +
       'de alta calidad, junto a nuestros proveedores alrededor del mundo.',
     miga: 'Nosotros',
-    dato: 'años de operación',
+    // Las tres cifras de la maqueta que entregó la empresa (octubre de 2026).
     cifras: [
-      { v: site.fundacion, e: 'Año de fundación', n: 'Más de dos décadas en el sector', anio: true },
-      { v: 3, e: 'Almacenes', n: 'Estratégicamente ubicados en Breña' },
-      { v: 3, e: 'Certificaciones', n: 'BPA · ISO 37001 · ISO 14001' },
+      { v: site.fundacion, e: 'Año de fundación', n: 'Más de dos décadas en el sector salud.', anio: true },
+      { v: 500, pre: '+', e: 'Clientes atendidos', n: 'Alcance comercial en el sector público y privado.' },
+      { v: 180, e: 'Productos en el portafolio', n: 'Amplitud de soluciones y dispositivos médicos.' },
     ],
     quienesAnte: 'Quiénes somos',
     quienesTitulo: 'Su aliado estratégico en insumos y dispositivos médicos',
@@ -122,11 +122,10 @@ const T = {
       'high-quality medical, biosafety and personal protection products, ' +
       'alongside our suppliers around the world.',
     miga: 'About us',
-    dato: 'years in operation',
     cifras: [
-      { v: site.fundacion, e: 'Year founded', n: 'More than two decades in the sector', anio: true },
-      { v: 3, e: 'Warehouses', n: 'Strategically located in Breña' },
-      { v: 3, e: 'Certifications', n: 'BPA · ISO 37001 · ISO 14001' },
+      { v: site.fundacion, e: 'Year founded', n: 'More than two decades in the health sector.', anio: true },
+      { v: 500, pre: '+', e: 'Clients served', n: 'Commercial reach across the public and private sectors.' },
+      { v: 180, e: 'Products in the portfolio', n: 'A wide range of solutions and medical devices.' },
     ],
     quienesAnte: 'Who we are',
     quienesTitulo: 'Your strategic partner in medical supplies and devices',
@@ -220,26 +219,29 @@ const principios = valores.map((v, i) => ({
     migas={[{ nombre: T.miga }]}
     foto="/img/fotos/almacen-pasillo-2-1600.webp"
     cine
-    dato={{ valor: String(site.anios), etiqueta: T.dato }}
   />
 
-  <!-- ── Cifras ──────────────────────────────────────────────────────── -->
-  <section class="bg-[var(--color-papel)] border-b border-[var(--color-linea)]">
+  <!-- ── Cifras ─────────────────────────────────────────────────────
+       Banda marina con tres cifras en celeste, cada una con su raya y su
+       rótulo en versales, separadas por filetes: la maqueta de la empresa. -->
+  <section class="hitos">
     <div class="caja">
-      <dl class="cifras" data-anim-grupo="80">
+      <div class="hitos__lista" data-anim-grupo="110">
         {T.cifras.map((c, i) => (
-          <div data-anim="sube">
-            <dd
-              class="cifras__valor cuenta"
+          <div class="hito" data-anim="sube">
+            <p
+              class="hito__valor cuenta"
               data-conteo={c.v}
-              data-duracion={1500 + i * 200}
+              data-duracion={1500 + i * 250}
+              {...c.pre ? { 'data-prefijo': c.pre } : {}}
               {...c.anio ? { 'data-agrupar': 'no', 'data-desde': '1980' } : {}}
-            >{c.v}</dd>
-            <dt class="cifras__etiqueta">{c.e}</dt>
-            <p class="cifras__nota">{c.n}</p>
+            >{c.pre ?? ''}{c.v}</p>
+            <span class="hito__raya" aria-hidden="true"></span>
+            <p class="hito__etiqueta">{c.e}</p>
+            <p class="hito__nota">{c.n}</p>
           </div>
         ))}
-      </dl>
+      </div>
     </div>
   </section>
 
@@ -381,23 +383,59 @@ const principios = valores.map((v, i) => ({
 
 <style>
   /* ── Cifras ───────────────────────────────────────────────────────── */
-  .cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (min-width: 900px) { .cifras { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .cifras > div { padding: 2.5rem 1.5rem 2.5rem 0; border-top: 1px solid var(--color-linea); }
-  @media (min-width: 900px) {
-    .cifras > div { border-top: 0; }
-    .cifras > div + div { border-left: 1px solid var(--color-linea); padding-left: 2.5rem; }
+  /* La banda sube por detrás de la cabecera: así las esquinas redondeadas
+     de la portada se recortan contra el azul y no dejan picos blancos. */
+  .hitos {
+    position: relative;
+    z-index: 0;
+    margin-top: calc(-1 * var(--r-lamina));
+    padding-top: calc(4rem + var(--r-lamina));
+    padding-bottom: 4rem;
+    background-color: var(--color-brand-900);
+    background-image: var(--fondo-marino);
+    color: #fff;
   }
-  .cifras__valor {
+  @media (min-width: 1024px) { .hitos { padding-top: calc(5.5rem + var(--r-lamina)); padding-bottom: 5.5rem; } }
+
+  .hitos__lista { display: grid; gap: 2.75rem; }
+  @media (min-width: 900px) {
+    .hitos__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+    .hito { padding-inline: 3rem; }
+    .hito:first-child { padding-left: 0; }
+    .hito + .hito { border-left: 1px solid rgb(34 189 242 / 0.45); }
+  }
+
+  .hito__valor {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    font-size: clamp(3rem, 6vw, 5.4rem);
     line-height: 1;
-    color: var(--color-brand-700);
+    letter-spacing: -0.03em;
+    color: var(--color-celeste);
     font-variant-numeric: lining-nums tabular-nums;
   }
-  .cifras__etiqueta { margin-top: 0.85rem; font-size: 0.9rem; font-weight: 500; }
-  .cifras__nota { margin-top: 0.3rem; font-size: 0.8rem; color: var(--color-tinta-45); }
+  .hito__raya {
+    display: block;
+    width: 3.5rem;
+    height: 4px;
+    margin-top: 1.4rem;
+    border-radius: 4px;
+    background: var(--color-celeste);
+  }
+  .hito__etiqueta {
+    margin-top: 1.4rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .hito__nota {
+    max-width: 26rem;
+    margin-top: 0.8rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    line-height: 1.55;
+    color: rgb(255 255 255 / 0.85);
+  }
 
   /* ── Quiénes somos ────────────────────────────────────────────────── */
   /* La entrada va en azul y a cuerpo mayor: es la frase que resume la
