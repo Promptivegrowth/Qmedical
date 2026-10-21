@@ -169,7 +169,13 @@ const matriz = lineasCat.map((c, i) => {
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 03 · El compromiso -->
+  <!-- ══════════════════════════════ 03 · Clientes (en movimiento) -->
+  <Clientes lang={lang} claro />
+
+  <!-- ══════════════════════════════ 04 · Certificaciones -->
+  <Respaldo lang={lang} />
+
+  <!-- ══════════════════════════════ 05 · El compromiso -->
   <section class="aire bg-[var(--color-papel-2)]">
     <div class="caja">
       <!-- Encabezado: el titular manda a la izquierda, la nota acompaña a la
@@ -227,13 +233,11 @@ const matriz = lineasCat.map((c, i) => {
     </div>
   </section>
 
-  <!-- ══════════════════════════════ 04 · Respaldo -->
-  <Respaldo lang={lang} />
-
-  <!-- ══════════════════════════════ 05 · Clientes -->
-  <Clientes lang={lang} />
-
-  <!-- ══════════════════════════════ 06 · Marcas (anillo, intacto) -->
+  <!-- ══════════════════════════════ 06 · Marcas asociadas
+       Clientes y marcas son las dos secciones con movimiento continuo —una
+       franja que corre y un anillo que gira— y juntas hacían «mucho ruido»
+       (observación de la empresa, octubre de 2026). Van separadas por
+       certificaciones y el compromiso, que están quietas. -->
   <MarcasConstelacion lang={lang} />
 </Base>
 

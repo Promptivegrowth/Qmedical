@@ -1,7 +1,6 @@
 ---
-import Icon from './Icon.astro';
 import { marcas, logoDe } from '../data/marcas';
-import { ruta, type Idioma } from '../i18n/rutas';
+import type { Idioma } from '../i18n/rutas';
 
 interface Props {
   lang?: Idioma;
@@ -33,7 +32,6 @@ const T = {
     titulo:
       'Aliados con las mejores marcas líderes en salud a nivel mundial: ' +
       'excelencia que cuida vidas.',
-    cta: 'Conocer nuestras marcas',
     lista: 'Marcas asociadas a Q-MEDICAL',
   },
   en: {
@@ -41,7 +39,6 @@ const T = {
     titulo:
       'Partnered with the world’s leading healthcare brands: excellence that ' +
       'cares for lives.',
-    cta: 'Meet our brands',
     lista: 'Brands partnered with Q-MEDICAL',
   },
 }[lang];
@@ -111,11 +108,8 @@ const orbes = enAnillo.map((m, i) => {
       <h2 class="constelacion__titulo">{T.titulo}</h2>
     </div>
 
-    <!-- Por encima de todo el anillo: nunca queda tapado ni deja de ser pulsable -->
-    <a href={ruta(lang, 'marcas')} class="constelacion__cta">
-      {T.cta}
-      <Icon name="flecha" size={15} />
-    </a>
+    {/* Sin botón: en /marcas llevaba a la misma página, y la empresa pidió
+        quitarlo (octubre de 2026). Las marcas siguen en el menú. */}
   </div>
 
   <!-- Equivalente accesible de la capa decorativa -->
@@ -305,34 +299,6 @@ const orbes = enAnillo.map((m, i) => {
        mitad en pantallas estrechas. */
     overflow-wrap: normal;
     hyphens: none;
-  }
-
-  .constelacion__cta {
-    position: absolute;
-    left: 50%;
-    bottom: clamp(1.75rem, 5vh, 3.25rem);
-    z-index: 5; /* por encima incluso de la mitad delantera */
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.7rem 1.4rem;
-    border: 1px solid var(--color-celeste);
-    border-radius: 999px;
-    background: var(--color-celeste);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: var(--color-brand-950);
-    box-shadow: 0 14px 30px -12px rgb(34 189 242 / 0.55);
-    white-space: nowrap;
-    transform: translateX(-50%);
-    transition: background 0.25s, border-color 0.25s, gap 0.25s;
-  }
-  .constelacion__cta:hover {
-    background: var(--color-celeste-suave);
-    border-color: var(--color-celeste-suave);
-    gap: 0.8rem;
   }
 
   /* ── Adaptaciones ───────────────────────────────────────────────────── */
