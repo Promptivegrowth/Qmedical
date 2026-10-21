@@ -249,23 +249,22 @@ export const valoresEn = [
   {
     titulo: 'Mission',
     texto:
-      'To strengthen Peru’s health system by supplying quality medical devices ' +
-      'and biosafety solutions, through efficient management, prompt service ' +
-      'and specialist technical support.',
+      'To supply the health sector with quality medical devices and biosafety ' +
+      'solutions, guaranteeing efficiency, availability and specialist ' +
+      'technical support.',
   },
   {
     titulo: 'Vision',
     texto:
-      'To be the strategic partner that gives Peru’s public and private ' +
-      'healthcare institutions timely, reliable access to medical devices and ' +
-      'biosafety solutions, and to become the benchmark for reliability, agility ' +
-      'and technical support.',
+      'To be a national benchmark in medical supply, recognised for our ' +
+      'reliability, operating capacity and commitment to public and private ' +
+      'healthcare institutions.',
   },
   {
     titulo: 'Philosophy',
     texto:
-      'We make sure care never stops, with reliable medical devices and a ' +
-      'response that arrives when health needs it most.',
+      'Health cannot stop. We work so that every institution has reliable ' +
+      'solutions, timely supply and backing when it needs them most.',
   },
 ];
 

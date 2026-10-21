@@ -20,7 +20,21 @@ import { certificacionesEn } from '../i18n/contenido';
  *
  * Lo que se mueve es transform u opacity: las tarjetas suben al entrar y al
  * pasar el puntero, y el sello respira con un halo.
+ *
+ * La misma banda sirve a «Nuestra esencia» —misión, visión y filosofía—,
+ * que la empresa pidió con este mismo diseño el 20 de octubre de 2026: se
+ * le pasan sus propias tarjetas, un subtítulo y sin la franja de cierre.
  */
+export interface Tarjeta {
+  icono: string;
+  sigla: string;
+  nombre?: string;
+  detalle: string;
+  emisor: string;
+  /** Sin dirección la tarjeta no es un enlace. */
+  href?: string;
+}
+
 interface Props {
   lang?: Idioma;
   /** Ancla de la sección. En /nosotros es a donde apunta el mega-menú. */
@@ -34,8 +48,16 @@ interface Props {
   nota?: string;
   /** A dónde lleva una tarjeta que no tenga certificado en PDF. */
   a?: string;
+  /** Línea en versales espaciadas bajo el titular. */
+  subtitulo?: string;
+  /** Otras tarjetas en lugar de las certificaciones. */
+  tarjetas?: Tarjeta[];
+  /** La franja de cierre con los tres valores. */
+  franja?: boolean;
 }
-const { lang = 'es', id = 'respaldo', ante, titulo, texto, nota, a } = Astro.props;
+const {
+  lang = 'es', id = 'respaldo', ante, titulo, texto, nota, a, subtitulo, tarjetas, franja = true,
+} = Astro.props;
 
 const T = {
   es: {
@@ -63,13 +85,15 @@ const T = {
   },
 }[lang];
 
-const avales = certificaciones.map((c, i) => ({
-  ...c,
-  ...(lang === 'en' ? (certificacionesEn[i] ?? {}) : {}),
-  n: String(i + 1).padStart(2, '0'),
-}));
-
 const destino = a ?? via(lang, 'nosotros', undefined, 'certificaciones');
+
+const avales: (Tarjeta & { n: string; pdf: boolean })[] = (tarjetas
+  ? tarjetas.map((t) => ({ ...t, pdf: false }))
+  : certificaciones.map((c, i) => {
+      const t = { ...c, ...(lang === 'en' ? (certificacionesEn[i] ?? {}) : {}) };
+      return { ...t, href: c.certificado ?? destino, pdf: Boolean(c.certificado) };
+    })
+).map((t, i) => ({ ...t, n: String(i + 1).padStart(2, '0') }));
 const [blanco, celeste] = titulo ?? T.titulo;
 const parrafo = texto === null ? null : (texto ?? T.texto);
 const frase = nota ?? T.nota;
@@ -87,6 +111,7 @@ const largo = (blanco + celeste).length > 34;
           <span class="respaldo__h-blanco">{blanco}</span>
           <span class="respaldo__h-celeste">{celeste}</span>
         </h2>
+        {subtitulo && <p class="respaldo__sub" data-anim="sube">{subtitulo}</p>}
         {parrafo && <p class="respaldo__texto" data-anim="sube">{parrafo}</p>}
       </div>
 
@@ -104,16 +129,18 @@ const largo = (blanco + celeste).length > 34;
     </div>
 
     <ol class="respaldo__tarjetas" data-anim-grupo="140">
-      {avales.map((c) => (
+      {avales.map((c) => {
+        const Tag = c.href ? 'a' : 'div';
+        return (
         <li data-anim="sube">
-          <a
-            href={c.certificado ?? destino}
-            class="aval"
-            aria-label={c.certificado ? T.verPdf(c.sigla) : undefined}
-            {...c.certificado ? { target: '_blank', rel: 'noopener' } : {}}
+          <Tag
+            href={c.href}
+            class:list={['aval', !c.href && 'es-fija']}
+            aria-label={c.pdf ? T.verPdf(c.sigla) : undefined}
+            {...c.pdf ? { target: '_blank', rel: 'noopener' } : {}}
           >
             <span class="aval__alto">
-              <span class="aval__n">{c.n}</span>
+              <span class:list={['aval__n', tarjetas && 'con-linea']}>{c.n}</span>
               <span class="aval__sello">
                 <span class="aval__halo" aria-hidden="true"></span>
                 <Icon name={c.icono} size={26} stroke={1.4} anim />
@@ -121,7 +148,7 @@ const largo = (blanco + celeste).length > 34;
             </span>
 
             <span class="aval__sigla">{c.sigla}</span>
-            <span class="aval__nombre">{c.nombre}</span>
+            {c.nombre && <span class="aval__nombre">{c.nombre}</span>}
             <span class="aval__detalle">{c.detalle}</span>
 
             <span class="aval__pie">
@@ -131,13 +158,15 @@ const largo = (blanco + celeste).length > 34;
               </span>
               <span class="aval__flecha" aria-hidden="true"><Icon name="flecha" size={17} /></span>
             </span>
-          </a>
+          </Tag>
         </li>
-      ))}
+        );
+      })}
     </ol>
   </div>
 
   <!-- Franja de cierre: los tres valores, sobre su propio filete. -->
+  {franja && (
   <div class="respaldo__franja">
     <div class="caja">
       <p class="respaldo__valores" data-anim="sube">
@@ -151,6 +180,7 @@ const largo = (blanco + celeste).length > 34;
       </p>
     </div>
   </div>
+  )}
 </section>
 
 <style>
@@ -193,6 +223,19 @@ const largo = (blanco + celeste).length > 34;
   .respaldo__h.es-largo { font-size: clamp(1.9rem, 3.5vw, 3.2rem); line-height: 1.04; }
   .respaldo__h > span { display: block; }
   .respaldo__h-celeste { color: var(--color-celeste); }
+  .respaldo__sub {
+    margin-top: 1.1rem;
+    font-size: clamp(0.8rem, 1.1vw, 0.98rem);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-celeste);
+  }
+  /* Sin franja, la banda cierra con su propio aire. */
+  .respaldo:not(:has(.respaldo__franja)) { padding-bottom: 5rem; }
+  @media (min-width: 1024px) { .respaldo:not(:has(.respaldo__franja)) { padding-bottom: 7rem; } }
+  /* Una tarjeta que no lleva a ningún sitio no se levanta como un enlace. */
+  .aval.es-fija:hover { transform: none; }
 
   .respaldo__texto {
     max-width: 34rem;
@@ -207,7 +250,7 @@ const largo = (blanco + celeste).length > 34;
     display: flex;
     align-items: center;
     gap: 1.75rem;
-    max-width: 23rem;
+    max-width: 29rem;
     font-size: 1.05rem;
     line-height: 1.55;
     color: rgb(255 255 255 / 0.88);
@@ -282,6 +325,17 @@ const largo = (blanco + celeste).length > 34;
     color: var(--color-celeste-suave);
   }
 
+  /* En «Nuestra esencia» el ordinal lleva un filete detrás, como en la
+     maqueta de la empresa. */
+  .aval__n.con-linea { display: inline-flex; align-items: center; gap: 0.9rem; }
+  .aval__n.con-linea::after {
+    content: '';
+    width: 2.6rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-celeste);
+  }
+
   .aval__sello {
     position: relative;
     display: grid;
@@ -311,6 +365,7 @@ const largo = (blanco + celeste).length > 34;
 
   .aval__sigla {
     margin-top: 1.6rem;
+    text-transform: uppercase;
     font-weight: 800;
     font-size: clamp(2.1rem, 3.4vw, 2.75rem);
     line-height: 1;

@@ -150,31 +150,35 @@ export const certificaciones = [
   },
 ];
 
+/**
+ * Misión, visión y filosofía. Los textos son los de la maqueta «Nuestra
+ * esencia» que entregó la empresa el 20 de octubre de 2026, que sustituyen
+ * a los de OBSERVACIONES 3.
+ */
 export const valores = [
   {
-    icono: 'brujula',
+    icono: 'diana',
     titulo: 'Misión',
     texto:
-      'Fortalecer el sistema de salud del Perú suministrando dispositivos ' +
-      'médicos y soluciones de bioseguridad de calidad, mediante una gestión ' +
-      'eficiente, atención oportuna y respaldo técnico especializado.',
+      'Abastecer al sector salud con dispositivos médicos y soluciones de ' +
+      'bioseguridad de calidad, garantizando eficiencia, disponibilidad y ' +
+      'respaldo técnico especializado.',
   },
   {
-    icono: 'horizonte',
+    icono: 'ojo',
     titulo: 'Visión',
     texto:
-      'Ser el socio estratégico que facilita a las instituciones de salud ' +
-      'públicas y privadas del Perú el acceso oportuno y confiable a ' +
-      'dispositivos médicos y soluciones de bioseguridad, consolidándose como ' +
-      'el referente por excelencia por su confiabilidad, agilidad y respaldo ' +
-      'técnico.',
+      'Ser un referente nacional en abastecimiento médico, reconocido por ' +
+      'nuestra confiabilidad, capacidad operativa y compromiso con las ' +
+      'instituciones públicas y privadas de salud.',
   },
   {
     icono: 'compromiso',
     titulo: 'Filosofía',
     texto:
-      'Aseguramos que la atención nunca se detenga, con dispositivos médicos ' +
-      'confiables y una respuesta que llega cuando la salud más lo necesita.',
+      'La salud no puede detenerse. Trabajamos para que cada institución ' +
+      'cuente con soluciones confiables, abastecimiento oportuno y respaldo ' +
+      'cuando más lo necesita.',
   },
 ];
 

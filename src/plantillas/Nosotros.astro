@@ -91,6 +91,14 @@ const T = {
       'Racks con cajas rotuladas y pallets identificados',
       'Pasillo entre racks, con producto ordenado por niveles',
     ],
+    esenciaAnte: 'Nuestra esencia ›',
+    esenciaTitulo: ['Nuestra misión,', 'visión y filosofía'] as [string, string],
+    esenciaSub: 'Nos guía, nos reta, nos impulsa.',
+    esenciaNota:
+      'Trabajamos con un propósito claro: llevar soluciones médicas confiables ' +
+      'a quienes cuidan la vida, con calidad, responsabilidad y compromiso en ' +
+      'cada entrega.',
+    esenciaEmisor: 'Q-MEDICAL SAC',
     certifAnte: 'Certificaciones y acreditaciones',
     certifTitulo: [
       'Calidad que impulsa la mejora continua',
@@ -163,6 +171,14 @@ const T = {
       'Racking with labelled boxes and identified pallets',
       'Aisle between racks, with product arranged by level',
     ],
+    esenciaAnte: 'Our essence ›',
+    esenciaTitulo: ['Our mission,', 'vision and philosophy'] as [string, string],
+    esenciaSub: 'It guides us, challenges us, drives us.',
+    esenciaNota:
+      'We work with a clear purpose: to bring reliable medical solutions to ' +
+      'those who care for life, with quality, responsibility and commitment in ' +
+      'every delivery.',
+    esenciaEmisor: 'Q-MEDICAL SAC',
     certifAnte: 'Certifications and accreditations',
     certifTitulo: [
       'Quality that drives continuous improvement',
@@ -264,26 +280,26 @@ const principios = valores.map((v, i) => ({
     </div>
   </section>
 
-  <!-- ── Misión, visión, filosofía ───────────────────────────────────── -->
-  <section class="aire bg-[var(--color-papel-2)]">
-    <div class="caja">
-      <ol class="valores" data-anim-grupo="170">
-        {principios.map((v) => (
-          <li data-anim>
-            <article class="valor">
-              <span class="valor__filo" aria-hidden="true"></span>
-              <span class="valor__sello">
-                <span class="valor__halo" aria-hidden="true"></span>
-                <Icon name={v.icono} size={30} stroke={1.3} anim />
-              </span>
-              <h2 class="valor__titulo">{v.titulo}</h2>
-              <p class="valor__texto">{v.texto}</p>
-            </article>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
+  <!-- ── Nuestra esencia: misión, visión y filosofía ─────────────────
+       Con el diseño de certificaciones, como en la maqueta que entregó la
+       empresa el 20 de octubre de 2026: titular a dos tonos, lema con
+       escudo y tres tarjetas. -->
+  <Respaldo
+    lang={lang}
+    id="esencia"
+    ante={T.esenciaAnte}
+    titulo={T.esenciaTitulo}
+    subtitulo={T.esenciaSub}
+    texto={null}
+    nota={T.esenciaNota}
+    franja={false}
+    tarjetas={principios.map((v) => ({
+      icono: v.icono,
+      sigla: v.titulo,
+      detalle: v.texto,
+      emisor: T.esenciaEmisor,
+    }))}
+  />
 
   <!-- ── Infraestructura ─────────────────────────────────────────────── -->
   <section id="infraestructura" class="aire scroll-mt-20 bg-[var(--color-papel)]">
@@ -374,7 +390,7 @@ const principios = valores.map((v, i) => ({
   }
   .cifras__valor {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 800;
     font-size: clamp(2.4rem, 4.5vw, 3.6rem);
     line-height: 1;
     color: var(--color-brand-700);
@@ -388,9 +404,10 @@ const principios = valores.map((v, i) => ({
      empresa, y en el gris del texto corrido se perdía entre las demás. */
   .quienes__entrada {
     font-family: var(--font-display);
-    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
     line-height: 1.3;
     color: var(--color-brand-700);
+    font-weight: 600;
   }
 
   .portafolio__rotulo {
@@ -495,129 +512,6 @@ const principios = valores.map((v, i) => ({
   }
 
   .quienes { margin-top: 1.25rem; }
-
-  /* ── Valores ──────────────────────────────────────────────────────────
-     Antes eran tres columnas separadas por filetes, encabezadas por 01, 02 y
-     03. El ordinal no decía nada —no hay un orden que importe entre misión,
-     visión y filosofía—, así que cada una lleva ahora su propio signo: la
-     brújula del rumbo, el sol sobre el horizonte y el pulso del compromiso.
-
-     Cada principio es una lámina con superficie propia, y sus tres piezas
-     —sello, título y texto— entran una detrás de otra, no de golpe. */
-  .valores { display: grid; gap: var(--medianil); }
-  @media (min-width: 900px) { .valores { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .valores > li { display: flex; }
-
-  .valor {
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 2.25rem;
-    border: 1px solid var(--color-linea);
-    border-radius: var(--r-lg);
-    background: #fff;
-    transform: translate3d(0, var(--alza, 0px), 0);
-    transition: transform 0.7s var(--ease-salida),
-      border-color 0.45s var(--ease-editorial),
-      box-shadow 0.45s var(--ease-editorial);
-  }
-  @media (min-width: 1024px) { .valor { padding: 2.75rem; } }
-
-  /* Igual que en las placas de certificacion: el disparador va en el <li>,
-     que no se mueve. Sobre la propia lamina, al subir se apartaba del puntero
-     en el borde inferior y se quedaba temblando. */
-  .valores > li:is(:hover, :focus-within) .valor {
-    --alza: -6px;
-    border-color: var(--color-brand-300);
-    box-shadow: 0 28px 55px -30px rgb(8 59 128 / 0.42);
-  }
-
-  /* Filo de luz sobre el canto superior: se traza de dentro hacia fuera al
-     pasar el puntero. Arranca y termina pasadas las esquinas redondeadas,
-     que si no el borde lo corta en seco. */
-  .valor__filo {
-    position: absolute;
-    top: -1px;
-    left: var(--r-lg);
-    right: var(--r-lg);
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-brand-500), transparent);
-    transform: scaleX(0);
-    transition: transform 0.85s var(--ease-salida);
-  }
-  .valores > li:is(:hover, :focus-within) .valor__filo { transform: scaleX(1); }
-
-  /* Sello: el signo dentro de su anillo. Crece con el ancho de la lámina y
-     el icono ocupa siempre la misma fracción, así que a 360 px se ve igual
-     de proporcionado que a 1440. */
-  .valor__sello {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: clamp(3.2rem, 3.6vw + 1.8rem, 4.4rem);
-    aspect-ratio: 1;
-    flex: none;
-    border: 1px solid var(--color-linea-2);
-    border-radius: 999px;
-    color: var(--color-brand-700);
-    transition: border-color 0.45s var(--ease-editorial),
-      background-color 0.45s var(--ease-editorial);
-  }
-  .valor__sello :global(svg) { position: relative; width: 54%; height: auto; }
-  .valores > li:is(:hover, :focus-within) .valor__sello {
-    border-color: var(--color-brand-300);
-    background: var(--color-brand-50);
-  }
-
-  .valor__halo {
-    position: absolute;
-    inset: -1px;
-    border: 1px solid var(--color-brand-300);
-    border-radius: 999px;
-    opacity: 0;
-  }
-  .valores > li:is(:hover, :focus-within) .valor__halo { animation: valor-halo 1.6s var(--ease-salida) infinite; }
-  @keyframes valor-halo {
-    0% { opacity: 0.6; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.5); }
-  }
-
-  .valor__titulo {
-    margin-top: 1.75rem;
-    font-family: var(--font-display);
-    font-weight: 300;
-    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
-    letter-spacing: -0.015em;
-  }
-  .valor__texto { margin-top: 1rem; font-size: 0.95rem; line-height: 1.65; color: var(--color-tinta-70); }
-
-  /* Entrada secuencial. El grupo escalona las tres láminas con --retraso, y
-     dentro de cada una las tres piezas se encadenan sobre ese mismo reloj:
-     así el ojo recorre la fila en un orden, no la recibe entera de golpe. */
-  :global(.js) .valor__sello,
-  :global(.js) .valor__titulo,
-  :global(.js) .valor__texto {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.7s var(--ease-editorial), transform 0.7s var(--ease-salida);
-  }
-  :global(.js) .visible .valor__sello,
-  :global(.js) .visible .valor__titulo,
-  :global(.js) .visible .valor__texto { opacity: 1; transform: none; }
-  :global(.js) .visible .valor__sello { transition-delay: calc(var(--retraso, 0ms) + 60ms); }
-  :global(.js) .visible .valor__titulo { transition-delay: calc(var(--retraso, 0ms) + 190ms); }
-  :global(.js) .visible .valor__texto { transition-delay: calc(var(--retraso, 0ms) + 310ms); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .valor { transition: none; }
-    .valores > li:is(:hover, :focus-within) .valor { --alza: 0px; }
-    .valores > li:is(:hover, :focus-within) .valor__halo { animation: none; }
-    :global(.js) .valor__sello,
-    :global(.js) .valor__titulo,
-    :global(.js) .valor__texto { opacity: 1; transform: none; transition: none; }
-  }
 
   /* ── Infraestructura ──────────────────────────────────────────────── */
   .infra__intro { margin-top: 1.25rem; }

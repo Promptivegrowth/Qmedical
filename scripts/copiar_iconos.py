@@ -52,6 +52,9 @@ MAPA = {
     'documento': 'file-text',
     'descarga': 'download',
     'buscar': 'search',
+    # Misión y visión en la sección «Nuestra esencia» (octubre de 2026)
+    'diana': 'target-arrow',
+    'ojo': 'eye',
     'reticula': 'grid-dots',
 
     # ── Contacto ──────────────────────────────────────────────────────────
