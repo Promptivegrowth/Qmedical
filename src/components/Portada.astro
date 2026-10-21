@@ -19,12 +19,14 @@ interface Props {
   foto?: string;
   /** Dato al pie de la cabecera, a la derecha. */
   dato?: { valor: string; etiqueta: string };
+  /** Segundo tramo del titular, en celeste, como en certificaciones. */
+  enfasis?: string;
   /** Llamada corta que cierra la bajada. */
   remate?: string;
   /** Acercamiento lento y continuo sobre la fotografía. */
   cine?: boolean;
 }
-const { lang = 'es', ante, titulo, texto, migas = [], foto, dato, remate, cine = false } = Astro.props;
+const { lang = 'es', ante, titulo, texto, migas = [], foto, dato, remate, cine = false, enfasis } = Astro.props;
 const t = textos(lang);
 ---
 
@@ -64,7 +66,9 @@ const t = textos(lang);
 
     <div class="portada__texto">
       {ante && <p class="ante ante-claro">{ante}</p>}
-      <h1 class="display-lg mt-5 max-w-[19ch]">{titulo}</h1>
+      <h1 class="display-lg mt-5 max-w-[19ch]">
+        {titulo}{enfasis && <span class="portada__enfasis"> {enfasis}</span>}
+      </h1>
       {texto && <p class="portada__bajada">{texto}</p>}
       {remate && <p class="portada__remate">{remate}</p>}
     </div>
@@ -169,4 +173,5 @@ const t = textos(lang);
     .portada__dato { border-top: 0; border-left: 1px solid rgb(158 219 255 / 0.35); padding: 0 0 0 3rem; }
   }
   .portada__dato .cifra { color: var(--color-celeste); }
+  .portada__enfasis { display: block; color: var(--color-celeste); }
 </style>

@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Portada from '../components/Portada.astro';
 import Icon from '../components/Icon.astro';
+import Respaldo from '../components/Respaldo.astro';
 import CtaContacto from '../components/CtaContacto.astro';
 import Postular from '../components/Postular.astro';
 import { vacantes, fecha, lugarDe, metaDe } from '../data/empleos';
@@ -45,7 +46,8 @@ const T = {
       'Vacantes vigentes en Q-MEDICAL S.A.C. Postule en línea adjuntando su CV ' +
       'o envíenos su hoja de vida para futuras convocatorias.',
     ante: 'Trabaja con nosotros',
-    titulo: '¡Impulsa tu talento y crece con Q-MEDICAL!',
+    titulo: '¡Impulsa tu talento',
+    enfasis: 'y crece con Q-MEDICAL!',
     bajada:
       'Buscamos personas con iniciativa, talento y ganas de crecer ' +
       'profesionalmente. Únete a un equipo que impulsa el sector salud y sé ' +
@@ -53,7 +55,8 @@ const T = {
       'instituciones de salud del Perú.',
     remate: '¡Postula hoy y convierte tu talento en nuevas oportunidades!',
     porqueAnte: 'Por qué aquí',
-    porqueTitulo: 'Lo que ofrecemos a quien se suma',
+    porqueTitulo: ['Lo que ofrecemos', 'a quien se suma'] as [string, string],
+    porqueNota: 'Únete a un equipo que impulsa el sector salud.',
     razones: [
       {
         icono: 'certificado',
@@ -104,7 +107,8 @@ const T = {
       'Current openings at Q-MEDICAL S.A.C. Apply online with your CV, or send ' +
       'us your résumé for future openings.',
     ante: 'Careers',
-    titulo: 'Grow your talent with Q-MEDICAL',
+    titulo: 'Grow your talent',
+    enfasis: 'with Q-MEDICAL',
     bajada:
       'We look for people with initiative, talent and a desire to grow ' +
       'professionally. Join a team that drives the health sector and be part of ' +
@@ -112,7 +116,8 @@ const T = {
       'institutions.',
     remate: 'Apply today and turn your talent into new opportunities.',
     porqueAnte: 'Why here',
-    porqueTitulo: 'What we offer whoever joins',
+    porqueTitulo: ['What we offer', 'whoever joins'] as [string, string],
+    porqueNota: 'Join a team that drives the health sector.',
     razones: [
       {
         icono: 'certificado',
@@ -195,6 +200,7 @@ const schema = lista.map((v) => ({
     lang={lang}
     ante={T.ante}
     titulo={T.titulo}
+    enfasis={T.enfasis}
     texto={T.bajada}
     remate={T.remate}
     migas={[{ nombre: T.ante }]}
@@ -202,27 +208,20 @@ const schema = lista.map((v) => ({
     cine
   />
 
-  <!-- ── Por qué aquí ─────────────────────────────────────────────────── -->
-  <section class="aire-sm bg-[var(--color-papel)]">
-    <div class="caja">
-      <p class="ante ante-brand" data-anim="sube">{T.porqueAnte}</p>
-      <h2 class="display-md mt-4 max-w-[20ch]" data-anim="sube">{T.porqueTitulo}</h2>
-
-      <ul class="razones" data-anim-grupo="110">
-        {T.razones.map((r, i) => (
-          <li class="razon" data-anim="sube" tabindex="0">
-            <span class="razon__filo" aria-hidden="true"></span>
-            <span class="razon__alto">
-              <span class="folio razon__folio">{String(i + 1).padStart(2, '0')}</span>
-              <span class="razon__ic"><Icon name={r.icono} size={28} stroke={1.1} anim /></span>
-            </span>
-            <h3 class="razon__titulo">{r.titulo}</h3>
-            <p class="razon__texto">{r.texto}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  <!-- ── Por qué aquí ─────────────────────────────────────────────────
+       Con el diseño de certificaciones: la empresa veía las tres tarjetas
+       grises «simples». Ahora son la misma banda marina que usa el resto
+       del sitio para lo que la empresa quiere destacar. -->
+  <Respaldo
+    lang={lang}
+    id="por-que"
+    ante={T.porqueAnte}
+    titulo={T.porqueTitulo}
+    texto={null}
+    nota={T.porqueNota}
+    franja={false}
+    tarjetas={T.razones.map((r) => ({ icono: r.icono, sigla: r.titulo, detalle: r.texto }))}
+  />
 
   <!-- ── Vacantes ─────────────────────────────────────────────────────── -->
   <section class="aire bg-[var(--color-papel-2)]" id="vacantes">
@@ -256,6 +255,7 @@ const schema = lista.map((v) => ({
                 <div class="vacante__alto">
                   {v.area && <span class="vacante__area">{v.area}</span>}
                   <span class="vacante__fecha">
+                    <Icon name="reloj" size={13} />
                     {v.fecha_cierre
                       ? T.hasta(fecha(v.fecha_cierre, lang))
                       : T.publicada(fecha(v.fecha_publicacion, lang))}
@@ -266,7 +266,12 @@ const schema = lista.map((v) => ({
 
                 {meta.length > 0 && (
                   <ul class="vacante__meta">
-                    {meta.map((m) => <li>{m}</li>)}
+                    {meta.map((m, i) => (
+                      <li>
+                        <Icon name={meta.length === 3 ? ['lugar', 'equipo', 'reloj'][i] : 'visto'} size={14} />
+                        {m}
+                      </li>
+                    ))}
                   </ul>
                 )}
 
@@ -351,109 +356,6 @@ const schema = lista.map((v) => ({
 </Base>
 
 <style>
-  /* ── Por qué aquí ─────────────────────────────────────────────────── */
-  .razones {
-    display: grid;
-    gap: var(--medianil);
-    margin-top: 3rem;
-  }
-  @media (min-width: 768px) { .razones { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-  /* Tres cajas grises con un icono pequeño no se distinguían de las de
-     cualquier otro sitio. Ahora cada una lleva su folio, el icono se dibuja
-     solo al entrar, y la tarjeta entera responde: se levanta, se viste del
-     azul corporativo y un filo recorre su borde superior. Responde también
-     al foco del teclado, no solo al ratón, por eso es tabulable. */
-  .razon {
-    position: relative;
-    overflow: hidden;
-    padding: 2rem 1.75rem 2.25rem;
-    background: var(--color-papel-2);
-    border-radius: var(--r-md);
-    cursor: default;
-    transition: background-color 0.5s var(--ease-editorial),
-      color 0.5s var(--ease-editorial), transform 0.5s var(--ease-salida),
-      box-shadow 0.5s var(--ease-editorial);
-  }
-  .razon:hover,
-  .razon:focus-visible {
-    background: var(--color-brand-700);
-    color: #fff;
-    transform: translateY(-6px);
-    box-shadow: 0 28px 50px -34px rgb(8 59 128 / 0.75);
-    outline: none;
-  }
-
-  /* El filo: un trazo que recorre el borde de lado a lado al activarse. */
-  .razon__filo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--color-brand-700);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.6s var(--ease-salida), background-color 0.5s;
-  }
-  .razon:hover .razon__filo,
-  .razon:focus-visible .razon__filo { transform: scaleX(1); background: #fff; }
-
-  .razon__alto {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .razon__folio {
-    font-size: 0.8rem;
-    color: var(--color-tinta-45);
-    transition: color 0.5s var(--ease-editorial);
-  }
-  .razon:hover .razon__folio,
-  .razon:focus-visible .razon__folio { color: rgba(255, 255, 255, 0.55); }
-
-  .razon__ic {
-    display: grid;
-    place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 999px;
-    background: var(--color-papel);
-    color: var(--color-brand-700);
-    transition: background-color 0.5s var(--ease-editorial),
-      color 0.5s var(--ease-editorial), transform 0.6s var(--ease-salida);
-  }
-  .razon:hover .razon__ic,
-  .razon:focus-visible .razon__ic {
-    background: rgba(255, 255, 255, 0.14);
-    color: #fff;
-    transform: scale(1.08) rotate(-4deg);
-  }
-
-  .razon__titulo {
-    margin-top: 2rem;
-    font-family: var(--font-display-texto);
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.25;
-  }
-  .razon__texto {
-    margin-top: 0.8rem;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: var(--color-tinta-70);
-    transition: color 0.5s var(--ease-editorial);
-  }
-  .razon:hover .razon__texto,
-  .razon:focus-visible .razon__texto { color: rgba(255, 255, 255, 0.78); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .razon, .razon__ic, .razon__filo { transition: background-color 0.3s, color 0.3s; }
-    .razon:hover, .razon:focus-visible { transform: none; }
-    .razon:hover .razon__ic, .razon:focus-visible .razon__ic { transform: none; }
-  }
-
   /* ── Vacantes ─────────────────────────────────────────────────────── */
   .vacantes__alto {
     display: flex;
@@ -462,22 +364,45 @@ const schema = lista.map((v) => ({
     justify-content: space-between;
     gap: 1rem;
   }
-  .vacantes__cuenta { font-size: 0.85rem; color: var(--color-tinta-45); }
+  .vacantes__cuenta {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brand-700);
+  }
 
-  .vacantes { display: grid; gap: 1.1rem; margin-top: 3rem; }
+  .vacantes { display: grid; gap: 1.25rem; margin-top: 3rem; }
 
+  /* Cada vacante es una tarjeta con un filete de acento a la izquierda, que
+     se enciende en celeste al pasar el puntero, y sube un poco. */
   .vacante {
-    padding: 1.9rem 1.6rem;
-    background: #fff;
+    position: relative;
+    overflow: hidden;
+    padding: 1.9rem 1.6rem 1.9rem 2rem;
+    background: var(--color-papel);
     border: 1px solid var(--color-linea);
-    border-radius: var(--r-md);
-    transition: border-color 0.35s var(--ease-editorial), box-shadow 0.35s var(--ease-editorial);
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 2px rgb(4 26 66 / 0.05);
+    transition: border-color 0.4s var(--ease-editorial), box-shadow 0.5s var(--ease-editorial),
+      transform 0.55s var(--ease-salida);
   }
-  @media (min-width: 768px) { .vacante { padding: 2.4rem 2.2rem; } }
+  @media (min-width: 768px) { .vacante { padding: 2.4rem 2.4rem 2.4rem 2.8rem; } }
+  .vacante::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--color-brand-900), var(--color-brand-700));
+    transition: background 0.4s var(--ease-editorial);
+  }
   .vacante:hover {
-    border-color: var(--color-brand-300);
-    box-shadow: 0 18px 40px -30px rgb(8 59 128 / 0.35);
+    border-color: var(--color-celeste);
+    box-shadow: 0 28px 50px -32px rgb(8 59 128 / 0.45);
+    transform: translateY(-4px);
   }
+  .vacante:hover::before { background: linear-gradient(180deg, var(--color-celeste), var(--color-brand-700)); }
 
   .vacante__alto {
     display: flex;
@@ -487,42 +412,51 @@ const schema = lista.map((v) => ({
     gap: 0.75rem;
   }
   .vacante__area {
-    padding: 0.3rem 0.7rem;
+    padding: 0.35rem 0.8rem;
     border-radius: 999px;
-    background: var(--color-brand-50);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
+    background: var(--color-brand-900);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--color-brand-700);
+    color: #fff;
   }
-  .vacante__fecha { font-size: 0.78rem; color: var(--color-tinta-45); }
+  .vacante__fecha {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--color-tinta-45);
+  }
 
   .vacante__titulo {
     margin-top: 1.1rem;
     font-family: var(--font-display);
-    font-size: clamp(1.15rem, 2vw, 1.45rem);
-    line-height: 1.22;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    line-height: 1.2;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: -0.01em;
+    color: var(--color-brand-900);
   }
 
   .vacante__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.4rem;
-    margin-top: 0.8rem;
-    font-size: 0.85rem;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .vacante__meta > li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    font-size: 0.8rem;
     color: var(--color-tinta-70);
   }
-  /* Un punto entre uno y otro, sin ponerlo en el marcado. */
-  .vacante__meta > li + li { position: relative; }
-  .vacante__meta > li + li::before {
-    content: '·';
-    position: absolute;
-    left: -0.85rem;
-    color: var(--color-tinta-45);
-  }
+  .vacante__meta > li :global(svg) { color: var(--color-brand-700); }
 
   .vacante__resumen {
     margin-top: 1.1rem;
@@ -597,6 +531,25 @@ const schema = lista.map((v) => ({
   .vacante__datos dd { margin: 0; color: var(--color-tinta); }
 
   .vacante__postular { margin-top: 1.8rem; }
+  /* En escritorio el botón ocupa la columna de la derecha, que de otro modo
+     quedaba vacía: el texto se corta a 62 caracteres por legibilidad. */
+  @media (min-width: 900px) {
+    .vacante {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 3rem;
+    }
+    .vacante > * { grid-column: 1; }
+    .vacante > .vacante__detalle,
+    .vacante > .vacante__alto { grid-column: 1 / -1; }
+    .vacante > .vacante__postular {
+      grid-column: 2;
+      grid-row: 2 / span 3;
+      align-self: center;
+      margin-top: 0;
+      padding-inline: 2rem;
+    }
+  }
 
   /* ── Sin convocatorias ────────────────────────────────────────────── */
   .vacantes__vacio {
@@ -655,7 +608,8 @@ const schema = lista.map((v) => ({
       color-mix(in srgb, var(--color-brand-800) 62%, transparent) 100%
     );
   }
-  .espontanea .ante-brand { color: var(--color-brand-200); }
+  .espontanea .ante-brand { color: var(--color-celeste-suave); }
+  .espontanea .ante-brand::before { background: var(--color-celeste); }
   .espontanea .cuerpo { color: rgba(255, 255, 255, 0.78); }
   @media (min-width: 900px) {
     .espontanea {

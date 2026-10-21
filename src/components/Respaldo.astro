@@ -30,7 +30,8 @@ export interface Tarjeta {
   sigla: string;
   nombre?: string;
   detalle: string;
-  emisor: string;
+  /** Sin emisor la tarjeta no lleva pie. */
+  emisor?: string;
   /** Sin dirección la tarjeta no es un enlace. */
   href?: string;
 }
@@ -44,8 +45,8 @@ interface Props {
   titulo?: [string, string];
   /** Párrafo bajo el titular. En nulo, no se pone. */
   texto?: string | null;
-  /** La frase que acompaña al escudo. */
-  nota?: string;
+  /** La frase que acompaña al escudo. En nulo, no hay escudo. */
+  nota?: string | null;
   /** A dónde lleva una tarjeta que no tenga certificado en PDF. */
   a?: string;
   /** Línea en versales espaciadas bajo el titular. */
@@ -96,7 +97,7 @@ const avales: (Tarjeta & { n: string; pdf: boolean })[] = (tarjetas
 ).map((t, i) => ({ ...t, n: String(i + 1).padStart(2, '0') }));
 const [blanco, celeste] = titulo ?? T.titulo;
 const parrafo = texto === null ? null : (texto ?? T.texto);
-const frase = nota ?? T.nota;
+const frase = nota === null ? null : (nota ?? T.nota);
 /* Un titular largo —el de /nosotros es una frase entera— no puede ir al
    cuerpo del de la portada: en versales se iba a ocho renglones. */
 const largo = (blanco + celeste).length > 34;
@@ -115,7 +116,7 @@ const largo = (blanco + celeste).length > 34;
         {parrafo && <p class="respaldo__texto" data-anim="sube">{parrafo}</p>}
       </div>
 
-      <div class="respaldo__lema" data-anim="sube">
+      {frase && <div class="respaldo__lema" data-anim="sube">
         <span class="respaldo__escudo" aria-hidden="true">
           <svg viewBox="0 0 64 72" fill="none" stroke="currentColor" stroke-width="2.4"
             stroke-linecap="round" stroke-linejoin="round">
@@ -125,7 +126,7 @@ const largo = (blanco + celeste).length > 34;
           </svg>
         </span>
         <p>{frase}</p>
-      </div>
+      </div>}
     </div>
 
     <ol class="respaldo__tarjetas" data-anim-grupo="140">
@@ -147,17 +148,19 @@ const largo = (blanco + celeste).length > 34;
               </span>
             </span>
 
-            <span class="aval__sigla">{c.sigla}</span>
+            <span class:list={['aval__sigla', c.sigla.length > 12 && 'es-larga']}>{c.sigla}</span>
             {c.nombre && <span class="aval__nombre">{c.nombre}</span>}
             <span class="aval__detalle">{c.detalle}</span>
 
-            <span class="aval__pie">
-              <span class="aval__emisor">
-                <span class="aval__rotulo">{T.emitidaPor}</span>
-                {c.emisor}
+            {c.emisor && (
+              <span class="aval__pie">
+                <span class="aval__emisor">
+                  <span class="aval__rotulo">{T.emitidaPor}</span>
+                  {c.emisor}
+                </span>
+                <span class="aval__flecha" aria-hidden="true"><Icon name="flecha" size={17} /></span>
               </span>
-              <span class="aval__flecha" aria-hidden="true"><Icon name="flecha" size={17} /></span>
-            </span>
+            )}
           </Tag>
         </li>
         );
@@ -371,6 +374,9 @@ const largo = (blanco + celeste).length > 34;
     line-height: 1;
     letter-spacing: -0.01em;
   }
+  /* Un título de varias palabras —«Capacitación y aprendizaje»— no puede ir
+     al cuerpo de una sigla como «BPA». */
+  .aval__sigla.es-larga { font-size: clamp(1.3rem, 1.9vw, 1.6rem); line-height: 1.15; }
   .aval__nombre {
     margin-top: 0.7rem;
     font-size: 1.02rem;

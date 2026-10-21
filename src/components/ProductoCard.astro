@@ -43,6 +43,8 @@ const href = ruta(lang, 'producto', p.slug);
 ---
 
 <article class="entrada">
+  <!-- La foto vive en su propia teja, con aire alrededor: la empresa veía
+       el producto «muy ajustado a los bordes», como un cuadro pegado. -->
   <a href={href} class="entrada__marco" tabindex="-1" aria-hidden="true">
     {img && (
       <img
@@ -53,122 +55,157 @@ const href = ruta(lang, 'producto', p.slug);
         loading={eager ? 'eager' : 'lazy'} decoding="async" class="entrada__img"
       />
     )}
+    {marca && <span class="entrada__marca">{marca.nombre}</span>}
   </a>
 
   <div class="entrada__pie">
-    <p class="entrada__credito">
-      {marca && <span class="text-[var(--color-brand-700)]">{marca.nombre}</span>}
-      {/* El punto separa marca y categoría; sin marca no separa nada, y
-          quedaba un «·» suelto al principio del renglón. Pasa en los
-          productos que se venden bajo más de una marca. */}
-      {mostrarCategoria && cat && (
-        <span class="opacity-45">{marca ? '· ' : ''}{cat.nombre}</span>
-      )}
-    </p>
+    {mostrarCategoria && cat && <p class="entrada__cat">{cat.nombre}</p>}
 
     <h3 class="entrada__titulo">
       <a href={href}>{p.nombre}</a>
     </h3>
 
     <span class="entrada__accion">
-      {t.verProducto}<span class="entrada__flecha"><Icon name="flecha" size={14} /></span>
+      {t.verProducto}
+      <span class="entrada__flecha" aria-hidden="true"><Icon name="flecha" size={15} /></span>
     </span>
   </div>
 </article>
 
 <style>
+  /* La tarjeta entera es una superficie: borde fino, esquinas amplias y una
+     sombra que apenas se nota. Al pasar el puntero se levanta, el borde se
+     vuelve celeste y la flecha se rellena, como en las tarjetas de líneas y
+     de certificaciones. */
   .entrada {
     position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding: 0.65rem;
+    border: 1px solid var(--color-linea);
+    border-radius: 1.25rem;
+    background: var(--color-papel);
+    box-shadow: 0 1px 2px rgb(4 26 66 / 0.05);
+    transition: transform 0.55s var(--ease-salida), border-color 0.4s var(--ease-editorial),
+      box-shadow 0.5s var(--ease-editorial);
+  }
+  .entrada:hover,
+  .entrada:focus-within {
+    transform: translateY(-6px);
+    border-color: var(--color-celeste);
+    box-shadow: 0 28px 50px -30px rgb(8 59 128 / 0.45);
   }
 
   .entrada__marco {
     position: relative;
-    display: block;
+    display: grid;
+    place-items: center;
     aspect-ratio: 1;
     overflow: hidden;
-    border-radius: var(--r-md);
-    background: #fff;
-    border: 1px solid var(--color-linea);
-    transition: border-color 0.4s var(--ease-editorial);
+    border-radius: 0.95rem;
+    background:
+      radial-gradient(65% 65% at 50% 45%, #fff 0%, rgb(255 255 255 / 0) 78%),
+      var(--color-brand-50);
   }
-  .entrada:hover .entrada__marco { border-color: var(--color-linea-2); }
 
   .entrada__img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 9%;
+    padding: 15%;
+    mix-blend-mode: multiply;
     transition: transform 0.8s var(--ease-salida);
   }
-  .entrada:hover .entrada__img { transform: scale(1.06); }
+  .entrada:hover .entrada__img { transform: scale(1.07); }
 
-  .entrada__sello {
+  /* La marca, como una etiqueta sobre la foto. */
+  .entrada__marca {
     position: absolute;
-    top: 0.85rem;
-    left: 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.6rem;
+    top: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0.32rem 0.7rem;
     border-radius: 999px;
     background: var(--color-papel);
-    font-size: 0.63rem;
-    font-weight: 500;
+    box-shadow: 0 4px 12px -6px rgb(4 26 66 / 0.25);
+    font-size: 0.64rem;
+    font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-tinta-70);
+    color: var(--color-brand-700);
   }
 
   .entrada__pie {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding-top: 1.1rem;
+    padding: 1.05rem 0.55rem 0.35rem;
   }
 
-  /* Guarda su línea aunque esté vacía. Un producto sin marca asignada no
-     imprime crédito, y sin esta altura mínima su título subía y se
-     descolgaba del de las entradas vecinas de la misma fila.
-
-     `1lh` es exactamente una línea de este texto, así que sigue al
-     interlineado si alguna vez cambia; el valor en em va delante como
-     reserva para los navegadores que no conocen la unidad. */
-  .entrada__credito {
-    min-height: 1.6em;
-    min-height: 1lh;
-    font-size: 0.68rem;
-    font-weight: 500;
+  .entrada__cat {
+    font-size: 0.66rem;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--color-tinta-45);
   }
 
-  /* Mayor que antes: al quitar el sumario, el nombre es lo que queda para
-     reconocer el producto, y a 1.12rem competía con el crédito de marca. */
   .entrada__titulo {
-    margin-top: 0.6rem;
+    margin-top: 0.45rem;
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.12rem;
-    line-height: 1.22;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.28;
     letter-spacing: -0.005em;
   }
   /* La tarjeta entera es pulsable, pero el foco vive en el enlace del título */
-  .entrada__titulo a::after { content: ''; position: absolute; inset: 0; }
+  .entrada__titulo a::after { content: ''; position: absolute; inset: 0; border-radius: 1.25rem; }
 
   .entrada__accion {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: space-between;
+    gap: 0.75rem;
     margin-top: auto;
-    padding-top: 1rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--color-tinta);
+    padding-top: 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-brand-700);
   }
-  .entrada__flecha { display: inline-flex; transition: transform 0.4s var(--ease-salida); }
-  .entrada:hover .entrada__flecha { transform: translateX(4px); }
+  .entrada__flecha {
+    display: grid;
+    place-items: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border: 1px solid var(--color-linea);
+    border-radius: 999px;
+    transition: background-color 0.4s var(--ease-editorial), border-color 0.4s var(--ease-editorial),
+      color 0.4s var(--ease-editorial), transform 0.5s var(--ease-salida);
+  }
+  .entrada:hover .entrada__flecha {
+    background: var(--color-celeste);
+    border-color: var(--color-celeste);
+    color: var(--color-brand-950);
+    transform: translateX(3px);
+  }
 
+  /* En dos columnas de teléfono la tarjeta se compacta. */
+  @media (max-width: 559px) {
+    .entrada { padding: 0.45rem; border-radius: 1rem; }
+    .entrada__marco { border-radius: 0.75rem; }
+    .entrada__marca { top: 0.5rem; left: 0.5rem; font-size: 0.56rem; padding: 0.25rem 0.55rem; }
+    .entrada__pie { padding: 0.8rem 0.35rem 0.2rem; }
+    .entrada__cat { font-size: 0.58rem; }
+    .entrada__titulo { font-size: 0.9rem; }
+    .entrada__accion { font-size: 0.74rem; padding-top: 0.8rem; }
+    .entrada__flecha { width: 1.9rem; height: 1.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entrada, .entrada__img, .entrada__flecha { transition: none; }
+    .entrada:hover { transform: none; }
+  }
 </style>

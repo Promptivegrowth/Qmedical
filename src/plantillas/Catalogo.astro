@@ -33,7 +33,8 @@ const T = {
       `Catálogo completo de Q-MEDICAL S.A.C. en ${lineasCat.length} líneas, con ` +
       'características técnicas y presentaciones.',
     ante: 'Catálogo',
-    titulo: 'Todo el catálogo, línea por línea',
+    titulo: 'Todo el catálogo,',
+    enfasis: 'línea por línea',
     bajada:
       'Descubre nuestro amplio portafolio de dispositivos médicos para cada ' +
       'especialidad y abastece tus servicios con la calidad y respaldo de ' +
@@ -73,7 +74,8 @@ const T = {
       `The full Q-MEDICAL S.A.C. catalogue across ` +
       `${lineasCat.length} lines, with technical features and presentations.`,
     ante: 'Catalogue',
-    titulo: 'The whole catalogue, line by line',
+    titulo: 'The whole catalogue,',
+    enfasis: 'line by line',
     bajada:
       'Explore our broad portfolio of medical devices for every specialty and ' +
       'supply your services with the quality and backing of Q-Medical.',
@@ -170,6 +172,7 @@ const schema = {
     lang={lang}
     ante={T.ante}
     titulo={T.titulo}
+    enfasis={T.enfasis}
     texto={T.bajada}
     remate={T.remate}
     migas={[{ nombre: T.ante }]}
@@ -183,7 +186,7 @@ const schema = {
 
        El servidor entrega las 45 fichas: sin JavaScript se ven todas, que es
        un catálogo completo y navegable. El guion solo las esconde. -->
-  <section class="aire bg-[var(--color-papel)]" id="explorar">
+  <section class="aire bg-[var(--color-papel-2)]" id="explorar">
     <div class="caja navegador">
       <!-- ── Filtros ──────────────────────────────────────────────────── -->
       <aside class="filtros" aria-labelledby="filtros-rotulo">
@@ -351,6 +354,19 @@ const schema = {
     }
   }
 
+  /* En escritorio los filtros son un panel con superficie propia: sueltos
+     sobre el fondo se leían como una lista de Word junto a la rejilla. */
+  @media (min-width: 1024px) {
+    .filtros {
+      padding: 1.5rem 1.1rem 1.25rem;
+      border: 1px solid var(--color-linea);
+      border-radius: 1.25rem;
+      background: var(--color-papel);
+      box-shadow: 0 18px 40px -34px rgb(4 26 66 / 0.35);
+    }
+    .filtros > .ante { margin-left: 0.4rem; }
+  }
+
   .buscador { position: relative; display: block; margin-top: 1.25rem; }
   .buscador__lupa {
     position: absolute;
@@ -387,15 +403,29 @@ const schema = {
   .rama:hover,
   .ramita:hover { background: var(--color-papel-2); color: var(--color-tinta); }
 
-  .rama.es-activa,
+  .rama.es-activa {
+    background: var(--color-brand-900);
+    color: #fff;
+    font-weight: 600;
+  }
   .ramita.es-activa {
     background: var(--color-brand-50);
     color: var(--color-brand-700);
     font-weight: 600;
   }
 
-  .rama__ic { display: grid; place-items: center; flex: none; opacity: 0.75; }
-  .rama.es-activa .rama__ic { opacity: 1; }
+  .rama__ic {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    transition: background-color 0.25s var(--ease-editorial), color 0.25s var(--ease-editorial);
+  }
+  .rama.es-activa .rama__ic { background: rgb(34 189 242 / 0.18); color: var(--color-celeste); }
   .rama__nombre,
   .ramita__nombre { flex: 1; min-width: 0; }
   .rama__cuenta {
@@ -404,7 +434,14 @@ const schema = {
     font-variant-numeric: tabular-nums;
     color: var(--color-tinta-45);
   }
-  .rama.es-activa .rama__cuenta,
+  .rama__cuenta {
+    min-width: 1.6rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--color-papel-2);
+    text-align: center;
+  }
+  .rama.es-activa .rama__cuenta { background: var(--color-celeste); color: var(--color-brand-950); }
   .ramita.es-activa .rama__cuenta { color: var(--color-brand-700); }
 
   .rama--todas { margin-bottom: 0.35rem; }
@@ -538,11 +575,14 @@ const schema = {
 
   .rejilla-catalogo {
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 3.5rem 2.75rem;
-    margin-top: 2.75rem;
+    /* Dos columnas ya en el teléfono: una sola tarjeta por fila llenaba la
+       pantalla con una foto y obligaba a desplazarse mucho. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 2rem;
   }
-  @media (min-width: 560px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1280px) { .rejilla-catalogo { gap: 1.5rem; } }
+  @media (min-width: 560px) { .rejilla-catalogo { gap: 1.25rem; } }
   @media (min-width: 1024px) { .rejilla-catalogo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1280px) { .rejilla-catalogo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
