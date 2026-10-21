@@ -141,7 +141,7 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
             >{otro === 'es' ? 'ES' : 'EN'}</a>
           </p>
 
-          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-tinta cta-barra">
+          <a href={via(lang, 'contacto', undefined, 'cotizar')} class="pill pill-papel cta-barra">
             <span class="hidden md:inline">{t.cotizar}</span>
             <span class="md:hidden">{t.cotizarCorto}</span>
           </a>
@@ -319,13 +319,12 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
      cabecera —papel y transparente sobre la portada— en vez de deducirlo de
      currentColor, que dejaría blanco sobre blanco. */
   .idioma__actual {
-    background: var(--color-brand-900);
-    color: var(--color-papel);
-    opacity: 1;
-  }
-  .cabecera.es-clara:not(.compacta):not(.abierta):not(.movil-abierto) .idioma__actual {
+    /* Celeste en los dos estados de la cabecera, sobre la portada y sobre
+       blanco: la empresa pidió que el selector y «Solicitar cotización» no
+       cambien de color al desplazarse. */
     background: var(--color-celeste);
     color: var(--color-brand-950);
+    opacity: 1;
   }
 
   .idioma__otro { opacity: 0.6; }
@@ -430,10 +429,6 @@ const destinoIdioma = alternas?.[otro] ?? via(otro, 'inicio');
   .nav__item.es-abierto .nav__punta { transform: rotate(270deg); }
 
   .cta-barra { display: none; min-height: 2.6rem; padding: 0.6rem 1.25rem; font-size: 0.88rem; }
-  .cabecera.es-clara:not(.compacta):not(.abierta):not(.movil-abierto) .cta-barra {
-    background: var(--color-celeste);
-    color: var(--color-brand-950);
-  }
   @media (min-width: 640px) { .cta-barra { display: inline-flex; } }
 
   .hamburguesa {

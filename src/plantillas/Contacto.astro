@@ -142,7 +142,7 @@ const T = {
 const vias = [
   { ic: 'telefono', t: T.telefonos, l: site.telefonos.map((x) => x.etiqueta), href: site.telefonos[0].href },
   { ic: 'whatsapp', t: 'WhatsApp', l: [site.whatsapp.numero], href: whatsapp(wa.cotizacion), externo: true },
-  { ic: 'correo', t: T.cotizaciones, l: [site.correoPrincipal], href: `mailto:${site.correoPrincipal}` },
+  { ic: 'correo', t: T.cotizaciones, l: [site.correoPrincipal], href: `mailto:${site.correoPrincipal}`, ancha: true },
   { ic: 'reloj', t: T.horario, l: [lang === 'en' ? empresaEn.horario : site.horario] },
 ];
 
@@ -186,14 +186,14 @@ const schema = {
     <div class="caja">
       <ul class="vias" data-anim-grupo="140">
         {vias.map((v) => (
-          <li class="via" data-anim="sube">
+          <li class:list={['via', v.ancha && 'via--ancha']} data-anim="sube">
             <p class="via__ic"><Icon name={v.ic} size={22} stroke={1.1} anim /></p>
             <p class="ante mt-4">{v.t}</p>
             <div class="via__valor">
               {v.l.map((x) =>
                 v.href ? (
                   <a href={v.href} target={v.externo ? '_blank' : undefined} rel={v.externo ? 'noopener' : undefined}
-                    class="block break-words hover:text-[var(--color-brand-700)] transition">{x}</a>
+                    class:list={['block hover:text-[var(--color-brand-700)] transition', v.ancha ? 'via__linea' : 'break-words']}>{x}</a>
                 ) : (<span class="block">{x}</span>)
               )}
             </div>
@@ -375,7 +375,20 @@ const schema = {
 <style>
   .vias { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
   @media (min-width: 640px) { .vias { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 1024px) { .vias { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  /* La columna del correo es más ancha: la empresa lo quiere en una sola
+     línea, y en un cuarto del ancho se partía en «…qmedicalsac / .com». */
+  @media (min-width: 1024px) {
+    .vias { grid-template-columns: minmax(0, 0.85fr) minmax(0, 0.75fr) minmax(0, 1.4fr) minmax(0, 1.25fr); }
+  }
+  /* En dos columnas el correo no cabe en media fila: ocupa la fila entera,
+     y el horario lo acompaña para que la rejilla no quede coja. */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .via--ancha, .via:last-child { grid-column: span 2; }
+  }
+  .via__linea {
+    white-space: nowrap;
+    font-size: clamp(0.8rem, 0.35vw + 0.72rem, 0.93rem);
+  }
 
   /* Cada vía es una teja: el icono dentro de un disco que se viste de azul
      al apuntarla, y la teja entera se levanta un poco. Antes eran cuatro
